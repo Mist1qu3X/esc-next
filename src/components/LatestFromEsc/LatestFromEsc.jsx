@@ -27,7 +27,7 @@ const LatestFromEsc = () => {
 
     const handleMore = () => console.log('clicked: MORE');
 
-    if (loading) return <section className="lastest-from-esc">Загрузка...</section>;
+    if (loading) return <section className="lastest-from-esc"></section>;
 
     return (
         <section className="lastest-from-esc">

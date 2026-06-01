@@ -39,7 +39,7 @@
         const handleViewEvent = () => console.log('clicked: VIEW EVENT');
         const handleAllEvents = () => console.log('clicked: ALL EVENTS');
 
-        if (loading) return <section className="info">Загрузка...</section>;
+        if (loading) return <section className="info"></section>;
 
         return (
             <section className="info">
