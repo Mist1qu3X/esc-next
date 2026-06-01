@@ -7,15 +7,29 @@ import config from '@/lib/config';
 const FullInfo = () => {
     const [events, setEvents] = useState([]);
     const [rankings, setRankings] = useState([]);
-    const [timeLeft, setTimeLeft] = useState({ days: 198, hours: 14, minutes: 32 });
+    const [championship, setChampionship] = useState(null);
+    const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
 
-    // Таймер
+    // Загрузка чемпионата
     useEffect(() => {
-        const targetDate = new Date('2026-11-12T00:00:00');
+        const fetchChampionship = async () => {
+            try {
+                const res = await axios.get(`${config.API_URL}/api/championships?populate=*`);
+                if (res.data.data.length > 0) {
+                    setChampionship(res.data.data[0]);
+                }
+            } catch (e) { console.error(e); }
+        };
+        fetchChampionship();
+    }, []);
+
+    // Таймер (зависит от championship)
+    useEffect(() => {
+        if (!championship?.startDate) return;
+        const targetDate = new Date(championship.startDate);
         const timer = setInterval(() => {
             const now = new Date();
             const difference = targetDate - now;
-            
             if (difference > 0) {
                 setTimeLeft({
                     days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -24,9 +38,8 @@ const FullInfo = () => {
                 });
             }
         }, 1000);
-
         return () => clearInterval(timer);
-    }, []);
+    }, [championship]);
 
     // Загрузка событий
     useEffect(() => {
@@ -36,9 +49,7 @@ const FullInfo = () => {
                     `${config.API_URL}/api/events?sort=date:asc&pagination[limit]=3`
                 );
                 setEvents(response.data.data);
-            } catch (error) {
-                console.error('Ошибка загрузки событий:', error);
-            }
+            } catch (error) { console.error('Ошибка загрузки событий:', error); }
         };
         fetchEvents();
     }, []);
@@ -51,9 +62,7 @@ const FullInfo = () => {
                     `${config.API_URL}/api/rankings?sort=position:asc`
                 );
                 setRankings(response.data.data);
-            } catch (error) {
-                console.error('Ошибка загрузки рейтинга:', error);
-            }
+            } catch (error) { console.error('Ошибка загрузки рейтинга:', error); }
         };
         fetchRankings();
     }, []);
@@ -70,16 +79,20 @@ const FullInfo = () => {
                     {/* PART 1 - WHAT'S ON */}
                     <div className="part1">
                         <div className="part-top">
-                            <p className="theme1">WHAT'S ON</p>
-                            <p className="title1">EUROPEAN CHAMPIONSHIP</p>
+                            <p className="theme1">{championship?.theme}</p>
+                            <p className="title1">
+                                {championship?.title?.split('\n').slice(0, 2).map((line, i) => (
+                                    <React.Fragment key={i}>{line}{i === 0 && <br />}</React.Fragment>
+                                ))}
+                            </p>
                             <div>
-                                <span className="card-text1">10m Air Weapons</span>
+                                <span className="card-text1">{championship?.subtitle}</span>
                                 <span className="point">•</span>
-                                <span className="card-text1">Prague</span>
+                                <span className="card-text1">{championship?.city}</span>
                             </div>
                         </div>
                         <div className="part-bottom">
-                            <p className="theme1">STARTS IN</p>
+                            <p className="theme1">{championship?.countdownLabel}</p>
                             <div className="countdown-timer">
                                 <div className="time-block">
                                     <span className="time-number">{String(timeLeft.days).padStart(3, '0')}</span>
