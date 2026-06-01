@@ -1,0 +1,1219 @@
+/* ========== СЕКЦИЯ ALL EVENTS ========== */
+.all-events {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 50px 32px;
+    background-color: #06121f;
+}
+
+.all-events-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.32);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.all-events-naming {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.all-events-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.32);
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.all-events-line {
+    width: 80px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.32);
+}
+
+.all-events-spacer {
+    flex: 1;
+}
+
+/* ========== ТАБЛИЦА ========== */
+.events-table-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Шапка */
+.events-table-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: #06121f;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.events-table-header .col {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+}
+
+/* Строка */
+.events-table-row {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+}
+
+.events-table-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.col {
+    display: flex;
+    align-items: center;
+}
+
+/* ========== ДАТА ========== */
+.col-date {
+    width: 140px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+}
+
+.date-range {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.date-year {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* ========== СОБЫТИЕ ========== */
+.col-event {
+    flex: 1.5;
+    min-width: 200px;
+    padding-left: 24px;
+}
+
+.event-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1.3;
+}
+
+/* ========== ЛОКАЦИЯ ========== */
+.col-location {
+    flex: 1.2;
+    min-width: 140px;
+    gap: 6px;
+}
+
+.col-location i {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 12px;
+}
+
+.col-location span {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========== ТИП ========== */
+.col-type {
+    flex: 0.8;
+    min-width: 100px;
+}
+
+.type-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+/* ========== СТАТУС ========== */
+.col-status {
+    flex: 0.7;
+    min-width: 100px;
+}
+
+.status-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 20px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.status-tag.upcoming {
+    color: #00d8f5;
+    background: #0D2642;
+}
+
+.status-tag.finished {
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ========== ДЕЙСТВИЯ ========== */
+.col-actions {
+    flex: 0.8;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding-left: 0;
+}
+
+.action-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.details-btn {
+    background: #00d8f5;
+    color: #06121f;
+}
+
+.details-btn:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 216, 245, 0.3);
+}
+
+.results-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.results-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-1px);
+}
+
+/* ========== ПАГИНАЦИЯ ========== */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 40px;
+}
+
+.page-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.page-btn.active {
+    background: #00d8f5;
+    color: #06121f;
+    border-color: #00d8f5;
+}
+
+.page-btn.next {
+    width: auto;
+    padding: 0 16px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #00d8f5;
+    border-color: rgba(0, 216, 245, 0.3);
+}
+
+.page-btn.next:hover {
+    background: rgba(0, 216, 245, 0.1);
+    border-color: rgba(0, 216, 245, 0.6);
+}
+
+/* ========== 1024px ========== */
+@media (max-width: 1024px) {
+    .all-events {
+        padding: 40px 24px;
+    }
+    
+    .events-table-header,
+    .events-table-row {
+        padding: 14px 16px;
+    }
+    
+    .col-date {
+        width: 100px;
+    }
+    
+    .date-range {
+        font-size: 12px;
+    }
+    
+    .event-name {
+        font-size: 14px;
+    }
+    
+    .col-type {
+        display: none;
+    }
+    
+    .action-btn {
+        font-size: 10px;
+        padding: 6px 12px;
+    }
+}
+
+/* ========== 480px ========== */
+@media (max-width: 480px) {
+    .all-events {
+        padding: 30px 16px;
+    }
+    
+    .all-events-naming {
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .all-events-title {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+    }
+    
+    .all-events-line {
+        width: 40px;
+    }
+    
+    .events-table-header {
+        display: none;
+    }
+    
+    .events-table-row {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 16px;
+        position: relative;
+    }
+    
+    .col-date {
+        width: 100%;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 8px;
+    }
+    
+    .date-range {
+        font-size: 12px;
+    }
+    
+    .date-year {
+        font-size: 10px;
+    }
+    
+    .col-event {
+        width: 100%;
+        flex: 0 0 100%;
+        min-width: 0;
+        padding-left: 0;
+    }
+    
+    .event-name {
+        font-size: 13px;
+    }
+    
+    .col-location {
+        width: auto;
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .col-location span {
+        font-size: 11px;
+    }
+    
+    .col-type {
+        display: none;
+    }
+    
+    .col-status {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        min-width: 0;
+    }
+    
+    .status-tag {
+        font-size: 9px;
+        padding: 3px 8px;
+    }
+    
+    .col-actions {
+        width: auto;
+        flex: 0 0 auto;
+        min-width: 0;
+        margin-top: 4px;
+    }
+    
+    .action-btn {
+        font-size: 10px;
+        padding: 6px 12px;
+    }
+    
+    .pagination {
+        margin-top: 24px;
+        gap: 4px;
+    }
+    
+    .page-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 11px;
+    }
+    
+    .page-btn.next {
+        padding: 0 12px;
+        font-size: 10px;
+    }
+}
+
+    /* ========== СЕКЦИЯ EVENTS CALENDAR ========== */
+    .events-calendar {
+        width: 100%;
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 40px 32px;
+        background-color: #091A2E;
+    }
+
+    /* ========== СТРОКА ХЛЕБНЫХ КРОШЕК ========== */
+    .breadcrumbs-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .breadcrumb-home {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.32);
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .breadcrumb-home:hover {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .breadcrumb-separator {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.32);
+    }
+
+    .breadcrumb-active {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+    }
+
+    /* ========== ВТОРАЯ СТРОКА: ЛИНИЯ + ПОДПИСЬ ========== */
+    .next-layer {
+        margin-top: 40px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .breadcrumb-line {
+        width: 35px;
+        height: 3px;
+        background: #00d8f5;
+        flex-shrink: 0;
+    }
+
+    .breadcrumb-subtitle {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: #00d8f5;
+        text-transform: uppercase;
+    }
+
+    /* ========== ОСНОВНОЙ ЗАГОЛОВОК + СЧЁТЧИК ========== */
+    .title-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .title-row h1 {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: clamp(40px, 5vw, 64px);
+        font-weight: 900;
+        color: #ffffff;
+        text-transform: uppercase;
+        margin: 0;
+        line-height: 1;
+        letter-spacing: 1px;
+    }
+
+    .events-count {
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.32);
+        text-transform: uppercase;
+        white-space: nowrap;
+        margin-left: auto;
+    }
+
+    /* ========== ДЛИННАЯ ЛИНИЯ (8% белого) ========== */
+    .new-section-line {
+        width: 100%;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+        margin-bottom: 32px;
+    }
+
+    /* ========== БЛОК ФИЛЬТРОВ ========== */
+    .filter {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    /* Иконка фильтра */
+    .filter-icon {
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.5);
+        transition: color 0.2s ease;
+    }
+
+    /* Текст "FILTER:" */
+    .filter-label {
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+    }
+
+    /* ВСЕ КНОПКИ ОДИНАКОВОГО РАЗМЕРА */
+    .filter-btn {
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        padding: 8px 16px;
+        border-radius: 2px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Кнопка выбора даты — ГОЛУБАЯ */
+    .date-event {
+        background-color: #00d8f5;
+        color: #06121f;
+        border: none;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .date-event:hover {
+        background-color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 216, 245, 0.3);
+    }
+
+    /* Кнопки фильтров — выбранные */
+    .selected-filter {
+        background: #00d8f5;
+        border: 1px solid rgba(0, 216, 245, 0.4);
+        color: #06121f;
+    }
+
+    .selected-filter:hover {
+        background: #0ee0ff;
+        border-color: rgba(0, 216, 245, 0.6);
+        transform: translateY(-1px);
+    }
+
+    /* Кнопки фильтров — невыбранные */
+    .unselected-filter {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .unselected-filter:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.8);
+        transform: translateY(-1px);
+    }
+
+    /* Вертикальные разделители */
+    .filter-divider {
+        width: 1px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.15);
+        flex-shrink: 0;
+    }
+
+    /* ========== ПОИСК В ФИЛЬТРЕ (как в хедере) ========== */
+    .filter-search-wrapper {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 40px;
+        transition: all 0.3s ease;
+    }
+
+    .filter-search-wrapper.active {
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 0 1px rgba(0, 216, 245, 0.3);
+    }
+
+    .search-icon-filter {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 40px;
+        height: 40px;
+        color: #8b9bb0;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-radius: 50%;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: relative;
+        top: 0;
+        left: 0;
+    }
+
+    .search-icon-filter:hover {
+        color: #00d8f5;
+        transform: scale(1.05);
+        background: rgba(0, 216, 245, 0.1);
+    }
+
+    .filter-search-input {
+        width: 0;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: #fff;
+        font-size: 15px;
+        font-family: 'Inter', sans-serif;
+        outline: none;
+        transition: all 0.3s ease;
+        opacity: 0;
+    }
+
+    .filter-search-wrapper.active .filter-search-input {
+        width: 180px;
+        padding: 10px 12px 10px 0;
+        margin-right: 12px;
+        opacity: 1;
+    }
+
+    .filter-search-input::placeholder {
+        color: #5a6e85;
+    }
+
+    /* ========== 1024px ========== */
+    @media (max-width: 1024px) {
+        .events-calendar {
+            padding: 32px 24px;
+        }
+        
+        .breadcrumb-home,
+        .breadcrumb-separator,
+        .breadcrumb-active,
+        .breadcrumb-subtitle {
+            font-size: 12px;
+            letter-spacing: 1.5px;
+        }
+        
+        .breadcrumb-line {
+            width: 30px;
+        }
+        
+        .title-row h1 {
+            font-size: 48px;
+        }
+        
+        .events-count {
+            font-size: 12px;
+            letter-spacing: 1.5px;
+        }
+        
+        .new-section-line {
+            margin-bottom: 24px;
+        }
+        
+        .filter {
+            gap: 10px;
+        }
+        
+        .filter-icon {
+            font-size: 16px;
+        }
+        
+        .filter-label {
+            font-size: 11px;
+        }
+        
+        .filter-btn {
+            font-size: 11px;
+            padding: 6px 12px;
+            height: 32px;
+        }
+        
+        .search-icon-filter {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+        
+        .filter-search-wrapper.active .filter-search-input {
+            width: 140px;
+        }
+    }
+
+    /* ========== 480px ========== */
+    @media (max-width: 480px) {
+        .events-calendar {
+            padding: 24px 16px;
+        }
+        
+        .breadcrumbs-row {
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .next-layer {
+            margin-top: 24px;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .breadcrumb-home,
+        .breadcrumb-separator,
+        .breadcrumb-active {
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .breadcrumb-line {
+            width: 20px;
+            height: 2px;
+        }
+        
+        .breadcrumb-subtitle {
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .title-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        
+        .title-row h1 {
+            font-size: 36px;
+        }
+        
+        .events-count {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            margin-left: 0;
+        }
+        
+        .new-section-line {
+            margin-bottom: 20px;
+        }
+        
+        .filter {
+            gap: 6px;
+        }
+        
+        .filter-icon {
+            font-size: 14px;
+        }
+        
+        .filter-label {
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .filter-btn {
+            font-size: 9px;
+            letter-spacing: 1px;
+            padding: 5px 8px;
+            height: 28px;
+        }
+        
+        .filter-divider {
+            height: 14px;
+            margin: 0 2px;
+        }
+        
+        .search-icon-filter {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+        }
+        
+        .filter-search-wrapper.active .filter-search-input {
+            width: 120px;
+            font-size: 12px;
+        }
+    }
+
+    /* ========== СЕКЦИЯ FEATURED EVENTS ========== */
+.featured-events {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 50px 32px;
+    background-color: #06121f;
+}
+
+/* Заголовок секции с линией */
+.next-layer {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.breadcrumb-line {
+    width: 35px;
+    height: 3px;
+    background: #00d8f5;
+    flex-shrink: 0;
+}
+
+.breadcrumb-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #00d8f5;
+    text-transform: uppercase;
+}
+
+/* ========== КОНТЕЙНЕР С КАРТОЧКАМИ ========== */
+.featured-container {
+    display: flex;
+    gap: 2px;
+    width: 100%;
+}
+
+/* ========== КАРТОЧКА ========== */
+.featured-card {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.featured-card img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.featured-card:hover img {
+    transform: scale(1.03);
+}
+
+/* Затемнение снизу */
+.featured-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 65%;
+    background: linear-gradient(to top, rgba(6, 18, 31, 0.95) 0%, rgba(6, 18, 31, 0.6) 40%, transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.featured-card > .status {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #00d8f5;
+    background: #0D2642;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+/* ========== КОНТЕНТ НА КАРТИНКЕ ========== */
+.featured-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0 32px 32px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2;
+}
+
+/* Теги */
+.featured-tags {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* SENIOR / COURSE — голубой */
+.tag-accent {
+    color: #00d8f5;
+}
+
+/* CHAMPIONSHIP / EDUCATION — серый */
+.tag-gray {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Заголовок события */
+.featured-event-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(24px, 2.5vw, 30px);
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin: 0;
+    max-width: 90%;
+}
+
+/* Детали — В ОДНУ СТРОКУ */
+.featured-details {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.featured-details i {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+}
+
+.featured-details span {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Кнопка VIEW EVENT — без рамок, голубая */
+.featured-view-btn {
+    margin-top: 6px;
+    background: transparent;
+    border: none;
+    color: #00d8f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 4px 0;
+    text-transform: uppercase;
+    width: fit-content;
+    transition: opacity 0.2s ease;
+}
+
+.featured-view-btn:hover {
+    opacity: 0.7;
+}
+
+/* ========== 1024px ========== */
+@media (max-width: 1024px) {
+    .featured-events {
+        padding: 40px 24px;
+    }
+    
+    .featured-container {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .featured-card img {
+        height: 360px;
+    }
+    
+    .featured-content {
+        padding: 0 24px 24px 24px;
+    }
+    
+    .featured-event-title {
+        font-size: 24px;
+    }
+    
+    .featured-details {
+        gap: 12px;
+    }
+}
+
+/* ========== 480px ========== */
+@media (max-width: 480px) {
+    .featured-events {
+        padding: 30px 16px;
+    }
+    
+    .featured-naming {
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .featured-title {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+    }
+    
+    .featured-line {
+        width: 25px;
+        height: 2px;
+    }
+    
+    .featured-card img {
+        height: 280px;
+    }
+    
+    .status {
+        top: 12px;
+        right: 12px;
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+    
+    .featured-content {
+        padding: 0 16px 16px 16px;
+        gap: 8px;
+    }
+    
+    .tag {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+    
+    .featured-tags {
+        gap: 12px;
+    }
+    
+    .featured-event-title {
+        font-size: 20px;
+    }
+    
+    .featured-details {
+        gap: 8px;
+    }
+    
+    .featured-details span {
+        font-size: 11px;
+    }
+    
+    .featured-details i {
+        font-size: 11px;
+    }
+    
+    .featured-view-btn {
+        font-size: 11px;
+    }
+}
+
+/* ========== ФИЛЬТР ДАТЫ ========== */
+.date-filter-wrapper {
+    position: relative;
+}
+
+.date-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    background: #0D2642;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 16px;
+    z-index: 10;
+    min-width: 280px;
+}
+
+.date-dropdown-section {
+    margin-bottom: 12px;
+}
+
+.date-dropdown-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.date-dropdown-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.date-option {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.date-option:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.date-option.active {
+    background: #00d8f5;
+    color: #06121f;
+    border-color: #00d8f5;
+}
+
+.date-apply-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: #00d8f5;
+    color: #06121f;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.date-apply-btn:hover {
+    background: #ffffff;
+}

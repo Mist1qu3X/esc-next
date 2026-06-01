@@ -1,0 +1,326 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #06121f;
+    font-family: 'Inter', sans-serif;
+}
+
+.error-page {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 15px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: center;
+    min-height: calc(100vh - 68px);
+    position: relative;
+    overflow: hidden;
+}
+
+.popular-divider {
+    width: 100%;
+    max-width: 800px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Иконка прицела */
+.target-icon {
+    position: absolute;
+    width: 680px;
+    height: 680px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(var(--scale, 1));
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Круги */
+.circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.circle-1 { width: 640px; height: 640px; }
+.circle-2 { width: 520px; height: 520px; }
+.circle-3 { width: 400px; height: 400px; }
+.circle-4 { width: 280px; height: 280px; }
+.circle-5 { width: 160px; height: 160px; }
+.circle-6 { width: 60px;  height: 60px; }
+
+/* Точка в центре */
+.center-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #00d8f5;
+    border-radius: 6px;
+    box-shadow: 0 0 8px rgba(0, 216, 245, 0.6),
+                0 0 16px rgba(0, 216, 245, 0.3);
+}
+
+/* Линии (черточки) */
+.line {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.line-top {
+    width: 2px;
+    height: 100px;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.line-right {
+    width: 100px;
+    height: 2px;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+}
+
+.line-bottom {
+    width: 2px;
+    height: 100px;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.line-left {
+    width: 100px;
+    height: 2px;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+}
+
+/* Контент */
+.error-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 35vh;
+}
+
+/* Голубая светящаяся черточка над текстом */
+.glow-line {
+    width: 40px;
+    height: 3px;
+    background: #00d8f5;
+    margin: 0 auto 24px;
+    box-shadow: 0 0 8px rgba(0, 216, 245, 0.6),
+                0 0 16px rgba(0, 216, 245, 0.3);
+}
+
+.error-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-style: normal;
+    font-size: 48px;
+    line-height: 50.4px;
+    letter-spacing: 0px;
+    text-align: center;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255);
+    margin-bottom: 24px;
+}
+
+.error-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    max-width: 500px;
+    line-height: 1.6;
+    margin: 0 auto 40px;
+}
+
+/* Кнопки */
+.error-buttons {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 80px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.back-home-btn {
+    display: inline-block;
+    background: #00d8f5;
+    color: #06121f;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    padding: 12px 32px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.back-home-btn:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 216, 245, 0.3);
+}
+
+.view-events-btn {
+    display: inline-block;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    padding: 12px 32px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+}
+
+.view-events-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+}
+
+/* Popular Pages */
+.popular-pages {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 800px;
+}
+
+.popular-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.32);
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.popular-links {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.popular-link {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.popular-link:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.back-home-btn i {
+    margin-right: 8px;
+}
+
+.view-events-btn i {
+    margin-left: 8px;
+}
+
+/* Адаптив */
+@media (max-width: 1024px) {
+    .target-icon {
+        --scale: 0.7;
+    }
+}
+
+@media (max-width: 768px) {
+    .target-icon {
+        --scale: 0.5;
+    }
+    .error-page {
+        padding: 60px 24px;
+    }
+    .error-content {
+        margin-top: 30vh;
+    }
+    .error-buttons {
+        margin-bottom: 60px;
+    }
+    .popular-links {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .target-icon {
+        --scale: 0.35;
+    }
+    .error-content {
+        margin-top: 25vh;
+    }
+    .error-title {
+        font-size: 36px;
+        line-height: 38px;
+    }
+    .error-text {
+        font-size: 14px;
+    }
+    .error-buttons {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+    .popular-links {
+        flex-wrap: wrap;
+    }
+    .popular-link {
+        font-size: 10px;
+        padding: 8px 14px;
+    }
+}

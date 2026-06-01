@@ -1,0 +1,378 @@
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #06121f;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Header */
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        max-width: 1440px;
+        height: 68px;
+        margin: 0 auto;
+        padding: 0 32px;
+        background: rgba(6, 18, 31, 0.95);
+        backdrop-filter: blur(8px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    /* Logospace */
+    .logospace {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        transition: opacity 0.2s;
+    }
+
+    .logospace:hover {
+        opacity: 0.85;
+    }
+
+    .logospace img {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid rgba(0, 216, 245, 0.3);
+        transition: border-color 0.2s;
+    }
+
+    .logospace h1 {
+        color: #fff;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 1px;
+        margin: 0;
+    }
+
+    .logospace .full-title {
+        display: none;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: 0.5px;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    /* Navigation */
+    .navigation ul {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        list-style: none;
+    }
+
+    .navigation a {
+        position: relative;
+        padding: 8px 0;
+        color: #8b9bb0;
+        font-size: 18px;
+        font-weight: 500;
+        text-decoration: none;
+        letter-spacing: 0.3px;
+        transition: color 0.25s ease;
+    }
+
+    .navigation a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #00d8f5, #0099cc);
+        border-radius: 2px;
+        transform: translateX(-50%);
+        transition: width 0.25s ease;
+    }
+
+    .navigation li:hover a::after,
+    .navigation li.active a::after {
+        width: 100%;
+    }
+
+    .navigation li:hover a {
+        color: #e0e8f0;
+    }
+
+    .navigation li.active a {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .navigation li {
+        transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    .navigation li:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Search */
+    .search-bar-container {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 40px;
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper.active {
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 0 1px rgba(0, 216, 245, 0.3);
+    }
+
+    .search-icon {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 40px;
+        height: 40px;
+        color: #8b9bb0;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-radius: 50%;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: relative;
+        top: 0;
+        left: 0;
+    }
+
+    .search-icon:hover {
+        color: #00d8f5;
+        transform: scale(1.05);
+        background: rgba(0, 216, 245, 0.1);
+    }
+
+    .search-input {
+        width: 0;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: #fff;
+        font-size: 15px;
+        outline: none;
+        transition: all 0.3s ease;
+        opacity: 0;
+    }
+
+    .search-wrapper.active .search-input {
+        width: 180px;
+        padding: 10px 12px 10px 0;
+        margin-right: 12px;
+        opacity: 1;
+    }
+
+    .search-input::placeholder {
+        color: #5a6e85;
+    }
+
+    .search-input-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 2px;
+        background: linear-gradient(135deg, #00d8f5 0%, #0099cc 100%);
+        color: #06121f;
+        font-size: 13px;
+        font-weight: 900;
+        height: 56px;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 216, 245, 0.2);
+    }
+
+    .search-input-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0, 216, 245, 0.3);
+        background: linear-gradient(135deg, #0ee0ff 0%, #00aadd 100%);
+    }
+
+    .search-input-button:active {
+        transform: translateY(1px);
+    }
+
+    .search-input-button .arrow {
+        display: inline-block;
+        margin-left: 6px;
+        transition: transform 0.2s;
+    }
+
+    .search-input-button:hover .arrow {
+        transform: translateX(4px);
+    }
+
+    /* Бургер-меню */
+    .burger-menu {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+    }
+
+    .burger-menu i {
+        font-size: 24px;
+        color: #fff;
+    }
+
+    /* Мобильное меню */
+    .mobile-nav {
+        display: none;
+        position: fixed;
+        top: 68px;
+        left: 0;
+        width: 100%;
+        background: rgba(6, 18, 31, 0.98);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        z-index: 99;
+    }
+
+    .mobile-nav.active {
+        display: block;
+    }
+
+    .mobile-nav ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .mobile-nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 18px;
+        font-weight: 500;
+        display: block;
+        padding: 8px 0;
+    }
+
+    /* ========== СОСТОЯНИЕ 1: 1440px (по умолчанию) ========== */
+    /* Всё уже настроено */
+
+    /* ========== СОСТОЯНИЕ 2: 1024px ========== */
+    @media (max-width: 1024px) {
+        .header {
+            padding: 0 20px;
+        }
+        
+        /* ESC → полное название */
+        .logospace h1 {
+            display: none;
+        }
+        
+        .logospace .full-title {
+            display: block;
+            max-width: 160px;
+        }
+        
+        /* Убираем стрелку у кнопки */
+        .search-input-button .arrow {
+            display: none;
+        }
+        
+        /* Скрываем навигацию, показываем бургер */
+        .navigation {
+            display: none;
+        }
+        
+        .burger-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Уменьшаем кнопку поиска */
+        .search-wrapper.active .search-input {
+            width: 140px;
+        }
+        
+        .search-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+    }
+
+    /* ========== СОСТОЯНИЕ 3: 375px ========== */
+    @media (max-width: 480px) {
+        .header {
+            padding: 0 16px;
+            height: 60px;
+        }
+        
+        /* Логотип: полное название (не ESC!) */
+        .logospace h1 {
+            display: none;
+        }
+        
+        .logospace .full-title {
+            display: block;
+            font-size: 12px;
+            max-width: 130px;
+        }
+        
+        .logospace img {
+            width: 36px;
+            height: 36px;
+        }
+        
+        /* Кнопка ENTRY SYSTEM полностью пропадает */
+        .search-input-button {
+            display: none;
+        }
+        
+        /* Бургер-меню остаётся */
+        .burger-menu {
+            display: flex;
+        }
+        
+        .burger-menu i {
+            font-size: 20px;
+        }
+        
+        /* Корректировка поиска без кнопки */
+        .search-bar-container {
+            gap: 8px;
+        }
+        
+        .search-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+        }
+        
+        .search-wrapper.active .search-input {
+            width: 120px;
+            font-size: 12px;
+        }
+        
+        .mobile-nav {
+            top: 60px;
+        }
+    }

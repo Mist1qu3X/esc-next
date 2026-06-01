@@ -1,0 +1,530 @@
+/* Блок full-info */
+.full-info {
+    width: 100%;
+    background-color: #06121f;
+}
+
+.full-info-content {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 3fr 1.5fr;
+    gap: 0;
+    width: 100%;
+}
+
+.part1,
+.part2,
+.part3,
+.part4 {
+    padding: 28px 24px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 370px;
+}
+
+/* PART 1 - WHAT'S ON */
+.part1 {
+    background: #00d8f5;
+    color: #06121f;
+}
+
+.part-top {
+    margin-bottom: 24px;
+}
+
+.part-bottom {
+    margin-top: auto;
+}
+
+.theme1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.title1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.card-text1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0.8;
+    display: inline-block;
+}
+
+.point {
+    display: inline-block;
+    margin: 0 6px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* Таймер */
+.countdown-timer {
+    display: flex;
+    gap: 20px;
+    margin: 16px 0 20px 0;
+}
+
+.time-block {
+    text-align: center;
+}
+
+.time-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1;
+    display: block;
+}
+
+.time-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 4px;
+    display: block;
+}
+
+.event-info-btn {
+    background: transparent;
+    border: none;
+    color: #06121f;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: opacity 0.2s;
+    text-transform: uppercase;
+}
+
+.event-info-btn:hover {
+    opacity: 0.6;
+}
+
+/* PART 2 - ESC PLATFORM */
+.part2 {
+    background: #0d2642;
+    color: #ffffff;
+}
+
+.theme2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    color: rgba(255, 255, 255, 0.32);
+}
+
+.title2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 12px;
+}
+
+.card-text2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.entry-system-btn {
+    background: #00d8f5;
+    border: none;
+    color: #06121f;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 10px 19px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.entry-system-btn:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* PART 3 - UPCOMING EVENTS */
+.part3 {
+    background: #091a2e;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.all-event-item {
+    flex: 1;
+}
+
+.part3 h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: rgba(255, 255, 255, 0.32);
+}
+
+.event-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.event-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.event-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.event-date-block {
+    text-align: center;
+    min-width: 48px;
+}
+
+.event-date {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    color: #00d8f5;
+    display: block;
+    line-height: 1;
+}
+
+.event-month {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.6);
+    display: block;
+    margin-top: 4px;
+}
+
+.event-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.event-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.geolocation {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.geolocation i {
+    color: #00d8f5;
+    font-size: 10px;
+}
+
+.geolocation p {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.status {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #00d8f5;
+    background: rgba(0, 216, 245, 0.15);
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.all-events-btn {
+    background: transparent;
+    border: none;
+    color: #00d8f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: opacity 0.2s ease;
+    text-transform: uppercase;
+    display: inline-block;
+    text-align: left;
+}
+
+.all-events-btn:hover {
+    opacity: 0.6;
+}
+
+/* PART 4 - ESC RANKING */
+.part4 {
+    background: #06121f;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ranking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.part4 h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+
+.go-to-full {
+    background: transparent;
+    border: none;
+    color: #00d8f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: opacity 0.2s ease;
+    text-transform: uppercase;
+}
+
+.go-to-full:hover {
+    opacity: 0.6;
+}
+
+.description {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.ranking-list {
+    flex: 1;
+}
+
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Линия как в UPCOMING EVENTS */
+}
+
+/* Убираем линию у последнего элемента */
+.ranking-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.rank-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.athlete-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-transform: uppercase;
+}
+
+.rank {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    width: 28px;
+}
+
+/* Первое место - голубой номер */
+.first-place .rank {
+    color: #00d8f5;
+}
+
+/* Остальные места - белый полупрозрачный номер */
+.ranking-item:not(.first-place) .rank {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.name {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+}
+
+.country {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Первое место - очки голубые */
+.first-place .points {
+    color: #00d8f5;
+}
+
+/* Остальные места - очки полупрозрачные белые */
+.ranking-item:not(.first-place) .points {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.points {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: right;
+}
+
+/* =========================
+   1024px
+========================= */
+
+@media (max-width: 1024px) {
+
+    .wrapper {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .part1,
+    .part2,
+    .part3,
+    .part4 {
+        min-height: 320px;
+    }
+
+    .title1,
+    .title2 {
+        font-size: 24px;
+    }
+
+    .part3 h4,
+    .part4 h4 {
+        font-size: 20px;
+    }
+}
+
+
+/* =========================
+   375px
+========================= */
+
+@media (max-width: 480px) {
+
+    .wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    /* скрываем второй блок */
+    .part2 {
+        display: none;
+    }
+
+    .part1,
+    .part3,
+    .part4 {
+        min-height: auto;
+        padding: 24px 18px;
+    }
+
+    .title1 {
+        font-size: 22px;
+    }
+
+    .part3 h4,
+    .part4 h4 {
+        font-size: 18px;
+    }
+
+    .countdown-timer {
+        gap: 12px;
+    }
+
+    .time-number {
+        font-size: 26px;
+    }
+
+    .event-item {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .status {
+        font-size: 9px;
+        padding: 3px 6px;
+    }
+
+    .ranking-item {
+        gap: 10px;
+    }
+
+    .name {
+        font-size: 13px;
+    }
+
+    .points {
+        font-size: 12px;
+    }
+}   

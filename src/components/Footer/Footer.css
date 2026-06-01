@@ -1,0 +1,401 @@
+/* Футер */
+.footer {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 50px 32px 30px 32px;
+    background-color: #06121f;
+    position: relative;
+}
+
+/* Верхняя линия (растянута на всю ширину) */
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Верхняя часть футера — социальные сети и ссылки */
+.social-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+/* Линия после social-container (растянута) */
+.social-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -32px;
+    width: calc(100% + 64px);
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 2vw, 24px);
+}
+
+.social-text {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(10px, 1vw, 12px);
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.social-links i {
+    font-size: clamp(16px, 1.5vw, 20px);
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.social-links i:hover {
+    color: #00d8f5;
+    transform: translateY(-2px);
+}
+
+.reading-links {
+    display: flex;
+    gap: clamp(12px, 2vw, 32px);
+}
+
+.reading-links a {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(9px, 0.9vw, 11px);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+}
+
+.reading-links a:hover {
+    color: #00d8f5;
+}
+
+/* Средняя часть футера — ссылки */
+.other-links-container {
+    display: flex;
+    justify-content: space-between;
+    gap: clamp(18px, 3vw, 40px);
+    padding-bottom: 50px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+/* Линия после other-links-container (растянута) */
+.other-links-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -32px;
+    width: calc(100% + 64px);
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Блок с логотипом */
+.logo-inf {
+    flex: 1.2;
+    max-width: 280px;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.logo-wrapper img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo-wrapper h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(20px, 2vw, 28px);
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0;
+}
+
+/* Полное название для мобильной версии (скрыто по умолчанию) */
+.logo-wrapper .full-title {
+    display: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(11px, 1.2vw, 14px);
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    max-width: 160px;
+}
+
+.info-corp {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(11px, 1vw, 13px);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+/* Блоки ссылок */
+.the-esc,
+.media,
+.related-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.title-links {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(10px, 1vw, 12px);
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    margin: 0 0 8px 0;
+}
+
+.the-esc a,
+.media a,
+.related-links a {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(11px, 1vw, 13px);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.the-esc a:hover,
+.media a:hover,
+.related-links a:hover {
+    color: #00d8f5;
+    transform: translateX(4px);
+}
+
+.logo-inf,
+.the-esc,
+.media,
+.related-links {
+    min-width: 0;
+}
+
+.reading-links,
+.social-links,
+.other-links-container {
+    overflow: hidden;
+}
+
+/* Нижняя часть футера — копирайт */
+.copyright-layer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+}
+
+.copyright-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.3);
+    margin: 0;
+}
+
+.right-copyright-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.blue-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background-color: #00d8f5;
+    border-radius: 50%;
+}
+
+/* ========== СОСТОЯНИЕ 1: 1440px (по умолчанию) ========== */
+
+/* ========== СОСТОЯНИЕ 2: 1024px ========== */
+@media (max-width: 1024px) {
+    .footer {
+        padding: 40px 24px 25px 24px;
+    }
+    
+    .social-container::after {
+        left: -24px;
+        width: calc(100% + 48px);
+    }
+    
+    .other-links-container::after {
+        left: -24px;
+        width: calc(100% + 48px);
+    }
+    
+    /* Логотип — полное название вместо ESC */
+    .logo-wrapper h4 {
+        display: none;
+    }
+    
+    .logo-wrapper .full-title {
+        display: block;
+    }
+    
+    .other-links-container {
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+    
+    .logo-inf {
+        flex: 1;
+        min-width: 250px;
+    }
+    
+    .the-esc,
+    .media,
+    .related-links {
+        min-width: 150px;
+    }
+}
+
+/* ========== СОСТОЯНИЕ 3: 480px ========== */
+@media (max-width: 480px) {
+    .footer {
+        padding: 30px 16px 20px 16px;
+    }
+    
+    .social-container::after {
+        left: -16px;
+        width: calc(100% + 32px);
+    }
+    
+    .other-links-container::after {
+        left: -16px;
+        width: calc(100% + 32px);
+    }
+    
+    /* SOCIAL CONTAINER — вертикально */
+    .social-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding-bottom: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .social-links {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .social-text {
+        font-size: 10px;
+    }
+    
+    .social-links i {
+        font-size: 18px;
+    }
+    
+    /* READING LINKS — ПРОПАДАЮТ */
+    .reading-links {
+        display: none;
+    }
+    
+    /* OTHER LINKS — структура 1 2 / 3 */
+    .other-links-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 24px;
+        padding-bottom: 30px;
+        margin-bottom: 20px;
+    }
+    
+    /* Логотип на всю ширину (строка 1) */
+    .logo-inf {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
+        margin-bottom: 0;
+    }
+    
+    .logo-wrapper img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .info-corp {
+        font-size: 12px;
+    }
+    
+    /* THE ESC (строка 2) */
+    .the-esc {
+        flex: 1;
+        min-width: calc(50% - 12px);
+    }
+    
+    /* MEDIA + RELATED LINKS вместе в одной строке (строка 3) */
+    .media {
+        flex: 1;
+        min-width: calc(50% - 12px);
+    }
+    
+    .related-links {
+        flex: 1;
+        min-width: calc(50% - 12px);
+    }
+    
+    .title-links {
+        font-size: 11px;
+    }
+    
+    .the-esc a,
+    .media a,
+    .related-links a {
+        font-size: 11px;
+    }
+    
+    /* COPYRIGHT */
+    .copyright-layer {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding-top: 5px;
+    }
+    
+    .copyright-text {
+        font-size: 10px;
+    }
+    
+    .right-copyright-text {
+        font-size: 10px;
+        justify-content: center;
+    }
+}
