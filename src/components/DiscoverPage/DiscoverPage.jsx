@@ -1,15 +1,76 @@
-// src/components/DiscoverPage/DiscoverPage.jsx
 'use client';
-import { useState } from 'react';
-import './DiscoverPage.css'; // объедините все CSS-секции в этот файл
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import config from '@/lib/config';
+import './DiscoverPage.css';
 
 const DiscoverPage = () => {
-  // Управление панелями Governance
+  const [pageData, setPageData] = useState(null);
+  const [leaders, setLeaders] = useState([]);
+  const [federations, setFederations] = useState([]);
+  const [milestones, setMilestones] = useState([]);
+  const [governance, setGovernance] = useState([]);
   const [openPanels, setOpenPanels] = useState({});
+  const [filterRegion, setFilterRegion] = useState('ALL');
 
-  const togglePanel = (panelId) => {
-    setOpenPanels((prev) => ({ ...prev, [panelId]: !prev[panelId] }));
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const [
+        aboutRes,
+        leadersRes,
+        fedsRes,
+        milestonesRes,
+        govRes,
+      ] = await Promise.all([
+        axios.get(`${config.API_URL}/api/about-pages?populate=*`),
+        axios.get(`${config.API_URL}/api/leaders?populate=*&sort=order:asc`),
+        axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
+        axios.get(`${config.API_URL}/api/heritage-milestones?sort=order:asc`),
+        axios.get(`${config.API_URL}/api/governances?sort=order:asc&pagination[limit]=20`)
+      ]);
+
+      setPageData(
+        Array.isArray(aboutRes.data?.data)
+          ? aboutRes.data.data[0]
+          : aboutRes.data?.data || null
+      );
+
+      setLeaders(leadersRes.data?.data || []);
+      setFederations(fedsRes.data?.data || []);
+      setMilestones(milestonesRes.data?.data || []);
+      setGovernance(govRes.data?.data || []);
+
+      console.log('ABOUT', aboutRes.data);
+      console.log('LEADERS', leadersRes.data);
+      console.log('FEDS', fedsRes.data);
+      console.log('MILESTONES', milestonesRes.data);
+      console.log('GOV', govRes.data);
+
+    } catch (e) {
+      console.error('Ошибка загрузки Discover:', e);
+    }
   };
+
+  fetchData();
+}, []);
+
+  const togglePanel = (id) => setOpenPanels(prev => ({ ...prev, [id]: !prev[id] }));
+
+  const regions = ['ALL', 'W.EUROPE', 'SCANDINAVIA', 'C.EUROPE', 'E.EUROPE', 'S.EUROPE', 'CAUCASUS'];
+  const filteredFeds = filterRegion === 'ALL'
+    ? federations
+    : federations.filter(f => f.region === filterRegion);
+
+  const getImageUrl = (img) => {
+    if (!img) return null;
+    if (typeof img === 'string') return img.startsWith('http') ? img : `${config.API_URL}${img}`;
+    return img.url?.startsWith('http') ? img.url : `${config.API_URL}${img.url}`;
+  };
+
+  const assembly = governance.find(g => g.type === 'legislative');
+  const executive = governance.find(g => g.type === 'executive');
+  const committees = governance.filter(g => g && g.type && !['legislative', 'executive'].includes(g.type));
 
   return (
     <>
@@ -22,11 +83,11 @@ const DiscoverPage = () => {
         </div>
         <div className="next-layer">
           <span className="breadcrumb-line"></span>
-          <span className="breadcrumb-subtitle">EUROPEAN SHOOTING CONFEDERATION</span>
+          <span className="breadcrumb-subtitle">{pageData?.heroSubtitle}</span>
         </div>
         <div className="about-title-row">
-          <h1>THE HEART OF EUROPEAN</h1>
-          <h1 className="accent">SHOOTING SPORT</h1>
+          <h1>{pageData?.heroTitle1}</h1>
+          <h1 className="accent">{pageData?.heroTitle2}</h1>
         </div>
       </section>
 
@@ -38,22 +99,20 @@ const DiscoverPage = () => {
               <span className="who-line"></span>
               <span className="who-subtitle">WHO WE ARE</span>
             </div>
-            <h2 className="who-title">MISSION & PURPOSE</h2>
-            <p className="who-text">
-              The European Shooting Confederation (ESC) is the continental governing body for shooting sports, overseeing the development, regulation, and promotion of precision shooting disciplines across Europe.
-            </p>
-            <p className="who-text">
-              We organise European Championships, youth competitions, officials' education, and work with the ISSF to deliver international standards to every member nation.
-            </p>
+            <h2 className="who-title">{pageData?.missionTitle}</h2>
+            <p className="who-text">{pageData?.missionText1}</p>
+            <p className="who-text">{pageData?.missionText2}</p>
             <div className="who-stats">
-              <div className="stat-card"><span className="stat-number">47</span><span className="stat-label">MEMBER FEDERATIONS</span></div>
-              <div className="stat-card"><span className="stat-number">38</span><span className="stat-label">NATIONS REPRESENTED</span></div>
-              <div className="stat-card"><span className="stat-number">24+</span><span className="stat-label">ANNUAL EVENTS</span></div>
-              <div className="stat-card"><span className="stat-number">48</span><span className="stat-label">YEARS OF HISTORY</span></div>
+              <div className="stat-card"><span className="stat-number">{pageData?.statsMembers}</span><span className="stat-label">{pageData?.statsLabelMembers}</span></div>
+              <div className="stat-card"><span className="stat-number">{pageData?.statsNations}</span><span className="stat-label">{pageData?.statsLabelNations}</span></div>
+              <div className="stat-card"><span className="stat-number">{pageData?.statsEvents}</span><span className="stat-label">{pageData?.statsLabelEvents}</span></div>
+              <div className="stat-card"><span className="stat-number">{pageData?.statsYears}</span><span className="stat-label">{pageData?.statsLabelYears}</span></div>
             </div>
           </div>
           <div className="who-right">
-            <img src="/img/news1.jpg" alt="European Shooting Confederation" />
+            {pageData?.missionImage && (
+              <img src={getImageUrl(pageData.missionImage)} alt="ESC" />
+            )}
           </div>
         </div>
       </section>
@@ -91,8 +150,6 @@ const DiscoverPage = () => {
                 <circle cx="11" cy="11" r="9.5" stroke="#00d8f5" strokeWidth="1.5"/>
                 <ellipse cx="11" cy="11" rx="4.5" ry="9.5" stroke="#00d8f5" strokeWidth="1.5"/>
                 <line x1="2" y1="11" x2="20" y2="11" stroke="#00d8f5" strokeWidth="1.5"/>
-                <line x1="11" y1="1.5" x2="11" y2="3.5" stroke="#00d8f5" strokeWidth="1.5"/>
-                <line x1="11" y1="18.5" x2="11" y2="20.5" stroke="#00d8f5" strokeWidth="1.5"/>
               </svg>
             </div>
             <h3 className="core-card-title">INCLUSION</h3>
@@ -110,78 +167,110 @@ const DiscoverPage = () => {
         <h2 className="structure-title">GOVERNANCE</h2>
 
         {/* General Assembly */}
-        <div className={`structure-block block-main ${openPanels['assembly'] ? 'has-open-panel' : ''}`}>
-          <div className="block-label">LEGISLATIVE</div>
-          <div className="block-info">
-            <h3 className="block-name">GENERAL ASSEMBLY</h3>
-            <p className="block-desc">All 47 Member Federations</p>
-          </div>
-          <button className="block-toggle" onClick={() => togglePanel('assembly')}>
-            {openPanels['assembly'] ? 'CLOSE' : 'VIEW'} <i className={`fa-solid fa-chevron-${openPanels['assembly'] ? 'up' : 'down'}`}></i>
-          </button>
-        </div>
-        {openPanels['assembly'] && (
-          <div className="assembly-panel is-open">
-            <div className="assembly-header">
-              <div className="assembly-label">LEGISLATIVE</div>
-              <h3 className="assembly-title">GENERAL ASSEMBLY</h3>
-              <p className="assembly-description">The supreme governing body of the ESC. Meets annually to adopt regulations, elect the Executive Committee, and decide strategic direction.</p>
-              <button className="panel-close" onClick={() => togglePanel('assembly')}><i className="fa-solid fa-xmark"></i></button>
+        {assembly && (
+          <>
+            <div className={`structure-block block-main ${openPanels['assembly'] ? 'has-open-panel' : ''}`}>
+              <div className="block-label">LEGISLATIVE</div>
+              <div className="block-info">
+                <h3 className="block-name">{assembly.name}</h3>
+                <p className="block-desc">{assembly.members}</p>
+              </div>
+              <button className="block-toggle" onClick={() => togglePanel('assembly')}>
+                {openPanels['assembly'] ? 'CLOSE' : 'VIEW'} <i className={`fa-solid fa-chevron-${openPanels['assembly'] ? 'up' : 'down'}`}></i>
+              </button>
             </div>
-            <div className="assembly-federations">
-              {/* 47 флагов - оставлены основные для примера */}
-              <div className="assembly-member"><div className="assembly-flag flag-de"></div><div className="assembly-code">GER</div><div className="assembly-country">Germany</div></div>
-              <div className="assembly-member"><div className="assembly-flag flag-fr"></div><div className="assembly-code">FRA</div><div className="assembly-country">France</div></div>
-              <div className="assembly-member"><div className="assembly-flag flag-it"></div><div className="assembly-code">ITA</div><div className="assembly-country">Italy</div></div>
-              <div className="assembly-member"><div className="assembly-flag flag-cz"></div><div className="assembly-code">CZE</div><div className="assembly-country">Czech Republic</div></div>
-              {/* ... добавьте остальные по аналогии */}
-            </div>
-          </div>
+            {openPanels['assembly'] && (
+              <div className="assembly-panel is-open">
+                <div className="assembly-header">
+                  <div className="assembly-label">LEGISLATIVE</div>
+                  <h3 className="assembly-title">{assembly.name}</h3>
+                  <p className="assembly-description">{assembly.description}</p>
+                  <button className="panel-close" onClick={() => togglePanel('assembly')}><i className="fa-solid fa-xmark"></i></button>
+                </div>
+                <div className="assembly-federations">
+                  {federations.slice(0, 46).map((fed) => (
+                    <div className="assembly-member" key={fed.id}>
+                      <div className={`assembly-flag flag-${fed.countryCode?.toLowerCase() || 'de'}`}></div>
+                      <div className="assembly-code">{fed.code}</div>
+                      <div className="assembly-country">{fed.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Executive Committee */}
-        <div className={`structure-block block-accent ${openPanels['executive'] ? 'has-open-panel' : ''}`}>
-          <div className="block-label">EXECUTIVE</div>
-          <div className="block-info">
-            <h3 className="block-name">EXECUTIVE COMMITTEE</h3>
-            <p className="block-desc">9 elected members</p>
-          </div>
-          <button className="block-toggle" onClick={() => togglePanel('executive')}>
-            {openPanels['executive'] ? 'CLOSE' : 'VIEW'} <i className={`fa-solid fa-chevron-${openPanels['executive'] ? 'up' : 'down'}`}></i>
-          </button>
-        </div>
-        {openPanels['executive'] && (
-          <div className="assembly-panel is-open">
-            <div className="assembly-header">
-              <div className="assembly-label">EXECUTIVE</div>
-              <h3 className="assembly-title">EXECUTIVE COMMITTEE</h3>
-              <p className="assembly-description">The executive body responsible for implementing decisions of the General Assembly and managing day-to-day governance.</p>
-              <button className="panel-close" onClick={() => togglePanel('executive')}><i className="fa-solid fa-xmark"></i></button>
+        {executive && (
+          <>
+            <div className={`structure-block block-accent ${openPanels['executive'] ? 'has-open-panel' : ''}`}>
+              <div className="block-label">EXECUTIVE</div>
+              <div className="block-info">
+                <h3 className="block-name">{executive.name}</h3>
+                <p className="block-desc">{executive.members}</p>
+              </div>
+              <button className="block-toggle" onClick={() => togglePanel('executive')}>
+                {openPanels['executive'] ? 'CLOSE' : 'VIEW'} <i className={`fa-solid fa-chevron-${openPanels['executive'] ? 'up' : 'down'}`}></i>
+              </button>
             </div>
-            <div className="executive-members">
-              <div className="executive-member"><div className="executive-photo"><span>TR</span></div><div className="executive-info"><h4>THOMAS REINHARDT</h4><span className="executive-role">PRESIDENT</span><div className="executive-country"><span className="assembly-flag flag-de"></span>Germany</div></div></div>
-              <div className="executive-member"><div className="executive-photo"><span>SM</span></div><div className="executive-info"><h4>SOFIA MARCHETTI</h4><span className="executive-role">SECRETARY GENERAL</span><div className="executive-country"><span className="assembly-flag flag-it"></span>Italy</div></div></div>
-              {/* ... остальные члены */}
-            </div>
-          </div>
+            {openPanels['executive'] && (
+              <div className="assembly-panel is-open">
+                <div className="assembly-header">
+                  <div className="assembly-label">EXECUTIVE</div>
+                  <h3 className="assembly-title">{executive.name}</h3>
+                  <p className="assembly-description">{executive.description}</p>
+                  <button className="panel-close" onClick={() => togglePanel('executive')}><i className="fa-solid fa-xmark"></i></button>
+                </div>
+                <div className="executive-members">
+                  {leaders.slice(0, 9).map((l) => (
+                    <div className="executive-member" key={l.id}>
+                      <div className="executive-photo"><span>{l.initials}</span></div>
+                      <div className="executive-info">
+                        <h4>{l.name}</h4>
+                        <span className="executive-role">{l.role}</span>
+                        <div className="executive-country">
+                          <span className={`assembly-flag flag-${l.countryCode?.toLowerCase() || 'de'}`}></span>
+                          {l.country}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
 
+        {console.log('committees before render:', committees)}
         {/* Комитеты */}
         <div className="committee-cards">
-          {['Technical Committee', 'Development Committee', 'Athletes Committee', 'Judges Committee'].map((name) => {
-            const id = name.toLowerCase().replace(/\s/g, '');
-            return (
-              <div key={id} className="committee-card" onClick={() => togglePanel(id)}>
-                <div className="committee-card-content">
-                  <h4 className="committee-name">{name.toUpperCase()}</h4>
-                  <p className="committee-members">{id === 'technicalcommittee' ? '6 experts' : id === 'developmentcommittee' ? '5 members' : id === 'athletescommittee' ? '4 athletes' : '4 senior judges'}</p>
-                </div>
-                <i className={`fa-solid fa-chevron-${openPanels[id] ? 'up' : 'down'} committee-arrow`}></i>
+          {committees.map((c) => (
+            <div key={c.id} className="committee-card" onClick={() => togglePanel(c.id)}>
+              <div className="committee-card-content">
+                <h4 className="committee-name">{c.name}</h4>
+                <p className="committee-members">{c.members}</p>
               </div>
-            );
-          })}
+              <i className={`fa-solid fa-chevron-${openPanels[c.id] ? 'up' : 'down'} committee-arrow`}></i>
+            </div>
+          ))}
         </div>
-        {/* Здесь можно добавить панели для каждого комитета аналогично */}
+
+        {/* Панели комитетов — ОТДЕЛЬНО после карточек */}
+        {committees.map((c) => (
+          openPanels[c.id] && (
+            <div key={`panel-${c.id}`} className="assembly-panel is-open">
+              <div className="assembly-header">
+                <div className="assembly-label">COMMITTEE</div>
+                <h3 className="assembly-title">{c.name}</h3>
+                <p className="assembly-description">{c.description}</p>
+                <button className="panel-close" onClick={() => togglePanel(c.id)}>
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          )
+        ))}
       </section>
 
       {/* ========== LEADERSHIP ========== */}
@@ -194,63 +283,78 @@ const DiscoverPage = () => {
           <a href="#" className="leadership-directory">FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i></a>
         </div>
         <div className="leadership-cards">
-          <div className="leader-card">
-            <div className="leader-photo"><span className="leader-initials">TR</span></div>
-            <div className="leader-info"><h3 className="leader-name">THOMAS REINHARDT</h3><p className="leader-role">PRESIDENT</p><div className="leader-country"><span className="flag flag-de"></span><span>Germany</span></div></div>
-          </div>
-          <div className="leader-card">
-            <div className="leader-photo"><span className="leader-initials">SM</span></div>
-            <div className="leader-info"><h3 className="leader-name">SOFIA MARCHETTI</h3><p className="leader-role">SECRETARY GENERAL</p><div className="leader-country"><span className="flag flag-it"></span><span>Italy</span></div></div>
-          </div>
-          <div className="leader-card">
-            <div className="leader-photo"><span className="leader-initials">JN</span></div>
-            <div className="leader-info"><h3 className="leader-name">JAKUB NOVÁK</h3><p className="leader-role">TECHNICAL DIRECTOR</p><div className="leader-country"><span className="flag flag-cz"></span><span>Czech Republic</span></div></div>
-          </div>
-          <div className="leader-card">
-            <div className="leader-photo"><span className="leader-initials">IL</span></div>
-            <div className="leader-info"><h3 className="leader-name">INGRID LARSEN</h3><p className="leader-role">DEVELOPMENT OFFICER</p><div className="leader-country"><span className="flag flag-no"></span><span>Norway</span></div></div>
-          </div>
+          {leaders.slice(0, 4).map((l) => (
+            <div className="leader-card" key={l.id}>
+              <div className="leader-photo"><span className="leader-initials">{l.initials}</span></div>
+              <div className="leader-info">
+                <h3 className="leader-name">{l.name}</h3>
+                <p className="leader-role">{l.role}</p>
+                <div className="leader-country">
+                  <span className={`flag flag-${l.countryCode?.toLowerCase() || 'de'}`}></span>
+                  <span>{l.country}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* ========== MEMBER FEDERATIONS ========== */}
       <section className="member-federations">
-        <div className="federations-next-layer"><span className="federations-line"></span><span className="federations-subtitle">MEMBER FEDERATIONS</span></div>
+        <div className="federations-next-layer">
+          <span className="federations-line"></span>
+          <span className="federations-subtitle">MEMBER FEDERATIONS</span>
+        </div>
         <div className="federations-header">
-          <div className="federations-title-row"><h2 className="federations-title">47 NATIONS,<br />ONE CONFEDERATION</h2></div>
+          <h2 className="federations-title">47 NATIONS,<br />ONE CONFEDERATION</h2>
           <a href="#" className="federations-directory-btn">FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i></a>
         </div>
         <div className="federations-filter">
           <div className="filter-tabs">
-            {['ALL', 'W.EUROPE', 'SCANDINAVIA', 'C.EUROPE', 'E.EUROPE', 'S.EUROPE', 'CAUCASUS'].map((r) => (
-              <button key={r} className={`filter-tab ${r === 'ALL' ? 'active' : ''}`}>{r}</button>
+            {regions.map((r) => (
+              <button key={r} className={`filter-tab ${filterRegion === r ? 'active' : ''}`}
+                onClick={() => setFilterRegion(r)}>{r}</button>
             ))}
           </div>
-          <div className="filter-count"><i className="fa-solid fa-users"></i><span>46 federations</span></div>
+          <div className="filter-count"><i className="fa-solid fa-users"></i><span>{filteredFeds.length} federations</span></div>
         </div>
         <div className="federations-grid">
-          {/* Примеры карточек */}
-          <div className="federation-card"><span className="fed-flag fed-flag-de"></span><div className="fed-info"><h3 className="fed-name">GERMANY</h3><span className="fed-code">GER</span><span className="fed-since">Since 1976</span></div><span className="fed-region">W.EUROPE</span></div>
-          <div className="federation-card"><span className="fed-flag fed-flag-fr"></span><div className="fed-info"><h3 className="fed-name">FRANCE</h3><span className="fed-code">FRA</span><span className="fed-since">Since year</span></div><span className="fed-region">W.EUROPE</span></div>
-          {/* ... ещё 44 карточки */}
+          {filteredFeds.slice(0, 12).map((fed) => (
+            <div className="federation-card" key={fed.id}>
+              <span className={`fed-flag fed-flag-${fed.countryCode?.toLowerCase() || 'de'}`}></span>
+              <div className="fed-info">
+                <h3 className="fed-name">{fed.name}</h3>
+                <span className="fed-code">{fed.code}</span>
+                <span className="fed-since">Since {fed.since}</span>
+              </div>
+              <span className="fed-region">{fed.region}</span>
+            </div>
+          ))}
         </div>
-        <div className="federations-show-all"><button className="show-all-btn">SHOW ALL 46 MEMBERS <i className="fa-solid fa-chevron-down"></i></button></div>
+        <div className="federations-show-all">
+          <button className="show-all-btn">SHOW ALL {federations.length} MEMBERS <i className="fa-solid fa-chevron-down"></i></button>
+        </div>
       </section>
 
       {/* ========== HERITAGE ========== */}
       <section className="heritage">
         <div className="heritage-container">
           <div className="heritage-left">
-            <div className="heritage-next-layer"><span className="heritage-line"></span><span className="heritage-subtitle">HERITAGE</span></div>
-            <h2 className="heritage-title">NEARLY FIVE DECADES</h2>
-            <p className="heritage-text">Founded in 1978 in Vienna, the ESC has grown from a coordination forum into a full continental federation governing 47 national bodies, 12 disciplines, and thousands of competitive athletes each season.</p>
+            <div className="heritage-next-layer">
+              <span className="heritage-line"></span>
+              <span className="heritage-subtitle">{pageData?.heritageSubtitle}</span>
+            </div>
+            <h2 className="heritage-title">{pageData?.heritageTitle}</h2>
+            <p className="heritage-text">{pageData?.heritageText}</p>
           </div>
           <div className="heritage-right">
             <div className="heritage-cards">
-              <div className="heritage-card"><span className="heritage-year">1978</span><span className="heritage-desc">ESC founded in Vienna, Austria</span></div>
-              <div className="heritage-card"><span className="heritage-year">1983</span><span className="heritage-desc">First European Championship organised</span></div>
-              <div className="heritage-card"><span className="heritage-year">2001</span><span className="heritage-desc">Youth League programme launched</span></div>
-              <div className="heritage-card"><span className="heritage-year">2018</span><span className="heritage-desc">Digital infrastructure modernised</span></div>
+              {milestones.map((m) => (
+                <div className="heritage-card" key={m.id}>
+                  <span className="heritage-year">{m.year}</span>
+                  <span className="heritage-desc">{m.description}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
