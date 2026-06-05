@@ -1,12 +1,5 @@
 import './globals.css';
 import '@/components/Header/Header.css';
-import '@/components/Info/Info.css';
-import '@/components/FullInfo/FullInfo.css';
-import '@/components/LatestFromEsc/LatestFromEsc.css';
-import '@/components/Spotlight/Spotlight.css';
-import '@/components/MustSeeAction/MustSeeAction.css';
-import '@/components/Ad/Ad.css';
-import '@/components/FeaturedDocuments/FeaturedDocuments.css';
 import '@/components/Footer/Footer.css';
 
 export const metadata = {

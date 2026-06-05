@@ -1,0 +1,973 @@
+/* ========== СЕКЦИЯ DOCUMENTS HERO ========== */
+.documents-hero {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 100px 32px;
+    background-color: #091A2E;
+}
+
+.documents-hero .breadcrumbs-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 40px;
+}
+
+.documents-hero .breadcrumb-home {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.32);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.documents-hero .breadcrumb-home:hover {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.documents-hero .breadcrumb-separator {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.32);
+}
+
+.documents-hero .breadcrumb-active {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+}
+
+.documents-hero .next-layer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.documents-hero .breadcrumb-line {
+    width: 35px;
+    height: 3px;
+    background: #00d8f5;
+    flex-shrink: 0;
+}
+
+.documents-hero .breadcrumb-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #00d8f5;
+    text-transform: uppercase;
+}
+
+.documents-hero .documents-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: 1px;
+    margin: 0 0 40px 0;
+}
+
+/* Поиск */
+.documents-hero .documents-search {
+    width: 580px;
+    max-width: 100%;
+    height: 50px;
+    background: #0C233D;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+}
+
+.documents-hero .documents-search-icon {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.documents-hero .documents-search-field {
+    width: 100%;
+    height: 42px;
+    background: transparent;
+    border: 0px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 0 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #ffffff;
+    outline: none;
+    opacity: 1 !important;
+}
+
+.documents-hero .documents-search-field::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.documents-hero .documents-search-field:focus {
+    border-color: rgba(0, 216, 245, 0.4);
+}
+
+/* ========== TWIST CONTAINER ========== */
+.twist-container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    gap: 32px;
+    padding: 60px 32px;
+    background-color: #06101C;
+}
+
+/* Левый сайдбар */
+.twist-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-categories {
+    background: #091A2E;
+    border-radius: 4px;
+    padding: 24px 0;
+}
+
+.sidebar-heading {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 9px;
+    letter-spacing: 1.44px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0 0 20px 0;
+    padding: 0 16px;
+}
+
+.category-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 2px solid transparent;
+    border-bottom: 1px solid transparent;
+}
+
+.category-item:hover {
+    background: rgba(0, 216, 245, 0.03);
+}
+
+.category-item.active {
+    background: rgba(0, 216, 245, 0.05);
+    border-left: 2px solid #00d8f5;
+    border-bottom: 1px solid #00d8f5;
+}
+
+.category-name {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.category-item.active .category-name {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.category-count {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    padding: 4px 8px;
+    min-width: 27px;
+    text-align: center;
+}
+
+.category-item.active .category-count {
+    background: rgba(0, 216, 245, 0.15);
+    color: #00d8f5;
+}
+
+/* Блок года */
+.sidebar-year {
+    background: #091A2E;
+    border-radius: 4px;
+    padding: 24px 16px;
+    margin-top: 2px;
+}
+
+.year-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.year-btn {
+    width: 57px;
+    height: 27px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.year-btn:hover {
+    background: rgba(0, 216, 245, 0.1);
+    border-color: rgba(0, 216, 245, 0.3);
+    color: #00d8f5;
+}
+
+.year-btn.active {
+    background: rgba(0, 216, 245, 0.15);
+    border-color: #00d8f5;
+    color: #00d8f5;
+}
+
+/* Правая часть */
+.twist-main {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+/* Featured Documents */
+.featured-documents {
+    margin-bottom: 48px;
+}
+
+.documents-naming {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+/* первая строка */
+.documents-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 32px;
+}
+
+.documents-count {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+}
+
+/* Для FEATURED - голубая полоска */
+.documents-line.blue {
+    width: 42px;
+    height: 3px;
+    background: #00d8f5;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+/* Для ALL DOCUMENTS - серая полоска */
+.documents-line.grey {
+    width: 42px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.documents-featured {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    color: #00d8f5;
+    text-transform: uppercase;
+}
+
+.documents-all {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+}
+
+.documents-sort {
+    margin-left: auto;
+}
+
+.sort-select {
+    width: 190px;
+    height: 36px;
+    background: #0C233D;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    transition: all .2s ease;
+}
+
+.sort-select:hover {
+    border-color: rgba(0,216,245,.35);
+}
+
+.sort-select:focus {
+    border-color: #00d8f5;
+}
+
+.sort-select option {
+    background: #0C233D;
+    color: #ffffff;
+}
+
+/* Контейнер документов */
+.document-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    width: 100%;
+}
+
+.document {
+    background: #091A2E;
+    border-radius: 4px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    position: relative;
+}
+
+.document::before {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: #00d8f5;
+    display: block;
+}
+
+.document.type-official::before {
+    background: #00d8f5;
+}
+
+.document.type-sustainability::before {
+    background: #00d8f5;
+}
+
+.document.type-rules::before {
+    background: #00d8f5;
+}
+
+.document:hover {
+    border-color: rgba(0, 216, 245, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Иконка документа (десктоп) */
+.document-icon-top {
+    position: absolute;
+    top: 18px;
+    left: 24px;
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.25);
+    z-index: 1;
+}
+
+.document-content {
+    padding: 24px;
+    padding-top: 52px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+}
+
+.doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.doc-type-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.44px;
+    text-transform: uppercase;
+    color: #00d8f5;
+}
+
+.doc-version {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.document-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin: 0;
+}
+
+/* Мобильные элементы (скрыты по умолчанию) */
+.document-icon-mobile {
+    display: none;
+}
+
+.doc-mobile-info {
+    display: none;
+}
+
+.document-description {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+    flex: 1;
+}
+
+.document-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.document-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.doc-date,
+.doc-size {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.download-btn {
+    width: 62px;
+    height: 27px;
+    background: #00d8f5;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #06101C;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-transform: uppercase;
+}
+
+.download-btn:hover {
+    background: #0ee0ff;
+    transform: translateY(-1px);
+}
+
+.download-btn i {
+    font-size: 12px;
+}
+
+/* All Documents Table */
+.all-documents {
+    margin-top: 0;
+}
+
+.all-documents .documents-naming {
+    margin-bottom: 24px;
+}
+
+.events-table-wrapper {
+    background: #06101c;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.events-table-header {
+    display: grid;
+    grid-template-columns: 3fr 1fr 0.8fr 0.8fr 0.8fr;
+    gap: 16px;
+    padding: 16px 24px;
+    background: #06101c;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.events-table-header .col {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.44px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.events-table-row {
+    display: grid;
+    grid-template-columns: 3fr 1fr 0.8fr 0.8fr 0.8fr;
+    gap: 16px;
+    padding: 20px 24px;
+    align-items: center;
+    background: #06101c;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background 0.2s ease;
+}
+
+.events-table-row:hover {
+    background: rgba(0, 216, 245, 0.03);
+}
+
+.events-table-row:last-child {
+    border-bottom: none;
+}
+
+.doc-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.doc-icon {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+}
+
+.doc-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.doc-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.doc-meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.col-category {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #00d8f5;
+}
+
+.col-version {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.col-date {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.col-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    height: 27px;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pdf-btn {
+    width: 62px;
+    background: #00d8f5;
+    color: #06101C;
+    justify-content: center;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.pdf-btn:hover {
+    background: #0ee0ff;
+    transform: translateY(-1px);
+}
+
+.view-btn {
+    width: 33px;
+    background: #0D2642;
+    color: rgba(255, 255, 255, 0.5);
+    justify-content: center;
+}
+
+.view-btn:hover {
+    background: #0ee0ff;
+    transform: translateY(-1px);
+}
+
+/* Мобильная мета-информация для таблицы */
+.doc-meta-mobile {
+    display: none;
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+
+/* 1200px */
+@media (max-width: 1200px) {
+    .document-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .events-table-header,
+    .events-table-row {
+        grid-template-columns: 2.5fr 1fr 0.7fr 0.7fr 0.8fr;
+    }
+}
+
+/* 1024px */
+@media (max-width: 1024px) {
+    .documents-hero {
+        padding: 80px 24px;
+    }
+    
+    .documents-hero .breadcrumb-home,
+    .documents-hero .breadcrumb-separator,
+    .documents-hero .breadcrumb-active,
+    .documents-hero .breadcrumb-subtitle {
+        font-size: 12px;
+        letter-spacing: 1.5px;
+    }
+    
+    .documents-hero .breadcrumb-line {
+        width: 30px;
+    }
+    
+    .documents-hero .documents-title {
+        font-size: clamp(40px, 5vw, 64px);
+    }
+    
+    /* Search bar адаптивность */
+    .documents-hero .documents-search {
+        width: 100%;
+        max-width: 580px;
+    }
+    
+    .twist-container {
+        flex-direction: column;
+        padding: 40px 24px;
+        gap: 24px;
+    }
+    
+    .twist-sidebar {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .sidebar-categories {
+        width: 100%;
+        padding: 24px 0;
+    }
+    
+    .sidebar-year {
+        width: 100%;
+        margin-top: 2px;
+    }
+    
+    .document-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .events-table-header,
+    .events-table-row {
+        grid-template-columns: 2fr 1fr 0.6fr 0.6fr 0.8fr;
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .document-icon-top {
+        position: absolute !important;
+        top: 16px !important;
+        left: 16px !important;
+        font-size: 20px !important;
+        z-index: 1 !important;
+    }
+    
+    .document-content {
+        padding-top: 48px !important;
+    }
+}
+
+/* 768px */
+@media (max-width: 768px) {
+    .documents-hero {
+        padding: 60px 20px;
+    }
+    
+    .documents-hero .documents-search {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .twist-container {
+        padding: 30px 16px;
+    }
+    
+    .twist-sidebar {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .document-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .documents-top {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .documents-sort {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+}
+
+/* 480px */
+@media (max-width: 480px) {
+
+    .documents-hero {
+        padding: 40px 10px;
+    }
+
+    .twist-container {
+        padding: 20px 10px;
+    }
+
+    .document-container {
+        grid-template-columns: 1fr;
+    }
+
+    .document {
+        min-height: auto;
+    }
+
+    .document-content {
+        padding: 16px;
+        padding-top: 14px;
+        gap: 10px;
+    }
+
+    .document-icon-top {
+        display: none;
+    }
+
+    .doc-header {
+        align-items: flex-start;
+    }
+
+    .doc-type-tag {
+        font-size: 9px;
+    }
+
+    .doc-version {
+        font-size: 10px;
+        background: rgba(255,255,255,.08);
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+
+    .document-title {
+        font-size: 24px;
+        line-height: 1.05;
+    }
+
+    .document-description {
+        display: none;
+    }
+
+    .document-footer {
+        padding-top: 10px;
+    }
+
+    .doc-date,
+    .doc-size {
+        font-size: 10px;
+    }
+
+    .download-btn {
+        width: 66px;
+        height: 28px;
+        font-size: 10px;
+    }
+
+    .download-btn i {
+        font-size: 10px;
+    }
+
+    /* TABLE */
+
+    .events-table-header {
+        display: none;
+    }
+
+    .events-table-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        padding: 14px 12px;
+        background: #091A2E;
+        border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+
+    .events-table-row .col-category,
+    .events-table-row .col-version,
+    .events-table-row .col-date {
+        display: none;
+    }
+
+    .doc-info {
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .doc-icon {
+        font-size: 14px;
+        color: #00d8f5;
+        margin-top: 2px;
+    }
+
+    .doc-details {
+        gap: 3px;
+    }
+
+    .doc-name {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        line-height: 1.3;
+    }
+
+    .doc-meta {
+        display: none;
+    }
+
+    .doc-meta-mobile {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .doc-category-mobile,
+    .doc-date-mobile {
+        font-size: 10px;
+        color: rgba(255,255,255,.4);
+    }
+
+    .doc-category-mobile::after {
+        content: "·";
+        margin-left: 4px;
+    }
+
+    .view-btn {
+        display: none;
+    }
+
+    .pdf-btn {
+        width: 40px;
+        height: 28px;
+        font-size: 10px;
+        padding: 0;
+    }
+
+    .pdf-btn i {
+        display: none;
+    }
+
+    .sidebar-categories,
+    .sidebar-year {
+        display: none;
+    }
+}
+
+/* 360px */
+@media (max-width: 360px) {
+    .doc-name {
+        font-size: 12px;
+    }
+    
+    .doc-mobile-category,
+    .doc-mobile-date {
+        font-size: 10px;
+    }
+    
+    .pdf-btn {
+        width: 45px;
+        height: 26px;
+        font-size: 10px;
+    }
+}
