@@ -1,0 +1,759 @@
+/* ========== RESULTS HERO ========== */
+.results-hero {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 100px 32px 0;
+    background-color: #091A2E;
+}
+
+.results-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 40px;
+}
+
+.results-breadcrumbs .breadcrumb-home {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.32);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.results-breadcrumbs .breadcrumb-home:hover {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.results-breadcrumbs .breadcrumb-separator {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.32);
+}
+
+.results-breadcrumbs .breadcrumb-active {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+}
+
+.results-subtitle-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.results-line {
+    width: 35px;
+    height: 3px;
+    background: #00d8f5;
+    flex-shrink: 0;
+}
+
+.results-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #00d8f5;
+    text-transform: uppercase;
+}
+
+.results-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: 1px;
+    margin: 0 0 40px 0;
+}
+
+.results-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 0;
+}
+
+.results-filters {
+    display: flex;
+    gap: 0;
+    margin-top: 0;
+    padding-bottom: 0;
+}
+
+.filter-btn {
+    padding: 16px 32px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.filter-btn.active {
+    color: #00d8f5;
+    border-bottom: 2px solid #00d8f5;
+}
+
+/* ========== RESULTS SEARCH BAR ========== */
+.results-search-bar {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px;
+    background-color: #06101C;
+}
+
+.search-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0;
+}
+
+.results-search {
+    width: 280px;
+    height: 35px;
+    background: #0C233D;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+}
+
+.results-search .search-icon {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 14px;
+}
+
+.results-search-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #ffffff;
+}
+
+.results-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.results-select {
+    height: 35px;
+    background: #0C233D;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 0 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.results-select:hover {
+    border-color: rgba(0, 216, 245, 0.3);
+}
+
+.results-select:focus {
+    border-color: #00d8f5;
+}
+
+.results-select option {
+    background: #0C233D;
+    color: #ffffff;
+}
+
+.export-btn {
+    width: 124px;
+    height: 31px;
+    background: #00d8f5;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #06101C;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    margin-left: auto;
+}
+
+.export-btn:hover {
+    background: #0ee0ff;
+    transform: translateY(-1px);
+}
+
+.export-btn i {
+    font-size: 12px;
+}
+
+/* ========== CONTENT SECTIONS ========== */
+.content-section {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px 60px;
+    background-color: #06101C;
+}
+
+.content-section.active {
+    display: block;
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 24px 0;
+}
+
+.results-event-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.event-details-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.event-dot {
+    color: rgba(255, 255, 255, 0.3);
+    font-weight: 600;
+}
+
+.final-results-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    line-height: 42px;
+    letter-spacing: 0px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+}
+
+/* ========== ТАБЛИЦА RESULTS (7 КОЛОНОК) ========== */
+.results-table-wrapper {
+    background: #06101C;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0;
+}
+
+.results-table-header {
+    display: grid;
+    grid-template-columns: 0.5fr 1.8fr 1fr 0.8fr 0.8fr 1.5fr 1fr;
+    gap: 16px;
+    padding: 16px 24px;
+    background: #06101C;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.results-table-row {
+    display: grid;
+    grid-template-columns: 0.5fr 1.8fr 1fr 0.8fr 0.8fr 1.5fr 1fr;
+    gap: 16px;
+    padding: 18px 24px;
+    align-items: center; /* ВСЕ колонки выравниваем по центру ВЕРТИКАЛЬНО */
+    background: #06101C;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background 0.2s ease;
+}
+
+/* ВСЕ колонки должны быть flex-контейнерами для правильного выравнивания содержимого */
+.results-table-row .col {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+/* Для колонок, где нужно особое выравнивание текста */
+.col-final {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    line-height: 30px;
+    letter-spacing: 0px;
+}
+
+.col-qual {
+    display: flex;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.col-event {
+    display: flex;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.col-date {
+    display: flex;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.col-rank {
+    display: flex;
+    align-items: center;
+}
+
+.col-athlete {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.athlete-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.col-federation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.flag-icon {
+    width: 22px;
+    height: 15px;
+    border-radius: 2px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+/* Для рейтинговой таблицы */
+.rankings-table-row {
+    display: grid;
+    grid-template-columns: 0.5fr 1.8fr 1fr 1fr 0.8fr 0.8fr;
+    gap: 16px;
+    padding: 18px 24px;
+    align-items: center;
+    background: #06101C;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: background 0.2s ease;
+}
+
+.rankings-table-row .col {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.col-points {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.points-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.points-line {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.col-events,
+.col-best {
+    display: flex;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+/* ========== ТАБЛИЦА RANKING (6 КОЛОНОК) ========== */
+/* Эти стили переопределяют сетку для рейтинга */
+.rankings-header,
+.rankings-row {
+    grid-template-columns: 0.5fr 1.8fr 1fr 1fr 0.8fr 0.8fr !important;
+}
+
+/* Стили для ячеек */
+.results-table-header .col {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.44px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.results-table-row:hover {
+    background: rgba(0, 216, 245, 0.03);
+}
+
+.results-table-row:last-child {
+    border-bottom: none;
+}
+
+/* RANK */
+.col-rank {
+    display: flex;
+    align-items: center;
+}
+
+.rank-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.rank-badge.gold {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #06101C;
+}
+
+.rank-badge.silver {
+    background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+    color: #06101C;
+}
+
+.rank-badge.bronze {
+    background: linear-gradient(135deg, #CD7F32, #B8860B);
+    color: #06101C;
+}
+
+.rank-number {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    padding-left: 4px;
+}
+
+/* ATHLETE */
+.col-athlete {
+    /* контейнер для имени */
+}
+
+.athlete-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* FEDERATION */
+.col-federation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.flag-icon {
+    width: 22px;
+    height: 15px;
+    border-radius: 2px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+/* FINAL */
+.col-final {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 20px;
+    line-height: 30px;
+    letter-spacing: 0px;
+}
+
+.results-table-row:first-child .col-final {
+    color: #00d8f5;
+}
+
+.results-table-row:not(:first-child) .col-final {
+    color: #ffffff;
+}
+
+.first-place-final {
+    color: #00d8f5 !important;
+}
+
+/* QUAL */
+.col-qual {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* EVENT */
+.col-event {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* DATE */
+.col-date {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* POINTS (для рейтинга) */
+.col-points {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.points-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.results-table-row:first-child .points-value {
+    color: #00d8f5;
+}
+
+.results-table-row:not(:first-child) .points-value {
+    color: #ffffff;
+}
+
+.points-line {
+    width: 100%;
+    height: 1px;
+}
+
+.results-table-row:first-child .points-line {
+    background: #00d8f5;
+}
+
+.col-events,
+.col-best {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Пагинация */
+.results-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 0 20px;
+}
+
+.page-btn {
+    width: 34px;
+    height: 34px;
+    background: transparent;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-btn:hover {
+    background: rgba(0, 216, 245, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.page-btn.active {
+    background: #00d8f5;
+    border-top: none;
+    color: #06101C;
+    font-weight: 700;
+}
+
+/* Анимация */
+.content-section {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+@media (max-width: 1024px) {
+    .results-hero,
+    .results-search-bar,
+    .content-section {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .event-details-row {
+        flex-wrap: wrap;
+    }
+    
+    .final-results-title {
+        font-size: 24px;
+        line-height: 32px;
+    }
+    
+    .search-controls {
+        flex-wrap: wrap;
+    }
+    
+    .export-btn {
+        margin-left: 0;
+    }
+    
+    /* Адаптация таблиц */
+    .results-table-header,
+    .results-table-row {
+        grid-template-columns: 0.4fr 1.5fr 0.8fr 0.7fr 0.7fr 1.2fr 0.7fr;
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .rankings-header,
+    .rankings-row {
+        grid-template-columns: 0.4fr 1.5fr 0.8fr 0.9fr 0.7fr 0.7fr !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .results-table-wrapper {
+        overflow-x: auto;
+    }
+    
+    .results-table-header,
+    .results-table-row {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 480px) {
+    .results-hero,
+    .results-search-bar,
+    .content-section {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    .results-title {
+        font-size: 36px;
+    }
+    
+    .final-results-title {
+        font-size: 20px;
+        line-height: 28px;
+    }
+    
+    .filter-btn {
+        padding: 12px 20px;
+        font-size: 11px;
+    }
+    
+    .results-search {
+        width: 100%;
+    }
+    
+    .results-select {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .export-btn {
+        width: 100%;
+    }
+}
