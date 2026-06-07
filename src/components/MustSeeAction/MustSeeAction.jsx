@@ -35,7 +35,10 @@ const MustSeeAction = () => {
             <div className="action-container">
                 {videos.map((video, index) => {
                     const { title, category, description, thumbnail } = video;
-                    const thumbnailUrl = thumbnail?.url;
+                    // Исправление: формируем полный URL для миниатюры видео
+                    const thumbnailUrl = thumbnail?.url 
+                        ? `${config.API_URL}${thumbnail.url}` 
+                        : null;
                     
                     return (
                         <div className="video-container" key={video.id}>

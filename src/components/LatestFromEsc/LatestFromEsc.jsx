@@ -40,7 +40,10 @@ const LatestFromEsc = () => {
             <div className="lastest-news-container">
                 {news.map((item) => {
                     const { title, theme, date, image } = item;
-                    const imageUrl = image?.url;
+                    // Исправление: формируем полный URL
+                    const imageUrl = image?.url 
+                        ? `${config.API_URL}${image.url}` 
+                        : null;
                     
                     return (
                         <div className="news" key={item.id}>

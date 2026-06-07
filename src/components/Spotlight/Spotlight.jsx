@@ -34,12 +34,15 @@ const Spotlight = () => {
             <div className="spotlight-container">
                 {miniNews.map((item) => {
                     const { title, theme, image } = item;
-                    const imageUrl = image?.url;
+                    // Исправление: формируем полный URL
+                    const imageUrl = image?.url 
+                        ? `${config.API_URL}${image.url}` 
+                        : null;
                     
                     return (
                         <div className="mini-news-container" key={item.id}>
                             {imageUrl && (
-                                <img src={imageUrl} alt={name} />
+                                <img src={imageUrl} alt={title} />
                             )}
                             <div className="mini-news-content">
                                 <p className="theme">{theme}</p>

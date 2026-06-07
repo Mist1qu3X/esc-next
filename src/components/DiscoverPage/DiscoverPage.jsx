@@ -10,50 +10,38 @@ const DiscoverPage = () => {
   const [federations, setFederations] = useState([]);
   const [milestones, setMilestones] = useState([]);
   const [governance, setGovernance] = useState([]);
+  const [committeeMembers, setCommitteeMembers] = useState([]);
   const [openPanels, setOpenPanels] = useState({});
   const [filterRegion, setFilterRegion] = useState('ALL');
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const [
-        aboutRes,
-        leadersRes,
-        fedsRes,
-        milestonesRes,
-        govRes,
-      ] = await Promise.all([
-        axios.get(`${config.API_URL}/api/about-pages?populate=*`),
-        axios.get(`${config.API_URL}/api/leaders?populate=*&sort=order:asc`),
-        axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
-        axios.get(`${config.API_URL}/api/heritage-milestones?sort=order:asc`),
-        axios.get(`${config.API_URL}/api/governances?sort=order:asc&pagination[limit]=20`)
-      ]);
+    const fetchData = async () => {
+      try {
+        const [aboutRes, leadersRes, fedsRes, milestonesRes, govRes, membersRes] = await Promise.all([
+          axios.get(`${config.API_URL}/api/about-pages?populate=*`),
+          axios.get(`${config.API_URL}/api/leaders?populate=*&sort=order:asc`),
+          axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
+          axios.get(`${config.API_URL}/api/heritage-milestones?sort=order:asc`),
+          axios.get(`${config.API_URL}/api/governances?sort=order:asc&pagination[limit]=20`),
+          axios.get(`${config.API_URL}/api/committee-members?populate=*&pagination[limit]=50`),
+        ]);
 
-      setPageData(
-        Array.isArray(aboutRes.data?.data)
-          ? aboutRes.data.data[0]
-          : aboutRes.data?.data || null
-      );
-
-      setLeaders(leadersRes.data?.data || []);
-      setFederations(fedsRes.data?.data || []);
-      setMilestones(milestonesRes.data?.data || []);
-      setGovernance(govRes.data?.data || []);
-
-      console.log('ABOUT', aboutRes.data);
-      console.log('LEADERS', leadersRes.data);
-      console.log('FEDS', fedsRes.data);
-      console.log('MILESTONES', milestonesRes.data);
-      console.log('GOV', govRes.data);
-
-    } catch (e) {
-      console.error('Ошибка загрузки Discover:', e);
-    }
-  };
-
-  fetchData();
-}, []);
+        setPageData(
+          Array.isArray(aboutRes.data?.data)
+            ? aboutRes.data.data[0]
+            : aboutRes.data?.data || null
+        );
+        setLeaders(leadersRes.data?.data || []);
+        setFederations(fedsRes.data?.data || []);
+        setMilestones(milestonesRes.data?.data || []);
+        setGovernance(govRes.data?.data || []);
+        setCommitteeMembers(membersRes.data?.data || []);
+      } catch (e) {
+        console.error('Ошибка загрузки Discover:', e);
+      }
+    };
+    fetchData();
+  }, []);
 
   const togglePanel = (id) => setOpenPanels(prev => ({ ...prev, [id]: !prev[id] }));
 
@@ -70,7 +58,22 @@ const DiscoverPage = () => {
 
   const assembly = governance.find(g => g.type === 'legislative');
   const executive = governance.find(g => g.type === 'executive');
-  const committees = governance.filter(g => g && g.type && !['legislative', 'executive'].includes(g.type));
+  
+  // ПОЛУЧАЕМ УНИКАЛЬНЫЕ КОМИТЕТЫ ИЗ committee-members
+  const committees = [...new Map(
+    committeeMembers
+      .filter(m => m.committee) // только те, у кого есть committee
+      .map(m => [m.committee, {
+        id: m.committee.replace(/\s/g, '_'), // создаем ID из названия
+        name: m.committee,
+        members: `${committeeMembers.filter(cm => cm.committee === m.committee).length} members`,
+        description: `${m.committee} committee description` // описание можно добавить в Strapi
+      }])
+  ).values()];
+
+  const getCommitteeMembers = (committeeName) => {
+    return committeeMembers.filter(m => m.committee === committeeName);
+  };
 
   return (
     <>
@@ -241,36 +244,57 @@ const DiscoverPage = () => {
             )}
           </>
         )}
-
-        {console.log('committees before render:', committees)}
-        {/* Комитеты */}
-        <div className="committee-cards">
-          {committees.map((c) => (
-            <div key={c.id} className="committee-card" onClick={() => togglePanel(c.id)}>
-              <div className="committee-card-content">
-                <h4 className="committee-name">{c.name}</h4>
-                <p className="committee-members">{c.members}</p>
+        
+        {/* КОМИТЕТЫ - теперь из committee-members */}
+        {committees.length > 0 && (
+          <div className="committee-cards">
+            {committees.map((c) => (
+              <div key={c.id} className="committee-card" onClick={() => togglePanel(c.id)}>
+                <div className="committee-card-content">
+                  <h4 className="committee-name">{c.name}</h4>
+                  <p className="committee-members">{c.members}</p>
+                </div>
+                <i className={`fa-solid fa-chevron-${openPanels[c.id] ? 'up' : 'down'} committee-arrow`}></i>
               </div>
-              <i className={`fa-solid fa-chevron-${openPanels[c.id] ? 'up' : 'down'} committee-arrow`}></i>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {/* Панели комитетов — ОТДЕЛЬНО после карточек */}
-        {committees.map((c) => (
-          openPanels[c.id] && (
-            <div key={`panel-${c.id}`} className="assembly-panel is-open">
-              <div className="assembly-header">
-                <div className="assembly-label">COMMITTEE</div>
-                <h3 className="assembly-title">{c.name}</h3>
-                <p className="assembly-description">{c.description}</p>
-                <button className="panel-close" onClick={() => togglePanel(c.id)}>
-                  <i className="fa-solid fa-xmark"></i>
-                </button>
+        {/* Панели комитетов */}
+        {committees.map((c) => {
+          const members = getCommitteeMembers(c.name);
+          return (
+            openPanels[c.id] && (
+              <div key={`panel-${c.id}`} className="assembly-panel is-open">
+                <div className="assembly-header">
+                  <div className="assembly-label">COMMITTEE</div>
+                  <h3 className="assembly-title">{c.name}</h3>
+                  <p className="assembly-description">{c.description}</p>
+                  <button className="panel-close" onClick={() => togglePanel(c.id)}>
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                {members.length > 0 && (
+                  <div className="executive-members">
+                    {members.map((m) => (
+                      <div className="executive-member" key={m.id}>
+                        <div className="executive-photo"><span>{m.initials}</span></div>
+                        <div className="executive-info">
+                          <h4>{m.name}</h4>
+                          <span className="executive-role">{m.role}</span>
+                          <div className="executive-country">
+                            <span className={`assembly-flag flag-${m.countryCode?.toLowerCase() || 'de'}`}></span>
+                            {m.country}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
-          )
-        ))}
+            )
+          );
+        })}
       </section>
 
       {/* ========== LEADERSHIP ========== */}
