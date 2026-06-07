@@ -44,6 +44,10 @@ const MediaPage = () => {
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
+  const goToNews = (slug) => {
+    if (slug) window.location.href = `/media/${slug}`;
+  };
+
   const featuredNews = news.slice(0, 2);
   const latestNews = news.slice(2, 6);
   const pressReleases = docs.filter((d) => d.theme === 'PRESS RELEASES').slice(0, 4);
@@ -89,13 +93,15 @@ const MediaPage = () => {
         </div>
         <div className="featured-container">
           {featuredNews.map((item) => (
-            <div key={item.id} className="featured-card" style={{ backgroundImage: `url(${getImageUrl(item.image)})` }}>
+            <div key={item.id} className="featured-card" 
+              style={{ backgroundImage: `url(${getImageUrl(item.image)})`, cursor: 'pointer' }}
+              onClick={() => goToNews(item.slug)}>
               <div className="featured-overlay">
                 <span className="news-type">{item.theme || 'CHAMPIONSHIP'}</span>
                 <h2 className="featured-title">{item.title}</h2>
                 <div className="featured-footer">
                   <span className="news-date">{formatDate(item.date)}</span>
-                  <button className="read-more-btn">READ MORE ›</button>
+                  <span className="read-more-btn">READ MORE ›</span>
                 </div>
               </div>
             </div>
@@ -112,7 +118,7 @@ const MediaPage = () => {
         </div>
         <div className="latest-news-grid">
           {latestNews.map((item) => (
-            <div key={item.id} className="news-card">
+            <div key={item.id} className="news-card" onClick={() => goToNews(item.slug)} style={{ cursor: 'pointer' }}>
               <div className="news-card-image" style={{ backgroundImage: `url(${getImageUrl(item.image)})` }}></div>
               <div className="news-card-content">
                 <span className={`news-type type-${item.theme?.toLowerCase() || 'education'}`}>{item.theme}</span>
@@ -134,7 +140,7 @@ const MediaPage = () => {
         </div>
         <div className="videos-grid">
           {videos.slice(0, 4).map((v) => (
-            <div key={v.id} className="video-card">
+            <div key={v.id} className="video-card" onClick={() => v.videoUrl && window.open(v.videoUrl, '_blank')} style={{ cursor: 'pointer' }}>
               <div className="video-thumbnail" style={{ backgroundImage: `url(${getImageUrl(v.thumbnail)})` }}>
                 <div className="video-play-btn"><i className="fa-solid fa-play"></i></div>
                 <span className="video-duration">{v.duration || '4:38'}</span>
@@ -156,7 +162,6 @@ const MediaPage = () => {
               <span className="live-streams">{streams.filter(s => s.streamStatus === 'live').length} streams</span>
             </div>
             <div className="live-grid">
-              {/* Главная карточка */}
               {mainStream && (
                 <div className="live-card-main" style={{ backgroundImage: `url(${getImageUrl(mainStream.thumbnail)})` }}>
                   <div className="live-card-top">
@@ -190,7 +195,6 @@ const MediaPage = () => {
                   </div>
                 </div>
               )}
-              {/* Боковые карточки */}
               <div className="live-right-column">
                 {sideStreams.map((s) => (
                   <div key={s.id} className="live-card-small" style={{ backgroundImage: `url(${getImageUrl(s.thumbnail)})` }}>

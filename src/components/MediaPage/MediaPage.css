@@ -3,7 +3,7 @@
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 100px 32px 0;
+    padding: 60px 32px 0;
     background-color: #091A2E;
 }
 
@@ -1031,6 +1031,56 @@
 
 .download-btn-press:hover {
     background: rgba(255, 255, 255, 0.12);
+}
+
+/* ========== АНИМАЦИИ ========== */
+
+/* Карточки Featured — свечение */
+.featured-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featured-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 216, 245, 0.15);
+}
+
+/* Карточки Latest News — подъём */
+.news-card {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 216, 245, 0.1);
+}
+
+/* Карточки видео — увеличение превью */
+.video-card:hover .video-thumbnail {
+    transform: scale(1.03);
+}
+
+.video-thumbnail {
+    transition: transform 0.4s ease;
+}
+
+/* Кнопка Play — пульсация */
+.video-play-btn {
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.video-card:hover .video-play-btn {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: #00d8f5;
+}
+
+/* Фильтры — плавная линия */
+.filter-btn .filter-line {
+    transition: width 0.3s ease;
+}
+
+.filter-btn:hover .filter-line {
+    width: 100%;
 }
 
 /* ========== АДАПТИВНОСТЬ ========== */
