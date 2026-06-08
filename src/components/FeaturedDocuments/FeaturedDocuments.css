@@ -1,5 +1,5 @@
 /* Секция FEATURED DOCUMENTS */
-.featured-documents {
+.featured-docs-section {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
@@ -8,7 +8,7 @@
 }
 
 /* Заголовок секции */
-.documents-naming {
+.featured-docs-header {
     display: flex;
     align-items: center;
     gap: 20px;
@@ -16,7 +16,7 @@
     width: 100%;
 }
 
-.documents-title {
+.featured-docs-title {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
@@ -27,17 +27,17 @@
     margin: 0;
 }
 
-.documents-line {
+.featured-docs-line {
     width: 80px;
     height: 1px;
     background: rgba(255, 255, 255, 0.32);
 }
 
-.documents-spacer {
+.featured-docs-spacer {
     flex: 1;
 }
 
-.documents-more-btn {
+.featured-docs-more-btn {
     background: transparent;
     border: none;
     color: #00d8f5;
@@ -52,12 +52,12 @@
     white-space: nowrap;
 }
 
-.documents-more-btn:hover {
+.featured-docs-more-btn:hover {
     opacity: 0.6;
 }
 
 /* Контейнер с документами */
-.document-container {
+.featured-docs-container {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
@@ -65,7 +65,7 @@
 }
 
 /* Карточка документа */
-.document {
+.featured-docs-card {
     background: #0C233D;
     padding: 20px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -75,25 +75,25 @@
     gap: 12px;
 }
 
-.document:hover {
+.featured-docs-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     background: rgba(10, 26, 44, 0.8);
 }
 
-.doc-header {
+.featured-docs-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
 }
 
-.doc-header i {
+.featured-docs-card-header i {
     font-size: 32px;
     color: #00d8f5;
 }
 
-.version {
+.featured-docs-version {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 700;
@@ -104,7 +104,7 @@
     border-radius: 4px;
 }
 
-.document .theme {
+.featured-docs-theme {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 800;
@@ -114,7 +114,7 @@
     margin: 0;
 }
 
-.document-title {
+.featured-docs-card-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 20px;
     font-weight: 700;
@@ -125,19 +125,19 @@
     flex: 1;
 }
 
-.download-area {
+.featured-docs-download-area {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-top: 8px;
 }
 
-.download-area i {
+.featured-docs-download-area i {
     font-size: 14px;
     color: rgb(255, 255, 255, 0.5);
 }
 
-.download-text {
+.featured-docs-download-text {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 600;
@@ -146,91 +146,91 @@
     transition: color 0.2s ease;
 }
 
-.document:hover .download-text,
-.document:hover .download-area i {
+.featured-docs-card:hover .featured-docs-download-text,
+.featured-docs-card:hover .featured-docs-download-area i {
     color: #00d8f5;
 }
 
 /* ========== СОСТОЯНИЕ 1: 1440px ========== */
 @media (min-width: 1025px) {
-    .document-container {
+    .featured-docs-container {
         justify-content: space-between;
         flex-wrap: nowrap;
     }
     
-    .document {
+    .featured-docs-card {
         width: calc(25% - 3.75px);
     }
 }
 
 /* ========== СОСТОЯНИЕ 2: 1024px ========== */
 @media (max-width: 1024px) {
-    .featured-documents {
+    .featured-docs-section {
         padding: 30px 20px 50px 20px;
     }
     
-    .document-container {
+    .featured-docs-container {
         justify-content: flex-start;
     }
     
-    .document {
+    .featured-docs-card {
         width: calc(50% - 2.5px);
     }
     
-    .document-title {
+    .featured-docs-card-title {
         font-size: 18px;
     }
 }
 
 /* ========== СОСТОЯНИЕ 3: 480px ========== */
 @media (max-width: 480px) {
-    .featured-documents {
+    .featured-docs-section {
         padding: 20px 16px 40px 16px;
     }
     
-    .documents-title {
+    .featured-docs-title {
         font-size: 12px;
     }
     
-    .documents-line {
+    .featured-docs-line {
         width: 60px;
     }
     
-    .documents-more-btn {
+    .featured-docs-more-btn {
         font-size: 11px;
     }
     
     /* НА 480px: 2 колонки (1 2 / 3 4) */
-    .document-container {
+    .featured-docs-container {
         justify-content: flex-start;
         gap: 5px;
     }
     
-    .document {
+    .featured-docs-card {
         width: calc(50% - 2.5px);
     }
     
-    .document-title {
+    .featured-docs-card-title {
         font-size: 14px;
     }
     
-    .doc-header i {
+    .featured-docs-card-header i {
         font-size: 24px;
     }
     
-    .version {
+    .featured-docs-version {
         font-size: 9px;
     }
     
-    .document .theme {
+    .featured-docs-theme {
         font-size: 9px;
     }
     
-    .download-text {
+    .featured-docs-download-text {
         font-size: 9px;
     }
     
-    .download-area i {
+    .featured-docs-download-area i {
         font-size: 12px;
     }
 }

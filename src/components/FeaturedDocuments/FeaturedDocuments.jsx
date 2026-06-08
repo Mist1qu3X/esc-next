@@ -33,27 +33,27 @@ const FeaturedDocuments = () => {
     };
 
     return (
-        <section className="featured-documents">
-            <div className="documents-naming">
-                <p className="documents-title">FEATURED DOCUMENTS</p>
-                <div className="documents-line"></div>
-                <div className="documents-spacer"></div>
-                <button className="documents-more-btn" onClick={handleMore}>MORE &gt;</button>
+        <section className="featured-docs-section">
+            <div className="featured-docs-header">
+                <p className="featured-docs-title">FEATURED DOCUMENTS</p>
+                <div className="featured-docs-line"></div>
+                <div className="featured-docs-spacer"></div>
+                <button className="featured-docs-more-btn" onClick={handleMore}>MORE &gt;</button>
             </div>
-            <div className="document-container">
+            <div className="featured-docs-container">
                 {documents.map((doc) => {
                     const { title, theme, version, file } = doc;
                     return (
-                        <div className="document" key={doc.id}>
-                            <div className="doc-header">
+                        <div className="featured-docs-card" key={doc.id}>
+                            <div className="featured-docs-card-header">
                                 <i className="fa-regular fa-file-lines"></i>
-                                <p className="version">{version}</p>
+                                <p className="featured-docs-version">{version}</p>
                             </div>
-                            <p className="theme">{theme}</p>
-                            <p className="document-title">{title}</p>
-                            <div className="download-area" onClick={() => handleDownload(doc)}>
+                            <p className="featured-docs-theme">{theme}</p>
+                            <p className="featured-docs-card-title">{title}</p>
+                            <div className="featured-docs-download-area" onClick={() => handleDownload(doc)}>
                                 <i className="fa-solid fa-download"></i>
-                                <p className="download-text">download PDF</p>
+                                <p className="featured-docs-download-text">download PDF</p>
                             </div>
                         </div>
                     );

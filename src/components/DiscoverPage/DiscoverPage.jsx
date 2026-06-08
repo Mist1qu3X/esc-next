@@ -194,8 +194,8 @@ const DiscoverPage = () => {
                   {federations.slice(0, 46).map((fed) => (
                     <div className="assembly-member" key={fed.id}>
                       <div className={`assembly-flag flag-${fed.countryCode?.toLowerCase() || 'de'}`}></div>
-                      <div className="assembly-code">{fed.code}</div>
-                      <div className="assembly-country">{fed.name}</div>
+                      <div className="assembly-code">{fed.countryCode}</div>
+                      <div className="assembly-country">{fed.country}</div>
                     </div>
                   ))}
                 </div>

@@ -633,7 +633,6 @@
     padding: 16px 12px;
     background: #0B1E33;
     border-radius: 4px;
-    transition: background 0.2s ease;
 }
 
 .assembly-member:hover {

@@ -10,7 +10,7 @@ body {
 }
 
 /* Секция info */
-.info {
+.info-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -33,7 +33,7 @@ body {
 }
 
 /* Контентный блок (левый) */
-.info-content {
+.info-section-content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -44,7 +44,7 @@ body {
 }
 
 /* Заголовок */
-.nameing {
+.info-section-nameing {
     color: #fff;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
@@ -54,7 +54,7 @@ body {
 }
 
 /* Блок с location и date — ВСЕГДА ГОРИЗОНТАЛЬНО */
-.event-details {
+.info-section-event-details {
     display: flex;
     align-items: center;
     gap: clamp(6px, 1.5vw, 20px);
@@ -63,26 +63,26 @@ body {
     flex-wrap: wrap;
 }
 
-.event-separator {
+.info-section-event-separator {
     color: rgba(255, 255, 255, 0.5);
     font-size: clamp(10px, 1vw, 16px);
 }
 
-.location-wrapper,
-.date-wrapper {
+.info-section-location-wrapper,
+.info-section-date-wrapper {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.location-wrapper i,
-.date-wrapper i {
+.info-section-location-wrapper i,
+.info-section-date-wrapper i {
     color: rgb(255, 255, 255, 0.5);
     font-size: clamp(11px, 1.2vw, 18px);
 }
 
-.location,
-.date {
+.info-section-location,
+.info-section-date {
     color: rgba(255, 255, 255, 0.8);
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1.1vw, 16px);
@@ -91,19 +91,17 @@ body {
 }
 
 /* Блок с кнопками */
-.buttons-wrapper {
+.info-section-buttons-wrapper {
     display: flex;
     gap: clamp(8px, 1.5vw, 20px);
     margin-top: 16px;
-
     justify-content: flex-start;
     align-items: flex-start;
-
     width: fit-content;
 }
 
 /* Кнопка VIEW EVENT */
-.btn-view-event {
+.info-section-btn-view-event {
     background-color: #00d8f5;
     color: #06121f;
     padding: clamp(7px, 1vw, 12px) clamp(12px, 2vw, 28px);
@@ -118,7 +116,7 @@ body {
     text-transform: uppercase;
 }
 
-.btn-view-event:hover {
+.info-section-btn-view-event:hover {
     background-color: #ffffff;
     color: #06121f;
     transform: translateY(-2px);
@@ -126,7 +124,7 @@ body {
 }
 
 /* Кнопка ALL EVENTS */
-.btn-all-events {
+.info-section-btn-all-events {
     background-color: #192129;
     color: #ffffff;
     padding: clamp(7px, 1vw, 12px) clamp(12px, 2vw, 28px);
@@ -141,7 +139,7 @@ body {
     text-transform: uppercase;
 }
 
-.btn-all-events:hover {
+.info-section-btn-all-events:hover {
     background-color: #2a3440;
     color: #ffffff;
     transform: translateY(-2px);
@@ -149,21 +147,21 @@ body {
 }
 
 /* Правая колонка с новостями */
-.news-content {
+.info-section-news-content {
     width: clamp(220px, 28vw, 340px);
     flex-shrink: 1;
     min-width: 220px;
 }
 
 /* Контейнер с новостями */
-.news-container {
+.info-section-news-container {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
 /* Карточка новости */
-.news-card {
+.info-section-news-card {
     width: 100%;
     height: clamp(120px, 14vw, 162px);
     border-radius: 4px;
@@ -178,11 +176,11 @@ body {
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
 }
 
-.news-card:hover {
+.info-section-news-card:hover {
     transform: translateY(-2px);
 }
 
-.news-card::before {
+.info-section-news-card::before {
     content: '';
     position: absolute;
     top: 0;
@@ -193,12 +191,12 @@ body {
     z-index: 0;
 }
 
-.news-card > * {
+.info-section-news-card > * {
     position: relative;
     z-index: 1;
 }
 
-.news-title {
+.info-section-news-title {
     color: #00d8f5;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
@@ -208,7 +206,7 @@ body {
     letter-spacing: 0.5px;
 }
 
-.news-excerpt {
+.info-section-news-excerpt {
     color: #fff;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
@@ -219,35 +217,33 @@ body {
 }
 
 @media (max-width: 480px) {
-
-    .info {
+    .info-section {
         padding: 32px 16px;
         min-height: auto;
     }
 
-    .nameing {
+    .info-section-nameing {
         font-size: 36px;
         line-height: 1.05;
     }
 
-    .event-details {
+    .info-section-event-details {
         flex-wrap: wrap;
         gap: 6px;
     }
 
-    .buttons-wrapper {
-    gap: 8px;
+    .info-section-buttons-wrapper {
+        gap: 8px;
     }
 
-    .btn-view-event,
-    .btn-all-events {
+    .info-section-btn-view-event,
+    .info-section-btn-all-events {
         width: auto;
         flex: 1;
     }
 
     /* скрываем правую колонку */
-
-    .news-content {
+    .info-section-news-content {
         display: none;
     }
 }
