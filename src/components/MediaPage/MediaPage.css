@@ -1,5 +1,5 @@
 /* ========== MEDIA HEADER SECTION ========== */
-.media-header {
+.mp-media-header {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
@@ -8,14 +8,14 @@
 }
 
 /* Хлебные крошки */
-.media-header .breadcrumbs-row {
+.mp-breadcrumbs-row {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 40px;
 }
 
-.media-header .breadcrumb-home {
+.mp-breadcrumb-home {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
@@ -26,18 +26,18 @@
     transition: color 0.2s ease;
 }
 
-.media-header .breadcrumb-home:hover {
+.mp-breadcrumb-home:hover {
     color: rgba(255, 255, 255, 0.6);
 }
 
-.media-header .breadcrumb-separator {
+.mp-breadcrumb-separator {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
     color: rgba(255, 255, 255, 0.32);
 }
 
-.media-header .breadcrumb-active {
+.mp-breadcrumb-active {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
@@ -47,21 +47,21 @@
 }
 
 /* Линия + подпись */
-.media-header .next-layer {
+.mp-next-layer {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 40px;
 }
 
-.media-header .breadcrumb-line {
+.mp-breadcrumb-line {
     width: 35px;
     height: 3px;
     background: #00d8f5;
     flex-shrink: 0;
 }
 
-.media-header .breadcrumb-subtitle {
+.mp-breadcrumb-subtitle {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
@@ -71,7 +71,7 @@
 }
 
 /* Заголовок */
-.media-title {
+.mp-media-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: clamp(48px, 6vw, 80px);
     font-weight: 900;
@@ -83,7 +83,7 @@
 }
 
 /* Разделительная линия */
-.media-divider {
+.mp-media-divider {
     width: 100%;
     height: 1px;
     background: rgba(255, 255, 255, 0.08);
@@ -91,13 +91,13 @@
 }
 
 /* Фильтры */
-.media-filters {
+.mp-media-filters {
     display: flex;
     align-items: flex-start;
     gap: 0;
 }
 
-.filter-btn {
+.mp-filter-btn {
     height: 64px;
     padding: 0 16px;
     background: transparent;
@@ -119,16 +119,16 @@
     white-space: nowrap;
 }
 
-.filter-btn:hover {
+.mp-filter-btn:hover {
     color: rgba(255, 255, 255, 0.7);
 }
 
-.filter-btn.active {
+.mp-filter-btn.active {
     color: #ffffff;
 }
 
 /* Линия под активной кнопкой */
-.filter-line {
+.mp-filter-line {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -138,12 +138,12 @@
     transition: background 0.2s ease;
 }
 
-.filter-btn.active .filter-line {
+.mp-filter-btn.active .mp-filter-line {
     background: #00d8f5;
 }
 
 /* ========== NEWS CONTENT SECTION ========== */
-.news-content {
+.mp-news-content {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
@@ -152,7 +152,7 @@
 }
 
 /* Section Label */
-.section-label {
+.mp-section-label {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -160,22 +160,22 @@
     padding-top: 40px;
 }
 
-.section-line {
+.mp-section-line {
     width: 42px;
     height: 3px;
     border-radius: 10px;
     flex-shrink: 0;
 }
 
-.section-line.blue {
+.mp-section-line.mp-blue {
     background: #00d8f5;
 }
 
-.section-line.grey {
+.mp-section-line.mp-grey {
     background: rgba(255, 255, 255, 0.2);
 }
 
-.section-text {
+.mp-section-text {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 800;
@@ -184,22 +184,22 @@
     text-transform: uppercase;
 }
 
-.section-text.grey-text {
+.mp-section-text.mp-grey-text {
     color: rgba(255, 255, 255, 0.3);
 }
 
-.section-header {
+.mp-section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 60px;
 }
 
-.section-header .section-label {
+.mp-section-header .mp-section-label {
     margin-bottom: 0;
 }
 
-.all-articles-btn {
+.mp-all-articles-btn {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 700;
@@ -212,29 +212,35 @@
     transition: color 0.2s ease;
 }
 
-.all-articles-btn:hover {
+.mp-all-articles-btn:hover {
     color: #0ee0ff;
 }
 
 /* Featured Container */
-.featured-container {
+.mp-featured-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 2px;
     margin-bottom: 60px;
 }
 
-.featured-card {
+.mp-featured-card {
     height: 340px;
     background-size: cover;
     background-position: center;
     border-radius: 4px;
     position: relative;
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mp-featured-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 216, 245, 0.15);
 }
 
 /* Затемнение для featured карточек */
-.featured-card::before {
+.mp-featured-card::before {
     content: '';
     position: absolute;
     bottom: 0;
@@ -246,7 +252,7 @@
     pointer-events: none;
 }
 
-.featured-overlay {
+.mp-featured-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -258,7 +264,7 @@
     z-index: 2;
 }
 
-.news-type {
+.mp-news-type {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
     font-size: 9.5px;
@@ -268,7 +274,7 @@
     color: #00d8f5;
 }
 
-.featured-title {
+.mp-featured-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
     font-size: 26px;
@@ -278,13 +284,13 @@
     margin: 0;
 }
 
-.featured-footer {
+.mp-featured-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.news-date {
+.mp-news-date {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 11.5px;
@@ -292,7 +298,7 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
-.read-more-btn {
+.mp-read-more-btn {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 700;
@@ -305,57 +311,61 @@
     transition: color 0.2s ease;
 }
 
-.read-more-btn:hover {
+.mp-read-more-btn:hover {
     color: #0ee0ff;
 }
 
 /* Latest News Grid */
-.latest-news-grid {
+.mp-latest-news-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 2px;
     margin-top: 32px;
 }
 
-.news-card {
-    width: 342px;
-    height: 365px;
+.mp-news-card {
     background: #091A2E;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
 }
 
-.news-card-image {
+.mp-news-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 216, 245, 0.1);
+}
+
+.mp-news-card-image {
     height: 160px;
     background-size: cover;
     background-position: center;
 }
 
-.news-card-content {
+.mp-news-card-content {
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.type-education {
+.mp-type-education {
     color: #C87DFF;
 }
 
-.type-special {
+.mp-type-special {
     color: #4CAF50;
 }
 
-.type-tech {
+.mp-type-tech {
     color: #00d8f5;
 }
 
-.type-youth {
+.mp-type-youth {
     color: #FFB347;
 }
 
-.news-card-title {
+.mp-news-card-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 800;
     font-size: 18px;
@@ -365,7 +375,7 @@
     margin: 0;
 }
 
-.news-card-desc {
+.mp-news-card-desc {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 11.5px;
@@ -374,7 +384,7 @@
     margin: 0;
 }
 
-.news-card-date {
+.mp-news-card-date {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
     font-size: 10.5px;
@@ -383,14 +393,14 @@
 }
 
 /* ========== VIDEOS GRID ========== */
-.videos-grid {
+.mp-videos-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 2px;
     margin-top: 32px;
 }
 
-.video-card {
+.mp-video-card {
     width: 100%;
     min-height: 232px;
     background: #091A2E;
@@ -401,7 +411,7 @@
     flex-direction: column;
 }
 
-.video-thumbnail {
+.mp-video-thumbnail {
     height: 160px;
     min-height: 160px;
     flex-shrink: 0;
@@ -409,10 +419,15 @@
     background-position: center;
     position: relative;
     overflow: hidden;
+    transition: transform 0.4s ease;
+}
+
+.mp-video-card:hover .mp-video-thumbnail {
+    transform: scale(1.03);
 }
 
 /* Затемнение 75% */
-.video-thumbnail::after {
+.mp-video-thumbnail::after {
     content: '';
     position: absolute;
     top: 0;
@@ -425,7 +440,7 @@
 }
 
 /* Кнопка Play по центру */
-.video-play-btn {
+.mp-video-play-btn {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -439,21 +454,21 @@
     justify-content: center;
     cursor: pointer;
     z-index: 2;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.video-play-btn i {
+.mp-video-card:hover .mp-video-play-btn {
+    transform: translate(-50%, -50%) scale(1.1);
+    background: #00d8f5;
+}
+
+.mp-video-play-btn i {
     font-size: 16px;
     color: #06101C;
     margin-left: 2px;
 }
 
-.video-play-btn:hover {
-    background: #0ee0ff;
-    transform: translate(-50%, -50%) scale(1.05);
-}
-
-.video-duration {
+.mp-video-duration {
     position: absolute;
     bottom: 8px;
     right: 8px;
@@ -471,7 +486,7 @@
     z-index: 2;
 }
 
-.video-info {
+.mp-video-info {
     padding: 16px;
     flex: 1;
     display: flex;
@@ -479,7 +494,7 @@
     gap: 6px;
 }
 
-.video-label {
+.mp-video-label {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
     font-size: 9.5px;
@@ -489,7 +504,7 @@
     color: #00d8f5;
 }
 
-.video-title {
+.mp-video-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 800;
     font-size: 16px;
@@ -502,32 +517,32 @@
 }
 
 /* ========== LIVE BLOCK ========== */
-.live-block {
+.mp-live-block {
     margin-top: 60px;
 }
 
-.live-header {
+.mp-live-header {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 24px;
 }
 
-.live-dot {
+.mp-live-dot {
     width: 10px;
     height: 10px;
     background: #FF4444;
     border-radius: 5px;
-    animation: pulse 2s infinite;
+    animation: mp-pulse 2s infinite;
 }
 
-@keyframes pulse {
+@keyframes mp-pulse {
     0% { opacity: 1; }
     50% { opacity: 0.5; }
     100% { opacity: 1; }
 }
 
-.live-text {
+.mp-live-text {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
     font-size: 10px;
@@ -537,7 +552,7 @@
     color: #FF4444;
 }
 
-.live-streams {
+.mp-live-streams {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
     font-size: 9.5px;
@@ -550,20 +565,20 @@
 }
 
 /* Сетка */
-.live-grid {
+.mp-live-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 2px;
 }
 
-.live-right-column {
+.mp-live-right-column {
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 
-/* ========== ГЛАВНАЯ КАРТОЧКА (YouTube) ========== */
-.live-card-main {
+/* ========== ГЛАВНАЯ КАРТОЧКА ========== */
+.mp-live-card-main {
     height: 360px;
     background-size: cover;
     background-position: center;
@@ -576,7 +591,7 @@
     overflow: hidden;
 }
 
-.live-card-main::after {
+.mp-live-card-main::after {
     content: '';
     position: absolute;
     top: 0;
@@ -588,7 +603,7 @@
     pointer-events: none;
 }
 
-.live-card-main::before {
+.mp-live-card-main::before {
     content: '';
     position: absolute;
     top: 0;
@@ -600,7 +615,7 @@
     pointer-events: none;
 }
 
-.live-card-top {
+.mp-live-card-top {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -609,7 +624,7 @@
 }
 
 /* Platform Badge */
-.platform-badge {
+.mp-platform-badge {
     height: 30px;
     padding: 6px 11px;
     border-radius: 2px;
@@ -624,43 +639,43 @@
     color: #ffffff;
 }
 
-.platform-badge i {
+.mp-platform-badge i {
     font-size: 14px;
 }
 
-.platform-badge.youtube {
+.mp-platform-badge.youtube {
     border-color: rgba(255, 0, 0, 0.45);
 }
 
-.platform-badge.youtube i {
+.mp-platform-badge.youtube i {
     color: #FF0000;
 }
 
-.platform-badge.twitch {
+.mp-platform-badge.twitch {
     border-color: rgba(100, 65, 165, 0.45);
 }
 
-.platform-badge.twitch i {
+.mp-platform-badge.twitch i {
     color: #9146FF;
 }
 
-.platform-badge.facebook {
+.mp-platform-badge.facebook {
     border-color: rgba(24, 119, 242, 0.45);
 }
 
-.platform-badge.facebook i {
+.mp-platform-badge.facebook i {
     color: #1877F2;
 }
 
 /* Live Pill */
-.live-pill {
+.mp-live-pill {
     display: flex;
     flex-direction: column;
     gap: 6px;
     align-items: flex-end;
 }
 
-.live-pill-status {
+.mp-live-pill-status {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -670,7 +685,7 @@
     height: 23px;
 }
 
-.live-pill-dot {
+.mp-live-pill-dot {
     width: 6px;
     height: 6px;
     background: #ffffff;
@@ -678,7 +693,7 @@
     flex-shrink: 0;
 }
 
-.live-pill-text {
+.mp-live-pill-text {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
     font-size: 10px;
@@ -687,7 +702,7 @@
     color: #ffffff;
 }
 
-.live-pill-stats {
+.mp-live-pill-stats {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -699,26 +714,26 @@
     font-size: 10px;
 }
 
-.live-pill-stats i {
+.mp-live-pill-stats i {
     color: rgba(255, 255, 255, 0.6);
     font-size: 10px;
 }
 
-.views-count {
+.mp-views-count {
     color: #ffffff;
     font-weight: 600;
 }
 
-.stat-separator {
+.mp-stat-separator {
     color: rgba(255, 255, 255, 0.4);
 }
 
-.duration {
+.mp-duration {
     color: rgba(255, 255, 255, 0.6);
 }
 
 /* Кнопка Play (большая) */
-.live-play-btn {
+.mp-live-play-btn {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -736,18 +751,18 @@
     transition: all 0.2s ease;
 }
 
-.live-play-btn i {
+.mp-live-play-btn i {
     font-size: 20px;
     color: #ffffff;
     margin-left: 3px;
 }
 
-.live-play-btn:hover {
+.mp-live-play-btn:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
 /* Нижняя часть карточки */
-.live-card-bottom {
+.mp-live-card-bottom {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -755,7 +770,7 @@
     z-index: 2;
 }
 
-.live-event {
+.mp-live-event {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
     font-size: 9.5px;
@@ -765,7 +780,7 @@
     color: #FF0000;
 }
 
-.live-title {
+.mp-live-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
     font-size: 28px;
@@ -776,7 +791,7 @@
 }
 
 /* Watch Buttons */
-.watch-btn {
+.mp-watch-btn {
     height: 31px;
     padding: 0 12px;
     border-radius: 2px;
@@ -794,7 +809,7 @@
     transition: all 0.2s ease;
 }
 
-.watch-btn i {
+.mp-watch-btn i {
     font-size: 10px;
 }
 
@@ -816,12 +831,12 @@
     color: #ffffff;
 }
 
-.watch-btn:hover {
+.mp-watch-btn:hover {
     filter: brightness(1.2);
 }
 
 /* ========== МАЛЕНЬКИЕ КАРТОЧКИ ========== */
-.live-card-small {
+.mp-live-card-small {
     height: 179px;
     background-size: cover;
     background-position: center;
@@ -834,7 +849,7 @@
     overflow: hidden;
 }
 
-.live-card-small::after {
+.mp-live-card-small::after {
     content: '';
     position: absolute;
     top: 0;
@@ -846,7 +861,7 @@
     pointer-events: none;
 }
 
-.live-card-small::before {
+.mp-live-card-small::before {
     content: '';
     position: absolute;
     top: 0;
@@ -858,51 +873,51 @@
     pointer-events: none;
 }
 
-.live-card-small .live-card-top,
-.live-card-small-content,
-.live-play-btn-small {
+.mp-live-card-small .mp-live-card-top,
+.mp-live-card-small-content,
+.mp-live-play-btn-small {
     position: relative;
     z-index: 2;
 }
 
 /* Уменьшенные элементы для маленьких карточек */
-.live-pill-small {
+.mp-live-pill-small {
     gap: 4px;
 }
 
-.live-pill-status-small {
+.mp-live-pill-status-small {
     height: 18px;
     padding: 2px 6px;
 }
 
-.live-pill-status-small .live-pill-dot {
+.mp-live-pill-status-small .mp-live-pill-dot {
     width: 4px;
     height: 4px;
 }
 
-.live-pill-status-small .live-pill-text {
+.mp-live-pill-status-small .mp-live-pill-text {
     font-size: 8px;
     letter-spacing: 1.2px;
 }
 
-.live-pill-stats-small {
+.mp-live-pill-stats-small {
     height: 16px;
     padding: 2px 6px;
     font-size: 8px;
     gap: 4px;
 }
 
-.live-pill-stats-small i {
+.mp-live-pill-stats-small i {
     font-size: 8px;
 }
 
-.live-pill-stats-small .views-count,
-.live-pill-stats-small .duration {
+.mp-live-pill-stats-small .mp-views-count,
+.mp-live-pill-stats-small .mp-duration {
     font-size: 8px;
 }
 
 /* Кнопка Play (маленькая) */
-.live-play-btn-small {
+.mp-live-play-btn-small {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -919,24 +934,24 @@
     transition: all 0.2s ease;
 }
 
-.live-play-btn-small i {
+.mp-live-play-btn-small i {
     font-size: 14px;
     color: #ffffff;
     margin-left: 2px;
 }
 
-.live-play-btn-small:hover {
+.mp-live-play-btn-small:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
 /* Контент маленьких карточек */
-.live-card-small-content {
+.mp-live-card-small-content {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.live-event-small {
+.mp-live-event-small {
     font-family: 'Inter', sans-serif;
     font-weight: 700;
     font-size: 8px;
@@ -946,7 +961,7 @@
     color: #FF0000;
 }
 
-.live-title-small {
+.mp-live-title-small {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 800;
     font-size: 14px;
@@ -956,19 +971,19 @@
     margin: 0;
 }
 
-.watch-btn-small {
+.mp-watch-btn-small {
     height: 24px;
     padding: 0 8px;
     font-size: 8px;
     letter-spacing: 0.4px;
 }
 
-.watch-btn-small i {
+.mp-watch-btn-small i {
     font-size: 8px;
 }
 
 /* Press Releases */
-.press-divider {
+.mp-press-divider {
     width: 100%;
     height: 1px;
     background: rgba(255, 255, 255, 0.08);
@@ -976,12 +991,12 @@
     margin-bottom: 0;
 }
 
-.press-list {
+.mp-press-list {
     display: flex;
     flex-direction: column;
 }
 
-.press-item {
+.mp-press-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -989,13 +1004,13 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.press-info {
+.mp-press-info {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.press-title {
+.mp-press-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
     font-size: 16px;
@@ -1004,13 +1019,13 @@
     margin: 0;
 }
 
-.press-meta {
+.mp-press-meta {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     color: rgba(255, 255, 255, 0.4);
 }
 
-.download-btn-press {
+.mp-download-btn-press {
     width: 112px;
     height: 30px;
     background: rgba(255, 255, 255, 0.08);
@@ -1029,686 +1044,265 @@
     transition: background 0.2s ease;
 }
 
-.download-btn-press:hover {
+.mp-download-btn-press:hover {
     background: rgba(255, 255, 255, 0.12);
 }
 
 /* ========== АНИМАЦИИ ========== */
 
-/* Карточки Featured — свечение */
-.featured-card {
+/* Карточки Featured — свечение уже добавлено */
+.mp-filter-btn .mp-filter-line {
+    transition: width 0.3s ease;
+}
+
+.mp-filter-btn:hover .mp-filter-line {
+    width: 100%;
+}
+
+/* SPOTLIGHT GRID */
+.mp-spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-bottom: 60px;
+    margin-top: 35px;
+}
+
+.mp-spotlight-card {
+    background: #091A2E;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
-.featured-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0, 216, 245, 0.15);
-}
-
-/* Карточки Latest News — подъём */
-.news-card {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-}
-
-.news-card:hover {
+.mp-spotlight-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 216, 245, 0.1);
 }
 
-/* Карточки видео — увеличение превью */
-.video-card:hover .video-thumbnail {
-    transform: scale(1.03);
+.mp-spotlight-image-wrapper {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
 }
 
-.video-thumbnail {
+.mp-spotlight-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: transform 0.4s ease;
 }
 
-/* Кнопка Play — пульсация */
-.video-play-btn {
-    transition: transform 0.2s ease, background 0.2s ease;
+.mp-spotlight-card:hover .mp-spotlight-image {
+    transform: scale(1.05);
 }
 
-.video-card:hover .video-play-btn {
-    transform: translate(-50%, -50%) scale(1.1);
-    background: #00d8f5;
+.mp-spotlight-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-/* Фильтры — плавная линия */
-.filter-btn .filter-line {
-    transition: width 0.3s ease;
+.mp-spotlight-theme {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #00d8f5;
+    text-transform: uppercase;
 }
 
-.filter-btn:hover .filter-line {
-    width: 100%;
+.mp-spotlight-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1.3;
+    margin: 0;
+}
+
+@media (max-width: 1024px) {
+    .mp-spotlight-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .mp-spotlight-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .mp-spotlight-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .mp-spotlight-image-wrapper {
+        height: 200px;
+    }
 }
 
 /* ========== АДАПТИВНОСТЬ ========== */
 
 @media (max-width: 1400px) {
-    /* Latest News */
-    .latest-news-grid {
+    .mp-latest-news-grid {
         grid-template-columns: repeat(3, 1fr);
     }
     
-    .news-card {
-        width: 100%;
-        height: auto;
-        min-height: 365px;
-    }
-    
-    /* Videos */
-    .videos-grid {
+    .mp-videos-grid {
         grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .video-card {
-        width: 100%;
     }
 }
 
 @media (max-width: 1200px) {
-    /* Latest News */
-    .latest-news-grid {
+    .mp-latest-news-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    /* Videos */
-    .videos-grid {
+    .mp-videos-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 1024px) {
-    .news-content {
+    .mp-news-content {
         padding: 0 24px 60px;
     }
     
-    /* Featured остаются 2 в ряд */
-    .featured-container {
+    .mp-featured-container {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .featured-card {
+    .mp-featured-card {
         height: 300px;
     }
     
-    .featured-title {
+    .mp-featured-title {
         font-size: 22px;
         line-height: 24px;
     }
     
-    /* Latest News 2x2 */
-    .latest-news-grid {
+    .mp-latest-news-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 2px;
     }
     
-    .news-card {
-        width: 100%;
-        height: auto;
-        min-height: 340px;
-    }
-    
-    .news-card-image {
+    .mp-news-card-image {
         height: 140px;
     }
     
-    .news-card-title {
+    .mp-news-card-title {
         font-size: 16px;
         line-height: 18px;
     }
     
-    /* Videos 2x2 */
-    .videos-grid {
+    .mp-videos-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 2px;
     }
     
-    .video-card {
-        width: 100%;
-    }
-    
-    .video-thumbnail {
+    .mp-video-thumbnail {
         height: 140px;
         min-height: 140px;
     }
     
-    .video-play-btn {
+    .mp-video-play-btn {
         width: 44px;
         height: 44px;
         border-radius: 22px;
     }
     
-    .video-play-btn i {
+    .mp-video-play-btn i {
         font-size: 15px;
     }
     
-    .video-title {
+    .mp-video-title {
         font-size: 14px;
         line-height: 17px;
     }
     
-    /* Live - main и mini делят пополам */
-    .live-grid {
+    .mp-live-grid {
         grid-template-columns: 1fr 1fr;
         gap: 2px;
     }
     
-    .live-card-main {
+    .mp-live-card-main {
         height: 300px;
     }
     
-    .live-title {
+    .mp-live-title {
         font-size: 22px;
         line-height: 24px;
     }
     
-    .live-play-btn {
+    .mp-live-play-btn {
         width: 52px;
         height: 52px;
         border-radius: 26px;
     }
     
-    .live-play-btn i {
+    .mp-live-play-btn i {
         font-size: 18px;
     }
     
-    .live-card-small {
+    .mp-live-card-small {
         height: 148px;
     }
     
-    .live-title-small {
+    .mp-live-title-small {
         font-size: 13px;
         line-height: 15px;
     }
     
-    .live-play-btn-small {
+    .mp-live-play-btn-small {
         width: 36px;
         height: 36px;
         border-radius: 18px;
     }
     
-    .live-play-btn-small i {
+    .mp-live-play-btn-small i {
         font-size: 13px;
     }
     
-    .press-item {
+    .mp-press-item {
         padding: 14px 0;
     }
     
-    .press-title {
+    .mp-press-title {
         font-size: 14px;
     }
-}
 
-@media (max-width: 768px) {
-    .news-content {
-        padding: 0 16px 40px;
-    }
-    
-    .section-header {
-        margin-top: 40px;
-    }
-    
-    /* Featured */
-    .featured-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2px;
-    }
-    
-    .featured-card {
-        height: 240px;
-    }
-    
-    .featured-overlay {
-        padding: 20px;
-    }
-    
-    .featured-title {
-        font-size: 18px;
-        line-height: 20px;
-    }
-    
-    .news-type {
-        font-size: 8px;
-    }
-    
-    .news-date {
-        font-size: 10px;
-    }
-    
-    .read-more-btn {
-        font-size: 10px;
-    }
-    
-    /* Latest News */
-    .latest-news-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2px;
-    }
-    
-    .news-card {
-        min-height: 300px;
-    }
-    
-    .news-card-image {
-        height: 120px;
-    }
-    
-    .news-card-content {
-        padding: 12px;
-        gap: 8px;
-    }
-    
-    .news-card-title {
-        font-size: 14px;
-        line-height: 16px;
-    }
-    
-    .news-card-desc {
-        font-size: 10px;
-        line-height: 14px;
-    }
-    
-    /* Videos */
-    .videos-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2px;
-    }
-    
-    .video-thumbnail {
-        height: 120px;
-        min-height: 120px;
-    }
-    
-    .video-play-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 18px;
-    }
-    
-    .video-play-btn i {
-        font-size: 12px;
-    }
-    
-    .video-info {
-        padding: 10px;
-    }
-    
-    .video-title {
-        font-size: 12px;
-        line-height: 14px;
-    }
-    
-    /* Live */
-    .live-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-    
-    .live-card-main {
-        height: 240px;
-        padding: 14px;
-    }
-    
-    .live-title {
-        font-size: 17px;
-        line-height: 19px;
-    }
-    
-    .live-event {
-        font-size: 8px;
-    }
-    
-    .live-play-btn {
-        width: 44px;
-        height: 44px;
-        border-radius: 22px;
-    }
-    
-    .live-play-btn i {
-        font-size: 15px;
-    }
-    
-    .live-card-small {
-        height: 118px;
-        padding: 10px;
-    }
-    
-    .live-title-small {
-        font-size: 11px;
-        line-height: 13px;
-    }
-    
-    .live-event-small {
-        font-size: 7px;
-    }
-    
-    .live-play-btn-small {
-        width: 30px;
-        height: 30px;
-        border-radius: 15px;
-    }
-    
-    .live-play-btn-small i {
-        font-size: 11px;
-    }
-    
-    .platform-badge {
-        height: 22px;
-        padding: 3px 7px;
-        font-size: 9px;
-        gap: 4px;
-    }
-    
-    .platform-badge i {
-        font-size: 10px;
-    }
-    
-    .watch-btn {
-        height: 24px;
-        padding: 0 8px;
-        font-size: 8px;
-    }
-    
-    .watch-btn-small {
-        height: 20px;
-        padding: 0 6px;
-        font-size: 7px;
-    }
-    
-    /* Press */
-    .press-item {
-        padding: 12px 0;
-    }
-    
-    .press-title {
-        font-size: 13px;
-    }
-    
-    .download-btn-press {
-        width: 90px;
-        height: 28px;
-        font-size: 9px;
-    }
-}
-
-@media (max-width: 480px) {
-    .news-content {
-        padding: 0 12px 30px;
-    }
-    
-    .section-header {
-        margin-top: 32px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-    
-    .all-articles-btn {
-        align-self: flex-end;
-    }
-    
-    /* Featured - 1 в ряд */
-    .featured-container {
-        grid-template-columns: 1fr;
-        gap: 2px;
-    }
-    
-    .featured-card {
-        height: 200px;
-    }
-    
-    .featured-overlay {
-        padding: 14px;
-        gap: 8px;
-    }
-    
-    .featured-title {
-        font-size: 15px;
-        line-height: 17px;
-    }
-    
-    /* Latest News - 1 в ряд */
-    .latest-news-grid {
-        grid-template-columns: 1fr;
-        gap: 2px;
-    }
-    
-    .news-card {
-        min-height: auto;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .news-card-image {
-        width: 100%;
-        height: 180px;
-        min-height: auto;
-        flex-shrink: 0;
-    }
-    
-    .news-card-content {
-        padding: 12px;
-        gap: 6px;
-        flex: 1;
-    }
-    
-    .news-card-title {
-        font-size: 14px;
-        line-height: 16px;
-    }
-    
-    .news-card-desc {
-        font-size: 10px;
-        line-height: 14px;
-    }
-    
-    .news-card-date {
-        font-size: 9px;
-    }
-    
-    /* Videos - 2x2 */
-    .videos-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2px;
-    }
-    
-    .video-thumbnail {
-        height: 100px;
-        min-height: 100px;
-    }
-    
-    .video-play-btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 15px;
-    }
-    
-    .video-play-btn i {
-        font-size: 10px;
-    }
-    
-    .video-duration {
-        width: 30px;
-        height: 16px;
-        font-size: 8px;
-    }
-    
-    .video-info {
-        padding: 8px;
-    }
-    
-    .video-label {
-        font-size: 7px;
-    }
-    
-    .video-title {
-        font-size: 10px;
-        line-height: 12px;
-    }
-    
-    /* Live - 1 в ряд */
-    .live-block {
-        margin-top: 40px;
-    }
-    
-    .live-grid {
-        grid-template-columns: 1fr;
-        gap: 2px;
-    }
-    
-    .live-card-main {
-        height: 200px;
-        padding: 12px;
-    }
-    
-    .live-card-top {
-        flex-direction: row;
-        gap: 8px;
-    }
-    
-    .live-pill {
-        flex-direction: column;
-        gap: 4px;
-    }
-    
-    .live-pill-status {
-        height: 16px;
-        padding: 2px 5px;
-    }
-    
-    .live-pill-dot {
-        width: 4px;
-        height: 4px;
-    }
-    
-    .live-pill-text {
-        font-size: 7px;
-    }
-    
-    .live-pill-stats {
-        height: 14px;
-        padding: 2px 5px;
-        font-size: 7px;
-    }
-    
-    .live-title {
-        font-size: 14px;
-        line-height: 16px;
-    }
-    
-    .live-event {
-        font-size: 7px;
-    }
-    
-    .live-play-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 18px;
-    }
-    
-    .live-play-btn i {
-        font-size: 13px;
-    }
-    
-    .live-card-small {
-        height: auto;
-        min-height: 140px;
-        padding: 10px;
-    }
-    
-    .live-title-small {
-        font-size: 12px;
-        line-height: 14px;
-    }
-    
-    .live-play-btn-small {
-        width: 28px;
-        height: 28px;
-        border-radius: 14px;
-    }
-    
-    .live-play-btn-small i {
-        font-size: 10px;
-    }
-    
-    .platform-badge {
-        height: 20px;
-        padding: 2px 6px;
-        font-size: 8px;
-        gap: 3px;
-    }
-    
-    .platform-badge i {
-        font-size: 9px;
-    }
-    
-    .watch-btn {
-        height: 22px;
-        padding: 0 6px;
-        font-size: 7px;
-    }
-    
-    .watch-btn-small {
-        height: 18px;
-        padding: 0 5px;
-        font-size: 6px;
-    }
-    
-    /* Press */
-    .press-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        padding: 10px 0;
-    }
-    
-    .press-title {
-        font-size: 12px;
-    }
-    
-    .press-meta {
-        font-size: 10px;
-    }
-    
-    .download-btn-press {
-        width: 100%;
-        height: 28px;
-        font-size: 9px;
-    }
-}
-
-/* ========== АДАПТИВНОСТЬ ДЛЯ MEDIA HEADER ========== */
-
-@media (max-width: 1024px) {
-    .media-header {
+    .mp-media-header {
         padding: 80px 24px 0;
     }
     
-    .media-header .breadcrumb-home,
-    .media-header .breadcrumb-separator,
-    .media-header .breadcrumb-active,
-    .media-header .breadcrumb-subtitle {
+    .mp-breadcrumb-home,
+    .mp-breadcrumb-separator,
+    .mp-breadcrumb-active,
+    .mp-breadcrumb-subtitle {
         font-size: 12px;
         letter-spacing: 1.5px;
     }
     
-    .media-header .breadcrumb-line {
+    .mp-breadcrumb-line {
         width: 30px;
     }
     
-    .media-title {
+    .mp-media-title {
         font-size: clamp(40px, 5vw, 64px);
     }
     
-    /* Фильтры */
-    .media-filters {
+    .mp-media-filters {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
     
-    .filter-btn {
+    .mp-filter-btn {
         height: 52px;
         padding: 0 14px;
         font-size: 10px;
@@ -1718,11 +1312,191 @@
 }
 
 @media (max-width: 768px) {
-    .media-header {
+    .mp-news-content {
+        padding: 0 16px 40px;
+    }
+    
+    .mp-section-header {
+        margin-top: 40px;
+    }
+    
+    .mp-featured-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
+    }
+    
+    .mp-featured-card {
+        height: 240px;
+    }
+    
+    .mp-featured-overlay {
+        padding: 20px;
+    }
+    
+    .mp-featured-title {
+        font-size: 18px;
+        line-height: 20px;
+    }
+    
+    .mp-news-type {
+        font-size: 8px;
+    }
+    
+    .mp-news-date {
+        font-size: 10px;
+    }
+    
+    .mp-read-more-btn {
+        font-size: 10px;
+    }
+    
+    .mp-latest-news-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
+    }
+    
+    .mp-news-card-image {
+        height: 120px;
+    }
+    
+    .mp-news-card-content {
+        padding: 12px;
+        gap: 8px;
+    }
+    
+    .mp-news-card-title {
+        font-size: 14px;
+        line-height: 16px;
+    }
+    
+    .mp-news-card-desc {
+        font-size: 10px;
+        line-height: 14px;
+    }
+    
+    .mp-videos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
+    }
+    
+    .mp-video-thumbnail {
+        height: 120px;
+        min-height: 120px;
+    }
+    
+    .mp-video-play-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+    }
+    
+    .mp-video-play-btn i {
+        font-size: 12px;
+    }
+    
+    .mp-video-info {
+        padding: 10px;
+    }
+    
+    .mp-video-title {
+        font-size: 12px;
+        line-height: 14px;
+    }
+    
+    .mp-live-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .mp-live-card-main {
+        height: 240px;
+        padding: 14px;
+    }
+    
+    .mp-live-title {
+        font-size: 17px;
+        line-height: 19px;
+    }
+    
+    .mp-live-event {
+        font-size: 8px;
+    }
+    
+    .mp-live-play-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 22px;
+    }
+    
+    .mp-live-play-btn i {
+        font-size: 15px;
+    }
+    
+    .mp-live-card-small {
+        height: 118px;
+        padding: 10px;
+    }
+    
+    .mp-live-title-small {
+        font-size: 11px;
+        line-height: 13px;
+    }
+    
+    .mp-live-event-small {
+        font-size: 7px;
+    }
+    
+    .mp-live-play-btn-small {
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+    }
+    
+    .mp-live-play-btn-small i {
+        font-size: 11px;
+    }
+    
+    .mp-platform-badge {
+        height: 22px;
+        padding: 3px 7px;
+        font-size: 9px;
+        gap: 4px;
+    }
+    
+    .mp-platform-badge i {
+        font-size: 10px;
+    }
+    
+    .mp-watch-btn {
+        height: 24px;
+        padding: 0 8px;
+        font-size: 8px;
+    }
+    
+    .mp-watch-btn-small {
+        height: 20px;
+        padding: 0 6px;
+        font-size: 7px;
+    }
+    
+    .mp-press-item {
+        padding: 12px 0;
+    }
+    
+    .mp-press-title {
+        font-size: 13px;
+    }
+    
+    .mp-download-btn-press {
+        width: 90px;
+        height: 28px;
+        font-size: 9px;
+    }
+
+    .mp-media-header {
         padding: 60px 20px 0;
     }
     
-    .filter-btn {
+    .mp-filter-btn {
         height: 44px;
         padding: 0 12px;
         font-size: 9px;
@@ -1731,50 +1505,265 @@
 }
 
 @media (max-width: 480px) {
-    .media-header {
+    .mp-news-content {
+        padding: 0 12px 30px;
+    }
+    
+    .mp-section-header {
+        margin-top: 32px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .mp-all-articles-btn {
+        align-self: flex-end;
+    }
+    
+    .mp-featured-container {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+    
+    .mp-featured-card {
+        height: 200px;
+    }
+    
+    .mp-featured-overlay {
+        padding: 14px;
+        gap: 8px;
+    }
+    
+    .mp-featured-title {
+        font-size: 15px;
+        line-height: 17px;
+    }
+    
+    .mp-latest-news-grid {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+    
+    .mp-news-card-image {
+        height: 180px;
+    }
+    
+    .mp-news-card-content {
+        padding: 12px;
+        gap: 6px;
+    }
+    
+    .mp-videos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
+    }
+    
+    .mp-video-thumbnail {
+        height: 100px;
+        min-height: 100px;
+    }
+    
+    .mp-video-play-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 15px;
+    }
+    
+    .mp-video-play-btn i {
+        font-size: 10px;
+    }
+    
+    .mp-video-duration {
+        width: 30px;
+        height: 16px;
+        font-size: 8px;
+    }
+    
+    .mp-video-info {
+        padding: 8px;
+    }
+    
+    .mp-video-label {
+        font-size: 7px;
+    }
+    
+    .mp-video-title {
+        font-size: 10px;
+        line-height: 12px;
+    }
+    
+    .mp-live-block {
+        margin-top: 40px;
+    }
+    
+    .mp-live-grid {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+    
+    .mp-live-card-main {
+        height: 200px;
+        padding: 12px;
+    }
+    
+    .mp-live-card-top {
+        flex-direction: row;
+        gap: 8px;
+    }
+    
+    .mp-live-pill {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .mp-live-pill-status {
+        height: 16px;
+        padding: 2px 5px;
+    }
+    
+    .mp-live-pill-dot {
+        width: 4px;
+        height: 4px;
+    }
+    
+    .mp-live-pill-text {
+        font-size: 7px;
+    }
+    
+    .mp-live-pill-stats {
+        height: 14px;
+        padding: 2px 5px;
+        font-size: 7px;
+    }
+    
+    .mp-live-title {
+        font-size: 14px;
+        line-height: 16px;
+    }
+    
+    .mp-live-event {
+        font-size: 7px;
+    }
+    
+    .mp-live-play-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+    }
+    
+    .mp-live-play-btn i {
+        font-size: 13px;
+    }
+    
+    .mp-live-card-small {
+        height: auto;
+        min-height: 140px;
+        padding: 10px;
+    }
+    
+    .mp-live-title-small {
+        font-size: 12px;
+        line-height: 14px;
+    }
+    
+    .mp-live-play-btn-small {
+        width: 28px;
+        height: 28px;
+        border-radius: 14px;
+    }
+    
+    .mp-live-play-btn-small i {
+        font-size: 10px;
+    }
+    
+    .mp-platform-badge {
+        height: 20px;
+        padding: 2px 6px;
+        font-size: 8px;
+        gap: 3px;
+    }
+    
+    .mp-platform-badge i {
+        font-size: 9px;
+    }
+    
+    .mp-watch-btn {
+        height: 22px;
+        padding: 0 6px;
+        font-size: 7px;
+    }
+    
+    .mp-watch-btn-small {
+        height: 18px;
+        padding: 0 5px;
+        font-size: 6px;
+    }
+    
+    .mp-press-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 0;
+    }
+    
+    .mp-press-title {
+        font-size: 12px;
+    }
+    
+    .mp-press-meta {
+        font-size: 10px;
+    }
+    
+    .mp-download-btn-press {
+        width: 100%;
+        height: 28px;
+        font-size: 9px;
+    }
+
+    .mp-media-header {
         padding: 40px 16px 0;
     }
     
-    .media-header .breadcrumbs-row {
+    .mp-breadcrumbs-row {
         gap: 6px;
         margin-bottom: 24px;
     }
     
-    .media-header .breadcrumb-home,
-    .media-header .breadcrumb-separator,
-    .media-header .breadcrumb-active {
+    .mp-breadcrumb-home,
+    .mp-breadcrumb-separator,
+    .mp-breadcrumb-active {
         font-size: 10px;
         letter-spacing: 1px;
     }
     
-    .media-header .next-layer {
+    .mp-next-layer {
         gap: 8px;
         margin-bottom: 24px;
     }
     
-    .media-header .breadcrumb-line {
+    .mp-breadcrumb-line {
         width: 20px;
         height: 2px;
     }
     
-    .media-header .breadcrumb-subtitle {
+    .mp-breadcrumb-subtitle {
         font-size: 10px;
         letter-spacing: 1px;
     }
     
-    .media-title {
+    .mp-media-title {
         font-size: 36px;
         margin-bottom: 24px;
     }
     
-    .filter-btn {
+    .mp-filter-btn {
         height: 38px;
         padding: 0 10px;
         font-size: 8px;
         letter-spacing: 0.5px;
     }
     
-    .filter-line {
+    .mp-filter-line {
         height: 1.5px;
     }
 }

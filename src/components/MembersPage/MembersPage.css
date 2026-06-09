@@ -1,5 +1,5 @@
 /* ========== MEMBERS HERO SECTION ========== */
-.members-hero {
+.mp-hero {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
@@ -8,14 +8,14 @@
 }
 
 /* Хлебные крошки */
-.members-hero .breadcrumbs-row {
+.mp-breadcrumbs-row {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 40px;
 }
 
-.members-hero .breadcrumb-home {
+.mp-breadcrumb-home {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
@@ -26,18 +26,18 @@
     transition: color 0.2s ease;
 }
 
-.members-hero .breadcrumb-home:hover {
+.mp-breadcrumb-home:hover {
     color: rgba(255, 255, 255, 0.6);
 }
 
-.members-hero .breadcrumb-separator {
+.mp-breadcrumb-separator {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
     color: rgba(255, 255, 255, 0.32);
 }
 
-.members-hero .breadcrumb-active {
+.mp-breadcrumb-active {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
@@ -47,21 +47,21 @@
 }
 
 /* Линия + подпись */
-.members-hero .next-layer {
+.mp-next-layer {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 40px;
 }
 
-.members-hero .breadcrumb-line {
+.mp-breadcrumb-line {
     width: 35px;
     height: 3px;
     background: #00d8f5;
     flex-shrink: 0;
 }
 
-.members-hero .breadcrumb-subtitle {
+.mp-breadcrumb-subtitle {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 800;
@@ -71,14 +71,14 @@
 }
 
 /* Заголовок и статистика */
-.members-header-row {
+.mp-header-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0;
 }
 
-.members-title {
+.mp-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: clamp(48px, 6vw, 80px);
     font-weight: 900;
@@ -89,20 +89,20 @@
     margin: 0;
 }
 
-.members-stats {
+.mp-stats {
     display: flex;
     align-items: center;
     gap: 40px;
 }
 
-.stat-item {
+.mp-stat-item {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 4px;
 }
 
-.stat-number {
+.mp-stat-number {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 48px;
     font-weight: 900;
@@ -110,7 +110,7 @@
     line-height: 1;
 }
 
-.stat-label {
+.mp-stat-label {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -120,7 +120,7 @@
 }
 
 /* Разделительная линия */
-.members-divider {
+.mp-divider {
     width: 100%;
     height: 1px;
     background: rgba(255, 255, 255, 0.08);
@@ -128,14 +128,14 @@
 }
 
 /* Поиск и фильтры */
-.members-controls {
+.mp-controls {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
 }
 
-.members-search {
+.mp-search {
     width: 265px;
     height: 35px;
     background: #0C233D;
@@ -147,13 +147,13 @@
     flex-shrink: 0;
 }
 
-.members-search .search-icon {
+.mp-search-icon {
     color: rgba(255, 255, 255, 0.3);
     font-size: 14px;
     flex-shrink: 0;
 }
 
-.members-search-field {
+.mp-search-field {
     width: 100%;
     height: 100%;
     background: transparent;
@@ -165,20 +165,20 @@
     outline: none;
 }
 
-.members-search-field::placeholder {
+.mp-search-field::placeholder {
     color: rgba(255, 255, 255, 0.4);
     font-size: 12px;
 }
 
 /* Кнопки регионов */
-.region-buttons {
+.mp-region-buttons {
     display: flex;
     gap: 4px;
     flex-shrink: 1;
     flex-wrap: wrap;
 }
 
-.region-btn {
+.mp-region-btn {
     height: 30px;
     padding: 0 12px;
     background: transparent;
@@ -195,28 +195,28 @@
     align-items: center;
 }
 
-.region-btn:hover {
+.mp-region-btn:hover {
     border-color: rgba(0, 216, 245, 0.35);
     color: rgba(255, 255, 255, 0.8);
     background: rgba(0, 216, 245, 0.05);
 }
 
-.region-btn.active {
+.mp-region-btn.active {
     background: rgba(0, 216, 245, 0.15);
     border-color: #00d8f5;
     color: #00d8f5;
 }
 
 /* Кнопки переключения вида */
-.view-buttons {
+.mp-view-buttons {
     display: flex;
     gap: 0;
     flex-shrink: 0;
     margin-left: auto;
 }
 
-.view-btn-grid,
-.view-btn-list {
+.mp-view-btn-grid,
+.mp-view-btn-list {
     height: 30px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background: transparent;
@@ -235,34 +235,34 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
-.view-btn-grid {
+.mp-view-btn-grid {
     border-radius: 4px 0 0 4px;
 }
 
-.view-btn-list {
+.mp-view-btn-list {
     border-radius: 0 4px 4px 0;
 }
 
-.view-btn-grid i,
-.view-btn-list i {
+.mp-view-btn-grid i,
+.mp-view-btn-list i {
     font-size: 12px;
 }
 
-.view-btn-grid.active,
-.view-btn-list.active {
+.mp-view-btn-grid.active,
+.mp-view-btn-list.active {
     background: #00d8f5;
     border-color: #00d8f5;
     color: #06101C;
 }
 
-.view-btn-grid:hover:not(.active),
-.view-btn-list:hover:not(.active) {
+.mp-view-btn-grid:hover:not(.active),
+.mp-view-btn-list:hover:not(.active) {
     border-color: rgba(0, 216, 245, 0.35);
     color: rgba(255, 255, 255, 0.7);
 }
 
 /* ========== SHOWING FEDERATIONS ========== */
-.members-grid-section {
+.mp-grid-section {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
@@ -270,7 +270,7 @@
     background-color: #06101C;
 }
 
-.showing-header {
+.mp-showing-header {
     display: flex;
     align-items: baseline;
     gap: 8px;
@@ -279,7 +279,7 @@
     padding-top: 20px;
 }
 
-.showing-label {
+.mp-showing-label {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -287,7 +287,7 @@
     color: rgba(255, 255, 255, 0.4);
 }
 
-.showing-number {
+.mp-showing-number {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 16px;
     font-weight: 900;
@@ -295,7 +295,7 @@
     line-height: 1;
 }
 
-.showing-text {
+.mp-showing-text {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -304,14 +304,14 @@
 }
 
 /* Сетка карточек */
-.federations-grid {
+.mp-federations-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 2px;
 }
 
 /* Карточка федерации */
-.federation-card {
+.mp-federation-card {
     width: 100%;
     background: #091A2E;
     border-radius: 4px;
@@ -323,14 +323,14 @@
     cursor: pointer;
 }
 
-.federation-card:hover {
+.mp-federation-card:hover {
     border-color: rgba(0, 216, 245, 0.2);
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 /* Верхняя строка карточки */
-.card-top-row {
+.mp-card-top-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -338,7 +338,7 @@
 }
 
 /* Квадрат с инициалами */
-.federation-initials {
+.mp-federation-initials {
     width: 52px;
     height: 52px;
     border: 2px solid #00d8f5;
@@ -355,7 +355,7 @@
 }
 
 /* Код федерации */
-.federation-code {
+.mp-federation-code {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -365,7 +365,7 @@
 }
 
 /* Информация о федерации */
-.federation-info {
+.mp-federation-info {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -373,7 +373,7 @@
     width: 100%;
 }
 
-.federation-name {
+.mp-federation-name {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 18px;
     font-weight: 700;
@@ -383,7 +383,7 @@
     margin: 0 0 4px 0;
 }
 
-.federation-country {
+.mp-federation-country {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -393,7 +393,7 @@
 }
 
 /* Разделительная линия */
-.card-divider {
+.mp-card-divider {
     width: 100%;
     height: 1px;
     background: rgba(255, 255, 255, 0.08);
@@ -401,7 +401,7 @@
 }
 
 /* Президент */
-.president-label {
+.mp-president-label {
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 700;
@@ -410,7 +410,7 @@
     margin-bottom: 4px;
 }
 
-.president-name {
+.mp-president-name {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -419,14 +419,14 @@
 }
 
 /* Контакты */
-.contact-info {
+.mp-contact-info {
     display: flex;
     flex-direction: column;
     gap: 6px;
     margin-bottom: 16px;
 }
 
-.contact-item {
+.mp-contact-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -435,7 +435,7 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
-.contact-item i {
+.mp-contact-item i {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.3);
     width: 14px;
@@ -443,7 +443,7 @@
 }
 
 /* Кнопка View Federation */
-.view-federation-btn {
+.mp-view-federation-btn {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 700;
@@ -458,225 +458,225 @@
     align-self: flex-start;
 }
 
-.view-federation-btn:hover {
+.mp-view-federation-btn:hover {
     color: #0ee0ff;
 }
 
 /* ========== АДАПТИВНОСТЬ ========== */
 
 @media (max-width: 1200px) {
-    .federations-grid {
+    .mp-federations-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 1024px) {
-    .members-hero {
+    .mp-hero {
         padding: 80px 24px 50px;
     }
     
-    .members-header-row {
+    .mp-header-row {
         flex-direction: column;
         align-items: flex-start;
         gap: 24px;
     }
     
-    .members-stats {
+    .mp-stats {
         gap: 32px;
     }
     
-    .stat-number {
+    .mp-stat-number {
         font-size: 42px;
     }
     
-    .members-search {
+    .mp-search {
         width: 100%;
     }
     
-    .region-btn {
+    .mp-region-btn {
         font-size: 10px;
         padding: 0 8px;
         height: 28px;
     }
     
-    .federations-grid {
+    .mp-federations-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .members-grid-section {
+    .mp-grid-section {
         padding: 0 24px 60px;
     }
     
-    .federation-card {
+    .mp-federation-card {
         padding: 20px;
     }
 }
 
 @media (max-width: 768px) {
-    .members-hero {
+    .mp-hero {
         padding: 60px 20px 40px;
     }
     
-    .members-hero .breadcrumb-home,
-    .members-hero .breadcrumb-separator,
-    .members-hero .breadcrumb-active,
-    .members-hero .breadcrumb-subtitle {
+    .mp-breadcrumb-home,
+    .mp-breadcrumb-separator,
+    .mp-breadcrumb-active,
+    .mp-breadcrumb-subtitle {
         font-size: 12px;
         letter-spacing: 1.5px;
     }
     
-    .members-hero .breadcrumb-line {
+    .mp-breadcrumb-line {
         width: 30px;
     }
     
-    .members-title {
+    .mp-title {
         font-size: clamp(40px, 5vw, 56px);
     }
     
-    .members-stats {
+    .mp-stats {
         gap: 24px;
     }
     
-    .stat-number {
+    .mp-stat-number {
         font-size: 32px;
     }
     
-    .stat-label {
+    .mp-stat-label {
         font-size: 9px;
     }
     
-    .members-controls {
+    .mp-controls {
         flex-direction: column;
         align-items: stretch;
     }
     
-    .view-buttons {
+    .mp-view-buttons {
         margin-left: 0;
         align-self: flex-end;
     }
     
-    .federations-grid {
+    .mp-federations-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .members-grid-section {
+    .mp-grid-section {
         padding: 0 16px 50px;
     }
     
-    .federation-card {
+    .mp-federation-card {
         padding: 16px;
     }
     
-    .federation-initials {
+    .mp-federation-initials {
         width: 44px;
         height: 44px;
         font-size: 16px;
     }
     
-    .federation-name {
+    .mp-federation-name {
         font-size: 16px;
     }
     
-    .showing-header {
+    .mp-showing-header {
         margin-bottom: 24px;
     }
     
-    .showing-number {
+    .mp-showing-number {
         font-size: 36px;
     }
 }
 
 @media (max-width: 480px) {
-    .members-hero {
+    .mp-hero {
         padding: 40px 16px 30px;
     }
     
-    .members-hero .breadcrumbs-row {
+    .mp-breadcrumbs-row {
         gap: 6px;
         margin-bottom: 24px;
     }
     
-    .members-hero .breadcrumb-home,
-    .members-hero .breadcrumb-separator,
-    .members-hero .breadcrumb-active {
+    .mp-breadcrumb-home,
+    .mp-breadcrumb-separator,
+    .mp-breadcrumb-active {
         font-size: 10px;
         letter-spacing: 1px;
     }
     
-    .members-hero .next-layer {
+    .mp-next-layer {
         gap: 8px;
         margin-bottom: 24px;
     }
     
-    .members-hero .breadcrumb-line {
+    .mp-breadcrumb-line {
         width: 20px;
         height: 2px;
     }
     
-    .members-hero .breadcrumb-subtitle {
+    .mp-breadcrumb-subtitle {
         font-size: 10px;
         letter-spacing: 1px;
     }
     
-    .members-title {
+    .mp-title {
         font-size: 36px;
     }
     
-    .members-stats {
+    .mp-stats {
         width: 100%;
         justify-content: space-between;
         gap: 12px;
     }
     
-    .stat-item {
+    .mp-stat-item {
         align-items: flex-start;
     }
     
-    .stat-number {
+    .mp-stat-number {
         font-size: 28px;
     }
     
-    .stat-label {
+    .mp-stat-label {
         font-size: 8px;
         letter-spacing: 1px;
     }
     
-    .members-divider {
+    .mp-divider {
         margin: 24px 0;
     }
     
-    .members-search {
+    .mp-search {
         width: 100%;
         height: 35px;
     }
     
-    .region-btn {
+    .mp-region-btn {
         height: 28px;
         font-size: 10px;
         padding: 0 8px;
     }
     
-    .view-btn-grid,
-    .view-btn-list {
+    .mp-view-btn-grid,
+    .mp-view-btn-list {
         height: 28px;
         font-size: 9px;
         padding: 0 8px;
     }
     
-    .federations-grid {
+    .mp-federations-grid {
         grid-template-columns: 1fr;
     }
     
-    .members-grid-section {
+    .mp-grid-section {
         padding: 0 12px 40px;
     }
     
-    .federation-card {
+    .mp-federation-card {
         max-width: 100%;
         padding: 16px;
     }
     
-    .showing-number {
+    .mp-showing-number {
         font-size: 28px;
     }
 }

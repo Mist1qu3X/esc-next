@@ -1,21 +1,11 @@
 /* ============================================================
-   TABLE OF CONTENTS
-   ------------------------------------------------------------
-   1. ALL EVENTS SECTION
-   2. EVENTS TABLE
-   3. PAGINATION
-   4. EVENTS CALENDAR SECTION
-   5. BREADCRUMBS & HEADER
-   6. FILTERS
-   7. FEATURED EVENTS
-   8. DATE FILTER DROPDOWN
-   9. MEDIA QUERIES
+   EVENTS PAGE CONTENT - UNIQUE CLASSES (epc- prefix)
    ============================================================ */
 
 /* ============================================================
    1. ALL EVENTS SECTION
    ============================================================ */
-.all-events {
+.epc-all-events {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
@@ -23,7 +13,7 @@
     background-color: #06121f;
 }
 
-.all-events-count {
+.epc-all-events-count {
     font-family: 'Inter', sans-serif;
     font-size: clamp(11px, 1.5vw, 14px);
     font-weight: 800;
@@ -33,7 +23,7 @@
     white-space: nowrap;
 }
 
-.all-events-naming {
+.epc-all-events-naming {
     display: flex;
     align-items: center;
     gap: clamp(12px, 1.5vw, 20px);
@@ -41,7 +31,7 @@
     width: 100%;
 }
 
-.all-events-title {
+.epc-all-events-title {
     font-family: 'Inter', sans-serif;
     font-size: clamp(11px, 1.5vw, 14px);
     font-weight: 800;
@@ -52,20 +42,20 @@
     margin: 0;
 }
 
-.all-events-line {
+.epc-all-events-line {
     width: clamp(25px, 4vw, 40px);
     height: 1px;
     background: rgba(255, 255, 255, 0.32);
 }
 
-.all-events-spacer {
+.epc-all-events-spacer {
     flex: 1;
 }
 
 /* ============================================================
    2. EVENTS TABLE
    ============================================================ */
-.events-table-wrapper {
+.epc-events-table-wrapper {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -74,7 +64,7 @@
 }
 
 /* Header */
-.events-table-header {
+.epc-events-table-header {
     display: flex;
     align-items: center;
     min-width: 700px;
@@ -84,7 +74,7 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.events-table-header .col {
+.epc-events-table-header .epc-col {
     font-family: 'Inter', sans-serif;
     font-size: clamp(9px, 1vw, 11px);
     font-weight: 800;
@@ -94,7 +84,7 @@
 }
 
 /* Row */
-.events-table-row {
+.epc-events-table-row {
     display: flex;
     align-items: center;
     min-width: 700px;
@@ -103,17 +93,17 @@
     transition: background 0.2s ease;
 }
 
-.events-table-row:hover {
+.epc-events-table-row:hover {
     background: rgba(255, 255, 255, 0.02);
 }
 
-.col {
+.epc-col {
     display: flex;
     align-items: center;
 }
 
 /* Date Column */
-.col-date {
+.epc-col-date {
     width: clamp(100px, 14vw, 140px);
     flex-shrink: 0;
     display: flex;
@@ -122,7 +112,7 @@
     align-items: flex-start;
 }
 
-.date-range {
+.epc-date-range {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: clamp(12px, 1.5vw, 16px);
     font-weight: 800;
@@ -130,7 +120,7 @@
     white-space: nowrap;
 }
 
-.date-year {
+.epc-date-year {
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1vw, 11px);
     font-weight: 500;
@@ -138,13 +128,13 @@
 }
 
 /* Event Column */
-.col-event {
+.epc-col-event {
     flex: 1.5;
     min-width: clamp(150px, 20vw, 200px);
     padding-left: clamp(16px, 2vw, 24px);
 }
 
-.event-name {
+.epc-event-name {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: clamp(13px, 1.5vw, 16px);
     font-weight: 700;
@@ -154,18 +144,18 @@
 }
 
 /* Location Column */
-.col-location {
+.epc-col-location {
     flex: 1.2;
     min-width: clamp(110px, 14vw, 140px);
     gap: 6px;
 }
 
-.col-location i {
+.epc-col-location i {
     color: rgba(255, 255, 255, 0.4);
     font-size: clamp(11px, 1.2vw, 12px);
 }
 
-.col-location span {
+.epc-col-location span {
     font-family: 'Inter', sans-serif;
     font-size: clamp(11px, 1.3vw, 13px);
     font-weight: 500;
@@ -173,12 +163,12 @@
 }
 
 /* Type Column */
-.col-type {
+.epc-col-type {
     flex: 0.8;
     min-width: 80px;
 }
 
-.type-tag {
+.epc-type-tag {
     font-family: 'Inter', sans-serif;
     font-size: clamp(9px, 1vw, 10px);
     font-weight: 800;
@@ -188,12 +178,12 @@
 }
 
 /* Status Column */
-.col-status {
+.epc-col-status {
     flex: 0.7;
     min-width: 90px;
 }
 
-.status-tag {
+.epc-status-tag {
     font-family: 'Inter', sans-serif;
     font-size: clamp(9px, 1.1vw, 12px);
     font-weight: 700;
@@ -205,18 +195,18 @@
     display: inline-block;
 }
 
-.status-tag.upcoming {
+.epc-status-tag.epc-upcoming {
     color: #00d8f5;
     background: #0D2642;
 }
 
-.status-tag.finished {
+.epc-status-tag.epc-finished {
     color: rgba(255, 255, 255, 0.5);
     background: rgba(255, 255, 255, 0.08);
 }
 
 /* Actions Column */
-.col-actions {
+.epc-col-actions {
     flex: 0.8;
     min-width: clamp(120px, 16vw, 160px);
     display: flex;
@@ -226,7 +216,7 @@
     padding-left: 0;
 }
 
-.action-btn {
+.epc-action-btn {
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1vw, 11px);
     font-weight: 800;
@@ -240,23 +230,23 @@
     border: none;
 }
 
-.details-btn {
+.epc-details-btn {
     background: #00d8f5;
     color: #06121f;
 }
 
-.details-btn:hover {
+.epc-details-btn:hover {
     background: #ffffff;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 216, 245, 0.3);
 }
 
-.results-btn {
+.epc-results-btn {
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.5);
 }
 
-.results-btn:hover {
+.epc-results-btn:hover {
     background: rgba(255, 255, 255, 0.15);
     color: rgba(255, 255, 255, 0.8);
     transform: translateY(-1px);
@@ -265,7 +255,7 @@
 /* ============================================================
    3. PAGINATION
    ============================================================ */
-.pagination {
+.epc-pagination {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -273,7 +263,7 @@
     margin-top: clamp(24px, 4vw, 40px);
 }
 
-.page-btn {
+.epc-page-btn {
     width: clamp(34px, 4vw, 40px);
     height: clamp(34px, 4vw, 40px);
     display: flex;
@@ -290,18 +280,18 @@
     transition: all 0.2s ease;
 }
 
-.page-btn:hover {
+.epc-page-btn:hover {
     border-color: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.8);
 }
 
-.page-btn.active {
+.epc-page-btn.epc-active {
     background: #00d8f5;
     color: #06121f;
     border-color: #00d8f5;
 }
 
-.page-btn.next {
+.epc-page-btn.epc-next {
     width: auto;
     padding: 0 clamp(12px, 1.5vw, 16px);
     font-size: clamp(10px, 1vw, 11px);
@@ -311,7 +301,7 @@
     border-color: rgba(0, 216, 245, 0.3);
 }
 
-.page-btn.next:hover {
+.epc-page-btn.epc-next:hover {
     background: rgba(0, 216, 245, 0.1);
     border-color: rgba(0, 216, 245, 0.6);
 }
@@ -319,7 +309,7 @@
 /* ============================================================
    4. EVENTS CALENDAR SECTION
    ============================================================ */
-.events-calendar {
+.epc-events-calendar {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
@@ -330,7 +320,7 @@
 /* ============================================================
    5. BREADCRUMBS & HEADER
    ============================================================ */
-.breadcrumbs-row {
+.epc-breadcrumbs-row {
     display: flex;
     align-items: center;
     gap: clamp(6px, 0.8vw, 8px);
@@ -338,7 +328,7 @@
     flex-wrap: wrap;
 }
 
-.breadcrumb-home {
+.epc-breadcrumb-home {
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1.3vw, 14px);
     font-weight: 800;
@@ -349,18 +339,18 @@
     transition: color 0.2s ease;
 }
 
-.breadcrumb-home:hover {
+.epc-breadcrumb-home:hover {
     color: rgba(255, 255, 255, 0.6);
 }
 
-.breadcrumb-separator {
+.epc-breadcrumb-separator {
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1.3vw, 14px);
     font-weight: 800;
     color: rgba(255, 255, 255, 0.32);
 }
 
-.breadcrumb-active {
+.epc-breadcrumb-active {
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1.3vw, 14px);
     font-weight: 800;
@@ -369,7 +359,7 @@
     text-transform: uppercase;
 }
 
-.next-layer {
+.epc-next-layer {
     margin-top: clamp(24px, 4vw, 40px);
     display: flex;
     align-items: center;
@@ -377,14 +367,14 @@
     margin-bottom: clamp(16px, 2vw, 20px);
 }
 
-.breadcrumb-line {
+.epc-breadcrumb-line {
     width: clamp(20px, 3.5vw, 35px);
     height: clamp(2px, 0.3vw, 3px);
     background: #00d8f5;
     flex-shrink: 0;
 }
 
-.breadcrumb-subtitle {
+.epc-breadcrumb-subtitle {
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1.3vw, 14px);
     font-weight: 800;
@@ -393,7 +383,7 @@
     text-transform: uppercase;
 }
 
-.title-row {
+.epc-title-row {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -401,7 +391,7 @@
     gap: clamp(8px, 1vw, 16px);
 }
 
-.title-row h1 {
+.epc-title-row h1 {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: clamp(34px, 6vw, 86px);
     font-weight: 900;
@@ -412,7 +402,7 @@
     letter-spacing: 1px;
 }
 
-.events-count {
+.epc-events-count {
     font-family: 'Inter', sans-serif;
     font-size: clamp(11px, 1.5vw, 14px);
     font-weight: 800;
@@ -423,7 +413,7 @@
     margin-left: auto;
 }
 
-.new-section-line {
+.epc-new-section-line {
     width: 100%;
     height: 1px;
     background: rgba(255, 255, 255, 0.08);
@@ -433,20 +423,20 @@
 /* ============================================================
    6. FILTERS
    ============================================================ */
-.filter {
+.epc-filter {
     display: flex;
     align-items: center;
     gap: clamp(6px, 1vw, 12px);
     flex-wrap: wrap;
 }
 
-.filter-icon {
+.epc-filter-icon {
     font-size: clamp(14px, 1.8vw, 18px);
     color: rgba(255, 255, 255, 0.5);
     transition: color 0.2s ease;
 }
 
-.filter-label {
+.epc-filter-label {
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1.2vw, 12px);
     font-weight: 800;
@@ -455,7 +445,7 @@
     text-transform: uppercase;
 }
 
-.filter-btn {
+.epc-filter-btn {
     font-family: 'Inter', sans-serif;
     font-size: clamp(9px, 1.1vw, 12px);
     font-weight: 800;
@@ -472,7 +462,7 @@
     justify-content: center;
 }
 
-.date-event {
+.epc-date-event {
     background-color: #00d8f5;
     color: #06121f;
     border: none;
@@ -482,37 +472,37 @@
     transition: all 0.3s ease;
 }
 
-.date-event:hover {
+.epc-date-event:hover {
     background-color: #ffffff;
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 216, 245, 0.3);
 }
 
-.selected-filter {
+.epc-selected-filter {
     background: #00d8f5;
     border: 1px solid rgba(0, 216, 245, 0.4);
     color: #06121f;
 }
 
-.selected-filter:hover {
+.epc-selected-filter:hover {
     background: #0ee0ff;
     border-color: rgba(0, 216, 245, 0.6);
     transform: translateY(-1px);
 }
 
-.unselected-filter {
+.epc-unselected-filter {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.5);
 }
 
-.unselected-filter:hover {
+.epc-unselected-filter:hover {
     border-color: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.8);
     transform: translateY(-1px);
 }
 
-.filter-divider {
+.epc-filter-divider {
     width: 1px;
     height: clamp(14px, 2vw, 20px);
     background: rgba(255, 255, 255, 0.15);
@@ -521,7 +511,7 @@
 }
 
 /* Filter Search */
-.filter-search-wrapper {
+.epc-filter-search-wrapper {
     display: flex;
     align-items: center;
     margin-left: auto;
@@ -530,12 +520,12 @@
     transition: all 0.3s ease;
 }
 
-.filter-search-wrapper.active {
+.epc-filter-search-wrapper.epc-active {
     background: rgba(255, 255, 255, 0.1);
     box-shadow: 0 0 0 1px rgba(0, 216, 245, 0.3);
 }
 
-.search-icon-filter {
+.epc-search-icon-filter {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -553,13 +543,13 @@
     left: 0;
 }
 
-.search-icon-filter:hover {
+.epc-search-icon-filter:hover {
     color: #00d8f5;
     transform: scale(1.05);
     background: rgba(0, 216, 245, 0.1);
 }
 
-.filter-search-input {
+.epc-filter-search-input {
     width: 0;
     padding: 0;
     border: none;
@@ -572,21 +562,21 @@
     opacity: 0;
 }
 
-.filter-search-wrapper.active .filter-search-input {
+.epc-filter-search-wrapper.epc-active .epc-filter-search-input {
     width: clamp(120px, 18vw, 180px);
     padding: 10px 12px 10px 0;
     margin-right: 12px;
     opacity: 1;
 }
 
-.filter-search-input::placeholder {
+.epc-filter-search-input::placeholder {
     color: #5a6e85;
 }
 
 /* ============================================================
    7. FEATURED EVENTS
    ============================================================ */
-.featured-events {
+.epc-featured-events {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
@@ -594,15 +584,14 @@
     background-color: #06121f;
 }
 
-/* По умолчанию — В СТРОКУ */
-.featured-container {
+.epc-featured-container {
     display: flex;
     flex-direction: row;
     gap: 2px;
     width: 100%;
 }
 
-.featured-card {
+.epc-featured-card {
     flex: 1;
     min-width: 0;
     position: relative;
@@ -610,7 +599,7 @@
     cursor: pointer;
 }
 
-.featured-card img {
+.epc-featured-card img {
     width: 100%;
     height: clamp(280px, 40vw, 420px);
     object-fit: cover;
@@ -618,11 +607,11 @@
     transition: transform 0.4s ease;
 }
 
-.featured-card:hover img {
+.epc-featured-card:hover img {
     transform: scale(1.03);
 }
 
-.featured-card::after {
+.epc-featured-card::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -634,7 +623,7 @@
     z-index: 1;
 }
 
-.featured-card > .status {
+.epc-featured-card > .epc-status {
     position: absolute;
     top: clamp(12px, 1.5vw, 16px);
     right: clamp(12px, 1.5vw, 16px);
@@ -651,7 +640,7 @@
     z-index: 2;
 }
 
-.featured-content {
+.epc-featured-content {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -663,14 +652,14 @@
     z-index: 2;
 }
 
-.featured-tags {
+.epc-featured-tags {
     display: flex;
     gap: clamp(12px, 1.5vw, 16px);
     align-items: center;
     flex-wrap: wrap;
 }
 
-.tag {
+.epc-tag {
     font-family: 'Inter', sans-serif;
     font-size: clamp(9px, 1vw, 10px);
     font-weight: 800;
@@ -678,15 +667,15 @@
     text-transform: uppercase;
 }
 
-.tag-accent {
+.epc-tag-accent {
     color: #00d8f5;
 }
 
-.tag-gray {
+.epc-tag-gray {
     color: rgba(255, 255, 255, 0.5);
 }
 
-.featured-event-title {
+.epc-featured-event-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: clamp(20px, 2.5vw, 30px);
     font-weight: 700;
@@ -697,26 +686,26 @@
     max-width: 90%;
 }
 
-.featured-details {
+.epc-featured-details {
     display: flex;
     align-items: center;
     gap: clamp(8px, 1.8vw, 18px);
     flex-wrap: wrap;
 }
 
-.featured-details i {
+.epc-featured-details i {
     color: rgba(255, 255, 255, 0.4);
     font-size: clamp(11px, 1.3vw, 13px);
 }
 
-.featured-details span {
+.epc-featured-details span {
     font-family: 'Inter', sans-serif;
     font-size: clamp(11px, 1.3vw, 13px);
     font-weight: 500;
     color: rgba(255, 255, 255, 0.6);
 }
 
-.featured-view-btn {
+.epc-featured-view-btn {
     margin-top: clamp(4px, 0.6vw, 6px);
     background: transparent;
     border: none;
@@ -732,18 +721,18 @@
     transition: opacity 0.2s ease;
 }
 
-.featured-view-btn:hover {
+.epc-featured-view-btn:hover {
     opacity: 0.7;
 }
 
 /* ============================================================
    8. DATE FILTER DROPDOWN
    ============================================================ */
-.date-filter-wrapper {
+.epc-date-filter-wrapper {
     position: relative;
 }
 
-.date-dropdown {
+.epc-date-dropdown {
     position: absolute;
     top: 100%;
     left: 0;
@@ -756,11 +745,11 @@
     min-width: clamp(240px, 28vw, 280px);
 }
 
-.date-dropdown-section {
+.epc-date-dropdown-section {
     margin-bottom: 12px;
 }
 
-.date-dropdown-label {
+.epc-date-dropdown-label {
     font-family: 'Inter', sans-serif;
     font-size: clamp(9px, 1vw, 10px);
     font-weight: 800;
@@ -771,13 +760,13 @@
     margin-bottom: 8px;
 }
 
-.date-dropdown-grid {
+.epc-date-dropdown-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
 }
 
-.date-option {
+.epc-date-option {
     font-family: 'Inter', sans-serif;
     font-size: clamp(10px, 1.1vw, 11px);
     font-weight: 700;
@@ -791,18 +780,18 @@
     transition: all 0.2s ease;
 }
 
-.date-option:hover {
+.epc-date-option:hover {
     border-color: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.8);
 }
 
-.date-option.active {
+.epc-date-option.epc-active {
     background: #00d8f5;
     color: #06121f;
     border-color: #00d8f5;
 }
 
-.date-apply-btn {
+.epc-date-apply-btn {
     width: 100%;
     margin-top: 8px;
     padding: clamp(6px, 0.8vw, 8px);
@@ -819,7 +808,7 @@
     transition: all 0.2s ease;
 }
 
-.date-apply-btn:hover {
+.epc-date-apply-btn:hover {
     background: #ffffff;
 }
 
@@ -829,36 +818,35 @@
 
 /* ---------- 1024px ---------- */
 @media (max-width: 1024px) {
-    .col-type {
+    .epc-col-type {
         display: none;
     }
     
-    .events-table-header,
-    .events-table-row {
+    .epc-events-table-header,
+    .epc-events-table-row {
         min-width: 600px;
     }
 }
 
 /* ---------- 740px до 481px ---------- */
 @media (max-width: 740px) {
-    .events-table-header,
-    .events-table-row {
+    .epc-events-table-header,
+    .epc-events-table-row {
         min-width: 580px;
     }
     
-    .col-location span {
+    .epc-col-location span {
         font-size: 11px;
     }
 }
 
 /* ---------- 480px и ниже ---------- */
 @media (max-width: 480px) {
-    /* Таблица - мобильная версия */
-    .events-table-header {
+    .epc-events-table-header {
         display: none;
     }
     
-    .events-table-row {
+    .epc-events-table-row {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
@@ -869,7 +857,7 @@
         min-width: 0;
     }
 
-    .date-range {
+    .epc-date-range {
         font-family: 'Inter', sans-serif;
         font-size: clamp(10px, 1.5vw, 16px);
         font-weight: 600;
@@ -877,8 +865,7 @@
         white-space: nowrap;
     }
     
-    /* Левая колонка: Название → Локация → Дата */
-    .col-event {
+    .epc-col-event {
         order: 1;
         width: calc(100% - 120px);
         flex: 0 0 auto;
@@ -886,7 +873,7 @@
         padding-left: 0;
     }
     
-    .col-location {
+    .epc-col-location {
         order: 2;
         width: calc(100% - 120px);
         flex: 0 0 auto;
@@ -894,7 +881,7 @@
         gap: 6px;
     }
     
-    .col-date {
+    .epc-col-date {
         order: 3;
         width: calc(100% - 120px);
         flex: 0 0 auto;
@@ -903,19 +890,18 @@
         gap: 8px;
     }
     
-    .col-type {
+    .epc-col-type {
         display: none;
     }
     
-    .col-status {
+    .epc-col-status {
         position: absolute;
         top: 16px;
         right: 16px;
         min-width: 0;
     }
     
-    /* Actions — справа, вертикально */
-    .col-actions {
+    .epc-col-actions {
         order: 4;
         position: absolute;
         right: 16px;
@@ -926,23 +912,21 @@
         gap: 6px;
     }
     
-    /* Скрываем RESULTS */
-    .results-btn {
+    .epc-results-btn {
         display: none;
     }
     
-    /* Featured — В СТОЛБЕЦ при 480px и ниже */
-    .featured-container {
+    .epc-featured-container {
         flex-direction: column;
         gap: 2px;
     }
     
-    .featured-card {
+    .epc-featured-card {
         flex: 0 0 auto;
         width: 100%;
     }
     
-    .featured-card img {
+    .epc-featured-card img {
         height: 280px;
     }
 }

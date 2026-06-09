@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import './EventsPageContent.css';
 
@@ -15,6 +16,7 @@ const EventsPageContent = () => {
     const [showDateFilter, setShowDateFilter] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const eventsPerPage = 6;
+    const router = useRouter();
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -56,8 +58,15 @@ const EventsPageContent = () => {
     const currentYear = new Date().getFullYear();
     const years = ['all', currentYear - 1, currentYear, currentYear + 1, currentYear + 2].map(String);
 
-    const handleDetails = (event) => console.log('DETAILS', event.name);
-    const handleResults = (event) => console.log('RESULTS', event.name);
+    const handleDetails = (event) => {
+        if (event.slug) {
+            router.push(`/events/${event.slug}`);
+        }
+    };
+    
+    const handleResults = (event) => {
+        router.push(`/results`);
+    };
 
     const formatDate = (d) =>
         d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -73,81 +82,80 @@ const EventsPageContent = () => {
     return (
         <>
             {/* ========== EVENTS CALENDAR ========== */}
-            <section className="events-calendar">
-                <div className="breadcrumbs-row">
-                    <span className="breadcrumb-home">HOME</span>
-                    <span className="breadcrumb-separator">›</span>
-                    <span className="breadcrumb-active">EVENTS</span>
+            <section className="epc-events-calendar">
+                <div className="epc-breadcrumbs-row">
+                    <span className="epc-breadcrumb-home">HOME</span>
+                    <span className="epc-breadcrumb-separator">›</span>
+                    <span className="epc-breadcrumb-active">EVENTS</span>
                 </div>
-                <div className="next-layer">
-                    <span className="breadcrumb-line"></span>
-                    <span className="breadcrumb-subtitle">COMPETITION SCHEDULE</span>
+                <div className="epc-next-layer">
+                    <span className="epc-breadcrumb-line"></span>
+                    <span className="epc-breadcrumb-subtitle">COMPETITION SCHEDULE</span>
                 </div>
-                <div className="title-row">
+                <div className="epc-title-row">
                     <h1>EVENTS CALENDAR</h1>
-                    <span className="events-count">{filteredEvents.length} EVENTS</span>
+                    <span className="epc-events-count">{filteredEvents.length} EVENTS</span>
                 </div>
-                <div className="new-section-line"></div>
+                <div className="epc-new-section-line"></div>
 
-                <div className="filter">
-                    <i className="fa-solid fa-filter filter-icon"></i>
-                    <span className="filter-label">FILTER:</span>
+                <div className="epc-filter">
+                    <i className="fa-solid fa-filter epc-filter-icon"></i>
+                    <span className="epc-filter-label">FILTER:</span>
 
-                    {/* Фильтр даты с выпадашкой */}
-                    <div className="date-filter-wrapper">
-                        <button className="filter-btn date-event" onClick={() => setShowDateFilter(!showDateFilter)}>
+                    <div className="epc-date-filter-wrapper">
+                        <button className="epc-filter-btn epc-date-event" onClick={() => setShowDateFilter(!showDateFilter)}>
                             {dateButtonLabel}
                         </button>
                         {showDateFilter && (
-                            <div className="date-dropdown">
-                                <div className="date-dropdown-section">
-                                    <span className="date-dropdown-label">Month</span>
-                                    <div className="date-dropdown-grid">
-                                        <button className={`date-option ${filterMonth === 'all' ? 'active' : ''}`}
+                            <div className="epc-date-dropdown">
+                                <div className="epc-date-dropdown-section">
+                                    <span className="epc-date-dropdown-label">Month</span>
+                                    <div className="epc-date-dropdown-grid">
+                                        <button className={`epc-date-option ${filterMonth === 'all' ? 'epc-active' : ''}`}
                                             onClick={() => { setFilterMonth('all'); setCurrentPage(1); }}>ALL</button>
                                         {months.map((m) => (
-                                            <button key={m.value} className={`date-option ${filterMonth === m.value ? 'active' : ''}`}
+                                            <button key={m.value} className={`epc-date-option ${filterMonth === m.value ? 'epc-active' : ''}`}
                                                 onClick={() => { setFilterMonth(m.value); setCurrentPage(1); }}>{m.label}</button>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="date-dropdown-section">
-                                    <span className="date-dropdown-label">Year</span>
-                                    <div className="date-dropdown-grid">
+                                <div className="epc-date-dropdown-section">
+                                    <span className="epc-date-dropdown-label">Year</span>
+                                    <div className="epc-date-dropdown-grid">
                                         {years.map((y) => (
-                                            <button key={y} className={`date-option ${filterYear === y ? 'active' : ''}`}
+                                            <button key={y} className={`epc-date-option ${filterYear === y ? 'epc-active' : ''}`}
                                                 onClick={() => { setFilterYear(y); setCurrentPage(1); }}>{y === 'all' ? 'ALL' : y}</button>
                                         ))}
                                     </div>
                                 </div>
-                                <button className="date-apply-btn" onClick={() => setShowDateFilter(false)}>APPLY</button>
+                                <button className="epc-date-apply-btn" onClick={() => setShowDateFilter(false)}>APPLY</button>
                             </div>
                         )}
                     </div>
-                    <span className="filter-divider"></span>
+                    <span className="epc-filter-divider"></span>
 
-                    <div className="filter-group">
+                    <div className="epc-filter-group">
                         {types.map((t) => (
-                            <button key={t} className={`filter-btn ${filterType === t ? 'selected-filter' : 'unselected-filter'}`}
+                            <button key={t} className={`epc-filter-btn ${filterType === t ? 'epc-selected-filter' : 'epc-unselected-filter'}`}
                                 onClick={() => { setFilterType(t); setCurrentPage(1); }}>
                                 {t.toUpperCase()}
                             </button>
                         ))}
                     </div>
-                    <span className="filter-divider"></span>
+                    <span className="epc-filter-divider"></span>
 
-                    <div className="filter-group">
+                    <div className="epc-filter-group">
                         {statuses.map((s) => (
-                            <button key={s} className={`filter-btn ${filterStatus === s ? 'selected-filter' : 'unselected-filter'}`}
+                            <button key={s} className={`epc-filter-btn ${filterStatus === s ? 'epc-selected-filter' : 'epc-unselected-filter'}`}
                                 onClick={() => { setFilterStatus(s); setCurrentPage(1); }}>
                                 {s.toUpperCase()}
                             </button>
                         ))}
                     </div>
 
-                    <div className={`filter-search-wrapper ${searchActive ? 'active' : ''}`}>
-                        <i className="fa-solid fa-magnifying-glass search-icon-filter" onClick={() => setSearchActive(!searchActive)}></i>
-                        <input type="text" className="filter-search-input" placeholder="Search events..."
+                    <div className={`epc-filter-search-wrapper ${searchActive ? 'epc-active' : ''}`}>
+                        <i className="fa-solid fa-magnifying-glass epc-search-icon-filter" onClick={() => setSearchActive(!searchActive)}></i>
+                        <input type="text" className="epc-filter-search-input" placeholder="Search events..."
                             value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                             onKeyDown={(e) => e.key === 'Escape' && setSearchActive(false)} />
                     </div>
@@ -156,30 +164,30 @@ const EventsPageContent = () => {
 
             {/* ========== FEATURED EVENTS ========== */}
             {featuredEvents.length > 0 && (
-                <section className="featured-events">
-                    <div className="next-layer">
-                        <span className="breadcrumb-line"></span>
-                        <span className="breadcrumb-subtitle">FEATURED EVENTS</span>
+                <section className="epc-featured-events">
+                    <div className="epc-next-layer">
+                        <span className="epc-breadcrumb-line"></span>
+                        <span className="epc-breadcrumb-subtitle">FEATURED EVENTS</span>
                     </div>
-                    <div className="featured-container">
+                    <div className="epc-featured-container">
                         {featuredEvents.map((event) => {
                             const imgUrl = event.image?.url?.startsWith('http') ? event.image.url : `${config.API_URL}${event.image?.url}`;
                             return (
-                                <div className="featured-card" key={event.id}>
+                                <div className="epc-featured-card" key={event.id} onClick={() => handleDetails(event)}>
                                     {imgUrl && <img src={imgUrl} alt={event.name} />}
-                                    <span className="status">{event.statusEvent || 'UPCOMING'}</span>
-                                    <div className="featured-content">
-                                        <div className="featured-tags">
-                                            <span className="tag tag-accent">{event.category || 'SENIOR'}</span>
-                                            <span className="tag tag-gray">{event.type || 'CHAMPIONSHIP'}</span>
+                                    <span className="epc-status">{event.statusEvent || 'UPCOMING'}</span>
+                                    <div className="epc-featured-content">
+                                        <div className="epc-featured-tags">
+                                            <span className="epc-tag epc-tag-accent">{event.category || 'SENIOR'}</span>
+                                            <span className="epc-tag epc-tag-gray">{event.type || 'CHAMPIONSHIP'}</span>
                                         </div>
-                                        <h3 className="featured-event-title">{event.name}</h3>
-                                        <div className="featured-details">
+                                        <h3 className="epc-featured-event-title">{event.name}</h3>
+                                        <div className="epc-featured-details">
                                             <i className="fa-solid fa-location-dot"></i>
                                             <span>{event.location}</span>
                                             <span>{formatDate(new Date(event.date))}</span>
                                         </div>
-                                        <button className="featured-view-btn" onClick={() => handleDetails(event)}>VIEW EVENT &gt;</button>
+                                        <button className="epc-featured-view-btn" onClick={(e) => { e.stopPropagation(); handleDetails(event); }}>VIEW EVENT &gt;</button>
                                     </div>
                                 </div>
                             );
@@ -189,54 +197,54 @@ const EventsPageContent = () => {
             )}
 
             {/* ========== ALL EVENTS ========== */}
-            <section className="all-events">
-                <div className="all-events-naming">
-                    <div className="all-events-line"></div>
-                    <p className="all-events-title">ALL EVENTS</p>
-                    <div className="all-events-spacer"></div>
-                    <span className="all-events-count">{filteredEvents.length} EVENTS</span>
+            <section className="epc-all-events">
+                <div className="epc-all-events-naming">
+                    <div className="epc-all-events-line"></div>
+                    <p className="epc-all-events-title">ALL EVENTS</p>
+                    <div className="epc-all-events-spacer"></div>
+                    <span className="epc-all-events-count">{filteredEvents.length} EVENTS</span>
                 </div>
 
-                <div className="events-table-wrapper">
-                    <div className="events-table-header">
-                        <div className="col col-date">DATES</div>
-                        <div className="col col-event">EVENT</div>
-                        <div className="col col-location">LOCATION</div>
-                        <div className="col col-type">TYPE</div>
-                        <div className="col col-status">STATUS</div>
-                        <div className="col col-actions">ACTIONS</div>
+                <div className="epc-events-table-wrapper">
+                    <div className="epc-events-table-header">
+                        <div className="epc-col epc-col-date">DATES</div>
+                        <div className="epc-col epc-col-event">EVENT</div>
+                        <div className="epc-col epc-col-location">LOCATION</div>
+                        <div className="epc-col epc-col-type">TYPE</div>
+                        <div className="epc-col epc-col-status">STATUS</div>
+                        <div className="epc-col epc-col-actions">ACTIONS</div>
                     </div>
 
                     {currentEvents.map((event) => {
-                        const { name, date, location, statusEvent, type } = event;
+                        const { name, date, location, statusEvent, type, slug } = event;
                         const isFinished = statusEvent === 'FINISHED';
                         const eventDate = new Date(date);
                         const endDate = new Date(eventDate);
                         endDate.setDate(endDate.getDate() + 2);
 
                         return (
-                            <div className="events-table-row" key={event.id}>
-                                <div className="col col-date">
-                                    <span className="date-range">{formatDate(eventDate)} - {formatDate(endDate)}</span>
-                                    <span className="date-year">{eventDate.getFullYear()}</span>
+                            <div className="epc-events-table-row" key={event.id}>
+                                <div className="epc-col epc-col-date">
+                                    <span className="epc-date-range">{formatDate(eventDate)} - {formatDate(endDate)}</span>
+                                    <span className="epc-date-year">{eventDate.getFullYear()}</span>
                                 </div>
-                                <div className="col col-event">
-                                    <span className="event-name">{name}</span>
+                                <div className="epc-col epc-col-event">
+                                    <span className="epc-event-name">{name}</span>
                                 </div>
-                                <div className="col col-location">
+                                <div className="epc-col epc-col-location">
                                     <i className="fa-solid fa-location-dot"></i>
                                     <span>{location}</span>
                                 </div>
-                                <div className="col col-type">
-                                    <span className="type-tag">{type || 'CHAMPIONSHIP'}</span>
+                                <div className="epc-col epc-col-type">
+                                    <span className="epc-type-tag">{type || 'CHAMPIONSHIP'}</span>
                                 </div>
-                                <div className="col col-status">
-                                    <span className={`status-tag ${isFinished ? 'finished' : 'upcoming'}`}>{statusEvent}</span>
+                                <div className="epc-col epc-col-status">
+                                    <span className={`epc-status-tag ${isFinished ? 'epc-finished' : 'epc-upcoming'}`}>{statusEvent}</span>
                                 </div>
-                                <div className="col col-actions">
-                                    <button className="action-btn details-btn" onClick={() => handleDetails(event)}>DETAILS</button>
+                                <div className="epc-col epc-col-actions">
+                                    <button className="epc-action-btn epc-details-btn" onClick={() => handleDetails(event)}>DETAILS</button>
                                     {isFinished && (
-                                        <button className="action-btn results-btn" onClick={() => handleResults(event)}>RESULTS</button>
+                                        <button className="epc-action-btn epc-results-btn" onClick={() => handleResults(event)}>RESULTS</button>
                                     )}
                                 </div>
                             </div>
@@ -244,13 +252,13 @@ const EventsPageContent = () => {
                     })}
                 </div>
 
-                <div className="pagination">
+                <div className="epc-pagination">
                     {Array.from({ length: totalPages }, (_, i) => (
-                        <button key={i} className={`page-btn ${currentPage === i + 1 ? 'active' : ''}`}
+                        <button key={i} className={`epc-page-btn ${currentPage === i + 1 ? 'epc-active' : ''}`}
                             onClick={() => setCurrentPage(i + 1)}>{i + 1}</button>
                     ))}
                     {currentPage < totalPages && (
-                        <button className="page-btn next" onClick={() => setCurrentPage(currentPage + 1)}>NEXT &gt;</button>
+                        <button className="epc-page-btn epc-next" onClick={() => setCurrentPage(currentPage + 1)}>NEXT &gt;</button>
                     )}
                 </div>
             </section>

@@ -1,12 +1,14 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import './LatestFromEsc.css';
 import config from '@/lib/config';
 
 const LatestFromEsc = () => {
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchNews = async () => {
@@ -21,16 +23,17 @@ const LatestFromEsc = () => {
                 setLoading(false);
             }
         };
-
         fetchNews();
     }, []);
 
-    const handleMore = () => console.log('clicked: MORE');
+    const handleMore = () => {
+        router.push('/media#latest-news');
+    };
 
     if (loading) return <section className="lastest-from-esc"></section>;
 
     return (
-        <section className="lastest-from-esc">
+        <section className="lastest-from-esc" id="latest-news">
             <div className="section-naming">
                 <p className="section-title">LATEST FROM ESC</p>
                 <div className="section-line"></div>
@@ -39,17 +42,18 @@ const LatestFromEsc = () => {
             </div>
             <div className="lastest-news-container">
                 {news.map((item) => {
-                    const { title, theme, date, image } = item;
-                    // Исправление: формируем полный URL
+                    const { title, theme, date, image, slug } = item;
                     const imageUrl = image?.url 
                         ? `${config.API_URL}${image.url}` 
                         : null;
-                    
                     return (
-                        <div className="news" key={item.id}>
-                            {imageUrl && (
-                                <img src={imageUrl} alt={title} />
-                            )}
+                        <div 
+                            className="news" 
+                            key={item.id} 
+                            onClick={() => router.push(`/media/${slug}`)} 
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {imageUrl && <img src={imageUrl} alt={title} />}
                             <p className="theme">{theme}</p>
                             <p className="description">{title}</p>
                             <p className="date">

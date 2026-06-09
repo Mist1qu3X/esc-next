@@ -1,10 +1,10 @@
 import Header from '@/components/Header/Header';
-import ResultsPage from '@/components/ResultsPage/ResultsPage';
+import ResultsRankingsPage from '@/components/ResultsRankingsPage/ResultsRankingsPage';
 import Footer from '@/components/Footer/Footer';
 
 export const metadata = {
   title: 'Results & Rankings | ESC Shooting',
-  description: 'ESC competition results, rankings, and records',
+  description: 'ESC competition results, rankings and records',
 };
 
 export default function Results() {
@@ -12,7 +12,7 @@ export default function Results() {
     <>
       <Header />
       <main>
-        <ResultsPage />
+        <ResultsRankingsPage />
       </main>
       <Footer />
     </>

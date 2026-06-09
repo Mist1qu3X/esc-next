@@ -2,87 +2,145 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
+import { useRouter } from 'next/navigation';
+import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import './SelectedNewsPage.css';
 
 const SelectedNewsPage = ({ slug }) => {
   const [article, setArticle] = useState(null);
   const [relatedNews, setRelatedNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    setArticle(null);
-    setRelatedNews([]);
-    setLoading(true);
-    
-    const fetchArticle = async () => {
+    const fetchData = async () => {
+      if (!slug) {
+        setLoading(false);
+        setNotFound(true);
+        return;
+      }
+      
+      console.log('Fetching article for slug:', slug);
+      setLoading(true);
+      setNotFound(false);
+      
       try {
         const res = await axios.get(
           `${config.API_URL}/api/news-items?filters[slug][$eq]=${slug}&populate=*`
         );
+        
         if (res.data?.data?.length > 0) {
-          setArticle(res.data.data[0]);
+          const articleData = res.data.data[0];
+          setArticle(articleData);
+          
+          const relatedRes = await axios.get(
+            `${config.API_URL}/api/news-items?populate=*&pagination[limit]=4&sort=date:desc&filters[id][$ne]=${articleData.id}`
+          );
+          setRelatedNews(relatedRes.data?.data || []);
+        } else {
+          setArticle(null);
+          setNotFound(true);
         }
-        setLoading(false);
       } catch (e) { 
-        console.error(e); 
+        console.error('Error fetching article:', e); 
+        setArticle(null);
+        setNotFound(true);
+      } finally {
         setLoading(false);
       }
     };
-    fetchArticle();
+
+    fetchData();
   }, [slug]);
-
-  useEffect(() => {
-    if (!article) return;
-    const fetchRelated = async () => {
-      try {
-        const res = await axios.get(
-          `${config.API_URL}/api/news-items?populate=*&pagination[limit]=4&sort=date:desc&filters[id][$ne]=${article.id}`
-        );
-        setRelatedNews(res.data?.data || []);
-      } catch (e) { console.error(e); }
-    };
-    fetchRelated();
-  }, [article]);
-
-  if (!article) {
-    return (
-      <section className="selected_media_head" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: '#fff', fontSize: '20px' }}>Loading...</p>
-      </section>
-    );
-  }
 
   const getImageUrl = (img) => {
     if (!img) return null;
     if (typeof img === 'string') return img.startsWith('http') ? img : `${config.API_URL}${img}`;
-    return img.url?.startsWith('http') ? img.url : `${config.API_URL}${img.url}`;
+    if (img.url) return img.url.startsWith('http') ? img.url : `${config.API_URL}${img.url}`;
+    if (img[0]?.url) return img[0].url.startsWith('http') ? img[0].url : `${config.API_URL}${img[0].url}`;
+    return null;
   };
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
 
-    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
 
-    const handleShareTwitter = () => {
+  const handleShareTwitter = () => {
     window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(article?.title || '')}`, '_blank');
-    };
+  };
 
-    const handleShareLinkedIn = () => {
+  const handleShareLinkedIn = () => {
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
-    };
+  };
 
-    const handleCopyLink = () => {
+  const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl);
-    };
+    alert('Link copied to clipboard!');
+  };
 
+  const handleGoBack = () => {
+    router.back();
+  };
+
+  const handleAllMedia = () => {
+    router.push('/media');
+  };
+
+  const handleRelatedClick = (relatedSlug) => {
+    if (relatedSlug) {
+      router.push(`/media/${relatedSlug}`);
+    }
+  };
+
+  const formatContent = (content) => {
+    if (!content) return null;
+    
+    const blocks = content.split('\n\n');
+    return blocks.map((block, i) => {
+      if (block.startsWith('"') && block.endsWith('"')) {
+        return (
+          <blockquote key={i} className="article-quote">
+            <p>{block.slice(1, -1)}</p>
+          </blockquote>
+        );
+      }
+      
+      const isHeading = block === block.toUpperCase() && block.length < 60 && !block.includes('.');
+      if (isHeading) {
+        return <h2 key={i} className="article-heading">{block}</h2>;
+      }
+      
+      return <p key={i} className="article-text">{block}</p>;
+    });
+  };
+
+  // Показываем лоадер
+  if (loading) {
     return (
+      <section className="selected_media_head" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="media-loader">
+          <div className="loader-spinner"></div>
+          <p style={{ color: '#fff', fontSize: '20px', marginTop: '20px' }}>Loading article...</p>
+        </div>
+      </section>
+    );
+  }
+
+  // Если статья не найдена - показываем страницу 404
+  if (notFound || !article) {
+    return <ErrorPage />;
+  }
+
+  return (
     <>
       {/* ========== HERO ========== */}
       <section className="selected_media_head" style={{ backgroundImage: `url(${getImageUrl(article.image)})` }}>
         <div className="selected-media-overlay"></div>
         <div className="selected-breadcrumbs">
-          <span className="selected-breadcrumb">HOME</span>
+          <span className="selected-breadcrumb" onClick={handleAllMedia} style={{ cursor: 'pointer' }}>HOME</span>
           <span className="selected-breadcrumb-separator">›</span>
-          <span className="selected-breadcrumb">MEDIA</span>
+          <span className="selected-breadcrumb" onClick={handleAllMedia} style={{ cursor: 'pointer' }}>MEDIA</span>
           <span className="selected-breadcrumb-separator">›</span>
           <span className="selected-breadcrumb-active">{article.theme}</span>
         </div>
@@ -104,7 +162,6 @@ const SelectedNewsPage = ({ slug }) => {
       <section className="media_main_content">
         <div className="media-content-wrapper">
           <div className="media-article-body">
-            {/* Подзаголовок */}
             {article.subtitle && (
               <>
                 <p className="article-subtitle">{article.subtitle}</p>
@@ -112,35 +169,14 @@ const SelectedNewsPage = ({ slug }) => {
               </>
             )}
 
-            {/* Основной контент */}
-            {article.content && article.content.split('\n\n').map((block, i) => {
-              // Цитата в кавычках
-              if (block.startsWith('"') && block.endsWith('"')) {
-                return (
-                  <blockquote key={i} className="article-quote">
-                    <p>{block.slice(1, -1)}</p>
-                  </blockquote>
-                );
-              }
-              
-              // Заголовок (короткие строки без точек в UpperCase)
-              const isHeading = block === block.toUpperCase() && block.length < 60 && !block.includes('.');
-              if (isHeading) {
-                return <h2 key={i} className="article-heading">{block}</h2>;
-              }
-              
-              // Обычный параграф
-              return <p key={i} className="article-text">{block}</p>;
-            })}
+            {formatContent(article.content)}
             
-            {/* Если нет контента */}
-            {!article.content && (
+            {!article.content && article.description && (
               <p className="article-text">{article.description}</p>
             )}
 
             <div className="article-divider"></div>
             
-            {/* Теги */}
             {article.tags && (
               <>
                 <div className="article-tags">
@@ -152,27 +188,25 @@ const SelectedNewsPage = ({ slug }) => {
               </>
             )}
 
-            {/* Share */}
             <div className="article-share">
               <span className="share-label">SHARE THIS ARTICLE</span>
               <div className="share-buttons">
                 <button className="share-btn-item twitter" onClick={handleShareTwitter}>
-                    <i className="fa-solid fa-share-nodes"></i>
-                    TWITTER
+                  <i className="fa-brands fa-twitter"></i>
+                  TWITTER
                 </button>
                 <button className="share-btn-item linkedin" onClick={handleShareLinkedIn}>
-                    <i className="fa-solid fa-share-nodes"></i>
-                    LINKEDIN
+                  <i className="fa-brands fa-linkedin-in"></i>
+                  LINKEDIN
                 </button>
                 <button className="share-btn-item copy" onClick={handleCopyLink}>
-                    <i className="fa-solid fa-share-nodes"></i>
-                    COPY LINK
+                  <i className="fa-regular fa-copy"></i>
+                  COPY LINK
                 </button>
-                </div>
+              </div>
             </div>
           </div>
 
-          {/* ========== SIDEBAR ========== */}
           <aside className="media-sidebar">
             <div className="sidebar-block">
               <h4 className="sidebar-block-title">ARTICLE ACTIONS</h4>
@@ -199,7 +233,12 @@ const SelectedNewsPage = ({ slug }) => {
               <h4 className="sidebar-block-title">RELATED ARTICLES</h4>
               <div className="related-list">
                 {relatedNews.slice(0, 2).map((n) => (
-                  <div key={n.id} className="related-item">
+                  <div 
+                    key={n.id} 
+                    className="related-item"
+                    onClick={() => handleRelatedClick(n.slug)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <img src={getImageUrl(n.image)} alt={n.title} className="related-img" />
                     <div className="related-info">
                       <span className={`related-type type-${n.theme?.toLowerCase() || 'event'}`}>{n.theme}</span>
@@ -209,13 +248,35 @@ const SelectedNewsPage = ({ slug }) => {
                 ))}
               </div>
               <div className="related-divider"></div>
-              <button className="all-media-btn">ALL MEDIA ›</button>
+              <button className="all-media-btn" onClick={handleAllMedia}>ALL MEDIA ›</button>
             </div>
 
-            <button className="back-to-media-btn"><i className="fa-solid fa-arrow-left"></i>BACK TO MEDIA</button>
+            <button className="back-to-media-btn" onClick={handleGoBack}>
+              <i className="fa-solid fa-arrow-left"></i>BACK TO MEDIA
+            </button>
           </aside>
         </div>
       </section>
+
+      <style jsx>{`
+        .media-loader {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        .loader-spinner {
+          width: 50px;
+          height: 50px;
+          border: 3px solid rgba(0, 216, 245, 0.2);
+          border-top-color: #00d8f5;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   );
 };

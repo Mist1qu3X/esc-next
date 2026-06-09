@@ -18,35 +18,21 @@
 /* Контент секции */
 .ad-content {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 40px 0;
+    justify-content: center;
+    align-items: center;
+    padding: 48px 0;
 }
 
-/* Блок спонсоров */
-.sponsors {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.name-sponsors {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: rgba(255, 255, 255, 0.5);
-    text-transform: uppercase;
-    margin: 0;
-}
-
-.sponsors-logos {
+/* Логотипы в ряд */
+.ad-logos {
     display: flex;
     align-items: center;
-    gap: 32px;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.sponsors-logos img {
+.ad-logos img {
     height: 56px;
     width: auto;
     object-fit: contain;
@@ -55,66 +41,18 @@
     cursor: pointer;
 }
 
-.sponsors-logos img:hover {
+.ad-logos img:hover {
     opacity: 1;
     transform: scale(1.05);
 }
 
-/* Блок партнёров */
-.partners {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.ad-logos a {
+    display: inline-flex;
+    text-decoration: none;
 }
 
-.name-partners {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: rgba(255, 255, 255, 0.5);
-    text-transform: uppercase;
-    margin: 0;
-}
+/* ========== АДАПТИВНОСТЬ ========== */
 
-.partners-logos {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-}
-
-.partners-logos img {
-    height: 56px;
-    width: auto;
-    object-fit: contain;
-    opacity: 0.6;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    cursor: pointer;
-}
-
-.partners-logos img:hover {
-    opacity: 1;
-    transform: scale(1.05);
-}
-
-/* ========== СОСТОЯНИЕ 1: 1440px (по умолчанию) ========== */
-/* 2 колонки: SPONSORS слева, PARTNERS справа */
-
-@media (max-width: 1180px) {
-    .sponsors-logos,
-    .partners-logos {
-        flex-wrap: wrap;
-        gap: 20px;
-        row-gap: 16px;
-    }
-    
-    .sponsors-logos img,
-    .partners-logos img {
-        height: 48px;
-    }
-}
-
-/* ========== СОСТОЯНИЕ 2: 1024px ========== */
 @media (max-width: 1024px) {
     .ad {
         padding: 0 20px;
@@ -126,34 +64,42 @@
     }
     
     .ad-content {
-        flex-direction: column;
-        gap: 40px;
+        padding: 40px 0;
     }
     
-    .sponsors-logos img,
-    .partners-logos img {
-        height: 56px;
-        flex-shrink: 0;
+    .ad-logos {
+        gap: 32px;
     }
     
-    .sponsors,
-    .partners {
-        width: 100%;
-    }
-
-    .sponsors-logos,
-    .partners-logos {
-        display: flex;
-        flex-wrap: wrap;
-
-        gap: 24px;
-        row-gap: 20px;
-
-        max-width: 100%;
+    .ad-logos img {
+        height: 48px;
     }
 }
 
-/* ========== СОСТОЯНИЕ 3: 480px ========== */
+@media (max-width: 768px) {
+    .ad-content {
+        padding: 32px 0;
+    }
+    
+    .ad-logos {
+        gap: 24px;
+    }
+    
+    .ad-logos img {
+        height: 42px;
+    }
+}
+
+@media (max-width: 640px) {
+    .ad-logos {
+        gap: 20px;
+    }
+    
+    .ad-logos img {
+        height: 38px;
+    }
+}
+
 @media (max-width: 480px) {
     .ad {
         padding: 0 16px;
@@ -165,23 +111,14 @@
     }
     
     .ad-content {
-        padding: 30px 0;
-        gap: 30px;
+        padding: 24px 0;
     }
     
-    .name-sponsors,
-    .name-partners {
-        font-size: 10px;
-    }
-    
-    .sponsors-logos img,
-    .partners-logos img {
-        height: 56px;
-    }
-    
-    .sponsors-logos,
-    .partners-logos {
+    .ad-logos {
         gap: 16px;
-        flex-wrap: wrap;
+    }
+    
+    .ad-logos img {
+        height: 32px;
     }
 }

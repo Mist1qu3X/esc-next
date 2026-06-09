@@ -1,23 +1,19 @@
 import Header from '@/components/Header/Header';
-import SelectedNewsPage from '@/components/SelectedNewsPage/SelectedNewsPage';
+import SelectedEventPage from '@/components/SelectedEventPage/SelectedEventPage';
 import Footer from '@/components/Footer/Footer';
-
-export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  return {
-    title: `${slug.replace(/-/g, ' ')} | ESC Media`,
-  };
+  return { title: `${slug} | ESC Events` };
 }
 
-export default async function NewsArticle({ params }) {
+export default async function EventDetail({ params }) {
   const { slug } = await params;
   return (
     <div key={slug}>
       <Header />
       <main>
-        <SelectedNewsPage slug={slug} />
+        <SelectedEventPage slug={slug} />
       </main>
       <Footer />
     </div>

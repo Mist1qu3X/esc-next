@@ -1,0 +1,1087 @@
+/* ========== SELECTED EVENT HEADER ========== */
+.selected-event-header {
+    width: 100%;
+    max-width: 1440px;
+    height: 480px;
+    margin: 0 auto;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+/* Затемнение - как в selected news */
+.event-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(0deg, rgba(6, 16, 28, 1) 0%, rgba(6, 16, 28, 0.8) 50%, rgba(6, 16, 28, 0.7) 100%);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Хлебные крошки - выше всего, слева сверху */
+.event-breadcrumbs {
+    position: absolute;
+    top: 32px;
+    left: 32px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    z-index: 3;
+    padding-top: 180px;
+}
+
+.event-breadcrumb {
+    color: rgba(255, 255, 255, 0.32);
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.event-breadcrumb:hover {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.event-breadcrumb-sep {
+    color: rgba(255, 255, 255, 0.32);
+}
+
+.event-breadcrumb-active {
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+/* Статусы - под хлебными крошками */
+.event-status-row {
+    position: absolute;
+    top: 72px;
+    left: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 3;
+    padding-top: 180px;
+}
+
+.event-status-upcoming {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #00d8f5;
+    background: #0D2642;
+    padding: 4px 10px;
+    border-radius: 2px;
+}
+
+.event-status-type {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 2px;
+}
+
+/* Контент снизу */
+.event-header-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Заголовок */
+.event-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1.1;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+    max-width: 700px;
+}
+
+/* Информация */
+.event-info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.event-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.event-info-item i {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.event-info-sep {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 12px;
+}
+
+.event-info-sep-dot {
+    margin-left: 6px;
+    margin-right: 6px;
+    opacity: 0.5;
+}
+
+/* Кнопка Entry System - по центру справа */
+.event-entry-btn {
+    position: absolute;
+    right: 32px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 44px;
+    padding: 0 20px;
+    background: #00d8f5;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #06101C;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.event-entry-btn:hover {
+    background: #0ee0ff;
+}
+
+.event-entry-btn i {
+    font-size: 12px;
+}
+
+/* ========== EVENT FILTERS ========== */
+.event-filters {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    background-color: #091A2E;
+}
+
+.event-filters-nav {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: 100%;
+    padding: 0 32px;
+}
+
+.event-filter-btn {
+    height: 48px;
+    padding: 0 24px;
+    background: transparent;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+}
+
+.event-filter-btn:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.event-filter-btn.active {
+    color: #ffffff;
+}
+
+.event-filter-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #00d8f5;
+}
+
+/* ========== EVENT CONTENT ========== */
+.event-content {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    background-color: #06101C;
+}
+
+.event-content-wrapper {
+    display: flex;
+    gap: 32px;
+}
+
+.event-main-body {
+    flex: 1;
+    min-width: 0;
+}
+
+/* ========== EVENT SIDEBAR ========== */
+.event-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* Блоки сайдбара */
+.sidebar-block {
+    background: #0C233D;
+    overflow: hidden;
+}
+
+.sidebar-block-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 9px;
+    line-height: 13.5px;
+    letter-spacing: 1.44px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0;
+    padding: 16px 16px 12px 16px;
+}
+
+.sidebar-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* Event Details */
+.event-detail-list {
+    padding: 0;
+}
+
+.detail-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    align-items: flex-start;
+}
+
+.detail-icon {
+    font-size: 14px;
+    color: #00d8f5;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 9px;
+    letter-spacing: 1.44px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.detail-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.4;
+}
+
+.detail-subvalue {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Quick Actions */
+.quick-actions-list {
+    padding: 0;
+}
+
+.quick-action-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.quick-action-btn:first-child {
+    color: #00d8f5;
+}
+
+.quick-action-btn:not(:first-child) {
+    color: rgb(255, 255, 255);
+}
+
+.quick-action-btn i {
+    font-size: 12px;
+    width: 16px;
+    text-align: center;
+}
+
+.quick-action-btn:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Contact */
+.contact-item-sidebar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+}
+
+.contact-item-sidebar i {
+    font-size: 12px;
+    color: #00d8f5;
+}
+
+.contact-item-sidebar a {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: #00d8f5;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.contact-item-sidebar a:hover {
+    color: #0ee0ff;
+}
+
+/* Live Stream Block */
+.live-stream-block {
+    background: #0C233D;
+    overflow: hidden;
+}
+
+.live-stream-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(255, 68, 68, 0.1);
+    border-bottom: 2px solid rgba(255, 68, 68, 0.2);
+}
+
+.live-stream-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-direction: row; /* Явно указываем строку */
+}
+
+.live-dot-sidebar {
+    width: 6px;
+    height: 6px;
+    background: #FF4444;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.live-waves {
+    color: #FF4444;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.live-stream-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 9px;
+    letter-spacing: 1.44px;
+    text-transform: uppercase;
+    color: #FF4444;
+}
+
+.on-air-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 9px;
+    letter-spacing: 1.44px;
+    text-transform: uppercase;
+    color: #FF4444;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+}
+
+.on-air-dot {
+    width: 5px;
+    height: 5px;
+    background: #FF4444;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+/* Live Platforms */
+.live-platforms {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px 12px;
+    gap: 6px;
+}
+
+.live-platform-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    height: 56px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* YouTube */
+.live-platform-card.youtube-card {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1.4px solid rgba(255, 0, 0, 0.3);
+}
+
+/* Twitch */
+.live-platform-card.twitch-card {
+    background: rgba(145, 70, 255, 0.1);
+    border: 1.4px solid rgba(145, 70, 255, 0.3);
+}
+
+/* Facebook */
+.live-platform-card.facebook-card {
+    background: rgba(24, 119, 242, 0.1);
+    border: 1.4px solid rgba(24, 119, 242, 0.3);
+}
+
+.live-platform-card.facebook-card:hover {
+    background: rgba(24, 119, 242, 0.15);
+}
+
+/* Иконки платформ */
+.platform-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.platform-icon i {
+    font-size: 12px;
+}
+
+.youtube-icon i {
+    color: #FF0000;
+}
+
+.twitch-icon i {
+    color: #9146FF;
+}
+
+.facebook-icon i {
+    color: #1877F2;
+}
+
+.platform-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.platform-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.platform-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+}
+
+.platform-stream {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.platform-stats {
+    display: flex;
+    align-items: center;
+}
+
+.stats-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+}
+
+
+.viewers-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    color: #ff0000;
+}
+
+.watching-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1;
+}
+
+.twitch-card .viewers-count {
+    color: #9146FF;
+}
+
+.facebook-card .viewers-count {
+    color: #1877F2;
+}
+
+.watching-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.platform-go-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.platform-go-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+}
+
+.platform-go-btn i {
+    font-size: 10px;
+}
+
+/* ========== EVENT MAIN BODY ========== */
+
+.event-section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    line-height: 48px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 16px 0;
+}
+
+.event-description {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14.5px;
+    line-height: 26.1px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 32px 0;
+}
+
+.event-subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    line-height: 33px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0 0 16px 0;
+}
+
+/* Disciplines Grid */
+.disciplines-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    margin-bottom: 40px;
+}
+
+.discipline-card {
+    height: 46px;
+    background: #0C233D;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+}
+
+.discipline-dot {
+    width: 6px;
+    height: 6px;
+    background: #00d8f5;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.discipline-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+}
+
+/* Venue */
+.venue-container {
+    height: 285px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #091A2E;
+}
+
+.venue-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+}
+
+.venue-info {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.venue-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+}
+
+.venue-location {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========== АДАПТИВНОСТЬ ========== */
+
+@media (max-width: 1024px) {
+    .selected-event-header {
+        height: 420px;
+    }
+    
+    .event-breadcrumbs {
+        top: 24px;
+        left: 24px;
+    }
+    
+    .event-status-row {
+        top: 60px;
+        left: 24px;
+    }
+    
+    .event-header-content {
+        padding: 0 24px 32px;
+    }
+    
+    .event-title {
+        font-size: clamp(28px, 4vw, 42px);
+    }
+    
+    .event-entry-btn {
+        position: static;
+        transform: none;
+        width: fit-content;
+    }
+    
+    /* Фильтры */
+    .event-filters-nav {
+        padding: 0 24px;
+    }
+    
+    .event-filter-btn {
+        padding: 0 16px;
+        font-size: 10px;
+        height: 44px;
+    }
+    
+    /* Контент */
+    .event-content {
+        padding: 30px 24px 60px;
+    }
+    
+    .event-content-wrapper {
+        gap: 24px;
+    }
+    
+    /* Sidebar */
+    .event-sidebar {
+        width: 280px;
+    }
+    
+    /* Event main body */
+    .event-section-title {
+        font-size: 28px;
+        line-height: 40px;
+    }
+    
+    .event-description {
+        font-size: 13.5px;
+        line-height: 24px;
+    }
+    
+    .event-subtitle {
+        font-size: 20px;
+        line-height: 28px;
+    }
+    
+    .discipline-card {
+        height: 42px;
+    }
+    
+    .discipline-name {
+        font-size: 12px;
+    }
+    
+    .venue-container {
+        height: 250px;
+    }
+    
+    .venue-image {
+        height: 170px;
+    }
+    
+    .venue-name {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .selected-event-header {
+        height: 360px;
+    }
+    
+    .event-breadcrumbs {
+        top: 20px;
+        left: 20px;
+        font-size: 10px;
+    }
+    
+    .event-status-row {
+        top: 52px;
+        left: 20px;
+    }
+    
+    .event-header-content {
+        padding: 0 20px 24px;
+        gap: 8px;
+    }
+    
+    .event-title {
+        font-size: 24px;
+    }
+    
+    .event-info-row {
+        gap: 4px;
+    }
+    
+    .event-info-item {
+        font-size: 10px;
+    }
+    
+    .event-entry-btn {
+        height: 38px;
+        font-size: 10px;
+    }
+    
+    /* Фильтры */
+    .event-filters-nav {
+        padding: 0 16px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .event-filter-btn {
+        height: 40px;
+        padding: 0 14px;
+        font-size: 9px;
+        flex-shrink: 0;
+    }
+    
+    /* Контент */
+    .event-content {
+        padding: 20px 16px 40px;
+    }
+    
+    .event-content-wrapper {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    /* Sidebar */
+    .event-sidebar {
+        width: 100%;
+    }
+    
+    /* Event main body */
+    .event-section-title {
+        font-size: 24px;
+        line-height: 34px;
+    }
+    
+    .event-description {
+        font-size: 12.5px;
+        line-height: 22px;
+        margin-bottom: 24px;
+    }
+    
+    .event-subtitle {
+        font-size: 18px;
+        line-height: 24px;
+    }
+    
+    .disciplines-grid {
+        gap: 2px;
+        margin-bottom: 30px;
+    }
+    
+    .discipline-card {
+        height: 38px;
+        padding: 0 12px;
+        gap: 8px;
+    }
+    
+    .discipline-name {
+        font-size: 11px;
+    }
+    
+    .venue-container {
+        height: 220px;
+    }
+    
+    .venue-image {
+        height: 150px;
+    }
+    
+    .venue-info {
+        padding: 12px 16px;
+    }
+    
+    .venue-name {
+        font-size: 15px;
+    }
+    
+    .venue-location {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .selected-event-header {
+        height: 320px;
+    }
+    
+    .event-breadcrumbs {
+        top: 16px;
+        left: 16px;
+        font-size: 9px;
+        letter-spacing: 0.5px;
+    }
+    
+    .event-status-row {
+        top: 44px;
+        left: 16px;
+        gap: 6px;
+    }
+    
+    .event-status-upcoming,
+    .event-status-type {
+        font-size: 8px;
+        padding: 3px 8px;
+    }
+    
+    .event-header-content {
+        padding: 0 16px 20px;
+        gap: 6px;
+    }
+    
+    .event-title {
+        font-size: 20px;
+    }
+    
+    .event-info-item {
+        font-size: 9px;
+    }
+    
+    .event-entry-btn {
+        height: 34px;
+        padding: 0 14px;
+        font-size: 9px;
+    }
+    
+    /* Фильтры */
+    .event-filters-nav {
+        padding: 0 12px;
+    }
+    
+    .event-filter-btn {
+        height: 36px;
+        padding: 0 10px;
+        font-size: 8px;
+    }
+    
+    /* Контент */
+    .event-content {
+        padding: 16px 12px 30px;
+    }
+    
+    .event-content-wrapper {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    /* Sidebar уходит вниз */
+    .event-sidebar {
+        width: 100%;
+        order: 2;
+    }
+    
+    .event-main-body {
+        order: 1;
+    }
+    
+    /* Event main body */
+    .event-section-title {
+        font-size: 22px;
+        line-height: 30px;
+    }
+    
+    .event-description {
+        font-size: 12px;
+        line-height: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .event-subtitle {
+        font-size: 16px;
+        line-height: 22px;
+        margin-bottom: 12px;
+    }
+    
+    /* Дисциплины в 1 колонку */
+    .disciplines-grid {
+        grid-template-columns: 1fr;
+        gap: 2px;
+        margin-bottom: 24px;
+    }
+    
+    .discipline-card {
+        height: 40px;
+    }
+    
+    .discipline-name {
+        font-size: 11px;
+    }
+    
+    .venue-container {
+        height: auto;
+    }
+    
+    .venue-image {
+        height: 160px;
+    }
+    
+    .venue-info {
+        padding: 12px 14px;
+    }
+    
+    .venue-name {
+        font-size: 14px;
+    }
+    
+    .venue-location {
+        font-size: 11px;
+    }
+}

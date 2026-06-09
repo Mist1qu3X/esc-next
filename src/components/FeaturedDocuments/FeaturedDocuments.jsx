@@ -1,11 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import './FeaturedDocuments.css';
 import config from '@/lib/config';
 
 const FeaturedDocuments = () => {
     const [documents, setDocuments] = useState([]);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchDocuments = async () => {
@@ -21,7 +23,9 @@ const FeaturedDocuments = () => {
         fetchDocuments();
     }, []);
 
-    const handleMore = () => console.log('clicked: MORE');
+    const handleMore = () => {
+        router.push('/documents');
+    };
     
     const handleDownload = (doc) => {
         const file = doc.file;

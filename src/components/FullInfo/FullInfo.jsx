@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import './FullInfo.css';
 import config from '@/lib/config';
 
@@ -9,6 +10,7 @@ const FullInfo = () => {
     const [rankings, setRankings] = useState([]);
     const [championship, setChampionship] = useState(null);
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
+    const router = useRouter();
 
     // Загрузка чемпионата
     useEffect(() => {
@@ -23,7 +25,7 @@ const FullInfo = () => {
         fetchChampionship();
     }, []);
 
-    // Таймер (зависит от championship)
+    // Таймер
     useEffect(() => {
         if (!championship?.startDate) return;
         const targetDate = new Date(championship.startDate);
@@ -59,7 +61,7 @@ const FullInfo = () => {
         const fetchRankings = async () => {
             try {
                 const response = await axios.get(
-                    `${config.API_URL}/api/rankings?sort=position:asc`
+                    `${config.API_URL}/api/ranking-details?sort=position:asc`
                 );
                 setRankings(response.data.data);
             } catch (error) { console.error('Ошибка загрузки рейтинга:', error); }
@@ -67,10 +69,29 @@ const FullInfo = () => {
         fetchRankings();
     }, []);
 
-    const handleEventInfo = () => console.log('clicked: EVENT INFO');
-    const handleEntrySystem = () => console.log('clicked: ENTRY SYSTEM');
-    const handleAllEvents = () => console.log('clicked: ALL EVENTS');
-    const handleFull = () => console.log('clicked: FULL');
+    const handleEventInfo = () => {
+        if (championship?.slug) {
+            router.push(`/events/${championship.slug}`);
+        }
+    };
+
+    const handleEntrySystem = () => {
+        router.push('/documents');
+    };
+
+    const handleAllEvents = () => {
+        router.push('/events');  // Просто переход на страницу событий, без hash
+    };
+
+    const handleFull = () => {
+        router.push('/results');
+    };
+
+    const handleEventClick = (eventSlug) => {
+        if (eventSlug) {
+            router.push(`/events/${eventSlug}`);
+        }
+    };
 
     return (
         <section className="full-info">
@@ -132,9 +153,14 @@ const FullInfo = () => {
                         <div className="all-event-item">
                             <h4>UPCOMING EVENTS</h4>
                             {events.map((event) => {
-                                const { name, date, month, location, statusEvent } = event;
+                                const { name, date, month, location, statusEvent, slug } = event;
                                 return (
-                                    <div className="event-item" key={event.id}>
+                                    <div 
+                                        className="event-item" 
+                                        key={event.id}
+                                        onClick={() => handleEventClick(slug)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
                                         <div className="event-left">
                                             <div className="event-date-block">
                                                 <span className="event-date">{new Date(date).getDate()}</span>
