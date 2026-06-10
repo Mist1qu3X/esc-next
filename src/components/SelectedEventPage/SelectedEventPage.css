@@ -24,20 +24,21 @@
     pointer-events: none;
 }
 
-/* Хлебные крошки - выше всего, слева сверху */
+/* Хлебные крошки - адаптивные */
 .event-breadcrumbs {
     position: absolute;
     top: 32px;
     left: 32px;
+    right: 32px;
     display: flex;
     align-items: center;
     gap: 6px;
+    flex-wrap: wrap;
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 1px;
     z-index: 3;
-    padding-top: 180px;
 }
 
 .event-breadcrumb {
@@ -60,16 +61,17 @@
     text-transform: uppercase;
 }
 
-/* Статусы - под хлебными крошками */
+/* Статусы - адаптивные */
 .event-status-row {
     position: absolute;
     top: 72px;
     left: 32px;
+    right: 32px;
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
     z-index: 3;
-    padding-top: 180px;
 }
 
 .event-status-upcoming {
@@ -98,7 +100,7 @@
     border-radius: 2px;
 }
 
-/* Контент снизу */
+/* Контент снизу - с отступом от статусов */
 .event-header-content {
     position: relative;
     z-index: 2;
@@ -107,6 +109,7 @@
     flex-direction: column;
     gap: 12px;
     width: 100%;
+    margin-top: 120px;
 }
 
 /* Заголовок */
@@ -423,7 +426,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-direction: row; /* Явно указываем строку */
+    flex-direction: row;
 }
 
 .live-dot-sidebar {
@@ -590,7 +593,6 @@
     gap: 1px;
 }
 
-
 .viewers-count {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
@@ -612,12 +614,6 @@
 
 .facebook-card .viewers-count {
     color: #1877F2;
-}
-
-.watching-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 9px;
-    color: rgba(255, 255, 255, 0.4);
 }
 
 .platform-go-btn {
@@ -755,15 +751,18 @@
     .event-breadcrumbs {
         top: 24px;
         left: 24px;
+        right: 24px;
     }
     
     .event-status-row {
         top: 60px;
         left: 24px;
+        right: 24px;
     }
     
     .event-header-content {
         padding: 0 24px 32px;
+        margin-top: 100px;
     }
     
     .event-title {
@@ -774,6 +773,7 @@
         position: static;
         transform: none;
         width: fit-content;
+        margin-top: 16px;
     }
     
     /* Фильтры */
@@ -840,22 +840,25 @@
 
 @media (max-width: 768px) {
     .selected-event-header {
-        height: 360px;
+        height: 380px;
     }
     
     .event-breadcrumbs {
         top: 20px;
         left: 20px;
+        right: 20px;
         font-size: 10px;
     }
     
     .event-status-row {
         top: 52px;
         left: 20px;
+        right: 20px;
     }
     
     .event-header-content {
         padding: 0 20px 24px;
+        margin-top: 90px;
         gap: 8px;
     }
     
@@ -865,6 +868,7 @@
     
     .event-info-row {
         gap: 4px;
+        flex-wrap: wrap;
     }
     
     .event-info-item {
@@ -874,6 +878,13 @@
     .event-entry-btn {
         height: 38px;
         font-size: 10px;
+        margin-top: 12px;
+    }
+    
+    .event-status-upcoming,
+    .event-status-type {
+        font-size: 9px;
+        padding: 3px 8px;
     }
     
     /* Фильтры */
@@ -960,12 +971,13 @@
 
 @media (max-width: 480px) {
     .selected-event-header {
-        height: 320px;
+        height: 340px;
     }
     
     .event-breadcrumbs {
         top: 16px;
         left: 16px;
+        right: 16px;
         font-size: 9px;
         letter-spacing: 0.5px;
     }
@@ -973,6 +985,7 @@
     .event-status-row {
         top: 44px;
         left: 16px;
+        right: 16px;
         gap: 6px;
     }
     
@@ -980,25 +993,33 @@
     .event-status-type {
         font-size: 8px;
         padding: 3px 8px;
+        white-space: nowrap;
     }
     
     .event-header-content {
         padding: 0 16px 20px;
+        margin-top: 85px;
         gap: 6px;
     }
     
     .event-title {
         font-size: 20px;
+        line-height: 1.2;
     }
     
     .event-info-item {
         font-size: 9px;
     }
     
+    .event-info-item i {
+        font-size: 10px;
+    }
+    
     .event-entry-btn {
         height: 34px;
         padding: 0 14px;
         font-size: 9px;
+        margin-top: 10px;
     }
     
     /* Фильтры */

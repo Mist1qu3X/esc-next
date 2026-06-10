@@ -27,9 +27,11 @@
     position: absolute;
     top: 32px;
     left: 32px;
+    right: 32px;
     display: flex;
     align-items: center;
     gap: 6px;
+    flex-wrap: wrap;
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 600;
@@ -61,12 +63,14 @@
     flex-direction: column;
     gap: 16px;
     width: 100%;
+    margin-top: 100px;
 }
 
 .selected-meta-row {
     display: flex;
     align-items: center;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .selected-type {
@@ -104,6 +108,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
 }
@@ -332,7 +337,7 @@
     text-transform: uppercase;
 }
 
-.article-share { display: flex; align-items: center; justify-content: space-between; }
+.article-share { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
 
 .share-label {
     font-family: 'Inter', sans-serif;
@@ -343,7 +348,7 @@
     color: rgba(255, 255, 255, 0.4);
 }
 
-.share-buttons { display: flex; gap: 6px; }
+.share-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .share-btn-item {
     width: auto !important;
@@ -375,24 +380,398 @@
     color: #00d8f5 !important;
 }
 
-/* ========== АДАПТИВ ========== */
+/* ========== АДАПТИВНОСТЬ ========== */
+
+/* 1024px */
 @media (max-width: 1024px) {
-    .selected_media_head { height: 400px; }
-    .selected-breadcrumbs { top: 24px; left: 24px; }
-    .selected-media-content { padding: 0 24px 40px; }
-    .selected-title { font-size: clamp(28px, 4vw, 42px); }
+    .selected_media_head {
+        height: 400px;
+    }
+    
+    .selected-breadcrumbs {
+        top: 24px;
+        left: 24px;
+        right: 24px;
+    }
+    
+    .selected-media-content {
+        padding: 0 24px 40px;
+        margin-top: 90px;
+    }
+    
+    .selected-title {
+        font-size: clamp(28px, 4vw, 42px);
+    }
+    
+    .media_main_content {
+        padding: 0 24px 60px;
+    }
+    
+    .media-content-wrapper {
+        gap: 24px;
+    }
+    
+    .media-sidebar {
+        width: 280px;
+    }
 }
 
+/* 900px - sidebar начинает сужаться */
+@media (max-width: 900px) {
+    .media-sidebar {
+        width: 260px;
+    }
+    
+    .media-content-wrapper {
+        gap: 20px;
+    }
+}
+
+/* 768px - sidebar уходит вниз */
 @media (max-width: 768px) {
-    .selected_media_head { height: 340px; }
-    .selected-breadcrumbs { top: 20px; left: 20px; font-size: 10px; }
-    .selected-media-content { padding: 0 20px 32px; gap: 12px; }
-    .selected-title { font-size: 24px; }
+    .selected_media_head {
+        height: 360px;
+    }
+    
+    .selected-breadcrumbs {
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        font-size: 10px;
+    }
+    
+    .selected-media-content {
+        padding: 0 20px 32px;
+        margin-top: 80px;
+        gap: 12px;
+    }
+    
+    .selected-title {
+        font-size: 28px;
+    }
+    
+    .selected-info-row {
+        font-size: 11px;
+    }
+    
+    .media_main_content {
+        padding: 0 20px 50px;
+    }
+    
+    .media-content-wrapper {
+        flex-direction: column;
+        gap: 32px;
+    }
+    
+    .media-sidebar {
+        width: 100%;
+        order: 2;
+    }
+    
+    .media-article-body {
+        order: 1;
+        width: 100%;
+    }
+    
+    .article-subtitle {
+        font-size: 16px;
+        line-height: 26px;
+    }
+    
+    .article-text {
+        font-size: 14px;
+        line-height: 24px;
+    }
+    
+    .article-heading {
+        font-size: 24px;
+        line-height: 28px;
+    }
+    
+    .article-quote p {
+        font-size: 18px;
+        line-height: 26px;
+    }
 }
 
+/* 600px */
+@media (max-width: 600px) {
+    .selected_media_head {
+        height: 320px;
+    }
+    
+    .selected-breadcrumbs {
+        font-size: 9px;
+        letter-spacing: 0.5px;
+    }
+    
+    .selected-media-content {
+        margin-top: 70px;
+    }
+    
+    .selected-title {
+        font-size: 24px;
+    }
+    
+    .selected-meta-row {
+        gap: 12px;
+    }
+    
+    .selected-type {
+        font-size: 9px;
+    }
+    
+    .selected-read-time {
+        font-size: 9px;
+    }
+    
+    .selected-info-row {
+        font-size: 10px;
+        gap: 6px;
+    }
+    
+    .media_main_content {
+        padding: 0 16px 40px;
+    }
+    
+    .article-subtitle {
+        font-size: 15px;
+        line-height: 24px;
+    }
+    
+    .article-text {
+        font-size: 13px;
+        line-height: 22px;
+        margin-bottom: 16px;
+    }
+    
+    .article-heading {
+        font-size: 20px;
+        line-height: 24px;
+        margin: 24px 0 12px 0;
+    }
+    
+    .article-quote {
+        padding: 16px;
+    }
+    
+    .article-quote p {
+        font-size: 16px;
+        line-height: 22px;
+    }
+    
+    .article-divider {
+        margin: 20px 0;
+    }
+    
+    .tag-btn {
+        height: 24px;
+        padding: 0 10px;
+        font-size: 9px;
+    }
+    
+    .share-label {
+        font-size: 8px;
+    }
+    
+    .share-btn-item {
+        height: 32px;
+        padding: 0 12px !important;
+        font-size: 10px;
+    }
+    
+    .back-to-media-btn {
+        height: 40px;
+        font-size: 10px;
+    }
+}
+
+/* 480px */
 @media (max-width: 480px) {
-    .selected_media_head { height: 280px; }
-    .selected-breadcrumbs { top: 16px; left: 16px; font-size: 9px; }
-    .selected-media-content { padding: 0 16px 24px; gap: 10px; }
-    .selected-title { font-size: 20px; line-height: 1.15; }
+    .selected_media_head {
+        height: 280px;
+    }
+    
+    .selected-breadcrumbs {
+        top: 16px;
+        left: 16px;
+        right: 16px;
+        font-size: 8px;
+    }
+    
+    .selected-media-content {
+        padding: 0 16px 20px;
+        margin-top: 60px;
+        gap: 8px;
+    }
+    
+    .selected-title {
+        font-size: 20px;
+        line-height: 1.2;
+    }
+    
+    .selected-meta-row {
+        gap: 10px;
+    }
+    
+    .selected-type {
+        font-size: 8px;
+    }
+    
+    .selected-read-time {
+        font-size: 8px;
+    }
+    
+    .selected-read-time i {
+        font-size: 9px;
+    }
+    
+    .selected-info-row {
+        font-size: 9px;
+    }
+    
+    .media_main_content {
+        padding: 0 12px 30px;
+    }
+    
+    .media-content-wrapper {
+        gap: 24px;
+    }
+    
+    .article-subtitle {
+        font-size: 14px;
+        line-height: 22px;
+        margin-bottom: 12px;
+    }
+    
+    .article-text {
+        font-size: 12px;
+        line-height: 20px;
+    }
+    
+    .article-heading {
+        font-size: 18px;
+        line-height: 22px;
+    }
+    
+    .article-quote {
+        padding: 12px;
+        margin: 16px 0;
+    }
+    
+    .article-quote p {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    
+    .tag-btn {
+        height: 22px;
+        padding: 0 8px;
+        font-size: 8px;
+    }
+    
+    .article-divider {
+        margin: 16px 0;
+    }
+    
+    .share-buttons {
+        width: 100%;
+    }
+    
+    .share-btn-item {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .sidebar-block-title {
+        font-size: 8px;
+        padding: 12px 12px 0 12px;
+    }
+    
+    .sidebar-actions {
+        padding: 12px;
+    }
+    
+    .action-btn {
+        height: 32px;
+        font-size: 10px;
+    }
+    
+    .info-list {
+        padding: 12px;
+    }
+    
+    .info-label,
+    .info-value {
+        font-size: 11px;
+    }
+    
+    .related-list {
+        padding: 12px 12px 0 12px;
+        gap: 10px;
+    }
+    
+    .related-img {
+        width: 48px;
+        height: 38px;
+    }
+    
+    .related-type {
+        font-size: 8px;
+    }
+    
+    .related-title {
+        font-size: 12px;
+    }
+    
+    .all-media-btn {
+        padding: 10px 12px;
+        font-size: 10px;
+    }
+    
+    .back-to-media-btn {
+        height: 38px;
+        font-size: 9px;
+    }
+    
+    .back-to-media-btn i {
+        font-size: 10px;
+    }
+}
+
+/* 360px - очень маленькие экраны */
+@media (max-width: 360px) {
+    .selected-title {
+        font-size: 18px;
+    }
+    
+    .selected-type {
+        font-size: 7px;
+    }
+    
+    .selected-read-time {
+        font-size: 7px;
+    }
+    
+    .selected-info-row {
+        font-size: 8px;
+    }
+    
+    .article-text {
+        font-size: 11px;
+        line-height: 18px;
+    }
+    
+    .article-heading {
+        font-size: 16px;
+    }
+    
+    .related-img {
+        width: 40px;
+        height: 32px;
+    }
+    
+    .related-title {
+        font-size: 11px;
+    }
 }
