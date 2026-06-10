@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import './DiscoverPage.css';
 
@@ -13,6 +14,7 @@ const DiscoverPage = () => {
   const [committeeMembers, setCommitteeMembers] = useState([]);
   const [openPanels, setOpenPanels] = useState({});
   const [filterRegion, setFilterRegion] = useState('ALL');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,7 +25,7 @@ const DiscoverPage = () => {
           axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/heritage-milestones?sort=order:asc`),
           axios.get(`${config.API_URL}/api/governances?sort=order:asc&pagination[limit]=20`),
-          axios.get(`${config.API_URL}/api/committee-members?populate=*&pagination[limit]=50`),
+          axios.get(`${config.API_URL}/api/committee-members?populate=*&pagination[limit]=100`),
         ]);
 
         setPageData(
@@ -53,31 +55,67 @@ const DiscoverPage = () => {
   const getImageUrl = (img) => {
     if (!img) return null;
     if (typeof img === 'string') return img.startsWith('http') ? img : `${config.API_URL}${img}`;
-    return img.url?.startsWith('http') ? img.url : `${config.API_URL}${img.url}`;
+    if (img.url) return img.url.startsWith('http') ? img.url : `${config.API_URL}${img.url}`;
+    return null;
+  };
+
+  // Функция для получения URL флага из Strapi (PNG)
+  const getFlagUrl = (flag) => {
+    if (!flag) return null;
+    // Если пришел объект Media из Strapi
+    if (flag.url) {
+      return flag.url.startsWith('http') ? flag.url : `${config.API_URL}${flag.url}`;
+    }
+    // Если пришел код страны
+    if (typeof flag === 'string') {
+      return `${config.API_URL}/uploads/flags/${flag.toLowerCase()}.png`;
+    }
+    return null;
   };
 
   const assembly = governance.find(g => g.type === 'legislative');
   const executive = governance.find(g => g.type === 'executive');
   
-  // ПОЛУЧАЕМ УНИКАЛЬНЫЕ КОМИТЕТЫ ИЗ committee-members
-  const committees = [...new Map(
-    committeeMembers
-      .filter(m => m.committee) // только те, у кого есть committee
-      .map(m => [m.committee, {
-        id: m.committee.replace(/\s/g, '_'), // создаем ID из названия
-        name: m.committee,
-        members: `${committeeMembers.filter(cm => cm.committee === m.committee).length} members`,
-        description: `${m.committee} committee description` // описание можно добавить в Strapi
-      }])
-  ).values()];
+  // Список комитетов (включая JUDGES COMMITTEE)
+  const committeeList = [
+    'Technical Committee',
+    'Development Committee', 
+    'Athletes Committee',
+    'Judges Committee',
+    'Medical Committee',
+    'Legal Committee'
+  ];
+
+  const committees = committeeList
+    .filter(committeeName => committeeMembers.some(m => m.committee === committeeName))
+    .map(committeeName => {
+      const membersList = committeeMembers.filter(m => m.committee === committeeName);
+      return {
+        id: committeeName.replace(/\s/g, '_'),
+        name: committeeName,
+        members: `${membersList.length} members`,
+        description: `${committeeName} oversees the development and regulation of ${committeeName.toLowerCase().replace(' committee', '')} activities.`
+      };
+    });
 
   const getCommitteeMembers = (committeeName) => {
     return committeeMembers.filter(m => m.committee === committeeName);
   };
 
+  const handleFullDirectory = () => {
+    router.push('/members');
+  };
+
+  const handleShowAllMembers = () => {
+    router.push('/members');
+  };
+
+  const handleLeaderClick = (leaderId) => {
+    router.push(`/leaders/${leaderId}`);
+  };
+
   return (
     <>
-      {/* ========== ABOUT HERO ========== */}
       <section className="about-hero">
         <div className="breadcrumbs-row">
           <span className="breadcrumb-home">HOME</span>
@@ -94,7 +132,6 @@ const DiscoverPage = () => {
         </div>
       </section>
 
-      {/* ========== WHO WE ARE ========== */}
       <section className="who-we-are">
         <div className="who-we-are-container">
           <div className="who-left">
@@ -120,7 +157,6 @@ const DiscoverPage = () => {
         </div>
       </section>
 
-      {/* ========== CORE VALUES ========== */}
       <section className="core-values">
         <div className="core-next-layer">
           <span className="core-line"></span>
@@ -161,7 +197,6 @@ const DiscoverPage = () => {
         </div>
       </section>
 
-      {/* ========== STRUCTURE / GOVERNANCE ========== */}
       <section className="structure">
         <div className="structure-next-layer">
           <span className="structure-line"></span>
@@ -169,7 +204,6 @@ const DiscoverPage = () => {
         </div>
         <h2 className="structure-title">GOVERNANCE</h2>
 
-        {/* General Assembly */}
         {assembly && (
           <>
             <div className={`structure-block block-main ${openPanels['assembly'] ? 'has-open-panel' : ''}`}>
@@ -193,7 +227,12 @@ const DiscoverPage = () => {
                 <div className="assembly-federations">
                   {federations.slice(0, 46).map((fed) => (
                     <div className="assembly-member" key={fed.id}>
-                      <div className={`assembly-flag flag-${fed.countryCode?.toLowerCase() || 'de'}`}></div>
+                      <img 
+                        src={getFlagUrl(fed.flag || fed.countryCode)} 
+                        alt={fed.countryCode}
+                        className="assembly-flag-img"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
                       <div className="assembly-code">{fed.countryCode}</div>
                       <div className="assembly-country">{fed.country}</div>
                     </div>
@@ -218,23 +257,39 @@ const DiscoverPage = () => {
               </button>
             </div>
             {openPanels['executive'] && (
-              <div className="assembly-panel is-open">
-                <div className="assembly-header">
+              <div className="executive-panel is-open">
+                <div className="executive-panel-header">
                   <div className="assembly-label">EXECUTIVE</div>
                   <h3 className="assembly-title">{executive.name}</h3>
                   <p className="assembly-description">{executive.description}</p>
-                  <button className="panel-close" onClick={() => togglePanel('executive')}><i className="fa-solid fa-xmark"></i></button>
+                  <button className="panel-close" onClick={() => togglePanel('executive')}>
+                    <i className="fa-solid fa-xmark"></i>
+                  </button>
                 </div>
-                <div className="executive-members">
-                  {leaders.slice(0, 9).map((l) => (
-                    <div className="executive-member" key={l.id}>
-                      <div className="executive-photo"><span>{l.initials}</span></div>
-                      <div className="executive-info">
-                        <h4>{l.name}</h4>
-                        <span className="executive-role">{l.role}</span>
-                        <div className="executive-country">
-                          <span className={`assembly-flag flag-${l.countryCode?.toLowerCase() || 'de'}`}></span>
-                          {l.country}
+                <div className="executive-cards-grid">
+                  {leaders.slice(0, 9).map((leader) => (
+                    <div className="executive-new-card" key={leader.id}>
+                      <div className="executive-card-image">
+                        {leader.image ? (
+                          <img src={getImageUrl(leader.image)} alt={leader.name} />
+                        ) : (
+                          <div className="executive-card-placeholder">
+                            <span>{leader.initials}</span>
+                          </div>
+                        )}
+                        <div className="executive-card-role-badge">{leader.role?.toUpperCase()}</div>
+                      </div>
+                      <div className="executive-card-info">
+                        <h4 className="executive-card-name">{leader.name}</h4>
+                        <div className="executive-card-contact">
+                          <div className="executive-contact-item">
+                            <i className="fa-regular fa-envelope"></i>
+                            <span>{leader.email || 'info@esc-shooting.eu'}</span>
+                          </div>
+                          <div className="executive-contact-item">
+                            <i className="fa-solid fa-phone"></i>
+                            <span>{leader.phone || '+49 30 1234 5678'}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -245,7 +300,7 @@ const DiscoverPage = () => {
           </>
         )}
         
-        {/* КОМИТЕТЫ - теперь из committee-members */}
+        {/* Комитеты - Technical, Development, Athletes, Judges */}
         {committees.length > 0 && (
           <div className="committee-cards">
             {committees.map((c) => (
@@ -262,59 +317,77 @@ const DiscoverPage = () => {
 
         {/* Панели комитетов */}
         {committees.map((c) => {
-          const members = getCommitteeMembers(c.name);
-          return (
-            openPanels[c.id] && (
-              <div key={`panel-${c.id}`} className="assembly-panel is-open">
-                <div className="assembly-header">
-                  <div className="assembly-label">COMMITTEE</div>
-                  <h3 className="assembly-title">{c.name}</h3>
-                  <p className="assembly-description">{c.description}</p>
-                  <button className="panel-close" onClick={() => togglePanel(c.id)}>
-                    <i className="fa-solid fa-xmark"></i>
-                  </button>
-                </div>
-                {members.length > 0 && (
-                  <div className="executive-members">
-                    {members.map((m) => (
-                      <div className="executive-member" key={m.id}>
-                        <div className="executive-photo"><span>{m.initials}</span></div>
-                        <div className="executive-info">
-                          <h4>{m.name}</h4>
-                          <span className="executive-role">{m.role}</span>
-                          <div className="executive-country">
-                            <span className={`assembly-flag flag-${m.countryCode?.toLowerCase() || 'de'}`}></span>
-                            {m.country}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+        const members = getCommitteeMembers(c.name);
+        return (
+          openPanels[c.id] && (
+            <div key={`panel-${c.id}`} className="assembly-panel is-open">
+              <div className="assembly-header">
+                <div className="assembly-label">COMMITTEE</div>
+                <h3 className="assembly-title">{c.name}</h3>
+                <p className="assembly-description">{c.description}</p>
+                <button className="panel-close" onClick={() => togglePanel(c.id)}>
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
               </div>
-            )
-          );
-        })}
+              {members.length > 0 && (
+                <div className="executive-members">
+                  {members.map((m) => (
+                    <div className="executive-member" key={m.id}>
+                      <div className="executive-photo"><span>{m.initials}</span></div>
+                      <div className="executive-info">
+                        <h4>{m.name}</h4>
+                        <span className="executive-role">{m.role}</span>
+                        <div className="executive-country">
+                          <img 
+                            src={getFlagUrl(m.flag || m.countryCode)} 
+                            alt={m.countryCode}
+                            className="executive-flag-img"
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                          <span>{m.country}</span>
+                        </div>
+                        {/* УДАЛИТЬ email и phone для комитетов */}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        );
+      })}
       </section>
 
-      {/* ========== LEADERSHIP ========== */}
       <section className="leadership">
         <div className="leadership-header">
           <div className="leadership-naming">
             <span className="leadership-line"></span>
             <span className="leadership-title">LEADERSHIP</span>
           </div>
-          <a href="#" className="leadership-directory">FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i></a>
+          <button className="leadership-directory" onClick={handleFullDirectory}>
+            FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
+          </button>
         </div>
         <div className="leadership-cards">
           {leaders.slice(0, 4).map((l) => (
-            <div className="leader-card" key={l.id}>
-              <div className="leader-photo"><span className="leader-initials">{l.initials}</span></div>
+            <div className="leader-card" key={l.id} onClick={() => handleLeaderClick(l.id)}>
+              <div className="leader-photo">
+                {l.image ? (
+                  <img src={getImageUrl(l.image)} alt={l.name} className="leader-photo-img" />
+                ) : (
+                  <span className="leader-initials">{l.initials}</span>
+                )}
+              </div>
               <div className="leader-info">
                 <h3 className="leader-name">{l.name}</h3>
                 <p className="leader-role">{l.role}</p>
                 <div className="leader-country">
-                  <span className={`flag flag-${l.countryCode?.toLowerCase() || 'de'}`}></span>
+                  <img 
+                    src={getFlagUrl(l.flag || l.countryCode)} 
+                    alt={l.countryCode}
+                    className="leader-flag-img"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
                   <span>{l.country}</span>
                 </div>
               </div>
@@ -323,7 +396,6 @@ const DiscoverPage = () => {
         </div>
       </section>
 
-      {/* ========== MEMBER FEDERATIONS ========== */}
       <section className="member-federations">
         <div className="federations-next-layer">
           <span className="federations-line"></span>
@@ -331,7 +403,9 @@ const DiscoverPage = () => {
         </div>
         <div className="federations-header">
           <h2 className="federations-title">47 NATIONS,<br />ONE CONFEDERATION</h2>
-          <a href="#" className="federations-directory-btn">FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i></a>
+          <button className="federations-directory-btn" onClick={handleFullDirectory}>
+            FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
+          </button>
         </div>
         <div className="federations-filter">
           <div className="filter-tabs">
@@ -345,10 +419,15 @@ const DiscoverPage = () => {
         <div className="federations-grid">
           {filteredFeds.slice(0, 12).map((fed) => (
             <div className="federation-card" key={fed.id}>
-              <span className={`fed-flag fed-flag-${fed.countryCode?.toLowerCase() || 'de'}`}></span>
+              <img 
+                src={getFlagUrl(fed.flag || fed.countryCode)} 
+                alt={fed.countryCode}
+                className="fed-flag-img"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
               <div className="fed-info">
-                <h3 className="fed-name">{fed.name}</h3>
-                <span className="fed-code">{fed.code}</span>
+                <h3 className="fed-name">{fed.country}</h3>
+                <span className="fed-code">{fed.countryCode}</span>
                 <span className="fed-since">Since {fed.since}</span>
               </div>
               <span className="fed-region">{fed.region}</span>
@@ -356,11 +435,12 @@ const DiscoverPage = () => {
           ))}
         </div>
         <div className="federations-show-all">
-          <button className="show-all-btn">SHOW ALL {federations.length} MEMBERS <i className="fa-solid fa-chevron-down"></i></button>
+          <button className="show-all-btn" onClick={handleShowAllMembers}>
+            SHOW ALL {federations.length} MEMBERS <i className="fa-solid fa-chevron-down"></i>
+          </button>
         </div>
       </section>
 
-      {/* ========== HERITAGE ========== */}
       <section className="heritage">
         <div className="heritage-container">
           <div className="heritage-left">

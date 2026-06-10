@@ -1176,6 +1176,10 @@
     color: #ffffff;
 }
 
+.points-value.gold-value {
+    color:#00d8f5;
+}
+
 .points-bar {
     width: 80px;
     height: 6px;
@@ -1186,7 +1190,7 @@
 
 .points-bar-fill {
     height: 100%;
-    background: rgba(255, 255, 255, 0.3);
+    background: #00d8f5;
     border-radius: 3px;
 }
 
@@ -1200,6 +1204,259 @@
     font-size: 14px;
     font-weight: 600;
     color: #ffffff;
+}
+
+/* Date filter dropdown */
+.epc-date-filter-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.epc-filter-btn.epc-date-event {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.epc-date-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #0B1E33;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  z-index: 100;
+  min-width: 300px;
+  margin-top: 8px;
+}
+
+.epc-date-dropdown-section {
+  margin-bottom: 16px;
+}
+
+.epc-date-dropdown-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.epc-date-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.epc-date-option {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.epc-date-option.epc-active {
+  background: #00d8f5;
+  color: #06121f;
+}
+
+.epc-date-apply-btn {
+  background: #00d8f5;
+  border: none;
+  color: #06121f;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 700;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.rankings-search {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 6px 12px;
+}
+
+.rankings-search-icon {
+  color: rgba(255, 255, 255, 0.4);
+  margin-right: 8px;
+}
+
+.rankings-search-input {
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+  font-size: 12px;
+}
+
+.rankings-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Расширенные выпадающие списки */
+.events-select {
+  min-width: 120px;
+  padding: 8px 28px 8px 12px;
+  font-size: 12px;
+}
+
+/* Для фильтров в rankings detail */
+.rankings-filter-left .events-select {
+  min-width: 130px;
+}
+
+.rankings-search {
+  min-width: 240px;
+}
+
+/* Кнопки гендера для rankings */
+.rankings-gender-buttons {
+  display: flex;
+  gap: 8px;
+  margin: 24px 0;
+  justify-content: flex-end;
+}
+
+.rankings-gender-buttons .gender-btn {
+  display: flex;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.4);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  min-width: 73px;
+}
+
+.rankings-gender-buttons .gender-btn:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.rankings-gender-buttons .gender-btn.active {
+  background: #00d8f5;
+  color: #06101C;
+  border-color: #00d8f5;
+}
+
+/* DATA SOURCE BAR */
+.data-source-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin: 20px 0 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Date filter */
+.epc-date-filter-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.epc-filter-btn.epc-date-event {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 28px 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.5)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.epc-date-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #0B1E33;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  z-index: 100;
+  min-width: 300px;
+  margin-top: 8px;
+}
+
+.epc-date-dropdown-section {
+  margin-bottom: 16px;
+}
+
+.epc-date-dropdown-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.epc-date-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+.epc-date-option {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.epc-date-option.epc-active {
+  background: #00d8f5;
+  color: #06121f;
+}
+
+.epc-date-apply-btn {
+  background: #00d8f5;
+  border: none;
+  color: #06121f;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 700;
+  width: 100%;
+  margin-top: 8px;
 }
 
 /* ============================================

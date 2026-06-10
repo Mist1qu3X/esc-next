@@ -462,6 +462,309 @@
     color: #0ee0ff;
 }
 
+/* ========== LIST VIEW ========== */
+.mp-list-section {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px 80px;
+    background-color: #06101C;
+}
+
+.mp-federations-list-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Базовая таблица */
+.mp-federations-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+}
+
+.mp-federations-table thead tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mp-federations-table th {
+    text-align: left;
+    padding: 16px 12px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.mp-federations-table td {
+    padding: 16px 12px;
+    color: rgba(255, 255, 255, 0.8);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    vertical-align: middle;
+}
+
+.mp-federations-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Стили ячеек */
+.mp-list-code {
+    font-weight: 700;
+    color: #00d8f5;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+.mp-list-name {
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.mp-list-country {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    word-break: break-word;
+}
+
+.mp-list-president {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    word-break: break-word;
+}
+
+.mp-list-contact {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.mp-list-contact div {
+    margin: 2px 0;
+    word-break: break-all;
+}
+
+.mp-list-contact i {
+    width: 14px;
+    margin-right: 6px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.mp-list-actions {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.mp-list-actions .mp-view-federation-btn {
+    background: transparent;
+    border: 1px solid rgba(0, 216, 245, 0.3);
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: #00d8f5;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.mp-list-actions .mp-view-federation-btn:hover {
+    background: rgba(0, 216, 245, 0.1);
+    border-color: #00d8f5;
+}
+
+/* ========== АДАПТИВ ========== */
+
+/* 1024px - 1200px */
+@media (max-width: 1200px) {
+    .mp-list-section {
+        padding: 0 24px 60px;
+    }
+    
+    .mp-list-code {
+        font-size: 14px;
+    }
+    
+    .mp-federations-table th,
+    .mp-federations-table td {
+        padding: 12px 10px;
+    }
+}
+
+/* 900px - 1024px */
+@media (max-width: 1024px) {
+    .mp-list-section {
+        padding: 0 20px 50px;
+    }
+    
+    .mp-federations-table {
+        font-size: 12px;
+    }
+    
+    .mp-list-code {
+        font-size: 13px;
+    }
+    
+    .mp-list-country,
+    .mp-list-president {
+        font-size: 11px;
+    }
+    
+    .mp-federations-table th,
+    .mp-federations-table td {
+        padding: 10px 8px;
+    }
+}
+
+/* 768px - 900px */
+@media (max-width: 900px) {
+    /* Скрываем колонку CONTACTS */
+    .mp-federations-table th:nth-child(5),
+    .mp-federations-table td:nth-child(5) {
+        display: none;
+    }
+}
+
+/* 600px - 768px */
+@media (max-width: 768px) {
+    .mp-list-section {
+        padding: 0 16px 40px;
+    }
+    
+    .mp-federations-table {
+        font-size: 11px;
+        min-width: 500px;
+    }
+    
+    .mp-list-code {
+        font-size: 12px;
+    }
+    
+    .mp-list-name {
+        max-width: 150px;
+    }
+    
+    .mp-list-country,
+    .mp-list-president {
+        font-size: 10px;
+        max-width: 100px;
+    }
+    
+    .mp-federations-table th,
+    .mp-federations-table td {
+        padding: 8px 6px;
+    }
+    
+    .mp-list-actions .mp-view-federation-btn {
+        padding: 4px 8px;
+        font-size: 9px;
+    }
+}
+
+/* 480px - 600px - скрываем PRESIDENT и делаем карточки */
+@media (max-width: 600px) {
+    .mp-federations-table th:nth-child(4),
+    .mp-federations-table td:nth-child(4) {
+        display: none;
+    }
+    
+    .mp-federations-table {
+        min-width: 400px;
+    }
+    
+    .mp-list-name {
+        max-width: 120px;
+        font-size: 10px;
+    }
+    
+    .mp-list-code {
+        font-size: 11px;
+    }
+    
+    .mp-list-country {
+        font-size: 9px;
+        max-width: 80px;
+    }
+}
+
+/* 400px - 480px */
+@media (max-width: 480px) {
+    .mp-list-section {
+        padding: 0 12px 30px;
+    }
+    
+    .mp-federations-table {
+        font-size: 10px;
+        min-width: 350px;
+    }
+    
+    .mp-federations-table th,
+    .mp-federations-table td {
+        padding: 8px 4px;
+    }
+    
+    .mp-list-code {
+        font-size: 10px;
+    }
+    
+    .mp-list-name {
+        max-width: 100px;
+        font-size: 9px;
+    }
+    
+    .mp-list-country {
+        font-size: 8px;
+        max-width: 70px;
+    }
+    
+    .mp-list-actions .mp-view-federation-btn {
+        padding: 3px 6px;
+        font-size: 8px;
+    }
+}
+
+/* 320px - 400px - очень маленькие экраны */
+@media (max-width: 400px) {
+    .mp-list-section {
+        padding: 0 8px 20px;
+    }
+    
+    .mp-federations-table {
+        min-width: 300px;
+        font-size: 9px;
+    }
+    
+    .mp-list-code {
+        font-size: 9px;
+    }
+    
+    .mp-list-name {
+        max-width: 80px;
+        font-size: 8px;
+    }
+    
+    .mp-list-country {
+        font-size: 7px;
+        max-width: 60px;
+    }
+    
+    .mp-federations-table th,
+    .mp-federations-table td {
+        padding: 6px 3px;
+    }
+    
+    .mp-federations-table th {
+        font-size: 8px;
+    }
+    
+    .mp-list-actions .mp-view-federation-btn {
+        padding: 2px 4px;
+        font-size: 7px;
+    }
+}
+
 /* ========== АДАПТИВНОСТЬ ========== */
 
 @media (max-width: 1200px) {

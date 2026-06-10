@@ -8,21 +8,11 @@ const DocumentsPage = () => {
   const [documents, setDocuments] = useState([]);
   const [filteredDocs, setFilteredDocs] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All Documents');
-  const [activeYear, setActiveYear] = useState('2026');
+  const [activeYear, setActiveYear] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('Most Recent');
-
-  const categories = [
-    { name: 'All Documents', count: 48 },
-    { name: 'Official Documents', count: 12 },
-    { name: 'Rules', count: 8 },
-    { name: 'Assemblies', count: 9 },
-    { name: 'Sustainability', count: 4 },
-    { name: 'Newsletters', count: 7 },
-    { name: 'Courses', count: 8 },
-  ];
-
-  const years = ['2026', '2025', '2024', '2023'];
+  const [categories, setCategories] = useState([]);
+  const [years, setYears] = useState([]);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -30,8 +20,45 @@ const DocumentsPage = () => {
         const res = await axios.get(
           `${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[limit]=100`
         );
-        setDocuments(res.data.data);
-        setFilteredDocs(res.data.data);
+        
+        let docs = [];
+        // Универсальное извлечение данных
+        if (res.data?.data) {
+          docs = res.data.data;
+        } else if (Array.isArray(res.data)) {
+          docs = res.data;
+        }
+        
+        setDocuments(docs);
+        setFilteredDocs(docs);
+        
+        // Подсчет категорий из реальных данных
+        const categoryMap = new Map();
+        categoryMap.set('All Documents', docs.length);
+        
+        docs.forEach(doc => {
+          const theme = doc.theme || 'Other';
+          categoryMap.set(theme, (categoryMap.get(theme) || 0) + 1);
+        });
+        
+        const categoryList = Array.from(categoryMap.entries()).map(([name, count]) => ({
+          name,
+          count
+        }));
+        setCategories(categoryList);
+        
+        // Подсчет годов из реальных данных
+        const yearMap = new Map();
+        docs.forEach(doc => {
+          if (doc.date) {
+            const year = new Date(doc.date).getFullYear().toString();
+            yearMap.set(year, (yearMap.get(year) || 0) + 1);
+          }
+        });
+        
+        const yearList = Array.from(yearMap.keys()).sort((a, b) => b - a);
+        setYears(yearList);
+        
       } catch (e) {
         console.error('Ошибка загрузки документов:', e);
       }
@@ -49,8 +76,9 @@ const DocumentsPage = () => {
     }
 
     // По году
-    if (activeYear) {
+    if (activeYear && activeYear !== 'all') {
       result = result.filter((doc) => {
+        if (!doc.date) return false;
         const docYear = new Date(doc.date).getFullYear().toString();
         return docYear === activeYear;
       });
@@ -92,6 +120,7 @@ const DocumentsPage = () => {
   };
 
   const formatDate = (date) => {
+    if (!date) return '';
     return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
@@ -148,6 +177,13 @@ const DocumentsPage = () => {
           <div className="sidebar-year">
             <p className="sidebar-heading">YEAR</p>
             <div className="year-buttons">
+              <button
+                key="all"
+                className={`year-btn ${activeYear === 'all' ? 'active' : ''}`}
+                onClick={() => setActiveYear('all')}
+              >
+                ALL
+              </button>
               {years.map((year) => (
                 <button
                   key={year}
@@ -184,29 +220,35 @@ const DocumentsPage = () => {
               <span className="documents-featured">FEATURED</span>
             </div>
             <div className="document-container">
-              {featuredDocs.map((doc) => (
-                <div key={doc.id} className={`document type-${doc.theme?.toLowerCase().replace(/\s/g, '-') || 'official'}`}>
-                  <i className="fa-regular fa-file-pdf document-icon-top"></i>
-                  <div className="document-content">
-                    <div className="doc-header">
-                      <div className="doc-type-tag">{doc.theme || 'OFFICIAL DOCUMENTS'}</div>
-                      <span className="doc-version">{doc.version || 'v1.0'}</span>
-                    </div>
-                    <h3 className="document-title">{doc.title}</h3>
-                    <p className="document-description">{doc.description || ''}</p>
-                    <div className="document-footer">
-                      <div className="document-meta">
-                        <span className="doc-date">{formatDate(doc.date)}</span>
-                        <span className="doc-size">{doc.fileSize || '1.0 MB'}</span>
+              {featuredDocs.length > 0 ? (
+                featuredDocs.map((doc) => (
+                  <div key={doc.id} className={`document type-${doc.theme?.toLowerCase().replace(/\s/g, '-') || 'official'}`}>
+                    <i className="fa-regular fa-file-pdf document-icon-top"></i>
+                    <div className="document-content">
+                      <div className="doc-header">
+                        <div className="doc-type-tag">{doc.theme || 'OFFICIAL DOCUMENTS'}</div>
+                        <span className="doc-version">{doc.version || 'v1.0'}</span>
                       </div>
-                      <button className="download-btn" onClick={() => handleDownload(doc)}>
-                        <i className="fa-solid fa-download"></i>
-                        PDF
-                      </button>
+                      <h3 className="document-title">{doc.title}</h3>
+                      <p className="document-description">{doc.description || ''}</p>
+                      <div className="document-footer">
+                        <div className="document-meta">
+                          <span className="doc-date">{formatDate(doc.date)}</span>
+                          <span className="doc-size">{doc.fileSize || '1.0 MB'}</span>
+                        </div>
+                        <button className="download-btn" onClick={() => handleDownload(doc)}>
+                          <i className="fa-solid fa-download"></i>
+                          PDF
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center' }}>
+                  No featured documents available
+                </p>
+              )}
             </div>
           </section>
 
@@ -224,35 +266,41 @@ const DocumentsPage = () => {
                 <div className="col col-date">DATE</div>
                 <div className="col col-actions">ACTIONS</div>
               </div>
-              {allDocs.map((doc) => (
-                <div className="events-table-row" key={doc.id}>
-                  <div className="col col-doc">
-                    <div className="doc-info">
-                      <i className="fa-regular fa-file-lines doc-icon"></i>
-                      <div className="doc-details">
-                        <span className="doc-name">{doc.title}</span>
-                        <div className="doc-meta-mobile">
-                          <span className="doc-category-mobile">{doc.theme}</span>
-                          <span className="doc-date-mobile">{formatDate(doc.date)}</span>
+              {allDocs.length > 0 ? (
+                allDocs.map((doc) => (
+                  <div className="events-table-row" key={doc.id}>
+                    <div className="col col-doc">
+                      <div className="doc-info">
+                        <i className="fa-regular fa-file-lines doc-icon"></i>
+                        <div className="doc-details">
+                          <span className="doc-name">{doc.title}</span>
+                          <div className="doc-meta-mobile">
+                            <span className="doc-category-mobile">{doc.theme}</span>
+                            <span className="doc-date-mobile">{formatDate(doc.date)}</span>
+                          </div>
+                          <span className="doc-meta">{doc.fileSize || '1.0 MB'} · {doc.downloadCount || 0} downloads</span>
                         </div>
-                        <span className="doc-meta">{doc.fileSize || '1.0 MB'} · {doc.downloadCount || 0} downloads</span>
                       </div>
                     </div>
+                    <div className="col col-category">{doc.theme}</div>
+                    <div className="col col-version">{doc.version}</div>
+                    <div className="col col-date">{formatDate(doc.date)}</div>
+                    <div className="col col-actions">
+                      <button className="action-btn pdf-btn" onClick={() => handleDownload(doc)}>
+                        <i className="fa-solid fa-download"></i>
+                        PDF
+                      </button>
+                      <button className="action-btn view-btn" onClick={() => handleView(doc)}>
+                        <i className="fa-solid fa-eye"></i>
+                      </button>
+                    </div>
                   </div>
-                  <div className="col col-category">{doc.theme}</div>
-                  <div className="col col-version">{doc.version}</div>
-                  <div className="col col-date">{formatDate(doc.date)}</div>
-                  <div className="col col-actions">
-                    <button className="action-btn pdf-btn" onClick={() => handleDownload(doc)}>
-                      <i className="fa-solid fa-download"></i>
-                      PDF
-                    </button>
-                    <button className="action-btn view-btn" onClick={() => handleView(doc)}>
-                      <i className="fa-solid fa-eye"></i>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center' }}>
+                  No documents found
+                </p>
+              )}
             </div>
           </section>
         </div>

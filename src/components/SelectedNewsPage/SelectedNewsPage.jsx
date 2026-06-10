@@ -6,6 +6,18 @@ import { useRouter } from 'next/navigation';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import './SelectedNewsPage.css';
 
+// Универсальная функция для извлечения данных
+const extractData = (response) => {
+  if (!response || !response.data) return [];
+  if (response.data.data && Array.isArray(response.data.data)) {
+    return response.data.data;
+  }
+  if (Array.isArray(response.data)) {
+    return response.data;
+  }
+  return [];
+};
+
 const SelectedNewsPage = ({ slug }) => {
   const [article, setArticle] = useState(null);
   const [relatedNews, setRelatedNews] = useState([]);
@@ -21,23 +33,29 @@ const SelectedNewsPage = ({ slug }) => {
         return;
       }
       
-      console.log('Fetching article for slug:', slug);
       setLoading(true);
       setNotFound(false);
       
       try {
+        // Получаем статью по slug
         const res = await axios.get(
           `${config.API_URL}/api/news-items?filters[slug][$eq]=${slug}&populate=*`
         );
         
-        if (res.data?.data?.length > 0) {
-          const articleData = res.data.data[0];
+        // Извлекаем данные (универсально)
+        const articles = extractData(res);
+        
+        if (articles.length > 0) {
+          const articleData = articles[0];
           setArticle(articleData);
           
+          // Получаем похожие новости
           const relatedRes = await axios.get(
-            `${config.API_URL}/api/news-items?populate=*&pagination[limit]=4&sort=date:desc&filters[id][$ne]=${articleData.id}`
+            `${config.API_URL}/api/news-items?populate=*&limit=4&sort=date:desc`
           );
-          setRelatedNews(relatedRes.data?.data || []);
+          const related = extractData(relatedRes);
+          // Фильтруем текущую статью
+          setRelatedNews(related.filter(item => item.id !== articleData.id));
         } else {
           setArticle(null);
           setNotFound(true);
@@ -58,7 +76,6 @@ const SelectedNewsPage = ({ slug }) => {
     if (!img) return null;
     if (typeof img === 'string') return img.startsWith('http') ? img : `${config.API_URL}${img}`;
     if (img.url) return img.url.startsWith('http') ? img.url : `${config.API_URL}${img.url}`;
-    if (img[0]?.url) return img[0].url.startsWith('http') ? img[0].url : `${config.API_URL}${img[0].url}`;
     return null;
   };
 
@@ -79,12 +96,12 @@ const SelectedNewsPage = ({ slug }) => {
     alert('Link copied to clipboard!');
   };
 
-  const handleGoBack = () => {
-    router.back();
-  };
-
   const handleAllMedia = () => {
     router.push('/media');
+  };
+
+  const handleGoBack = () => {
+    router.back();
   };
 
   const handleRelatedClick = (relatedSlug) => {
@@ -95,7 +112,6 @@ const SelectedNewsPage = ({ slug }) => {
 
   const formatContent = (content) => {
     if (!content) return null;
-    
     const blocks = content.split('\n\n');
     return blocks.map((block, i) => {
       if (block.startsWith('"') && block.endsWith('"')) {
@@ -105,17 +121,14 @@ const SelectedNewsPage = ({ slug }) => {
           </blockquote>
         );
       }
-      
       const isHeading = block === block.toUpperCase() && block.length < 60 && !block.includes('.');
       if (isHeading) {
         return <h2 key={i} className="article-heading">{block}</h2>;
       }
-      
       return <p key={i} className="article-text">{block}</p>;
     });
   };
 
-  // Показываем лоадер
   if (loading) {
     return (
       <section className="selected_media_head" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -127,26 +140,24 @@ const SelectedNewsPage = ({ slug }) => {
     );
   }
 
-  // Если статья не найдена - показываем страницу 404
   if (notFound || !article) {
     return <ErrorPage />;
   }
 
   return (
     <>
-      {/* ========== HERO ========== */}
-      <section className="selected_media_head" style={{ backgroundImage: `url(${getImageUrl(article.image)})` }}>
+      <section className="selected_media_head" style={{ backgroundImage: `url(${getImageUrl(article.image) || '/img/fallback-news.jpg'})` }}>
         <div className="selected-media-overlay"></div>
         <div className="selected-breadcrumbs">
           <span className="selected-breadcrumb" onClick={handleAllMedia} style={{ cursor: 'pointer' }}>HOME</span>
           <span className="selected-breadcrumb-separator">›</span>
           <span className="selected-breadcrumb" onClick={handleAllMedia} style={{ cursor: 'pointer' }}>MEDIA</span>
           <span className="selected-breadcrumb-separator">›</span>
-          <span className="selected-breadcrumb-active">{article.theme}</span>
+          <span className="selected-breadcrumb-active">{article.theme || 'NEWS'}</span>
         </div>
         <div className="selected-media-content">
           <div className="selected-meta-row">
-            <span className="selected-type">{article.theme}</span>
+            <span className="selected-type">{article.theme || 'NEWS'}</span>
             <span className="selected-read-time"><i className="fa-regular fa-clock"></i>{article.readTime || '4 min read'}</span>
           </div>
           <h1 className="selected-title">{article.title}</h1>
@@ -158,7 +169,6 @@ const SelectedNewsPage = ({ slug }) => {
         </div>
       </section>
 
-      {/* ========== CONTENT ========== */}
       <section className="media_main_content">
         <div className="media-content-wrapper">
           <div className="media-article-body">
@@ -239,9 +249,9 @@ const SelectedNewsPage = ({ slug }) => {
                     onClick={() => handleRelatedClick(n.slug)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <img src={getImageUrl(n.image)} alt={n.title} className="related-img" />
+                    <img src={getImageUrl(n.image) || '/img/fallback-news.jpg'} alt={n.title} className="related-img" />
                     <div className="related-info">
-                      <span className={`related-type type-${n.theme?.toLowerCase() || 'event'}`}>{n.theme}</span>
+                      <span className={`related-type type-${n.theme?.toLowerCase() || 'event'}`}>{n.theme || 'NEWS'}</span>
                       <h5 className="related-title">{n.title}</h5>
                     </div>
                   </div>
@@ -257,26 +267,6 @@ const SelectedNewsPage = ({ slug }) => {
           </aside>
         </div>
       </section>
-
-      <style jsx>{`
-        .media-loader {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        .loader-spinner {
-          width: 50px;
-          height: 50px;
-          border: 3px solid rgba(0, 216, 245, 0.2);
-          border-top-color: #00d8f5;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </>
   );
 };

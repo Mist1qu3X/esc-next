@@ -8,18 +8,40 @@ import config from '@/lib/config';
 const LatestFromEsc = () => {
     const [news, setNews] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
         const fetchNews = async () => {
             try {
+                console.log('Fetching news from:', `${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[limit]=4`);
+                
                 const response = await axios.get(
-                    `${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[limit]=4`
+                    `${config.API_URL}/api/news-items?populate=*&sort=date:desc&limit=4`
                 );
-                setNews(response.data.data);
+                
+                console.log('Response:', response);
+                
+                // Проверяем структуру ответа
+                if (response.data && response.data.data) {
+                    setNews(response.data.data);
+                } else if (Array.isArray(response.data)) {
+                    setNews(response.data);
+                } else {
+                    console.warn('Unexpected response structure:', response.data);
+                    setNews([]);
+                }
                 setLoading(false);
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
+                console.error('Error details:', {
+                    message: error.message,
+                    code: error.code,
+                    response: error.response?.data,
+                    status: error.response?.status
+                });
+                setError(error.message);
+                setNews([]);
                 setLoading(false);
             }
         };
@@ -30,7 +52,41 @@ const LatestFromEsc = () => {
         router.push('/media#latest-news');
     };
 
-    if (loading) return <section className="lastest-from-esc"></section>;
+    if (loading) {
+        return (
+            <section className="lastest-from-esc" id="latest-news">
+                <div className="section-naming">
+                    <p className="section-title">LATEST FROM ESC</p>
+                    <div className="section-line"></div>
+                    <div className="section-spacer"></div>
+                    <button className="more-btn" onClick={handleMore}>MORE &gt;</button>
+                </div>
+                <div className="lastest-news-container">
+                    <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center' }}>
+                        Loading news...
+                    </p>
+                </div>
+            </section>
+        );
+    }
+
+    if (error) {
+        return (
+            <section className="lastest-from-esc" id="latest-news">
+                <div className="section-naming">
+                    <p className="section-title">LATEST FROM ESC</p>
+                    <div className="section-line"></div>
+                    <div className="section-spacer"></div>
+                    <button className="more-btn" onClick={handleMore}>MORE &gt;</button>
+                </div>
+                <div className="lastest-news-container">
+                    <p style={{ color: 'red', padding: '40px', textAlign: 'center' }}>
+                        Error loading news: {error}
+                    </p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="lastest-from-esc" id="latest-news">
@@ -41,30 +97,39 @@ const LatestFromEsc = () => {
                 <button className="more-btn" onClick={handleMore}>MORE &gt;</button>
             </div>
             <div className="lastest-news-container">
-                {news.map((item) => {
-                    const { title, theme, date, image, slug } = item;
-                    const imageUrl = image?.url 
-                        ? `${config.API_URL}${image.url}` 
-                        : null;
-                    return (
-                        <div 
-                            className="news" 
-                            key={item.id} 
-                            onClick={() => router.push(`/media/${slug}`)} 
-                            style={{ cursor: 'pointer' }}
-                        >
-                            {imageUrl && <img src={imageUrl} alt={title} />}
-                            <p className="theme">{theme}</p>
-                            <p className="description">{title}</p>
-                            <p className="date">
-                                {new Date(date).toLocaleDateString('en-US', { 
-                                    month: 'short', 
-                                    day: 'numeric' 
-                                })}
-                            </p>
-                        </div>
-                    );
-                })}
+                {news && news.length > 0 ? (
+                    news.map((item) => {
+                        const { title, theme, date, image, slug } = item;
+                        const imageUrl = image?.url 
+                            ? `${config.API_URL}${image.url}` 
+                            : null;
+                        // Используем documentId или id если slug отсутствует
+                        const linkSlug = slug || item.documentId || item.id;
+                        
+                        return (
+                            <div 
+                                className="news" 
+                                key={item.id} 
+                                onClick={() => router.push(`/media/${linkSlug}`)} 
+                                style={{ cursor: 'pointer' }}
+                            >
+                                {imageUrl && <img src={imageUrl} alt={title} />}
+                                <p className="theme">{theme || 'NEWS'}</p>
+                                <p className="description">{title}</p>
+                                <p className="date">
+                                    {new Date(date).toLocaleDateString('en-US', { 
+                                        month: 'short', 
+                                        day: 'numeric' 
+                                    })}
+                                </p>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center' }}>
+                        No news available
+                    </p>
+                )}
             </div>
         </section>
     );

@@ -773,9 +773,12 @@
     font-weight: 800;
     letter-spacing: 1px;
     color: #00d8f5;
+    background: transparent;
+    border: none;
     text-decoration: none;
     text-transform: uppercase;
     transition: opacity 0.2s ease;
+    cursor: pointer;
 }
 
 .leadership-directory:hover {
@@ -927,6 +930,7 @@
     font-weight: 800;
     letter-spacing: 1px;
     color: #00d8f5;
+    background: transparent;
     text-decoration: none;
     text-transform: uppercase;
     padding: 10px 20px;
@@ -934,6 +938,7 @@
     border-radius: 4px;
     transition: all 0.2s ease;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 .federations-directory-btn:hover {
@@ -1239,7 +1244,234 @@
 .flag-cz::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 0; border-left: 10px solid #11457E; border-bottom: 7px solid transparent; }
 .flag-pl { background: linear-gradient(to bottom, #fff 50%, #DC143C 50%); }
 
+/* ========== НОВЫЙ ФОРМАТ EXECUTIVE COMMITTEE ========== */
+.executive-panel {
+    display: none;
+    background: #080F1C;
+    padding: 40px;
+    margin-bottom: 25px;
+    border-radius: 0 0 4px 4px;
+}
+
+.executive-panel.is-open {
+    display: block;
+}
+
+.executive-panel-header {
+    position: relative;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.executive-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+}
+
+.executive-new-card {
+    background: #0B1E33;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.executive-new-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.executive-card-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.executive-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.executive-card-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0B1E33 0%, #06101C 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.executive-card-placeholder span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: #00d8f5;
+    text-transform: uppercase;
+}
+
+.executive-card-role-badge {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0, 216, 245, 0.2);
+    backdrop-filter: blur(4px);
+    padding: 4px 12px;
+    border-radius: 3px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #00d8f5;
+    text-transform: uppercase;
+}
+
+.executive-card-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.executive-card-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.executive-card-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.executive-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.executive-contact-item i {
+    width: 14px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 11px;
+}
+
+.executive-contact-item span {
+    word-break: break-all;
+}
+
+/* Флаги из PNG */
+.assembly-flag-img,
+.executive-flag-img,
+.leader-flag-img,
+.fed-flag-img {
+    width: 24px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+.leader-flag-img {
+    width: 20px;
+    height: 14px;
+}
+
+.executive-country {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.executive-country span {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.executive-contact-email,
+.executive-contact-phone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.executive-contact-email i,
+.executive-contact-phone i {
+    width: 12px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Фото лидеров */
+.leader-photo-img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Адаптив для новых карточек */
+@media (max-width: 1024px) {
+    .executive-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .executive-panel {
+        padding: 20px;
+    }
+    
+    .executive-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .executive-card-image {
+        height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .executive-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .executive-card-image {
+        height: 200px;
+    }
+    
+    .executive-card-name {
+        font-size: 16px;
+    }
+    
+    .executive-contact-item span {
+        font-size: 10px;
+    }
+}
+
 /* ========== АДАПТИВ ========== */
+
+@media (min-width: 1024px) and (max-width: 1350px) {
+    .federations-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
 @media (max-width: 1024px) {
     .about-hero { padding: 80px 24px; }
     .about-hero .breadcrumb-home, .about-hero .breadcrumb-separator, .about-hero .breadcrumb-active, .about-hero .breadcrumb-subtitle { font-size: 12px; letter-spacing: 1.5px; }
