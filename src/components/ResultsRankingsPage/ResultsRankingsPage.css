@@ -1459,6 +1459,76 @@
   margin-top: 8px;
 }
 
+/* ========== SHOT PROGRESS ========== */
+.shot-progress {
+    background: #0B1E33;
+    border-radius: 4px;
+    padding: 24px;
+    margin: 24px 0;
+}
+
+.shot-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.shot-progress-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+}
+
+.shot-progress-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.current-shot {
+    color: #00d8f5;
+    font-weight: 800;
+}
+
+.progress-bar-wrapper {
+    position: relative;
+}
+
+.progress-bar-track {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    position: relative;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: #00d8f5;
+    border-radius: 2px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+}
+
+.progress-markers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.marker {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.3);
+}
+
 /* ============================================
    АДАПТИВ
    ============================================ */
@@ -1578,5 +1648,53 @@
     
     .rankings-search {
         width: 100%;
+    }
+}
+
+/* ============================================
+   RECORDS — АДАПТИВ
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .rankings-table-header[style*="80px"],
+    .rankings-table-row[style*="80px"] {
+        grid-template-columns: 60px 1fr 200px 90px 90px 1fr 100px !important;
+        gap: 8px;
+        padding: 12px 14px;
+        font-size: 10px;
+    }
+    
+    .rankings-table-header[style*="80px"] .rt-col {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
+}
+
+@media (max-width: 768px) {
+    .rankings-table-container {
+        overflow-x: auto;
+    }
+    
+    .rankings-table-header[style*="80px"],
+    .rankings-table-row[style*="80px"] {
+        min-width: 650px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rankings-table-header[style*="80px"],
+    .rankings-table-row[style*="80px"] {
+        min-width: 580px;
+        grid-template-columns: 50px 1fr 150px 70px 70px 1fr 80px !important;
+        gap: 6px;
+        padding: 10px 12px;
+    }
+    
+    .rankings-table-row[style*="80px"] .athlete-name {
+        font-size: 11px;
+    }
+    
+    .rankings-table-row[style*="80px"] .rt-fed span {
+        font-size: 10px;
     }
 }

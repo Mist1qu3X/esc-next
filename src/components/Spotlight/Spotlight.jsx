@@ -1,4 +1,4 @@
-/*'use client';
+'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
@@ -109,4 +109,4 @@ const Spotlight = () => {
     );
 };
 
-export default Spotlight; */
+export default Spotlight;
