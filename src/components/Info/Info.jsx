@@ -42,8 +42,15 @@ const Info = () => {
 
     if (loading) return <section className="info-section"></section>;
 
+    const heroImg = championship?.image?.url
+        ? `${config.API_URL}${championship.image.url}`
+        : null;
+
     return (
-        <section className="info-section">
+        <section
+            className="info-section"
+            style={heroImg ? { '--hero-img': `url(${heroImg})` } : undefined}
+        >
             <div className="info-section-content">
                 <p className="info-section-nameing">
                     {championship?.title?.split('\n').map((line, i) => (
