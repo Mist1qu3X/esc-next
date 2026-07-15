@@ -12,6 +12,7 @@ const DiscoverPage = () => {
   const [milestones, setMilestones] = useState([]);
   const [governance, setGovernance] = useState([]);
   const [committeeMembers, setCommitteeMembers] = useState([]);
+  const [coreValues, setCoreValues] = useState([]);
   const [openPanels, setOpenPanels] = useState({});
   const [filterRegion, setFilterRegion] = useState('ALL');
   const router = useRouter();
@@ -19,13 +20,14 @@ const DiscoverPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [aboutRes, leadersRes, fedsRes, milestonesRes, govRes, membersRes] = await Promise.all([
+        const [aboutRes, leadersRes, fedsRes, milestonesRes, govRes, membersRes, coreRes] = await Promise.all([
           axios.get(`${config.API_URL}/api/about-pages?populate=*`),
           axios.get(`${config.API_URL}/api/leaders?populate=*&sort=order:asc`),
           axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/heritage-milestones?sort=order:asc`),
           axios.get(`${config.API_URL}/api/governances?sort=order:asc&pagination[limit]=20`),
           axios.get(`${config.API_URL}/api/committee-members?populate=*&pagination[limit]=100`),
+          axios.get(`${config.API_URL}/api/core-values?sort=order:asc`),
         ]);
 
         setPageData(
@@ -38,6 +40,7 @@ const DiscoverPage = () => {
         setMilestones(milestonesRes.data?.data || []);
         setGovernance(govRes.data?.data || []);
         setCommitteeMembers(membersRes.data?.data || []);
+        setCoreValues(coreRes.data?.data || []);
       } catch (e) {
         console.error('Ошибка загрузки Discover:', e);
       }
@@ -71,6 +74,35 @@ const DiscoverPage = () => {
       return `${config.API_URL}/uploads/flags/${flag.toLowerCase()}.png`;
     }
     return null;
+  };
+
+  // Иконки CORE VALUES по ключу iconKey из Strapi
+  const renderCoreIcon = (key) => {
+    switch (key) {
+      case 'shield':
+        return (
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M11 1L3 5V11C3 15.5 6.5 19.5 11 21C15.5 19.5 19 15.5 19 11V5L11 1Z" stroke="#00d8f5" strokeWidth="1.5" strokeLinejoin="round"/>
+          </svg>
+        );
+      case 'globe':
+        return (
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="11" r="9.5" stroke="#00d8f5" strokeWidth="1.5"/>
+            <ellipse cx="11" cy="11" rx="4.5" ry="9.5" stroke="#00d8f5" strokeWidth="1.5"/>
+            <line x1="2" y1="11" x2="20" y2="11" stroke="#00d8f5" strokeWidth="1.5"/>
+          </svg>
+        );
+      case 'target':
+      default:
+        return (
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <circle cx="11" cy="11" r="10" stroke="#00d8f5" strokeWidth="1.5"/>
+            <circle cx="11" cy="11" r="6" stroke="#00d8f5" strokeWidth="1.5"/>
+            <circle cx="11" cy="11" r="2" fill="#00d8f5"/>
+          </svg>
+        );
+    }
   };
 
   const assembly = governance.find(g => g.type === 'legislative');
@@ -116,7 +148,10 @@ const DiscoverPage = () => {
 
   return (
     <>
-      <section className="about-hero">
+      <section
+        className={`about-hero ${pageData?.heroImage ? 'has-hero-image' : ''}`}
+        style={pageData?.heroImage ? { '--hero-img': `url(${getImageUrl(pageData.heroImage)})` } : undefined}
+      >
         <div className="breadcrumbs-row">
           <span className="breadcrumb-home">HOME</span>
           <span className="breadcrumb-separator">›</span>
@@ -163,37 +198,125 @@ const DiscoverPage = () => {
           <span className="core-subtitle">CORE VALUES</span>
         </div>
         <div className="core-cards">
-          <div className="core-card">
-            <div className="core-icon-box">
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                <circle cx="11" cy="11" r="10" stroke="#00d8f5" strokeWidth="1.5"/>
-                <circle cx="11" cy="11" r="6" stroke="#00d8f5" strokeWidth="1.5"/>
-                <circle cx="11" cy="11" r="2" fill="#00d8f5"/>
-              </svg>
+          {coreValues.map((cv) => (
+            <div className="core-card" key={cv.id}>
+              <div className="core-icon-box">
+                {renderCoreIcon(cv.iconKey)}
+              </div>
+              <h3 className="core-card-title">{cv.title}</h3>
+              <p className="core-card-text">{cv.text}</p>
             </div>
-            <h3 className="core-card-title">EXCELLENCE</h3>
-            <p className="core-card-text">We set and uphold the highest standards of athletic competition, officiating, and event quality across Europe.</p>
+          ))}
+        </div>
+      </section>
+
+      <section className="member-federations">
+        <div className="federations-next-layer">
+          <span className="federations-line"></span>
+          <span className="federations-subtitle">MEMBER FEDERATIONS</span>
+        </div>
+        <div className="federations-header">
+          <h2 className="federations-title">47 NATIONS,<br />ONE CONFEDERATION</h2>
+          <button className="federations-directory-btn" onClick={handleFullDirectory}>
+            FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+        <div className="federations-filter">
+          <div className="filter-tabs">
+            {regions.map((r) => (
+              <button key={r} className={`filter-tab ${filterRegion === r ? 'active' : ''}`}
+                onClick={() => setFilterRegion(r)}>{r}</button>
+            ))}
           </div>
-          <div className="core-card">
-            <div className="core-icon-box">
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                <path d="M11 1L3 5V11C3 15.5 6.5 19.5 11 21C15.5 19.5 19 15.5 19 11V5L11 1Z" stroke="#00d8f5" strokeWidth="1.5" strokeLinejoin="round"/>
-              </svg>
+          <div className="filter-count"><i className="fa-solid fa-users"></i><span>{filteredFeds.length} federations</span></div>
+        </div>
+        <div className="federations-grid">
+          {filteredFeds.slice(0, 12).map((fed) => (
+            <div className="federation-card" key={fed.id}>
+              <img 
+                src={getFlagUrl(fed.flag || fed.countryCode)} 
+                alt={fed.countryCode}
+                className="fed-flag-img"
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+              <div className="fed-info">
+                <h3 className="fed-name">{fed.country}</h3>
+                <span className="fed-code">{fed.countryCode}</span>
+                <span className="fed-since">Since {fed.since}</span>
+              </div>
+              <span className="fed-region">{fed.region}</span>
             </div>
-            <h3 className="core-card-title">INTEGRITY</h3>
-            <p className="core-card-text">Fair play, anti-doping compliance, and transparent governance are non-negotiable pillars of our federation.</p>
+          ))}
+        </div>
+        <div className="federations-show-all">
+          <button className="show-all-btn" onClick={handleShowAllMembers}>
+            SHOW ALL {federations.length} MEMBERS <i className="fa-solid fa-chevron-down"></i>
+          </button>
+        </div>
+      </section>
+
+      <section className="heritage">
+        <div className="heritage-header">
+          <div className="heritage-next-layer">
+            <span className="heritage-line"></span>
+            <span className="heritage-subtitle">{pageData?.heritageSubtitle}</span>
           </div>
-          <div className="core-card">
-            <div className="core-icon-box">
-              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                <circle cx="11" cy="11" r="9.5" stroke="#00d8f5" strokeWidth="1.5"/>
-                <ellipse cx="11" cy="11" rx="4.5" ry="9.5" stroke="#00d8f5" strokeWidth="1.5"/>
-                <line x1="2" y1="11" x2="20" y2="11" stroke="#00d8f5" strokeWidth="1.5"/>
-              </svg>
+          <h2 className="heritage-title">{pageData?.heritageTitle}</h2>
+          {pageData?.heritageText && <p className="heritage-text">{pageData?.heritageText}</p>}
+        </div>
+        <div className="heritage-cards">
+          {milestones.map((m) => (
+            <div className="heritage-card" key={m.id}>
+              <span className="heritage-card-head">
+                <span className="heritage-year">{m.year}</span>
+                {m.title && (
+                  <>
+                    <span className="heritage-sep">|</span>
+                    <span className="heritage-name">{m.title}</span>
+                  </>
+                )}
+              </span>
+              <span className="heritage-desc">{m.description}</span>
             </div>
-            <h3 className="core-card-title">INCLUSION</h3>
-            <p className="core-card-text">We support the development of the sport in every member nation, from established powers to emerging federations.</p>
+          ))}
+        </div>
+      </section>
+
+      <section className="leadership">
+        <div className="leadership-header">
+          <div className="leadership-naming">
+            <span className="leadership-line"></span>
+            <span className="leadership-title">LEADERSHIP</span>
           </div>
+          <button className="leadership-directory" onClick={handleFullDirectory}>
+            FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+        <div className="leadership-cards">
+          {leaders.slice(0, 4).map((l) => (
+            <div className="leader-card" key={l.id} onClick={() => handleLeaderClick(l.id)}>
+              <div className="leader-photo">
+                {l.image ? (
+                  <img src={getImageUrl(l.image)} alt={l.name} className="leader-photo-img" />
+                ) : (
+                  <span className="leader-initials">{l.initials}</span>
+                )}
+              </div>
+              <div className="leader-info">
+                <h3 className="leader-name">{l.name}</h3>
+                <p className="leader-role">{l.role}</p>
+                <div className="leader-country">
+                  <img
+                    src={getFlagUrl(l.flag || l.countryCode)}
+                    alt={l.countryCode}
+                    className="leader-flag-img"
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                  <span>{l.country}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -356,112 +479,6 @@ const DiscoverPage = () => {
           )
         );
       })}
-      </section>
-
-      <section className="leadership">
-        <div className="leadership-header">
-          <div className="leadership-naming">
-            <span className="leadership-line"></span>
-            <span className="leadership-title">LEADERSHIP</span>
-          </div>
-          <button className="leadership-directory" onClick={handleFullDirectory}>
-            FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
-          </button>
-        </div>
-        <div className="leadership-cards">
-          {leaders.slice(0, 4).map((l) => (
-            <div className="leader-card" key={l.id} onClick={() => handleLeaderClick(l.id)}>
-              <div className="leader-photo">
-                {l.image ? (
-                  <img src={getImageUrl(l.image)} alt={l.name} className="leader-photo-img" />
-                ) : (
-                  <span className="leader-initials">{l.initials}</span>
-                )}
-              </div>
-              <div className="leader-info">
-                <h3 className="leader-name">{l.name}</h3>
-                <p className="leader-role">{l.role}</p>
-                <div className="leader-country">
-                  <img 
-                    src={getFlagUrl(l.flag || l.countryCode)} 
-                    alt={l.countryCode}
-                    className="leader-flag-img"
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                  <span>{l.country}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="member-federations">
-        <div className="federations-next-layer">
-          <span className="federations-line"></span>
-          <span className="federations-subtitle">MEMBER FEDERATIONS</span>
-        </div>
-        <div className="federations-header">
-          <h2 className="federations-title">47 NATIONS,<br />ONE CONFEDERATION</h2>
-          <button className="federations-directory-btn" onClick={handleFullDirectory}>
-            FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
-          </button>
-        </div>
-        <div className="federations-filter">
-          <div className="filter-tabs">
-            {regions.map((r) => (
-              <button key={r} className={`filter-tab ${filterRegion === r ? 'active' : ''}`}
-                onClick={() => setFilterRegion(r)}>{r}</button>
-            ))}
-          </div>
-          <div className="filter-count"><i className="fa-solid fa-users"></i><span>{filteredFeds.length} federations</span></div>
-        </div>
-        <div className="federations-grid">
-          {filteredFeds.slice(0, 12).map((fed) => (
-            <div className="federation-card" key={fed.id}>
-              <img 
-                src={getFlagUrl(fed.flag || fed.countryCode)} 
-                alt={fed.countryCode}
-                className="fed-flag-img"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-              <div className="fed-info">
-                <h3 className="fed-name">{fed.country}</h3>
-                <span className="fed-code">{fed.countryCode}</span>
-                <span className="fed-since">Since {fed.since}</span>
-              </div>
-              <span className="fed-region">{fed.region}</span>
-            </div>
-          ))}
-        </div>
-        <div className="federations-show-all">
-          <button className="show-all-btn" onClick={handleShowAllMembers}>
-            SHOW ALL {federations.length} MEMBERS <i className="fa-solid fa-chevron-down"></i>
-          </button>
-        </div>
-      </section>
-
-      <section className="heritage">
-        <div className="heritage-container">
-          <div className="heritage-left">
-            <div className="heritage-next-layer">
-              <span className="heritage-line"></span>
-              <span className="heritage-subtitle">{pageData?.heritageSubtitle}</span>
-            </div>
-            <h2 className="heritage-title">{pageData?.heritageTitle}</h2>
-            <p className="heritage-text">{pageData?.heritageText}</p>
-          </div>
-          <div className="heritage-right">
-            <div className="heritage-cards">
-              {milestones.map((m) => (
-                <div className="heritage-card" key={m.id}>
-                  <span className="heritage-year">{m.year}</span>
-                  <span className="heritage-desc">{m.description}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </section>
     </>
   );

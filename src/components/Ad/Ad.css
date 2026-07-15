@@ -19,7 +19,7 @@
 .ad-content {
     display: flex;
     align-items: center;
-    padding: 48px 0;
+    padding: 24px 0;
 }
 
 /* Бегущая строка */
@@ -86,7 +86,7 @@
     }
 
     .ad-content {
-        padding: 40px 0;
+        padding: 20px 0;
     }
 
     .ad-track {
@@ -100,7 +100,7 @@
 
 @media (max-width: 768px) {
     .ad-content {
-        padding: 32px 0;
+        padding: 16px 0;
     }
 
     .ad-track {
@@ -133,7 +133,7 @@
     }
 
     .ad-content {
-        padding: 24px 0;
+        padding: 12px 0;
     }
 
     .ad-track {

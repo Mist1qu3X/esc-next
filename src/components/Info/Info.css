@@ -22,9 +22,9 @@ body {
     overflow: hidden;
     
     background: linear-gradient(
-        rgba(6, 18, 31, 0.85), 
+        rgba(6, 18, 31, 0.85),
         rgba(6, 18, 31, 0.85)
-    ), url(/img/back1.png);
+    ), var(--hero-img, url(/img/back1.png));
     
     background-size: cover;
     background-position: center;
