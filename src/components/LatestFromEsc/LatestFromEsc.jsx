@@ -14,23 +14,20 @@ const LatestFromEsc = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                console.log('Fetching news from:', `${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[limit]=4`);
-                
                 const response = await axios.get(
-                    `${config.API_URL}/api/news-items?populate=*&sort=date:desc&limit=4`
+                    `${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[limit]=4`
                 );
-                
-                console.log('Response:', response);
-                
-                // Проверяем структуру ответа
+
+                // Проверяем структуру ответа и оставляем максимум 4 новости
+                let items = [];
                 if (response.data && response.data.data) {
-                    setNews(response.data.data);
+                    items = response.data.data;
                 } else if (Array.isArray(response.data)) {
-                    setNews(response.data);
+                    items = response.data;
                 } else {
                     console.warn('Unexpected response structure:', response.data);
-                    setNews([]);
                 }
+                setNews(items.slice(0, 4));
                 setLoading(false);
             } catch (error) {
                 console.error('Ошибка загрузки:', error);

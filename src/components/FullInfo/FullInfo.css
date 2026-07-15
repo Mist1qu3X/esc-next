@@ -358,6 +358,18 @@
 
 .ranking-list {
     flex: 1;
+    animation: ranking-fade 0.5s ease;
+}
+
+@keyframes ranking-fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ranking-list {
+        animation: none;
+    }
 }
 
 .ranking-item {

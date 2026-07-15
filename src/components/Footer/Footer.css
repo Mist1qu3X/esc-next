@@ -68,6 +68,27 @@
     transform: translateY(-2px);
 }
 
+/* Иконки соц. сетей из Strapi */
+.social-icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.6;
+}
+
+.social-icon-link:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+.social-icon-link img {
+    width: clamp(18px, 1.6vw, 22px);
+    height: clamp(18px, 1.6vw, 22px);
+    object-fit: contain;
+    display: block;
+}
+
 .reading-links {
     display: flex;
     gap: clamp(12px, 2vw, 32px);
@@ -121,31 +142,12 @@
     margin-bottom: 16px;
 }
 
-.logo-wrapper img {
-    width: 48px;
+.logo-wrapper img.logo-full {
     height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.logo-wrapper h4 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: clamp(20px, 2vw, 28px);
-    font-weight: 900;
-    color: #ffffff;
-    margin: 0;
-}
-
-/* Полное название для мобильной версии (скрыто по умолчанию) */
-.logo-wrapper .full-title {
-    display: none;
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: clamp(11px, 1.2vw, 14px);
-    font-weight: 600;
-    color: #ffffff;
-    letter-spacing: 0.5px;
-    line-height: 1.2;
-    max-width: 160px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
 }
 
 .info-corp {
@@ -260,15 +262,11 @@
         width: calc(100% + 48px);
     }
     
-    /* Логотип — полное название вместо ESC */
-    .logo-wrapper h4 {
-        display: none;
+    /* Логотип Logo_full — слегка уменьшаем */
+    .logo-wrapper img.logo-full {
+        height: 44px;
     }
-    
-    .logo-wrapper .full-title {
-        display: block;
-    }
-    
+
     .other-links-container {
         flex-wrap: wrap;
         gap: 30px;
@@ -346,11 +344,10 @@
         margin-bottom: 0;
     }
     
-    .logo-wrapper img {
-        width: 40px;
+    .logo-wrapper img.logo-full {
         height: 40px;
     }
-    
+
     .info-corp {
         font-size: 12px;
     }

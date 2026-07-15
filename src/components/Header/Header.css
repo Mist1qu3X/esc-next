@@ -39,33 +39,11 @@
         opacity: 0.85;
     }
 
-    .logospace img {
-        width: 44px;
+    .logospace img.logo-full {
         height: 44px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 1px solid rgba(0, 216, 245, 0.3);
-        transition: border-color 0.2s;
-    }
-
-    .logospace h1 {
-        color: #fff;
-        font-family: 'Barlow Condensed', sans-serif;
-        font-size: 28px;
-        font-weight: 900;
-        letter-spacing: 1px;
-        margin: 0;
-    }
-
-    .logospace .full-title {
-        display: none;
-        font-family: 'Barlow Condensed', sans-serif;
-        font-size: 14px;
-        font-weight: 600;
-        color: #fff;
-        letter-spacing: 0.5px;
-        margin: 0;
-        line-height: 1.2;
+        width: auto;
+        object-fit: contain;
+        display: block;
     }
 
     /* Navigation */
@@ -80,7 +58,7 @@
         position: relative;
         padding: 8px 0;
         color: #8b9bb0;
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 500;
         text-decoration: none;
         letter-spacing: 0.3px;
@@ -384,17 +362,12 @@
         .header {
             padding: 0 20px;
         }
-        
-        /* ESC → полное название */
-        .logospace h1 {
-            display: none;
+
+        /* Логотип Logo_full — слегка уменьшаем */
+        .logospace img.logo-full {
+            height: 40px;
         }
-        
-        .logospace .full-title {
-            display: block;
-            max-width: 160px;
-        }
-        
+
         /* Убираем стрелку у кнопки */
         .search-input-button .arrow {
             display: none;
@@ -430,22 +403,11 @@
             height: 60px;
         }
         
-        /* Логотип: полное название (не ESC!) */
-        .logospace h1 {
-            display: none;
+        /* Логотип Logo_full — компактный размер для мобильных */
+        .logospace img.logo-full {
+            height: 34px;
         }
-        
-        .logospace .full-title {
-            display: block;
-            font-size: 12px;
-            max-width: 130px;
-        }
-        
-        .logospace img {
-            width: 36px;
-            height: 36px;
-        }
-        
+
         /* Кнопка ENTRY SYSTEM полностью пропадает */
         .search-input-button {
             display: none;

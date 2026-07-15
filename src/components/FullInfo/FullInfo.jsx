@@ -9,8 +9,13 @@ const FullInfo = () => {
     const [events, setEvents] = useState([]);
     const [rankings, setRankings] = useState([]);
     const [championship, setChampionship] = useState(null);
+    const [platform, setPlatform] = useState(null);
+    const [activeCategory, setActiveCategory] = useState('MEN');
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
     const router = useRouter();
+
+    // Категории для ротации ESC RANKING (муж → жен → по кругу)
+    const RANKING_CATEGORIES = ['MEN', 'WOMEN'];
 
     // Загрузка чемпионата
     useEffect(() => {
@@ -23,6 +28,19 @@ const FullInfo = () => {
             } catch (e) { console.error(e); }
         };
         fetchChampionship();
+    }, []);
+
+    // Загрузка блока ESC PLATFORM
+    useEffect(() => {
+        const fetchPlatform = async () => {
+            try {
+                const res = await axios.get(`${config.API_URL}/api/esc-platforms?populate=*`);
+                if (res.data.data.length > 0) {
+                    setPlatform(res.data.data[0]);
+                }
+            } catch (e) { console.error('Ошибка загрузки ESC PLATFORM:', e); }
+        };
+        fetchPlatform();
     }, []);
 
     // Таймер
@@ -69,6 +87,28 @@ const FullInfo = () => {
         fetchRankings();
     }, []);
 
+    // Ротация категорий рейтинга каждые 5 секунд (муж ↔ жен по кругу)
+    useEffect(() => {
+        const present = RANKING_CATEGORIES.filter(
+            (cat) => rankings.some((r) => r.category === cat)
+        );
+        if (present.length < 2) {
+            // Нечего чередовать — показываем то, что есть
+            if (present.length === 1) setActiveCategory(present[0]);
+            return;
+        }
+        // Гарантируем, что активная категория валидна
+        setActiveCategory((prev) => (present.includes(prev) ? prev : present[0]));
+
+        const interval = setInterval(() => {
+            setActiveCategory((prev) => {
+                const idx = present.indexOf(prev);
+                return present[(idx + 1) % present.length];
+            });
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [rankings]);
+
     const handleEventInfo = () => {
         if (championship?.slug) {
             router.push(`/events/${championship.slug}`);
@@ -76,7 +116,12 @@ const FullInfo = () => {
     };
 
     const handleEntrySystem = () => {
-        router.push('/documents');
+        const link = platform?.buttonLink || '/documents';
+        if (/^https?:\/\//.test(link)) {
+            window.open(link, '_blank');
+        } else {
+            router.push(link);
+        }
     };
 
     const handleAllEvents = () => {
@@ -137,13 +182,17 @@ const FullInfo = () => {
                     {/* PART 2 - ESC PLATFORM */}
                     <div className="part2">
                         <div className="part-top">
-                            <p className="theme2">ESC PLATFORM</p>
-                            <p className="title2">GET CLOSER<br /> TO THE ACTION</p>
-                            <p className="card-text2">Access live results, rankings, and event documents all in one place.</p>
+                            <p className="theme2">{platform?.theme}</p>
+                            <p className="title2">
+                                {platform?.title?.split('\n').map((line, i, arr) => (
+                                    <React.Fragment key={i}>{line}{i < arr.length - 1 && <br />}</React.Fragment>
+                                ))}
+                            </p>
+                            <p className="card-text2">{platform?.text}</p>
                         </div>
                         <div className="part-bottom">
                             <button className="entry-system-btn" onClick={handleEntrySystem}>
-                                ENTRY SYSTEM &gt;
+                                {platform?.buttonLabel || 'ENTRY SYSTEM'} &gt;
                             </button>
                         </div>
                     </div>
@@ -190,26 +239,30 @@ const FullInfo = () => {
                             <h4>ESC RANKING</h4>
                             <button className="go-to-full" onClick={handleFull}>FULL &gt;</button>
                         </div>
-                        <p className="description">10M AIR RIFLE W</p>
-                        <div className="ranking-list">
-                            {rankings.map((item) => {
-                                const { position, athleteName, country, points } = item;
-                                return (
-                                    <div 
-                                        className={`ranking-item ${position === 1 ? 'first-place' : ''}`} 
-                                        key={item.id}
-                                    >
-                                        <div className="rank-info">
-                                            <span className="rank">{position}</span>
-                                            <div className="athlete-info">
-                                                <span className="name">{athleteName}</span>
-                                                <span className="country">{country}</span>
+                        <p className="description">
+                            10M AIR RIFLE {activeCategory === 'WOMEN' ? 'W' : activeCategory === 'MEN' ? 'M' : ''}
+                        </p>
+                        <div className="ranking-list" key={activeCategory}>
+                            {rankings
+                                .filter((item) => item.category === activeCategory)
+                                .map((item) => {
+                                    const { position, athleteName, country, points } = item;
+                                    return (
+                                        <div
+                                            className={`ranking-item ${position === 1 ? 'first-place' : ''}`}
+                                            key={item.id}
+                                        >
+                                            <div className="rank-info">
+                                                <span className="rank">{position}</span>
+                                                <div className="athlete-info">
+                                                    <span className="name">{athleteName}</span>
+                                                    <span className="country">{country}</span>
+                                                </div>
                                             </div>
+                                            <span className="points">{points}</span>
                                         </div>
-                                        <span className="points">{points}</span>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
                         </div>
                     </div>
                 </div>

@@ -18,37 +18,59 @@
 /* Контент секции */
 .ad-content {
     display: flex;
-    justify-content: center;
     align-items: center;
     padding: 48px 0;
 }
 
-/* Логотипы в ряд */
-.ad-logos {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
+/* Бегущая строка */
+.ad-marquee {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    /* Плавное затухание по краям */
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
 }
 
-.ad-logos img {
+.ad-track {
+    display: flex;
+    align-items: center;
+    gap: 56px;
+    width: max-content;
+    animation: ad-marquee-scroll 40s linear infinite;
+}
+
+/* Пауза при наведении */
+.ad-marquee:hover .ad-track {
+    animation-play-state: paused;
+}
+
+@keyframes ad-marquee-scroll {
+    from { transform: translateX(0); }
+    /* Список продублирован ×2, поэтому сдвиг на половину = бесшовный цикл */
+    to { transform: translateX(-50%); }
+}
+
+.ad-track img {
     height: 56px;
     width: auto;
     object-fit: contain;
     opacity: 0.6;
     transition: opacity 0.2s ease, transform 0.2s ease;
-    cursor: pointer;
+    flex-shrink: 0;
 }
 
-.ad-logos img:hover {
+.ad-track img:hover {
     opacity: 1;
     transform: scale(1.05);
 }
 
-.ad-logos a {
-    display: inline-flex;
-    text-decoration: none;
+@media (prefers-reduced-motion: reduce) {
+    .ad-track {
+        animation: none;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }
 
 /* ========== АДАПТИВНОСТЬ ========== */
@@ -57,21 +79,21 @@
     .ad {
         padding: 0 20px;
     }
-    
+
     .ad-divider {
         width: calc(100% + 40px);
         margin-left: -20px;
     }
-    
+
     .ad-content {
         padding: 40px 0;
     }
-    
-    .ad-logos {
-        gap: 32px;
+
+    .ad-track {
+        gap: 44px;
     }
-    
-    .ad-logos img {
+
+    .ad-track img {
         height: 48px;
     }
 }
@@ -80,22 +102,22 @@
     .ad-content {
         padding: 32px 0;
     }
-    
-    .ad-logos {
-        gap: 24px;
+
+    .ad-track {
+        gap: 36px;
     }
-    
-    .ad-logos img {
+
+    .ad-track img {
         height: 42px;
     }
 }
 
 @media (max-width: 640px) {
-    .ad-logos {
-        gap: 20px;
+    .ad-track {
+        gap: 28px;
     }
-    
-    .ad-logos img {
+
+    .ad-track img {
         height: 38px;
     }
 }
@@ -104,21 +126,21 @@
     .ad {
         padding: 0 16px;
     }
-    
+
     .ad-divider {
         width: calc(100% + 32px);
         margin-left: -16px;
     }
-    
+
     .ad-content {
         padding: 24px 0;
     }
-    
-    .ad-logos {
-        gap: 16px;
+
+    .ad-track {
+        gap: 24px;
     }
-    
-    .ad-logos img {
+
+    .ad-track img {
         height: 32px;
     }
 }
