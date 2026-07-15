@@ -1,17 +1,47 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import config from '@/lib/config';
 import './Footer.css';
 
 const Footer = () => {
+    const [socialLinks, setSocialLinks] = useState([]);
+
+    useEffect(() => {
+        const fetchSocialLinks = async () => {
+            try {
+                const res = await axios.get(
+                    `${config.API_URL}/api/social-links?populate=*&sort=order:asc`
+                );
+                setSocialLinks(res.data.data || []);
+            } catch (error) {
+                console.error('Ошибка загрузки соц. сетей:', error);
+            }
+        };
+        fetchSocialLinks();
+    }, []);
+
     return (
         <footer className="footer">
             <div className="social-container">
                 <div className="social-links">
                     <p className="social-text">FOLLOW ESC</p>
-                    <i className="fa-brands fa-instagram"></i>
-                    <i className="fa-brands fa-twitter"></i>
-                    <i className="fa-brands fa-facebook"></i>
-                    <i className="fa-brands fa-youtube"></i>
+                    {socialLinks.map((link) => {
+                        const { id, platform, url, icon } = link;
+                        const iconUrl = icon?.url ? `${config.API_URL}${icon.url}` : null;
+                        return (
+                            <a
+                                key={id}
+                                href={url || '#'}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="social-icon-link"
+                                aria-label={platform}
+                            >
+                                {iconUrl && <img src={iconUrl} alt={platform} />}
+                            </a>
+                        );
+                    })}
                 </div>
                 <div className="reading-links">
                     <a href="#">PRIVACY POLICY</a>
@@ -24,9 +54,7 @@ const Footer = () => {
             <div className="other-links-container">
                 <div className="logo-inf">
                     <div className="logo-wrapper">
-                        <img src="/img/logo.svg" alt="ESC Logo" />
-                        <h4>ESC</h4>
-                        <span className="full-title">European Shooting Confederation</span>
+                        <img src="/img/Logo_full.png" alt="European Shooting Confederation" className="logo-full" />
                     </div>
                     <p className="info-corp">
                         The official governing body for precision shooting sport in Europe.
