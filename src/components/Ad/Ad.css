@@ -35,7 +35,7 @@
 .ad-track {
     display: flex;
     align-items: center;
-    gap: 56px;
+    gap: 10px;
     width: max-content;
     animation: ad-marquee-scroll 40s linear infinite;
 }
@@ -90,7 +90,7 @@
     }
 
     .ad-track {
-        gap: 44px;
+        gap: 10px;
     }
 
     .ad-track img {
@@ -104,7 +104,7 @@
     }
 
     .ad-track {
-        gap: 36px;
+        gap: 10px;
     }
 
     .ad-track img {
@@ -114,7 +114,7 @@
 
 @media (max-width: 640px) {
     .ad-track {
-        gap: 28px;
+        gap: 10px;
     }
 
     .ad-track img {
@@ -137,7 +137,7 @@
     }
 
     .ad-track {
-        gap: 24px;
+        gap: 10px;
     }
 
     .ad-track img {
