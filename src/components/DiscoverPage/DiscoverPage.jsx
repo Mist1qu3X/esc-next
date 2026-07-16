@@ -291,7 +291,7 @@ const DiscoverPage = () => {
           </button>
         </div>
         <div className="leadership-cards">
-          {leaders.slice(0, 4).map((l) => (
+          {leaders.slice(0, 3).map((l) => (
             <div className="leader-card" key={l.id} onClick={() => handleLeaderClick(l.id)}>
               <div className="leader-photo">
                 {l.image ? (
@@ -303,15 +303,6 @@ const DiscoverPage = () => {
               <div className="leader-info">
                 <h3 className="leader-name">{l.name}</h3>
                 <p className="leader-role">{l.role}</p>
-                <div className="leader-country">
-                  <img
-                    src={getFlagUrl(l.flag || l.countryCode)}
-                    alt={l.countryCode}
-                    className="leader-flag-img"
-                    onError={(e) => { e.target.style.display = 'none'; }}
-                  />
-                  <span>{l.country}</span>
-                </div>
               </div>
             </div>
           ))}

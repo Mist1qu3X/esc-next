@@ -861,19 +861,20 @@
 }
 
 .leadership-cards {
-    display: flex;
-    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 326px));
+    justify-content: center;
+    gap: 25px;
 }
 
 .leader-card {
-    width: 342px;
-    height: 200px;
+    width: 100%;
+    max-width: 326px;
     background: #0B1E33;
-    padding: 24px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    overflow: hidden;
+    cursor: pointer;
     transition: all 0.2s ease;
 }
 
@@ -887,17 +888,19 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    padding: 16px 20px;
     text-align: left;
 }
 
 .leader-name {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     color: #ffffff;
     text-transform: uppercase;
     margin: 0;
-    white-space: nowrap;
+    line-height: 1.1;
+    white-space: normal;
 }
 
 .leader-role {
@@ -925,19 +928,19 @@
 }
 
 .leader-photo {
-    width: 56px;
-    height: 56px;
-    border-radius: 4px;
+    width: 100%;
+    aspect-ratio: 326 / 408;
     background: rgba(0, 216, 245, 0.15);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .leader-initials {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 22px;
+    font-size: 64px;
     font-weight: 900;
     color: #00d8f5;
     text-transform: uppercase;
@@ -1367,7 +1370,7 @@
 .executive-card-image {
     position: relative;
     width: 100%;
-    height: 200px;
+    aspect-ratio: 326 / 408;
     overflow: hidden;
 }
 
@@ -1501,10 +1504,10 @@
 
 /* Фото лидеров */
 .leader-photo-img {
-    width: 56px;
-    height: 56px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 0;
 }
 
 /* Адаптив для новых карточек */
@@ -1580,12 +1583,10 @@
     .executive-members { grid-template-columns: repeat(2, 1fr); }
 
     .leadership { padding: clamp(40px, 5vw, 60px) clamp(16px, 3vw, 24px); }
-    .leader-card { width: 100%; height: clamp(140px, 18vw, 200px); padding: clamp(12px, 2vw, 24px); min-width: 0; }
-    .leader-name { font-size: clamp(12px, 1.5vw, 18px); white-space: normal; line-height: 1.1; }
-    .leader-role { font-size: clamp(8px, 1vw, 10px); }
-    .leader-country span { font-size: clamp(9px, 1vw, 12px); }
-    .leader-photo { width: clamp(40px, 5vw, 56px); height: clamp(40px, 5vw, 56px); }
-    .leader-initials { font-size: clamp(16px, 2vw, 22px); }
+    .leadership-cards { grid-template-columns: repeat(2, minmax(0, 326px)); }
+    .leader-name { font-size: 18px; }
+    .leader-role { font-size: 10px; }
+    .leader-initials { font-size: 56px; }
 
     .member-federations { padding: 60px 24px; }
     .federations-grid { grid-template-columns: repeat(3, 1fr); }
@@ -1643,10 +1644,9 @@
 
     .leadership { padding: 40px 16px; }
     .leadership-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
-    .leadership-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
-    .leader-card { width: 100%; height: auto; min-height: 140px; padding: 12px; }
-    .leader-photo { width: 40px; height: 40px; }
-    .leader-initials { font-size: 16px; }
+    .leadership-cards { grid-template-columns: minmax(0, 326px); justify-content: center; gap: 16px; }
+    .leader-card { margin: 0 auto; }
+    .leader-initials { font-size: 48px; }
     .leader-name { font-size: 13px; line-height: 1.1; white-space: normal; }
     .leader-role { font-size: 8px; }
     .leader-country span { font-size: 10px; }
