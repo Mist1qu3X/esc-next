@@ -35,7 +35,6 @@
 .ad-track {
     display: flex;
     align-items: center;
-    gap: 10px;
     width: max-content;
     animation: ad-marquee-scroll 40s linear infinite;
 }
@@ -54,6 +53,9 @@
 .ad-track img {
     height: 56px;
     width: auto;
+    /* Отступ задаётся на элементе (а не через gap контейнера),
+       чтобы ширина трека была ровно кратна одной копии — бесшовный цикл */
+    margin-right: 10px;
     object-fit: contain;
     opacity: 0.6;
     transition: opacity 0.2s ease, transform 0.2s ease;
@@ -70,6 +72,7 @@
         animation: none;
         flex-wrap: wrap;
         justify-content: center;
+        row-gap: 10px;
     }
 }
 
@@ -89,10 +92,6 @@
         padding: 20px 0;
     }
 
-    .ad-track {
-        gap: 10px;
-    }
-
     .ad-track img {
         height: 48px;
     }
@@ -103,20 +102,12 @@
         padding: 16px 0;
     }
 
-    .ad-track {
-        gap: 10px;
-    }
-
     .ad-track img {
         height: 42px;
     }
 }
 
 @media (max-width: 640px) {
-    .ad-track {
-        gap: 10px;
-    }
-
     .ad-track img {
         height: 38px;
     }
@@ -134,10 +125,6 @@
 
     .ad-content {
         padding: 12px 0;
-    }
-
-    .ad-track {
-        gap: 10px;
     }
 
     .ad-track img {
