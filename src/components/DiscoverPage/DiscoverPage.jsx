@@ -167,7 +167,10 @@ const DiscoverPage = () => {
         </div>
       </section>
 
-      <section className="who-we-are">
+      <section
+        className={`who-we-are ${pageData?.missionImage ? 'has-bg' : ''}`}
+        style={pageData?.missionImage ? { '--who-img': `url(${getImageUrl(pageData.missionImage)})` } : undefined}
+      >
         <div className="who-we-are-container">
           <div className="who-left">
             <div className="who-next-layer">
@@ -183,11 +186,6 @@ const DiscoverPage = () => {
               <div className="stat-card"><span className="stat-number">{pageData?.statsEvents}</span><span className="stat-label">{pageData?.statsLabelEvents}</span></div>
               <div className="stat-card"><span className="stat-number">{pageData?.statsYears}</span><span className="stat-label">{pageData?.statsLabelYears}</span></div>
             </div>
-          </div>
-          <div className="who-right">
-            {pageData?.missionImage && (
-              <img src={getImageUrl(pageData.missionImage)} alt="ESC" />
-            )}
           </div>
         </div>
       </section>
