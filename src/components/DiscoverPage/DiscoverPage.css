@@ -21,10 +21,10 @@
     background-image:
         linear-gradient(
             90deg,
-            #06101C 0%,
-            #06101C 22%,
-            rgba(6, 16, 28, 0.6) 55%,
-            rgba(6, 16, 28, 0.15) 100%
+            rgba(6, 16, 28, 0.65) 0%,
+            rgba(6, 16, 28, 0.4) 45%,
+            rgba(6, 16, 28, 0.15) 75%,
+            rgba(6, 16, 28, 0.05) 100%
         ),
         var(--hero-img);
     background-size: cover, cover;
@@ -122,11 +122,55 @@
 
 /* ========== СЕКЦИЯ WHO WE ARE ========== */
 .who-we-are {
+    position: relative;
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
     padding: 80px 32px;
     background-color: #06101C;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* missionImage как фон на всю ширину блока WHO WE ARE:
+   полностью прозрачна до 33% (слева виден фон блока), дальше плавно
+   проявляется и видна на остальных 67% */
+.who-we-are.has-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image:
+        linear-gradient(rgba(6, 16, 28, 0.55), rgba(6, 16, 28, 0.55)),
+        var(--who-img);
+    background-size: cover, cover;
+    background-position: center right, center right;
+    background-repeat: no-repeat, no-repeat;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 33%, #000 60%, #000 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, transparent 33%, #000 60%, #000 100%);
+    pointer-events: none;
+}
+
+.who-we-are > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Текст/статы держим в левой части, справа проявляется картинка */
+.who-we-are.has-bg .who-left {
+    flex: 0 1 600px;
+    max-width: 600px;
+}
+
+/* На узких экранах фон убираем — текст на сплошном тёмном (читаемость) */
+@media (max-width: 768px) {
+    .who-we-are.has-bg::before {
+        display: none;
+    }
+    .who-we-are.has-bg .who-left {
+        flex: 1;
+        max-width: 100%;
+    }
 }
 
 .who-we-are-container {
@@ -201,12 +245,6 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    transition: all 0.2s ease;
-}
-
-.stat-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(0, 216, 245, 0.2);
 }
 
 .stat-number {
