@@ -10,19 +10,26 @@
     isolation: isolate;
 }
 
-/* Фоновое изображение OUR TARGET: на весь фон, левые 40% полностью
-   прозрачны, дальше плавный переход к полной видимости */
+/* Фоновое изображение OUR TARGET: растянуто на всю ширину блока,
+   слева затемнено тёмным градиентом (для читаемости текста),
+   справа изображение видно полностью */
 .about-hero.has-hero-image::before {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 0;
-    background-image: var(--hero-img);
-    background-size: cover;
-    background-position: center right;
-    background-repeat: no-repeat;
-    -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 40%, #000 80%, #000 100%);
-    mask-image: linear-gradient(90deg, transparent 0%, transparent 40%, #000 80%, #000 100%);
+    background-image:
+        linear-gradient(
+            90deg,
+            #06101C 0%,
+            #06101C 22%,
+            rgba(6, 16, 28, 0.6) 55%,
+            rgba(6, 16, 28, 0.15) 100%
+        ),
+        var(--hero-img);
+    background-size: cover, cover;
+    background-position: center, center;
+    background-repeat: no-repeat, no-repeat;
     pointer-events: none;
 }
 
@@ -272,8 +279,10 @@
 }
 
 .core-card {
-    width: 457px;
-    height: 240px;
+    flex: 1;
+    min-width: 0;
+    min-height: 240px;
+    height: auto;
     background: #0B1E33;
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 4px;
