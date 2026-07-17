@@ -12,6 +12,7 @@ const DiscoverPage = () => {
   const [milestones, setMilestones] = useState([]);
   const [governance, setGovernance] = useState([]);
   const [committeeMembers, setCommitteeMembers] = useState([]);
+  const [committees, setCommittees] = useState([]);
   const [coreValues, setCoreValues] = useState([]);
   const [openPanels, setOpenPanels] = useState({});
   const [filterRegion, setFilterRegion] = useState('ALL');
@@ -20,13 +21,14 @@ const DiscoverPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [aboutRes, leadersRes, fedsRes, milestonesRes, govRes, membersRes, coreRes] = await Promise.all([
+        const [aboutRes, leadersRes, fedsRes, milestonesRes, govRes, membersRes, committeesRes, coreRes] = await Promise.all([
           axios.get(`${config.API_URL}/api/about-pages?populate=*`),
           axios.get(`${config.API_URL}/api/leaders?populate=*&sort=order:asc`),
           axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/heritage-milestones?sort=order:asc`),
           axios.get(`${config.API_URL}/api/governances?sort=order:asc&pagination[limit]=20`),
           axios.get(`${config.API_URL}/api/committee-members?populate=*&pagination[limit]=100`),
+          axios.get(`${config.API_URL}/api/committees?populate=*&sort=order:asc&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/core-values?sort=order:asc`),
         ]);
 
@@ -40,6 +42,7 @@ const DiscoverPage = () => {
         setMilestones(milestonesRes.data?.data || []);
         setGovernance(govRes.data?.data || []);
         setCommitteeMembers(membersRes.data?.data || []);
+        setCommittees(committeesRes.data?.data || []);
         setCoreValues(coreRes.data?.data || []);
       } catch (e) {
         console.error('Ошибка загрузки Discover:', e);
@@ -108,31 +111,22 @@ const DiscoverPage = () => {
   const assembly = governance.find(g => g.type === 'legislative');
   const executive = governance.find(g => g.type === 'executive');
   
-  // Список комитетов (включая JUDGES COMMITTEE)
-  const committeeList = [
-    'Technical Committee',
-    'Development Committee', 
-    'Athletes Committee',
-    'Judges Committee',
-    'Medical Committee',
-    'Legal Committee'
-  ];
-
-  const committees = committeeList
-    .filter(committeeName => committeeMembers.some(m => m.committee === committeeName))
-    .map(committeeName => {
-      const membersList = committeeMembers.filter(m => m.committee === committeeName);
-      return {
-        id: committeeName.replace(/\s/g, '_'),
-        name: committeeName,
-        members: `${membersList.length} members`,
-        description: `${committeeName} oversees the development and regulation of ${committeeName.toLowerCase().replace(' committee', '')} activities.`
-      };
-    });
-
-  const getCommitteeMembers = (committeeName) => {
-    return committeeMembers.filter(m => m.committee === committeeName);
+  // Участники комитета по связи (relation). У участника committee — объект { id, name, ... } или null
+  const getCommitteeMembers = (committeeId) => {
+    return committeeMembers.filter(m => (m.committee?.id ?? m.committee) === committeeId);
   };
+
+  // Карточки комитетов строятся из коллекции Committee (названия редактируются в Strapi)
+  const committeeCards = committees.map((c) => {
+    const membersList = getCommitteeMembers(c.id);
+    return {
+      id: `committee_${c.id}`,
+      committeeId: c.id,
+      name: c.name,
+      members: `${membersList.length} members`,
+      description: c.description || `${c.name} oversees ESC activities.`,
+    };
+  });
 
   const handleFullDirectory = () => {
     router.push('/members');
@@ -412,10 +406,10 @@ const DiscoverPage = () => {
           </>
         )}
         
-        {/* Комитеты - Technical, Development, Athletes, Judges */}
-        {committees.length > 0 && (
+        {/* Комитеты — названия и состав редактируются в Strapi (коллекция Committee) */}
+        {committeeCards.length > 0 && (
           <div className="committee-cards">
-            {committees.map((c) => (
+            {committeeCards.map((c) => (
               <div key={c.id} className="committee-card" onClick={() => togglePanel(c.id)}>
                 <div className="committee-card-content">
                   <h4 className="committee-name">{c.name}</h4>
@@ -428,8 +422,8 @@ const DiscoverPage = () => {
         )}
 
         {/* Панели комитетов */}
-        {committees.map((c) => {
-        const members = getCommitteeMembers(c.name);
+        {committeeCards.map((c) => {
+        const members = getCommitteeMembers(c.committeeId);
         return (
           openPanels[c.id] && (
             <div key={`panel-${c.id}`} className="assembly-panel is-open">
