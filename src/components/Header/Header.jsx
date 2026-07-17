@@ -121,7 +121,7 @@ const Header = () => {
         <>
             <header className="header">
                 <Link href="/" className="logospace">
-                    <img src="/img/Logo_full.png" alt="European Shooting Confederation" className="logo-full" />
+                    <img src="/img/Frame%20175.svg" alt="European Shooting Confederation" className="logo-full" />
                 </Link>
 
                 <nav className="navigation">

@@ -54,7 +54,7 @@ const Footer = () => {
             <div className="other-links-container">
                 <div className="logo-inf">
                     <div className="logo-wrapper">
-                        <img src="/img/Logo_full.png" alt="European Shooting Confederation" className="logo-full" />
+                        <img src="/img/Frame%20175.svg" alt="European Shooting Confederation" className="logo-full" />
                     </div>
                     <p className="info-corp">
                         The official governing body for precision shooting sport in Europe.
