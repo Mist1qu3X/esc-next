@@ -119,11 +119,14 @@ const DiscoverPage = () => {
   // Карточки комитетов строятся из коллекции Committee (названия редактируются в Strapi)
   const committeeCards = committees.map((c) => {
     const membersList = getCommitteeMembers(c.id);
+    // Счётчик задаётся в Strapi (число + слово). Если не задан — считаем привязанных участников.
+    const count = c.membersCount ?? membersList.length;
+    const status = c.membersStatus || 'members';
     return {
       id: `committee_${c.id}`,
       committeeId: c.id,
       name: c.name,
-      members: `${membersList.length} members`,
+      members: `${count} ${status}`,
       description: c.description || `${c.name} oversees ESC activities.`,
     };
   });
