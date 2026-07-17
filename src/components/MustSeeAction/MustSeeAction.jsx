@@ -13,7 +13,7 @@ const MustSeeAction = () => {
         const fetchVideos = async () => {
             try {
                 const response = await axios.get(
-                    `${config.API_URL}/api/videos?populate=*&pagination[limit]=3`
+                    `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
                 );
                 setVideos(response.data.data);
             } catch (error) { 

@@ -242,7 +242,7 @@
     background: #0B1E33;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     gap: 6px;
 }
@@ -262,7 +262,7 @@
     letter-spacing: 1px;
     color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
-    text-align: center;
+    text-align: left;
 }
 
 .who-right {
