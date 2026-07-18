@@ -376,7 +376,7 @@ const DiscoverPage = () => {
                   </button>
                 </div>
                 <div className="executive-cards-grid">
-                  {leaders.slice(0, 9).map((leader) => (
+                  {leaders.slice(0, 16).map((leader) => (
                     <div className="executive-new-card" key={leader.id}>
                       <div className="executive-card-image">
                         {leader.image ? (
