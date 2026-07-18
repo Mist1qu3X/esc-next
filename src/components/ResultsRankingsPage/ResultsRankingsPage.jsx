@@ -27,16 +27,20 @@ const ResultsRankingsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [eventsRes, rankingsRes, resultsRes, recordsRes] = await Promise.all([
+        // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
+        const [eventsRes, rankingsRes, resultsRes, recordsRes] = await Promise.allSettled([
           axios.get(`${config.API_URL}/api/events?populate=*&sort=date:asc&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/ranking-details?populate=*&sort=position:asc&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/result-details?populate=*&sort=position:asc&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/records?populate=*&sort=date:desc&pagination[limit]=100`),
         ]);
-        if (eventsRes.data?.data) setEvents(eventsRes.data.data);
-        if (rankingsRes.data?.data) setRankings(rankingsRes.data.data);
-        if (resultsRes.data?.data) setResultDetails(resultsRes.data.data);
-        if (recordsRes.data?.data) setRecords(recordsRes.data.data);
+        if (eventsRes.status === 'fulfilled' && eventsRes.value.data?.data) setEvents(eventsRes.value.data.data);
+        if (rankingsRes.status === 'fulfilled' && rankingsRes.value.data?.data) setRankings(rankingsRes.value.data.data);
+        if (resultsRes.status === 'fulfilled' && resultsRes.value.data?.data) setResultDetails(resultsRes.value.data.data);
+        if (recordsRes.status === 'fulfilled' && recordsRes.value.data?.data) setRecords(recordsRes.value.data.data);
+        [eventsRes, rankingsRes, resultsRes, recordsRes]
+          .filter((r) => r.status === 'rejected')
+          .forEach((r) => console.error('Ошибка загрузки раздела:', r.reason?.message || r.reason));
       } catch (e) { console.error('Ошибка загрузки:', e); }
     };
     fetchData();
@@ -55,12 +59,12 @@ const ResultsRankingsPage = () => {
   const statuses = ['ALL STATUSES', 'UPCOMING', 'COMPLETED'];
 
   const disciplines = [
-    { main: '10M', sub: 'AIR PISTOL', id: '10m-air-pistol', icon: '/img/icon1.png' },
-    { main: '10M', sub: 'AIR RIFLE', id: '10m-air-rifle', icon: '/img/icon2.png' },
-    { main: '25M', sub: 'PISTOL', id: '25m-pistol', icon: '/img/icon1.png' },
-    { main: '50M', sub: 'RIFLE', id: '50m-rifle', icon: '/img/icon2.png' },
-    { main: 'MOVING', sub: 'TARGET', id: 'moving-target', icon: '/img/icon3.png' },
-    { main: 'SHOTGUN', sub: '', id: 'shotgun', icon: '/img/icon4.png' },
+    { main: '10M', sub: 'AIR PISTOL', id: '10m-air-pistol', icon: '/img/Icon1.png' },
+    { main: '10M', sub: 'AIR RIFLE', id: '10m-air-rifle', icon: '/img/Icon2.png' },
+    { main: '25M', sub: 'PISTOL', id: '25m-pistol', icon: '/img/Icon1.png' },
+    { main: '50M', sub: 'RIFLE', id: '50m-rifle', icon: '/img/Icon2.png' },
+    { main: 'MOVING', sub: 'TARGET', id: 'moving-target', icon: '/img/Icon3.png' },
+    { main: 'SHOTGUN', sub: '', id: 'shotgun', icon: '/img/Icon4.png' },
   ];
 
   const formatDate = (d) => {
