@@ -442,7 +442,13 @@ const DiscoverPage = () => {
                 <div className="executive-members">
                   {members.map((m) => (
                     <div className="executive-member" key={m.id}>
-                      <div className="executive-photo"><span>{m.initials}</span></div>
+                      <div className="executive-photo">
+                        {m.image ? (
+                          <img src={getImageUrl(m.image)} alt={m.name} className="executive-photo-img" />
+                        ) : (
+                          <span>{m.initials}</span>
+                        )}
+                      </div>
                       <div className="executive-info">
                         <h4>{m.name}</h4>
                         <span className="executive-role">{m.role}</span>
