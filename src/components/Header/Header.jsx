@@ -184,7 +184,7 @@ const Header = () => {
                         )}
                     </div>
                     <button className="search-input-button" onClick={handleEntrySystem}>
-                        ENTRY SYSTEM<span className="arrow">🡥</span>
+                        ENTRY SYSTEM<img src="/img/ArrowUpRight.png" alt="" className="arrow" />
                     </button>
                     <button className="burger-menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                         <i className="fa-solid fa-bars"></i>
