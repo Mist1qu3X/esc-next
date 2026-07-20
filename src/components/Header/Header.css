@@ -195,7 +195,11 @@
 
     .search-input-button .arrow {
         display: inline-block;
+        width: 14px;
+        height: 14px;
         margin-left: 6px;
+        vertical-align: middle;
+        object-fit: contain;
         transition: transform 0.2s;
     }
 
