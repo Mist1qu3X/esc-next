@@ -4,6 +4,74 @@ import axios from 'axios';
 import config from '@/lib/config';
 import './ResultsRankingsPage.css';
 
+// Детерминированная генерация выстрелов (9.5–10.9) без Math.random.
+// count — сколько выстрелов уже сделано (остальные пустые: соревнование идёт)
+const genShots = (seed, count = 11) =>
+  Array.from({ length: 24 }, (_, i) => (i < count ? (9.5 + ((seed * 7 + i * 3) % 15) / 10).toFixed(1) : ''));
+
+// Тестовые участники для демонстрации таблицы результатов (level 3)
+const TEST_RESULTS = [
+  { position: 1, athleteName: 'KOVÁČOVÁ ANNA', federationCode: 'CZE', flagEmoji: '🇨🇿', total: '115.4', inner10s: '6', category: 'MEN', shots: genShots(1) },
+  { position: 2, athleteName: 'BECKER MARIE', federationCode: 'GER', flagEmoji: '🇩🇪', total: '113.8', inner10s: '5', category: 'WOMEN', shots: genShots(2) },
+  { position: 3, athleteName: 'BOSCHETTI ELENA', federationCode: 'ITA', flagEmoji: '🇮🇹', total: '112.5', inner10s: '3', category: 'MEN', shots: genShots(3) },
+  { position: 4, athleteName: 'NOVOTNÁ HANA', federationCode: 'SVK', flagEmoji: '🇸🇰', total: '110.0', inner10s: '4', category: 'WOMEN', shots: genShots(4) },
+  { position: 5, athleteName: 'HANSEN INGRID', federationCode: 'NOR', flagEmoji: '🇳🇴', total: '92.0', inner10s: '2', category: 'MEN', shots: genShots(5) },
+  { position: 6, athleteName: 'MÜLLER PETRA', federationCode: 'AUT', flagEmoji: '🇦🇹', total: '92.0', inner10s: '3', category: 'WOMEN', shots: genShots(6) },
+  { position: 7, athleteName: 'WIŚNIEWSKA KAROLINA', federationCode: 'POL', flagEmoji: '🇵🇱', total: '61.4', inner10s: '1', category: 'MEN', shots: genShots(7) },
+  { position: 8, athleteName: 'BERG INGRID', federationCode: 'SWE', flagEmoji: '🇸🇪', total: '80.8', inner10s: '2', category: 'WOMEN', shots: genShots(8) },
+];
+
+// Тестовые соревнования (fallback, если в Strapi пусто) — чтобы флоу Results работал целиком
+const TEST_EVENTS = [
+  { id: 'te1', name: 'European Championship 10m 2026', location: 'Prague, Czech Republic', date: '2026-05-18', statusEvent: 'FINISHED', category: 'SENIOR', type: 'CHAMPIONSHIP' },
+  { id: 'te2', name: 'ESC Grand Prix Munich 2026', location: 'Munich, Germany', date: '2026-06-12', statusEvent: 'UPCOMING', category: 'SENIOR', type: 'CHAMPIONSHIP' },
+  { id: 'te3', name: 'European Youth League Final', location: 'Bologna, Italy', date: '2026-04-05', statusEvent: 'FINISHED', category: 'JUNIOR', type: 'CHAMPIONSHIP' },
+  { id: 'te4', name: 'ESC Development Workshop Lausanne', location: 'Lausanne, Switzerland', date: '2026-03-15', statusEvent: 'FINISHED', category: 'SENIOR', type: 'WORKSHOP' },
+  { id: 'te5', name: 'Nordic Shooting Cup Oslo', location: 'Oslo, Norway', date: '2026-07-20', statusEvent: 'UPCOMING', category: 'SENIOR', type: 'CHAMPIONSHIP' },
+  { id: 'te6', name: 'ESC Air Rifle Grand Prix Vienna', location: 'Vienna, Austria', date: '2026-02-10', statusEvent: 'FINISHED', category: 'SENIOR', type: 'CHAMPIONSHIP' },
+];
+
+// Дисциплины для RANKINGS — с разбивкой по полу (порядок = 3 колонки по макету)
+const IC_PISTOL = '/img/Icon1.png';
+const IC_RIFLE = '/img/Icon2.png';
+const IC_SHOTGUN = '/img/Icon4.png';
+const RANKING_DISCIPLINES = [
+  { main: '10M PISTOL', sub: 'MEN', discipline: '10m Air Pistol', gender: 'MEN', icon: IC_PISTOL },
+  { main: '25M RAPID FIRE', sub: 'PISTOL', discipline: '25m Rapid Fire Pistol', gender: 'MEN', icon: IC_PISTOL },
+  { main: 'TRAP MEN', sub: '', discipline: 'Trap', gender: 'MEN', icon: IC_SHOTGUN },
+  { main: '10M PISTOL', sub: 'WOMEN', discipline: '10m Air Pistol', gender: 'WOMEN', icon: IC_PISTOL },
+  { main: '25M PISTOL', sub: 'WOMEN', discipline: '25m Pistol', gender: 'WOMEN', icon: IC_PISTOL },
+  { main: 'TRAP WOMEN', sub: '', discipline: 'Trap', gender: 'WOMEN', icon: IC_SHOTGUN },
+  { main: '10M RIFLE', sub: 'MEN', discipline: '10m Air Rifle', gender: 'MEN', icon: IC_RIFLE },
+  { main: '50M RIFLE 3 POSITION', sub: 'MEN', discipline: '50m Rifle 3 Position', gender: 'MEN', icon: IC_RIFLE },
+  { main: 'SKEET MEN', sub: '', discipline: 'Skeet', gender: 'MEN', icon: IC_SHOTGUN },
+  { main: '10M RIFLE', sub: 'WOMEN', discipline: '10m Air Rifle', gender: 'WOMEN', icon: IC_RIFLE },
+  { main: '50M RIFLE 3 POSITION', sub: 'WOMEN', discipline: '50m Rifle 3 Position', gender: 'WOMEN', icon: IC_RIFLE },
+  { main: 'SKEET WOMEN', sub: '', discipline: 'Skeet', gender: 'WOMEN', icon: IC_SHOTGUN },
+];
+
+// Тестовые рейтинги (fallback), пока нет реальных данных по дисциплине/полу
+const TEST_RANKINGS_MEN = [
+  { position: 1, athleteName: 'QUIQUAMPOIX JEAN', country: 'FRA', flagEmoji: '🇫🇷', points: '1,380', events: '7', best: '245.3', category: 'MEN' },
+  { position: 2, athleteName: 'KOROSTELYOV MIKAEL', country: 'SWE', flagEmoji: '🇸🇪', points: '1,295', events: '6', best: '244.8', category: 'MEN' },
+  { position: 3, athleteName: 'GRÜN STEFAN', country: 'GER', flagEmoji: '🇩🇪', points: '1,244', events: '7', best: '244.2', category: 'MEN' },
+  { position: 4, athleteName: 'PETROV SERGEI', country: 'BUL', flagEmoji: '🇧🇬', points: '1,198', events: '5', best: '243.6', category: 'MEN' },
+  { position: 5, athleteName: 'NAGY PÉTER', country: 'HUN', flagEmoji: '🇭🇺', points: '1,154', events: '6', best: '243.0', category: 'MEN' },
+  { position: 6, athleteName: 'FERRARI MARCO', country: 'ITA', flagEmoji: '🇮🇹', points: '1,109', events: '5', best: '242.4', category: 'MEN' },
+  { position: 7, athleteName: 'HERNANDEZ CARLOS', country: 'ESP', flagEmoji: '🇪🇸', points: '1,072', events: '6', best: '241.8', category: 'MEN' },
+  { position: 8, athleteName: 'MÜLLER HANS', country: 'AUT', flagEmoji: '🇦🇹', points: '1,038', events: '4', best: '241.2', category: 'MEN' },
+];
+const TEST_RANKINGS_WOMEN = [
+  { position: 1, athleteName: 'KOVÁŘOVÁ ANNA', country: 'CZE', flagEmoji: '🇨🇿', points: '1,352', events: '7', best: '244.1', category: 'WOMEN' },
+  { position: 2, athleteName: 'BACOSI DIANA', country: 'ITA', flagEmoji: '🇮🇹', points: '1,288', events: '6', best: '243.5', category: 'WOMEN' },
+  { position: 3, athleteName: 'RUIZ FÁTIMA', country: 'ESP', flagEmoji: '🇪🇸', points: '1,230', events: '7', best: '242.9', category: 'WOMEN' },
+  { position: 4, athleteName: 'JANSEN NADINE', country: 'GER', flagEmoji: '🇩🇪', points: '1,190', events: '5', best: '242.2', category: 'WOMEN' },
+  { position: 5, athleteName: 'NOVOTNÁ HANA', country: 'SVK', flagEmoji: '🇸🇰', points: '1,148', events: '6', best: '241.6', category: 'WOMEN' },
+  { position: 6, athleteName: 'HANSEN SOFIA', country: 'SWE', flagEmoji: '🇸🇪', points: '1,102', events: '5', best: '241.0', category: 'WOMEN' },
+  { position: 7, athleteName: 'GRŽELJ ANA', country: 'SLO', flagEmoji: '🇸🇮', points: '1,065', events: '6', best: '240.4', category: 'WOMEN' },
+  { position: 8, athleteName: 'MÜLLER PETRA', country: 'AUT', flagEmoji: '🇦🇹', points: '1,030', events: '4', best: '239.8', category: 'WOMEN' },
+];
+
 const ResultsRankingsPage = () => {
   const [activeTab, setActiveTab] = useState('results');
   const [events, setEvents] = useState([]);
@@ -11,6 +79,7 @@ const ResultsRankingsPage = () => {
   const [resultsLevel, setResultsLevel] = useState(false);
   const [rankingsDetailLevel, setRankingsDetailLevel] = useState(false);
   const [selectedDiscipline, setSelectedDiscipline] = useState('10m Air Pistol');
+  const [selectedEvent, setSelectedEvent] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('World Records');
   const [rankings, setRankings] = useState([]);
   const [resultDetails, setResultDetails] = useState([]);
@@ -91,14 +160,38 @@ const ResultsRankingsPage = () => {
     return matchDiscipline && matchGender;
   });
 
+  // Пока нет реальных данных — показываем тестовых участников
+  const testResults = TEST_RESULTS.filter(r => gender === 'ALL' || r.category === gender);
+  const displayResults = filteredResults.length > 0 ? filteredResults : testResults;
+
+  // Прогресс выстрелов — по числу сделанных выстрелов у лидера
+  const totalShots = 24;
+  const leaderShots = Array.isArray(displayResults[0]?.shots)
+    ? displayResults[0].shots.filter((s) => s && s !== '•' && s !== '-').length
+    : 0;
+  const currentShot = leaderShots || totalShots;
+  const shotSeries = ['S1', 'S2', 'S3', 'S4'];
+
   const filteredRankings = rankings.filter(r => {
-    const itemCategory = r.category?.toUpperCase();
-    const matchGender = rankingsGender === 'ALL' || itemCategory === rankingsGender;
+    const matchDiscipline = r.discipline && r.discipline.toLowerCase() === selectedDiscipline.toLowerCase();
+    const matchGender = rankingsGender === 'ALL' || r.category?.toUpperCase() === rankingsGender;
     const matchSearch = !rankingsSearchTerm || r.athleteName?.toLowerCase().includes(rankingsSearchTerm.toLowerCase());
-    return matchGender && matchSearch;
+    return matchDiscipline && matchGender && matchSearch;
   });
 
-  const filteredEvents = events.filter(ev => {
+  // Fallback тестовых рейтингов по полу, если реальных данных нет
+  const testRankingsBase =
+    rankingsGender === 'MEN' ? TEST_RANKINGS_MEN
+      : rankingsGender === 'WOMEN' ? TEST_RANKINGS_WOMEN
+        : [...TEST_RANKINGS_MEN, ...TEST_RANKINGS_WOMEN];
+  const testRankings = testRankingsBase.filter(
+    r => !rankingsSearchTerm || r.athleteName.toLowerCase().includes(rankingsSearchTerm.toLowerCase())
+  );
+  const displayRankings = filteredRankings.length > 0 ? filteredRankings : testRankings;
+
+  // Пока нет реальных соревнований — показываем тестовые, чтобы флоу работал
+  const eventsSource = events.length > 0 ? events : TEST_EVENTS;
+  const filteredEvents = eventsSource.filter(ev => {
     const eventDate = new Date(ev.date);
     const matchType = filterType === 'ALL TYPES' || ev.type?.toUpperCase() === filterType;
     const matchStatus = filterStatus === 'ALL STATUSES' || 
@@ -126,6 +219,39 @@ const ResultsRankingsPage = () => {
   const dateButtonLabel = filterMonth === 'all' && filterYear === 'all'
     ? 'DATE ▼'
     : `${currentMonthLabel} ${currentYearLabel} ▼`;
+
+  // Общий фильтр-бар для RANKINGS (оба уровня)
+  const rankingDisciplineOptions = [...new Set(RANKING_DISCIPLINES.map(d => `${d.main} ${d.sub}`.trim()))];
+  const rankingsFilterBar = (
+    <div className="rankings-filter-bar">
+      <div className="rankings-filter-left">
+        <div className="rankings-search">
+          <i className="fa-solid fa-magnifying-glass rankings-search-icon"></i>
+          <input
+            type="text"
+            className="rankings-search-input"
+            placeholder="Search athlete or event..."
+            value={rankingsSearchTerm}
+            onChange={(e) => setRankingsSearchTerm(e.target.value)}
+          />
+        </div>
+        <select className="events-select" defaultValue="">
+          <option value="">Discipline</option>
+          {rankingDisciplineOptions.map((o) => <option key={o}>{o}</option>)}
+        </select>
+        <select className="events-select" value={rankingsGender} onChange={(e) => setRankingsGender(e.target.value)}>
+          <option value="ALL">Gender</option>
+          <option value="MEN">Men</option>
+          <option value="WOMEN">Women</option>
+        </select>
+        <select className="events-select" defaultValue="">
+          <option value="">Year</option>
+          {years.filter((y) => y !== 'all').map((y) => <option key={y}>{y}</option>)}
+        </select>
+      </div>
+      <button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button>
+    </div>
+  );
 
   return (
     <>
@@ -173,7 +299,7 @@ const ResultsRankingsPage = () => {
           </div>
           <div className="events-list">
             {filteredEvents.map((ev) => (
-              <div key={ev.id} className={`event-card ${ev.statusEvent?.toUpperCase() === 'UPCOMING' ? 'event-upcoming' : 'event-completed'}`} onClick={() => setDisciplineLevel(true)}>
+              <div key={ev.id} className={`event-card ${ev.statusEvent?.toUpperCase() === 'UPCOMING' ? 'event-upcoming' : 'event-completed'}`} onClick={() => { setDisciplineLevel(true); setSelectedEvent(ev.name); }}>
                 <div className="event-card-left">
                   <div className="event-tags">
                     <span className={`event-status ${ev.statusEvent?.toUpperCase() === 'UPCOMING' ? 'status-upcoming' : 'status-completed'}`}>{ev.statusEvent}</span>
@@ -204,7 +330,7 @@ const ResultsRankingsPage = () => {
             </div>
             <div className="discipline-filter-right"><button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button></div>
           </div>
-          <div className="discipline-breadcrumbs"><span className="disc-breadcrumb-parent" onClick={() => setDisciplineLevel(false)}>Results</span><span className="disc-breadcrumb-separator">›</span><span className="disc-breadcrumb-active">Competitions</span></div>
+          <div className="discipline-breadcrumbs"><span className="disc-breadcrumb-parent" onClick={() => setDisciplineLevel(false)}>Results</span><span className="disc-breadcrumb-separator">›</span><span className="disc-breadcrumb-active">{selectedEvent || 'Competitions'}</span></div>
           <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RANKING</span></div>
           <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
           <p className="discipline-desc">Choose a discipline to view season rankings</p>
@@ -223,12 +349,12 @@ const ResultsRankingsPage = () => {
       {activeTab === 'results' && resultsLevel && (
         <section className="results-detail">
           <div className="results-detail-header"><span className="results-detail-line"></span><span className="results-detail-subtitle">ESC RESULTS</span></div>
-          <h2 className="results-detail-title">{selectedDiscipline.toUpperCase()}</h2>
+          <h2 className="results-detail-title">{selectedDiscipline.toUpperCase()}{gender !== 'ALL' ? ` — ${gender}` : ''}</h2>
           <div className="results-detail-topbar">
             <div className="results-detail-breadcrumbs">
               <span className="rd-breadcrumb" onClick={() => { setResultsLevel(false); }}>Results</span>
               <span className="rd-breadcrumb-sep">›</span>
-              <span className="rd-breadcrumb" onClick={() => setResultsLevel(false)}>Competitions</span>
+              <span className="rd-breadcrumb" onClick={() => setResultsLevel(false)}>{selectedEvent || 'Competitions'}</span>
               <span className="rd-breadcrumb-sep">›</span>
               <span className="rd-breadcrumb-active">{selectedDiscipline}</span>
             </div>
@@ -241,16 +367,16 @@ const ResultsRankingsPage = () => {
               <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">ATHLETE</div><div className="rt-col rt-spacer"></div>
               <div className="rt-col rt-fed">FED</div><div className="rt-col rt-series">SERIES (SHOT BY SHOT)</div><div className="rt-col rt-total">TOTAL</div><div className="rt-col rt-inner">INNER<br />10S</div>
             </div>
-            {filteredResults.map((r, i) => {
+            {displayResults.map((r, i) => {
               const medals = ['medal-gold', 'medal-silver', 'medal-bronze'];
               const medalClass = i < 3 ? `medal-row ${medals[i]}` : '';
               const shots = Array.isArray(r.shots) ? r.shots : [];
               return (
-                <div key={r.id} className={`results-table-row ${medalClass}`}>
-                  <div className="rt-col rt-rank">{i < 3 ? <img src={`/img/medal${i+1}.png`} className="rank-medal" alt="" /> : <span className="rank-num">{r.position}</span>}</div>
+                <div key={r.id || r.athleteName} className={`results-table-row ${medalClass}`}>
+                  <div className="rt-col rt-rank">{i < 3 ? <img src={`/img/${['First', 'Second', 'Third'][i]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{i + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
                   <div className="rt-col rt-spacer"></div>
-                  <div className="rt-col rt-fed">{r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />}<span>{r.federationCode}</span></div>
+                  <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
                   <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shots.slice(0, 12).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>)}</div><div className="shots-row">{shots.slice(12, 24).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div></div></div>
                   <div className="rt-col rt-total"><span className={`total-value ${i === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
                   <div className="rt-col rt-inner"><span className={`inner-value ${i === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
@@ -258,6 +384,36 @@ const ResultsRankingsPage = () => {
               );
             })}
           </div>
+
+          {/* SHOT PROGRESS */}
+          <div className="shot-progress">
+            <div className="shot-progress-header">
+              <span className="shot-progress-title">SHOT PROGRESS</span>
+              <span className="shot-progress-count">Shot <b>{currentShot}</b> of {totalShots}</span>
+            </div>
+            <div className="progress-bar-wrapper">
+              <div className="progress-bar-track">
+                <div className="progress-bar-fill" style={{ width: `${(currentShot / totalShots) * 100}%` }}></div>
+              </div>
+              <div className="progress-markers">
+                {shotSeries.map((s) => <span key={s} className="marker">{s}</span>)}
+              </div>
+            </div>
+          </div>
+
+          {/* Data source / Download — как было до правок */}
+          <div className="data-source-bar">
+            <div className="data-source-left">
+              <span className="source-label">Data source:</span>
+              <span className="source-text">SIUS Scoring System</span>
+              <span className="source-dot">·</span>
+              <span className="source-refresh">Refreshing automatically</span>
+            </div>
+            <button className="download-pdf-btn" onClick={handleExportPDF}>
+              <i className="fa-solid fa-download"></i> DOWNLOAD PDF
+            </button>
+          </div>
+
           <div className="results-pagination">
             {[1, 2, 3].map((p) => <button key={p} className={`page-btn ${p === 1 ? 'active' : ''}`}>{p}</button>)}
             <button className="page-btn next">NEXT &gt;</button>
@@ -268,13 +424,14 @@ const ResultsRankingsPage = () => {
       {/* RANKING TAB - Level 1 */}
       {activeTab === 'ranking' && !rankingsDetailLevel && (
         <section className="rankings-level">
+          {rankingsFilterBar}
           <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RANKINGS</span></div>
           <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
           <p className="discipline-desc">Choose a discipline to view season rankings</p>
-          <div className="discipline-grid">
-            {disciplines.map((d) => (
-              <div key={d.id} className="discipline-card" onClick={() => { setRankingsDetailLevel(true); setSelectedDiscipline(`${d.main} ${d.sub}`.trim()); }}>
-                <h3 className="disc-card-title"><span className="disc-main">{d.main}</span><span className="disc-sub">{d.sub}</span></h3>
+          <div className="discipline-grid ranking-grid">
+            {RANKING_DISCIPLINES.map((d, i) => (
+              <div key={i} className="discipline-card" onClick={() => { setRankingsDetailLevel(true); setSelectedDiscipline(d.discipline); setRankingsGender(d.gender); }}>
+                <h3 className="disc-card-title"><span className="disc-main">{d.main}</span>{d.sub && <span className="disc-sub">{d.sub}</span>}</h3>
                 <div className="disc-card-icon"><img src={d.icon} alt="" /><span className="disc-card-arrow">›</span></div>
               </div>
             ))}
@@ -285,37 +442,26 @@ const ResultsRankingsPage = () => {
       {/* RANKINGS DETAIL - Level 2 */}
       {activeTab === 'ranking' && rankingsDetailLevel && (
         <section className="rankings-detail">
+          {rankingsFilterBar}
           <div className="rankings-detail-breadcrumbs"><span className="rd-breadcrumb" onClick={() => setRankingsDetailLevel(false)}>Rankings</span><span className="rd-breadcrumb-sep">›</span><span className="rd-breadcrumb-active">{selectedDiscipline}</span></div>
-          <div className="rankings-filter-bar">
-            <div className="rankings-filter-left">
-              <div className="rankings-search"><i className="fa-solid fa-magnifying-glass rankings-search-icon"></i><input type="text" className="rankings-search-input" placeholder="Search athlete..." value={rankingsSearchTerm} onChange={(e) => setRankingsSearchTerm(e.target.value)} /></div>
-              <select className="events-select" style={{ width: 140 }}><option>COMING SOON</option></select>
-              <select className="events-select" style={{ width: 120 }}><option>COMING SOON</option></select>
-              <select className="events-select" style={{ width: 90 }}><option>COMING SOON</option></select>
-            </div>
-            <button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button>
-          </div>
-          <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RANKING</span></div>
-          <div className="rankings-gender-buttons">
-            {['ALL', 'MEN', 'WOMEN'].map((g) => <button key={g} className={`gender-btn ${rankingsGender === g ? 'active' : ''}`} onClick={() => setRankingsGender(g)}>{g}</button>)}
-          </div>
-          <div className="rankings-detail-topbar"><h2 className="rankings-detail-title">{selectedDiscipline.toUpperCase()}</h2></div>
+          <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RANKINGS</span></div>
+          <div className="rankings-detail-topbar"><h2 className="rankings-detail-title">{selectedDiscipline.toUpperCase()}{rankingsGender !== 'ALL' ? ` — ${rankingsGender}` : ''}</h2></div>
           <div className="rankings-table-container">
             <div className="rankings-table-header">
               <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">ATHLETE</div><div className="rt-col rt-spacer-wide"></div>
               <div className="rt-col rt-fed">FEDERATION</div><div className="rt-col rt-points">POINTS</div><div className="rt-col rt-events">EVENTS</div><div className="rt-col rt-best">BEST</div>
             </div>
-            {filteredRankings.length > 0 ? filteredRankings.map((r, i) => {
+            {displayRankings.length > 0 ? displayRankings.map((r, i) => {
               const medals = ['medal-row medal-gold', 'medal-row medal-silver', 'medal-row medal-bronze'];
               const medalClass = i < 3 ? medals[i] : '';
-              const maxPoints = parseFloat(String(filteredRankings[0]?.points).replace(',', '')) || 1;
+              const maxPoints = parseFloat(String(displayRankings[0]?.points).replace(',', '')) || 1;
               const barWidth = (parseFloat(String(r.points).replace(',', '')) / maxPoints) * 100;
               return (
-                <div key={r.id} className={`rankings-table-row ${medalClass}`}>
-                  <div className="rt-col rt-rank">{i < 3 ? <img src={`/img/medal${i+1}.png`} className="rank-medal" alt="" /> : <span className="rank-num">{r.position}</span>}</div>
+                <div key={r.id || r.athleteName} className={`rankings-table-row ${medalClass}`}>
+                  <div className="rt-col rt-rank">{i < 3 ? <img src={`/img/${['First', 'Second', 'Third'][i]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{i + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
                   <div className="rt-col rt-spacer-wide"></div>
-                  <div className="rt-col rt-fed">{r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />}<span>{r.country}</span></div>
+                  <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.country}</span></div>
                   <div className="rt-col rt-points"><div className="points-block"><span className={`points-value ${i === 0 ? 'gold-value' : ''}`}>{r.points}</span><div className="points-bar"><div className="points-bar-fill" style={{ width: `${barWidth}%` }}></div></div></div></div>
                   <div className="rt-col rt-events"><span className="events-value">{r.events}</span></div>
                   <div className="rt-col rt-best"><span className={`best-value ${i === 0 ? 'gold-value' : ''}`}>{r.best}</span></div>
