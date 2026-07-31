@@ -24,6 +24,7 @@ const MediaPage = () => {
   const [docs, setDocs] = useState([]);
   const [streams, setStreams] = useState([]);
   const [spotlights, setSpotlights] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   
   const router = useRouter();
@@ -31,7 +32,7 @@ const MediaPage = () => {
   const spotlightRef = useRef(null);
   const videosRef = useRef(null);
 
-  const filters = ['ALL', 'NEWS', 'FEATURES', 'INTERVIEWS', 'VIDEOS', 'PRESS', 'RELEASES'];
+  const filters = ['ALL', 'NEWS', 'FEATURES', 'INTERVIEWS', 'PHOTO', 'VIDEOS', 'PRESS RELEASES'];
 
   const scrollToElement = (element) => {
     if (!element) return;
@@ -61,19 +62,22 @@ const MediaPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [newsRes, videosRes, docsRes, streamsRes, spotlightsRes] = await Promise.all([
+        const [newsRes, videosRes, docsRes, streamsRes, spotlightsRes, photosRes] = await Promise.all([
           axios.get(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&limit=20`),
           axios.get(`${config.API_URL}/api/videos?populate=*&limit=20`),
           axios.get(`${config.API_URL}/api/docs?populate=*&limit=20`),
           axios.get(`${config.API_URL}/api/live-streams?populate=*&limit=10`),
           axios.get(`${config.API_URL}/api/spotlight-items?populate=*&limit=4`),
+          // Фолбэк на пустой ответ, пока коллекция photos не создана/Strapi не перезапущен
+          axios.get(`${config.API_URL}/api/photos?populate=*&sort=date:desc&limit=40`).catch(() => ({ data: { data: [] } })),
         ]);
-        
+
         setNews(extractData(newsRes));
         setVideos(extractData(videosRes));
         setDocs(extractData(docsRes));
         setStreams(extractData(streamsRes));
         setSpotlights(extractData(spotlightsRes));
+        setPhotos(extractData(photosRes));
         
         setLoading(false);
       } catch (e) { 
@@ -95,6 +99,12 @@ const MediaPage = () => {
   const formatDate = (d) => {
     if (!d) return '';
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
+  // Формат для фото-карточек: "05 June 2026"
+  const formatDatePhoto = (d) => {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
   };
 
   const goToNews = (slug) => {
@@ -129,33 +139,41 @@ const MediaPage = () => {
 
   // Фильтр для PRESS RELEASES
   const getFilteredPressReleases = () => {
-    if (activeFilter === 'ALL' || activeFilter === 'PRESS') {
-      return docs.filter((d) => d.theme === 'PRESS RELEASES').slice(0, 4);
-    }
-    if (activeFilter === 'RELEASES') {
-      return docs.filter((d) => d.theme === 'RELEASES').slice(0, 4);
+    if (activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES') {
+      return docs
+        .filter((d) => d.theme === 'PRESS RELEASES' || d.theme === 'RELEASES')
+        .slice(0, 4);
     }
     return [];
   };
 
   const pressReleases = getFilteredPressReleases();
 
-  const mainStream = streams.find((s) => s.isMain === true);
-  const sideStreams = streams.filter((s) => !s.isMain).slice(0, 2);
+  const normPlatform = (p) => (p || '').toString().trim().toLowerCase();
 
   const platformClass = (p) => {
-    if (p === 'youtube') return 'youtube';
-    if (p === 'twitch') return 'twitch';
-    if (p === 'facebook') return 'facebook';
+    if (normPlatform(p) === 'facebook') return 'facebook';
     return 'youtube';
   };
+
+  // Всегда показываем YouTube + Facebook (как на макете).
+  // Если чего-то не хватает — добираем из оставшихся стримов.
+  const youtubeStream = streams.find((s) => normPlatform(s.platform) === 'youtube');
+  const facebookStream = streams.find((s) => normPlatform(s.platform) === 'facebook');
+  let liveStreams = [youtubeStream, facebookStream].filter(Boolean);
+  if (liveStreams.length < 2) {
+    const rest = streams.filter((s) => !liveStreams.includes(s));
+    liveStreams = [...liveStreams, ...rest].slice(0, 2);
+  }
 
   // Проверка, нужно ли показывать секции
   const showFeatured = activeFilter === 'ALL' || ['NEWS', 'FEATURES', 'INTERVIEWS'].includes(activeFilter);
   const showLatestNews = activeFilter === 'ALL' || ['NEWS', 'FEATURES', 'INTERVIEWS'].includes(activeFilter);
-  const showVideos = activeFilter === 'ALL' || activeFilter === 'VIDEOS';
-  const showLiveStreams = activeFilter === 'ALL' || activeFilter === 'VIDEOS';
-  const showPressReleases = activeFilter === 'ALL' || activeFilter === 'PRESS' || activeFilter === 'RELEASES';
+  const showVideos = activeFilter === 'ALL';          // превью-ряд видео на ALL
+  const showVideoGallery = activeFilter === 'VIDEOS'; // отдельная галерея видео (как PHOTO)
+  const showLiveStreams = activeFilter === 'ALL';     // стримы только на ALL
+  const showPressReleases = activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES';
+  const showPhotos = activeFilter === 'PHOTO';
 
   if (loading) {
     return (
@@ -236,6 +254,78 @@ const MediaPage = () => {
           </>
         )}
 
+        {/* PHOTO GALLERY */}
+        {showPhotos && (
+          <div>
+            <h2 className="mp-photo-heading">PHOTO</h2>
+            <div className="mp-photo-grid">
+              {photos.length > 0 ? (
+                photos.map((p) => {
+                  const cover = getImageUrl(p.image) || getImageUrl(p.images);
+                  const count = Array.isArray(p.images) && p.images.length > 0 ? p.images.length : (p.photoCount || 0);
+                  return (
+                    <div
+                      key={p.id}
+                      className="mp-photo-card"
+                      onClick={() => p.slug && router.push(`/media/photo/${p.slug}`)}
+                      style={{ cursor: p.slug ? 'pointer' : 'default' }}
+                    >
+                      <div className="mp-photo-cover" style={{ backgroundImage: `url(${cover})` }}></div>
+                      <div className="mp-photo-panel">
+                        <h3 className="mp-photo-title">{p.title}</h3>
+                        <div className="mp-photo-footer">
+                          <span className="mp-photo-date">{formatDatePhoto(p.date)}</span>
+                          <span className="mp-photo-count">
+                            <i className="fa-regular fa-images"></i>{count}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
+                  No photos available
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* VIDEO GALLERY (вкладка VIDEOS — чистое видео, как PHOTO) */}
+        {showVideoGallery && (
+          <div>
+            <h2 className="mp-photo-heading">VIDEOS</h2>
+            <div className="mp-photo-grid">
+              {videos.length > 0 ? (
+                videos.map((v) => (
+                  <div
+                    key={v.id}
+                    className="mp-photo-card"
+                    onClick={() => router.push(`/media/video/${v.documentId}`)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="mp-vgal-cover" style={{ backgroundImage: `url(${getImageUrl(v.thumbnail)})` }}>
+                      <div className="mp-vgal-play"><i className="fa-solid fa-play"></i></div>
+                      {v.duration && <span className="mp-vgal-duration">{v.duration}</span>}
+                    </div>
+                    <div className="mp-photo-panel">
+                      <h3 className="mp-photo-title">{v.title}</h3>
+                      <div className="mp-photo-footer">
+                        <span className="mp-photo-date">{formatDatePhoto(v.date)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
+                  No videos available
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* LATEST NEWS */}
         {showLatestNews && (
           <div ref={latestNewsRef}>
@@ -276,12 +366,12 @@ const MediaPage = () => {
                 <span className="mp-section-line mp-blue"></span>
                 <span className="mp-section-text">VIDEOS</span>
               </div>
-              <button className="mp-all-articles-btn" onClick={() => router.push('/media')}>ALL VIDEOS ›</button>
+              <button className="mp-all-articles-btn" onClick={() => setActiveFilter('VIDEOS')}>ALL VIDEOS ›</button>
             </div>
             <div className="mp-videos-grid">
               {filteredVideos.length > 0 ? (
                 filteredVideos.slice(0, 4).map((v) => (
-                  <div key={v.id} className="mp-video-card" onClick={() => v.videoUrl && window.open(v.videoUrl, '_blank')} style={{ cursor: 'pointer' }}>
+                  <div key={v.id} className="mp-video-card" onClick={() => router.push(`/media/video/${v.documentId}`)} style={{ cursor: 'pointer' }}>
                     <div className="mp-video-thumbnail" style={{ backgroundImage: `url(${getImageUrl(v.thumbnail)})` }}>
                       <div className="mp-video-play-btn"><i className="fa-solid fa-play"></i></div>
                       <span className="mp-video-duration">{v.duration || '4:38'}</span>
@@ -310,74 +400,39 @@ const MediaPage = () => {
               <span className="mp-live-streams">{streams.filter(s => s.streamStatus === 'live').length} streams</span>
             </div>
             <div className="mp-live-grid">
-              {mainStream && (
-                <div className="mp-live-card-main" style={{ backgroundImage: `url(${getImageUrl(mainStream.thumbnail)})` }}>
+              {liveStreams.map((s) => (
+                <div key={s.id} className={`mp-live-card-main ${platformClass(s.platform)}`} style={{ backgroundImage: `url(${getImageUrl(s.thumbnail)})` }}>
                   <div className="mp-live-card-top">
-                    <div className={`mp-platform-badge ${platformClass(mainStream.platform)}`}>
-                      <i className={`fa-brands fa-${mainStream.platform}`}></i>
-                      <span>{mainStream.platform}</span>
+                    <div className={`mp-platform-badge ${platformClass(s.platform)}`}>
+                      <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
+                      <span>{platformClass(s.platform)}</span>
                     </div>
                     <div className="mp-live-pill">
                       <div className="mp-live-pill-status">
                         <span className="mp-live-pill-dot"></span>
-                        <span className="mp-live-pill-text">{mainStream.streamStatus?.toUpperCase()}</span>
+                        <span className="mp-live-pill-text">{s.streamStatus?.toUpperCase()}</span>
                       </div>
                       <div className="mp-live-pill-stats">
                         <i className="fa-regular fa-eye"></i>
-                        <span className="mp-views-count">{mainStream.views}</span>
+                        <span className="mp-views-count">{s.views}</span>
                         <span className="mp-stat-separator">·</span>
-                        <span className="mp-duration">{mainStream.duration}</span>
+                        <span className="mp-duration">{s.duration}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="mp-live-play-btn" onClick={() => window.open(mainStream.url, '_blank')}>
+                  <div className="mp-live-play-btn" onClick={() => window.open(s.url, '_blank')}>
                     <i className="fa-solid fa-play"></i>
                   </div>
                   <div className="mp-live-card-bottom">
-                    <span className="mp-live-event">{mainStream.eventName}</span>
-                    <h3 className="mp-live-title">{mainStream.title}</h3>
-                    <button className={`mp-watch-btn ${platformClass(mainStream.platform)}-btn`} onClick={() => window.open(mainStream.url, '_blank')}>
+                    <span className="mp-live-event">{s.eventName}</span>
+                    <h3 className="mp-live-title">{s.title}</h3>
+                    <button className={`mp-watch-btn ${platformClass(s.platform)}-btn`} onClick={() => window.open(s.url, '_blank')}>
                       <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      WATCH ON {mainStream.platform?.toUpperCase()}
+                      WATCH ON {s.platform?.toUpperCase()}
                     </button>
                   </div>
                 </div>
-              )}
-              <div className="mp-live-right-column">
-                {sideStreams.map((s) => (
-                  <div key={s.id} className="mp-live-card-small" style={{ backgroundImage: `url(${getImageUrl(s.thumbnail)})` }}>
-                    <div className="mp-live-card-top">
-                      <div className={`mp-platform-badge ${platformClass(s.platform)}`}>
-                        <i className={`fa-brands fa-${s.platform}`}></i>
-                        <span>{s.platform}</span>
-                      </div>
-                      <div className="mp-live-pill mp-live-pill-small">
-                        <div className="mp-live-pill-status mp-live-pill-status-small">
-                          <span className="mp-live-pill-dot"></span>
-                          <span className="mp-live-pill-text">{s.streamStatus?.toUpperCase()}</span>
-                        </div>
-                        <div className="mp-live-pill-stats mp-live-pill-stats-small">
-                          <i className="fa-regular fa-eye"></i>
-                          <span className="mp-views-count">{s.views}</span>
-                          <span className="mp-stat-separator">·</span>
-                          <span className="mp-duration">{s.duration}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="mp-live-play-btn-small" onClick={() => window.open(s.url, '_blank')}>
-                      <i className="fa-solid fa-play"></i>
-                    </div>
-                    <div className="mp-live-card-small-content">
-                      <span className="mp-live-event-small">{s.eventName}</span>
-                      <h4 className="mp-live-title-small">{s.title}</h4>
-                      <button className={`mp-watch-btn mp-watch-btn-small ${platformClass(s.platform)}-btn`} onClick={() => window.open(s.url, '_blank')}>
-                        <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                        WATCH ON {s.platform?.toUpperCase()}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
         )}
@@ -388,9 +443,7 @@ const MediaPage = () => {
             <div className="mp-section-header">
               <div className="mp-section-label">
                 <span className="mp-section-line mp-grey"></span>
-                <span className="mp-section-text mp-grey-text">
-                  {activeFilter === 'PRESS' ? 'PRESS RELEASES' : activeFilter === 'RELEASES' ? 'RELEASES' : 'PRESS RELEASES'}
-                </span>
+                <span className="mp-section-text mp-grey-text">PRESS RELEASES</span>
               </div>
             </div>
             <div className="mp-press-divider"></div>
