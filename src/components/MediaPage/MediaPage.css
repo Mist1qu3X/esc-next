@@ -191,12 +191,13 @@
 .mp-section-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 60px;
+    align-items: center;;
+    padding-top: 40px;
 }
 
 .mp-section-header .mp-section-label {
     margin-bottom: 0;
+    padding-top: 0;
 }
 
 .mp-all-articles-btn {
@@ -365,6 +366,27 @@
     color: #FFB347;
 }
 
+/* Цвета категорий (по макету) */
+.mp-type-sustainability {
+    color: #4CAF50;
+}
+
+.mp-type-features {
+    color: #00d8f5;
+}
+
+.mp-type-interviews,
+.mp-type-interview {
+    color: #FFB347;
+}
+
+.mp-type-news,
+.mp-type-championship,
+.mp-type-press,
+.mp-type-releases {
+    color: #00d8f5;
+}
+
 .mp-news-card-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 800;
@@ -400,6 +422,169 @@
     margin-top: 32px;
 }
 
+/* ========== PHOTO GALLERY ========== */
+.mp-photo-heading {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 26px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    padding-top: 40px;
+    margin: 0;
+}
+
+.mp-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.mp-photo-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.mp-photo-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Чистая фотография — без рамок и градиентов */
+.mp-photo-cover {
+    width: 100%;
+    aspect-ratio: 310 / 173;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Видео-обложка в галерее VIDEOS (play по центру + длительность справа снизу) */
+.mp-vgal-cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 310 / 173;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Затемнение + блюр (#06101C 32%, blur, 75% opacity) */
+.mp-vgal-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 16, 28, 0.32);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0.75;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.mp-vgal-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #00d8f5;
+    color: #06101C;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    padding-left: 3px;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.mp-photo-card:hover .mp-vgal-play {
+    transform: translate(-50%, -50%) scale(1.08);
+    background: #0ee0ff;
+}
+
+.mp-vgal-duration {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 2;
+    background: rgba(6, 16, 28, 0.85);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 3px;
+}
+
+/* Плашка под фото (310x97) */
+.mp-photo-panel {
+    min-height: 97px;
+    background: #0D2642;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.mp-photo-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+}
+
+.mp-photo-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.mp-photo-date {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.mp-photo-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.mp-photo-count i {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+@media (max-width: 960px) {
+    .mp-photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 560px) {
+    .mp-photo-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .mp-video-card {
     width: 100%;
     min-height: 232px;
@@ -426,15 +611,15 @@
     transform: scale(1.03);
 }
 
-/* Затемнение 75% */
+/* Затемнение + блюр видео-превью (#06101C 32%, blur, 75% opacity) */
 .mp-video-thumbnail::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(6, 16, 28, 0.75);
+    inset: 0;
+    background: rgba(6, 16, 28, 0.32);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0.75;
     z-index: 1;
     pointer-events: none;
 }
@@ -449,6 +634,7 @@
     height: 48px;
     border-radius: 24px;
     background: #00d8f5;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -476,6 +662,7 @@
     height: 19px;
     background: rgba(0, 0, 0, 0.8);
     border-radius: 2px;
+    z-index: 2;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -567,7 +754,7 @@
 /* Сетка */
 .mp-live-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 2px;
 }
 
@@ -778,6 +965,11 @@
     letter-spacing: 1.14px;
     text-transform: uppercase;
     color: #FF0000;
+}
+
+/* На Facebook-карточке подпись — фирменного синего цвета */
+.mp-live-card-main.facebook .mp-live-event {
+    color: #1877F2;
 }
 
 .mp-live-title {

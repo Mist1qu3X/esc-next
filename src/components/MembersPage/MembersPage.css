@@ -310,7 +310,7 @@
     gap: 2px;
 }
 
-/* Карточка федерации */
+/* Карточка федерации — фон и рамка как были */
 .mp-federation-card {
     width: 100%;
     background: #091A2E;
@@ -321,6 +321,42 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
     cursor: pointer;
+}
+
+/* Цикличная палитра карточек (по 5 цветов по кругу) */
+.mp-federation-card:nth-child(5n + 1) {
+    --fed-bg: #0D2137;
+    --fed-accent: #00D8F5;
+    --fed-border: rgba(0, 216, 245, 0.25);
+    --fed-tint: rgba(0, 216, 245, 0.10);
+}
+
+.mp-federation-card:nth-child(5n + 2) {
+    --fed-bg: #1A1230;
+    --fed-accent: #C084FC;
+    --fed-border: rgba(192, 132, 252, 0.25);
+    --fed-tint: rgba(192, 132, 252, 0.10);
+}
+
+.mp-federation-card:nth-child(5n + 3) {
+    --fed-bg: #0D2510;
+    --fed-accent: #4ADE80;
+    --fed-border: rgba(74, 222, 128, 0.25);
+    --fed-tint: rgba(74, 222, 128, 0.10);
+}
+
+.mp-federation-card:nth-child(5n + 4) {
+    --fed-bg: #2A1200;
+    --fed-accent: #FB923C;
+    --fed-border: rgba(251, 146, 60, 0.25);
+    --fed-tint: rgba(251, 146, 60, 0.10);
+}
+
+.mp-federation-card:nth-child(5n + 5) {
+    --fed-bg: #1E0A0A;
+    --fed-accent: #F87171;
+    --fed-border: rgba(248, 113, 113, 0.25);
+    --fed-tint: rgba(248, 113, 113, 0.10);
 }
 
 .mp-federation-card:hover {
@@ -341,17 +377,19 @@
 .mp-federation-initials {
     width: 52px;
     height: 52px;
-    border: 2px solid #00d8f5;
+    border: 1.3px solid var(--fed-border, rgba(0, 216, 245, 0.25));
+    background: var(--fed-bg, transparent);
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Inter', sans-serif;
-    font-size: 18px;
-    font-weight: 800;
-    color: #00d8f5;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    line-height: 19.5px;
+    letter-spacing: 0.52px;
+    color: var(--fed-accent, #00d8f5);
     flex-shrink: 0;
-    background: transparent;
 }
 
 /* Код федерации */

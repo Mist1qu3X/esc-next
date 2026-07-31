@@ -15,6 +15,7 @@ const EventsPageContent = () => {
     const [searchActive, setSearchActive] = useState(false);
     const [showDateFilter, setShowDateFilter] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [showSegments, setShowSegments] = useState(true);
     const eventsPerPage = 6;
     const router = useRouter();
 
@@ -133,7 +134,37 @@ const EventsPageContent = () => {
         router.push(`/results`);
     };
 
-    const featuredEvents = filteredEvents.slice(0, 2);
+    const featuredEvents = filteredEvents.slice(0, 4);
+
+    // Season progress (dynamic)
+    const seasonSegments = [
+        { label: '10m Rifle & Pistol', done: true },
+        { label: '25m / 50m / 300m', done: true },
+        { label: 'Moving Target', done: true },
+        { label: 'Shotgun', done: true },
+        { label: 'Youth Events', done: true },
+        { label: 'ESC Leagues', done: false, active: true },
+    ];
+    const seasonProgress = 72;
+    const completedSegments = seasonSegments.filter((s) => s.done).length;
+
+    const getMonthShort = (dateString) => {
+        const date = parseDate(dateString);
+        if (isNaN(date.getTime())) return '';
+        return date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+    };
+
+    const getDayRange = (startStr, endStr) => {
+        const s = parseDate(startStr);
+        if (isNaN(s.getTime())) return '';
+        const e = endStr ? parseDate(endStr) : null;
+        if (!e || isNaN(e.getTime()) || e.getTime() === s.getTime()) return `${s.getDate()}`;
+        if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) {
+            return `${s.getDate()}-${e.getDate()}`;
+        }
+        const eMonth = e.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+        return `${s.getDate()}-${eMonth} ${e.getDate()}`;
+    };
 
     const currentMonthLabel = filterMonth === 'all' ? '' : months.find(m => m.value === filterMonth)?.label;
     const currentYearLabel = filterYear === 'all' ? '' : filterYear;
@@ -149,10 +180,6 @@ const EventsPageContent = () => {
                     <span className="epc-breadcrumb-home">HOME</span>
                     <span className="epc-breadcrumb-separator">›</span>
                     <span className="epc-breadcrumb-active">EVENTS</span>
-                </div>
-                <div className="epc-next-layer">
-                    <span className="epc-breadcrumb-line"></span>
-                    <span className="epc-breadcrumb-subtitle">COMPETITION SCHEDULE</span>
                 </div>
                 <div className="epc-title-row">
                     <h1>EVENTS CALENDAR</h1>
@@ -259,6 +286,54 @@ const EventsPageContent = () => {
                 </section>
             )}
 
+            {/* ========== SEASON PROGRESS ========== */}
+            <section className="epc-season-wrapper">
+                <div className="epc-season-progress">
+                    <div className="epc-sp-top">
+                        <h2 className="epc-sp-title">SEASON PROGRESS</h2>
+                        <span className="epc-sp-percent">{seasonProgress}%</span>
+                    </div>
+                    <span className="epc-sp-count">{completedSegments}/{seasonSegments.length} SEGMENTS</span>
+                    <div className="epc-sp-track">
+                        {seasonSegments.map((seg, i) => (
+                            <span className={`epc-sp-line ${seg.done ? 'epc-done' : 'epc-pending'} ${seg.active ? 'epc-active' : ''}`} key={i}></span>
+                        ))}
+                    </div>
+
+                    {/* Desktop (>960px): labels under the track */}
+                    <div className="epc-sp-labels">
+                        {seasonSegments.map((seg, i) => (
+                            <span className={`epc-sp-label ${seg.active ? 'epc-active' : ''}`} key={i}>{seg.label}</span>
+                        ))}
+                    </div>
+
+                    {/* Mobile (<=960px): checklist */}
+                    {showSegments && (
+                        <ul className="epc-sp-list">
+                            {seasonSegments.map((seg, i) => (
+                                <li className={`epc-sp-item ${seg.active ? 'epc-active' : ''}`} key={i}>
+                                    <span className={`epc-sp-check ${seg.done ? 'epc-done' : ''}`}>
+                                        {seg.done && <i className="fa-solid fa-check"></i>}
+                                    </span>
+                                    <span className="epc-sp-item-label">{seg.label}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                    <button className="epc-sp-toggle" onClick={() => setShowSegments(!showSegments)}>
+                        SHOW SEGMENTS
+                        <i className={`fa-solid ${showSegments ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+                    </button>
+                </div>
+                <div className="epc-season-status">
+                    <div className="epc-ss-left">
+                        <span className="epc-ss-name">ESC Leagues</span>
+                        <span className="epc-ss-active">ACTIVE</span>
+                    </div>
+                    <button className="epc-ss-btn">ON THE RANGE</button>
+                </div>
+            </section>
+
             {/* ========== ALL EVENTS ========== */}
             <section className="epc-all-events">
                 <div className="epc-all-events-naming">
@@ -289,8 +364,9 @@ const EventsPageContent = () => {
                         return (
                             <div className="epc-events-table-row" key={event.id}>
                                 <div className="epc-col epc-col-date">
-                                    <span className="epc-date-range">
-                                        {formatDisplayDate(date)} - {endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                    <span className="epc-date-badge">
+                                        <span className="epc-date-month">{getMonthShort(date)}</span>
+                                        <span className="epc-date-day">{getDayRange(date, event.endDate)}</span>
                                     </span>
                                     <span className="epc-date-year">{getYearFromDate(date)}</span>
                                 </div>

@@ -519,13 +519,15 @@
 
 .disc-card-title .disc-main {
     color: #ffffff;
-    font-size: 28px;
-    font-weight: 700;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 38px;
+    font-weight: 900;
 }
 
 .disc-card-title .disc-sub {
     color: rgba(255, 255, 255, 0.5);
-    font-size: 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
     font-weight: 700;
 }
 
@@ -540,8 +542,8 @@
 }
 
 .disc-card-icon img {
-    width: 64px;
-    height: 64px;
+    width: 107px;
+    height: 107px;
     object-fit: contain;
     opacity: 0.6;
     transition: opacity 0.2s ease;
@@ -822,10 +824,11 @@
 }
 
 /* Медальные строки */
-.medal-row { border-left: 2px solid transparent; }
-.medal-gold { border-left: 2px solid #FFD700; border-bottom: 1px solid rgba(255, 215, 0, 0.3); }
-.medal-silver { border-left: 2px solid #C0C0C0; border-bottom: 1px solid rgba(192, 192, 192, 0.3); }
-.medal-bronze { border-left: 2px solid #CD7F32; border-bottom: 1px solid rgba(205, 127, 50, 0.3); }
+/* Первые 3 места — без цветной обводки */
+.medal-row { border-left: none; }
+.medal-gold,
+.medal-silver,
+.medal-bronze { border-left: none; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
 
 .rank-num {
     font-family: 'Inter', sans-serif;
@@ -979,6 +982,18 @@
 }
 
 /* Пагинация */
+/* Цветное число в счётчике выстрелов (как на макете) */
+.shot-progress-count b {
+    color: #00d8f5;
+    font-weight: 800;
+}
+
+.fed-flag-emoji {
+    font-size: 18px;
+    line-height: 1;
+    margin-right: 8px;
+}
+
 .results-pagination {
     display: flex;
     align-items: center;
@@ -1620,21 +1635,26 @@
     }
     
     .discipline-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
     }
-    
+
     .discipline-card {
-        height: 100px;
-        padding: 16px;
+        height: 110px;
+        padding: 14px;
     }
-    
-    .disc-card-title {
-        font-size: 18px;
+
+    .disc-card-title .disc-main {
+        font-size: 24px;
     }
-    
+
+    .disc-card-title .disc-sub {
+        font-size: 13px;
+    }
+
     .disc-card-icon img {
-        width: 36px;
-        height: 36px;
+        width: 80px;
+        height: 80px;
     }
     
     .results-detail-title {
@@ -1696,5 +1716,17 @@
     
     .rankings-table-row[style*="80px"] .rt-fed span {
         font-size: 10px;
+    }
+}
+/* RANKINGS grid: 2 ряда без отступа → 8px → ещё 2 ряда без отступа (десктоп, 3 колонки) */
+@media (min-width: 1025px) {
+    .ranking-grid {
+        row-gap: 0;
+    }
+
+    .ranking-grid .discipline-card:nth-child(7),
+    .ranking-grid .discipline-card:nth-child(8),
+    .ranking-grid .discipline-card:nth-child(9) {
+        margin-top: 8px;
     }
 }

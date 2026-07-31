@@ -4,6 +4,8 @@ import axios from 'axios';
 import config from '@/lib/config';
 import './DocumentsPage.css';
 
+const DOCS_PER_PAGE = 8;
+
 const DocumentsPage = () => {
   const [documents, setDocuments] = useState([]);
   const [filteredDocs, setFilteredDocs] = useState([]);
@@ -13,52 +15,56 @@ const DocumentsPage = () => {
   const [sortOrder, setSortOrder] = useState('Most Recent');
   const [categories, setCategories] = useState([]);
   const [years, setYears] = useState([]);
+  const [expandedId, setExpandedId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchDocuments = async () => {
+      const deepPopulate =
+        'populate[file]=true&populate[attachments][populate]=file';
+      const buildUrl = (populate) =>
+        `${config.API_URL}/api/docs?${populate}&sort=date:desc&pagination[limit]=100`;
+
       try {
-        const res = await axios.get(
-          `${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[limit]=100`
-        );
-        
+        let res;
+        try {
+          // Полный populate с вложенными файлами вложений
+          res = await axios.get(buildUrl(deepPopulate));
+        } catch {
+          // Фолбэк, если бэкенд ещё не знает про attachments
+          res = await axios.get(buildUrl('populate=*'));
+        }
+
         let docs = [];
-        // Универсальное извлечение данных
         if (res.data?.data) {
           docs = res.data.data;
         } else if (Array.isArray(res.data)) {
           docs = res.data;
         }
-        
+
         setDocuments(docs);
         setFilteredDocs(docs);
-        
+
         // Подсчет категорий из реальных данных
         const categoryMap = new Map();
         categoryMap.set('All Documents', docs.length);
-        
-        docs.forEach(doc => {
+        docs.forEach((doc) => {
           const theme = doc.theme || 'Other';
           categoryMap.set(theme, (categoryMap.get(theme) || 0) + 1);
         });
-        
-        const categoryList = Array.from(categoryMap.entries()).map(([name, count]) => ({
-          name,
-          count
-        }));
-        setCategories(categoryList);
-        
+        setCategories(
+          Array.from(categoryMap.entries()).map(([name, count]) => ({ name, count }))
+        );
+
         // Подсчет годов из реальных данных
         const yearMap = new Map();
-        docs.forEach(doc => {
+        docs.forEach((doc) => {
           if (doc.date) {
             const year = new Date(doc.date).getFullYear().toString();
             yearMap.set(year, (yearMap.get(year) || 0) + 1);
           }
         });
-        
-        const yearList = Array.from(yearMap.keys()).sort((a, b) => b - a);
-        setYears(yearList);
-        
+        setYears(Array.from(yearMap.keys()).sort((a, b) => b - a));
       } catch (e) {
         console.error('Ошибка загрузки документов:', e);
       }
@@ -70,21 +76,17 @@ const DocumentsPage = () => {
   useEffect(() => {
     let result = [...documents];
 
-    // По категории
     if (activeCategory !== 'All Documents') {
       result = result.filter((doc) => doc.theme === activeCategory);
     }
 
-    // По году
     if (activeYear && activeYear !== 'all') {
       result = result.filter((doc) => {
         if (!doc.date) return false;
-        const docYear = new Date(doc.date).getFullYear().toString();
-        return docYear === activeYear;
+        return new Date(doc.date).getFullYear().toString() === activeYear;
       });
     }
 
-    // По поиску
     if (searchTerm) {
       result = result.filter(
         (doc) =>
@@ -93,7 +95,6 @@ const DocumentsPage = () => {
       );
     }
 
-    // Сортировка
     if (sortOrder === 'Most Recent') {
       result.sort((a, b) => new Date(b.date) - new Date(a.date));
     } else if (sortOrder === 'Most Downloaded') {
@@ -103,31 +104,53 @@ const DocumentsPage = () => {
     }
 
     setFilteredDocs(result);
+    setCurrentPage(1);
   }, [activeCategory, activeYear, searchTerm, sortOrder, documents]);
 
-  const handleDownload = (doc) => {
-    const file = doc.file;
-    if (file?.url) {
-      window.open(file.url.startsWith('http') ? file.url : `${config.API_URL}${file.url}`, '_blank');
-    }
+  // Пагинация
+  const totalPages = Math.max(1, Math.ceil(filteredDocs.length / DOCS_PER_PAGE));
+  const pageDocs = filteredDocs.slice(
+    (currentPage - 1) * DOCS_PER_PAGE,
+    currentPage * DOCS_PER_PAGE
+  );
+
+  // По умолчанию раскрываем первый документ на странице
+  useEffect(() => {
+    setExpandedId(pageDocs.length > 0 ? pageDocs[0].id : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, filteredDocs]);
+
+  const fileUrl = (file) =>
+    file?.url ? (file.url.startsWith('http') ? file.url : `${config.API_URL}${file.url}`) : null;
+
+  const openFile = (file) => {
+    const url = fileUrl(file);
+    if (url) window.open(url, '_blank');
   };
 
-  const handleView = (doc) => {
-    const file = doc.file;
-    if (file?.url) {
-      window.open(file.url.startsWith('http') ? file.url : `${config.API_URL}${file.url}`, '_blank');
-    }
-  };
-
-  const formatDate = (date) => {
+  const formatMonthYear = (date) => {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return new Date(date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
-  // Featured — первые 3
-  const featuredDocs = filteredDocs.slice(0, 3);
-  // All documents
-  const allDocs = filteredDocs;
+  // Список файлов внутри документа: либо attachments, либо сам документ как один файл
+  const getAttachments = (doc) => {
+    if (Array.isArray(doc.attachments) && doc.attachments.length > 0) {
+      return doc.attachments;
+    }
+    return [
+      {
+        name: doc.title,
+        version: doc.version,
+        date: doc.date,
+        fileSize: doc.fileSize,
+        downloadCount: doc.downloadCount,
+        file: doc.file,
+      },
+    ];
+  };
+
+  const toggleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
   return (
     <>
@@ -197,112 +220,101 @@ const DocumentsPage = () => {
           </div>
         </aside>
 
-        {/* Правая часть */}
+        {/* Правая часть — аккордеон документов */}
         <div className="twist-main">
-          {/* Featured Documents */}
-          <section className="featured-documents">
-            <div className="documents-top">
-              <span className="documents-count">{filteredDocs.length} DOCUMENTS</span>
-              <div className="documents-sort">
-                <select
-                  className="sort-select"
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                >
-                  <option>Most Recent</option>
-                  <option>Most Downloaded</option>
-                  <option>Alphabetical</option>
-                </select>
-              </div>
+          <div className="docs-top">
+            <span className="docs-count">{filteredDocs.length} DOCUMENTS</span>
+            <div className="docs-sort">
+              <select
+                className="sort-select"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <option>Most Recent</option>
+                <option>Most Downloaded</option>
+                <option>Alphabetical</option>
+              </select>
             </div>
-            <div className="documents-naming">
-              <div className="documents-line blue"></div>
-              <span className="documents-featured">FEATURED</span>
-            </div>
-            <div className="document-container">
-              {featuredDocs.length > 0 ? (
-                featuredDocs.map((doc) => (
-                  <div key={doc.id} className={`document type-${doc.theme?.toLowerCase().replace(/\s/g, '-') || 'official'}`}>
-                    <i className="fa-regular fa-file-pdf document-icon-top"></i>
-                    <div className="document-content">
-                      <div className="doc-header">
-                        <div className="doc-type-tag">{doc.theme || 'OFFICIAL DOCUMENTS'}</div>
-                        <span className="doc-version">{doc.version || 'v1.0'}</span>
-                      </div>
-                      <h3 className="document-title">{doc.title}</h3>
-                      <p className="document-description">{doc.description || ''}</p>
-                      <div className="document-footer">
-                        <div className="document-meta">
-                          <span className="doc-date">{formatDate(doc.date)}</span>
-                          <span className="doc-size">{doc.fileSize || '1.0 MB'}</span>
-                        </div>
-                        <button className="download-btn" onClick={() => handleDownload(doc)}>
-                          <i className="fa-solid fa-download"></i>
-                          PDF
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center' }}>
-                  No featured documents available
-                </p>
-              )}
-            </div>
-          </section>
+          </div>
 
-          {/* All Documents Table */}
-          <section className="all-documents">
-            <div className="documents-naming">
-              <div className="documents-line grey"></div>
-              <span className="documents-all">ALL DOCUMENTS</span>
-            </div>
-            <div className="events-table-wrapper">
-              <div className="events-table-header">
-                <div className="col col-doc">DOCUMENT</div>
-                <div className="col col-category">CATEGORY</div>
-                <div className="col col-version">VERSION</div>
-                <div className="col col-date">DATE</div>
-                <div className="col col-actions">ACTIONS</div>
-              </div>
-              {allDocs.length > 0 ? (
-                allDocs.map((doc) => (
-                  <div className="events-table-row" key={doc.id}>
-                    <div className="col col-doc">
-                      <div className="doc-info">
-                        <i className="fa-regular fa-file-lines doc-icon"></i>
-                        <div className="doc-details">
-                          <span className="doc-name">{doc.title}</span>
-                          <div className="doc-meta-mobile">
-                            <span className="doc-category-mobile">{doc.theme}</span>
-                            <span className="doc-date-mobile">{formatDate(doc.date)}</span>
-                          </div>
-                          <span className="doc-meta">{doc.fileSize || '1.0 MB'} · {doc.downloadCount || 0} downloads</span>
+          <div className="docs-accordion">
+            {pageDocs.length > 0 ? (
+              pageDocs.map((doc) => {
+                const isOpen = expandedId === doc.id;
+                const attachments = getAttachments(doc);
+                return (
+                  <div className={`docs-acc-item ${isOpen ? 'open' : ''}`} key={doc.id}>
+                    <button
+                      className="docs-acc-header"
+                      onClick={() => toggleExpand(doc.id)}
+                      aria-expanded={isOpen}
+                    >
+                      <span className="docs-acc-title">{doc.title}</span>
+                      <i
+                        className={`fa-solid ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'} docs-acc-chevron`}
+                      ></i>
+                    </button>
+
+                    {isOpen && (
+                      <div className="docs-acc-body">
+                        {doc.description && (
+                          <p className="docs-acc-desc">{doc.description}</p>
+                        )}
+                        <div className="docs-acc-files">
+                          {attachments.map((att, i) => (
+                            <div className="docs-file" key={i}>
+                              <i className="fa-regular fa-file-lines docs-file-icon"></i>
+                              <div className="docs-file-info">
+                                <span className="docs-file-name">{att.name}</span>
+                                <span className="docs-file-meta">
+                                  {att.fileSize || '—'} · {att.downloadCount || 0} downloads
+                                </span>
+                                <span className="docs-file-meta-mobile">
+                                  {formatMonthYear(att.date)}{att.fileSize ? ` · ${att.fileSize}` : ''}
+                                </span>
+                              </div>
+                              <span className="docs-file-version">{att.version}</span>
+                              <span className="docs-file-date">{formatMonthYear(att.date)}</span>
+                              <button
+                                className="docs-file-pdf"
+                                onClick={() => openFile(att.file)}
+                              >
+                                <i className="fa-solid fa-download"></i>
+                                PDF
+                              </button>
+                              <button
+                                className="docs-file-view"
+                                onClick={() => openFile(att.file)}
+                                aria-label="View"
+                              >
+                                <i className="fa-solid fa-eye"></i>
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    </div>
-                    <div className="col col-category">{doc.theme}</div>
-                    <div className="col col-version">{doc.version}</div>
-                    <div className="col col-date">{formatDate(doc.date)}</div>
-                    <div className="col col-actions">
-                      <button className="action-btn pdf-btn" onClick={() => handleDownload(doc)}>
-                        <i className="fa-solid fa-download"></i>
-                        PDF
-                      </button>
-                      <button className="action-btn view-btn" onClick={() => handleView(doc)}>
-                        <i className="fa-solid fa-eye"></i>
-                      </button>
-                    </div>
+                    )}
                   </div>
-                ))
-              ) : (
-                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center' }}>
-                  No documents found
-                </p>
-              )}
+                );
+              })
+            ) : (
+              <p className="docs-empty">No documents found</p>
+            )}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="docs-pagination">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  className={`docs-page-btn ${currentPage === i + 1 ? 'active' : ''}`}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
             </div>
-          </section>
+          )}
         </div>
       </section>
     </>

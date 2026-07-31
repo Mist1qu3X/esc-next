@@ -1,0 +1,205 @@
+/* ========== SELECTED VIDEO — HEADER ========== */
+.sv-header {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 40px 32px 32px;
+    background-color: #0A1B2E;
+}
+
+.sv-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.sv-crumb {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.sv-crumb:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.sv-crumb-active {
+    color: rgba(255, 255, 255, 0.7);
+    cursor: default;
+}
+
+.sv-crumb-sep {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.sv-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(30px, 4vw, 52px);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.sv-loading {
+    color: rgba(255, 255, 255, 0.5);
+    padding: 40px 0;
+}
+
+/* ========== CONTENT ========== */
+.sv-content {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 32px;
+    background-color: #06101C;
+}
+
+.sv-more-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    margin: 32px 0 16px;
+}
+
+.sv-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+/* Карточка видео */
+.sv-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.sv-card:hover {
+    transform: translateY(-2px);
+}
+
+.sv-card-cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 310 / 173;
+    background-size: cover;
+    background-position: center;
+}
+
+/* Затемнение + блюр (#06101C 32%, blur, 75% opacity) */
+.sv-card-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 16, 28, 0.32);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0.75;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.sv-card-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #00d8f5;
+    color: #06101C;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    padding-left: 3px;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.sv-card:hover .sv-card-play {
+    transform: translate(-50%, -50%) scale(1.08);
+    background: #0ee0ff;
+}
+
+.sv-card-duration {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 2;
+    background: rgba(6, 16, 28, 0.85);
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 7px;
+    border-radius: 3px;
+}
+
+.sv-card-panel {
+    min-height: 97px;
+    background: #0D2642;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sv-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    line-height: 1.15;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+}
+
+.sv-card-date {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* ========== АДАПТИВ ========== */
+@media (max-width: 960px) {
+    .sv-header {
+        padding: 32px 20px 24px;
+    }
+
+    .sv-content {
+        padding: 24px 20px;
+    }
+
+    .sv-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 560px) {
+    .sv-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -252,96 +252,47 @@
     color: #00d8f5;
 }
 
-/* Правая часть */
+/* ========== Правая часть — аккордеон документов ========== */
 .twist-main {
     flex: 1;
     min-width: 0;
     width: 100%;
 }
 
-/* Featured Documents */
-.featured-documents {
-    margin-bottom: 48px;
-}
-
-.documents-naming {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 32px;
-}
-
-/* первая строка */
-.documents-top {
+/* Верхняя строка: счётчик + сортировка */
+.docs-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 18px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
-.documents-count {
+.docs-count {
+    font-family: 'Inter', sans-serif;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 2px;
-    color: rgba(255,255,255,0.35);
+    color: rgba(255, 255, 255, 0.55);
     text-transform: uppercase;
-}
-
-/* Для FEATURED - голубая полоска */
-.documents-line.blue {
-    width: 42px;
-    height: 3px;
-    background: #00d8f5;
-    border-radius: 10px;
-    flex-shrink: 0;
-}
-
-/* Для ALL DOCUMENTS - серая полоска */
-.documents-line.grey {
-    width: 42px;
-    height: 3px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    flex-shrink: 0;
-}
-
-.documents-featured {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 2.5px;
-    color: #00d8f5;
-    text-transform: uppercase;
-}
-
-.documents-all {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 2.5px;
-    color: rgba(255, 255, 255, 0.3);
-    text-transform: uppercase;
-}
-
-.documents-sort {
-    margin-left: auto;
 }
 
 .sort-select {
     width: 190px;
     height: 36px;
     background: #0C233D;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 6px;
     padding: 0 14px;
+    font-family: 'Inter', sans-serif;
     font-size: 12px;
     font-weight: 600;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
     transition: all .2s ease;
 }
 
 .sort-select:hover {
-    border-color: rgba(0,216,245,.35);
+    border-color: rgba(0, 216, 245, .35);
 }
 
 .sort-select:focus {
@@ -353,344 +304,251 @@
     color: #ffffff;
 }
 
-/* Контейнер документов */
-.document-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    width: 100%;
-}
-
-.document {
-    background: #091A2E;
-    border-radius: 4px;
-    padding: 0;
+/* Аккордеон */
+.docs-accordion {
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    overflow: hidden;
-    position: relative;
-}
-
-.document::before {
-    content: '';
-    width: 100%;
-    height: 2px;
-    background: #00d8f5;
-    display: block;
-}
-
-.document.type-official::before {
-    background: #00d8f5;
-}
-
-.document.type-sustainability::before {
-    background: #00d8f5;
-}
-
-.document.type-rules::before {
-    background: #00d8f5;
-}
-
-.document:hover {
-    border-color: rgba(0, 216, 245, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-/* Иконка документа (десктоп) */
-.document-icon-top {
-    position: absolute;
-    top: 18px;
-    left: 24px;
-    font-size: 24px;
-    color: rgba(255, 255, 255, 0.25);
-    z-index: 1;
-}
-
-.document-content {
-    padding: 24px;
-    padding-top: 52px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: 1;
-}
-
-.doc-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.doc-type-tag {
-    font-family: 'Inter', sans-serif;
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 1.44px;
-    text-transform: uppercase;
-    color: #00d8f5;
-}
-
-.doc-version {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.document-title {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: #ffffff;
-    text-transform: uppercase;
-    line-height: 1.2;
-    margin: 0;
-}
-
-/* Мобильные элементы (скрыты по умолчанию) */
-.document-icon-mobile {
-    display: none;
-}
-
-.doc-mobile-info {
-    display: none;
-}
-
-.document-description {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.5);
-    margin: 0;
-    flex: 1;
-}
-
-.document-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.document-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.doc-date,
-.doc-size {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.35);
-}
-
-.download-btn {
-    width: 62px;
-    height: 27px;
-    background: #00d8f5;
-    border: none;
-    border-radius: 4px;
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    color: #06101C;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    text-transform: uppercase;
-}
-
-.download-btn:hover {
-    background: #0ee0ff;
-    transform: translateY(-1px);
-}
-
-.download-btn i {
-    font-size: 12px;
-}
-
-/* All Documents Table */
-.all-documents {
-    margin-top: 0;
-}
-
-.all-documents .documents-naming {
-    margin-bottom: 24px;
-}
-
-.events-table-wrapper {
-    background: #06101c;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.events-table-header {
-    display: grid;
-    grid-template-columns: 3fr 1fr 0.8fr 0.8fr 0.8fr;
-    gap: 16px;
-    padding: 16px 24px;
-    background: #06101c;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.events-table-header .col {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 1.44px;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.4);
-}
-
-.events-table-row {
-    display: grid;
-    grid-template-columns: 3fr 1fr 0.8fr 0.8fr 0.8fr;
-    gap: 16px;
-    padding: 20px 24px;
-    align-items: center;
-    background: #06101c;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    transition: background 0.2s ease;
-}
-
-.events-table-row:hover {
-    background: rgba(0, 216, 245, 0.03);
-}
-
-.events-table-row:last-child {
-    border-bottom: none;
-}
-
-.doc-info {
-    display: flex;
-    align-items: center;
     gap: 12px;
 }
 
-.doc-icon {
-    font-size: 20px;
-    color: rgba(255, 255, 255, 0.3);
-    flex-shrink: 0;
+.docs-acc-item {
+    background: #0C2138;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-.doc-details {
+.docs-acc-item:hover {
+    border-color: rgba(0, 216, 245, 0.18);
+}
+
+.docs-acc-item.open {
+    background: #0D2642;
+    border-color: rgba(0, 216, 245, 0.22);
+}
+
+.docs-acc-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.docs-acc-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.25;
+    color: #ffffff;
+}
+
+.docs-acc-chevron {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.55);
+    transition: color 0.2s ease;
+}
+
+.docs-acc-item.open .docs-acc-chevron {
+    color: #00d8f5;
+}
+
+.docs-acc-body {
+    padding: 0 28px 24px 28px;
+}
+
+.docs-acc-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 8px 0;
+}
+
+.docs-acc-files {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 16px;
+}
+
+/* Строка файла */
+.docs-file {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+}
+
+.docs-file + .docs-file {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.docs-file-icon {
+    flex-shrink: 0;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.docs-file-info {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.doc-name {
+.docs-file-name {
     font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
     color: #ffffff;
+    line-height: 1.3;
 }
 
-.doc-meta {
+.docs-file-meta {
     font-family: 'Inter', sans-serif;
     font-size: 11px;
+    font-weight: 500;
     color: rgba(255, 255, 255, 0.35);
 }
 
-.col-category {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    color: #00d8f5;
-}
-
-.col-version {
+/* Мобильная мета (дата · размер) — по умолчанию скрыта */
+.docs-file-meta-mobile {
+    display: none;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
     font-weight: 500;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.docs-file-version {
+    flex-shrink: 0;
+    width: 44px;
+    text-align: right;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
     color: rgba(255, 255, 255, 0.6);
 }
 
-.col-date {
+.docs-file-date {
+    flex-shrink: 0;
+    width: 72px;
+    text-align: right;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
 }
 
-.col-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-}
-
-.action-btn {
-    height: 27px;
+.docs-file-pdf {
+    flex-shrink: 0;
+    height: 32px;
+    padding: 0 14px;
+    background: #00d8f5;
     border: none;
     border-radius: 4px;
     font-family: 'Inter', sans-serif;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #06101C;
     cursor: pointer;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-}
-
-.pdf-btn {
-    width: 62px;
-    background: #00d8f5;
-    color: #06101C;
-    justify-content: center;
     text-transform: uppercase;
-    font-weight: 700;
+    transition: all 0.2s ease;
 }
 
-.pdf-btn:hover {
+.docs-file-pdf:hover {
     background: #0ee0ff;
     transform: translateY(-1px);
 }
 
-.view-btn {
-    width: 33px;
-    background: #0D2642;
-    color: rgba(255, 255, 255, 0.5);
+.docs-file-view {
+    flex-shrink: 0;
+    width: 34px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s ease;
 }
 
-.view-btn:hover {
-    background: #0ee0ff;
-    transform: translateY(-1px);
+.docs-file-view:hover {
+    color: #00d8f5;
+    background: rgba(0, 216, 245, 0.08);
 }
 
-/* Мобильная мета-информация для таблицы */
-.doc-meta-mobile {
-    display: none;
+.docs-empty {
+    color: rgba(255, 255, 255, 0.5);
+    padding: 40px;
+    text-align: center;
+}
+
+/* Пагинация */
+.docs-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 32px;
+}
+
+.docs-page-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0C2138;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.docs-page-btn:hover {
+    border-color: rgba(0, 216, 245, 0.4);
+    color: #ffffff;
+}
+
+.docs-page-btn.active {
+    background: #00d8f5;
+    border-color: #00d8f5;
+    color: #06101C;
 }
 
 /* ========== АДАПТИВНОСТЬ ========== */
-
-/* 1200px */
-@media (max-width: 1200px) {
-    .document-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .events-table-header,
-    .events-table-row {
-        grid-template-columns: 2.5fr 1fr 0.7fr 0.7fr 0.8fr;
-    }
-}
 
 /* 1024px */
 @media (max-width: 1024px) {
     .documents-hero {
         padding: 80px 24px;
     }
-    
+
     .documents-hero .breadcrumb-home,
     .documents-hero .breadcrumb-separator,
     .documents-hero .breadcrumb-active,
@@ -698,65 +556,36 @@
         font-size: 12px;
         letter-spacing: 1.5px;
     }
-    
+
     .documents-hero .breadcrumb-line {
         width: 30px;
     }
-    
+
     .documents-hero .documents-title {
         font-size: clamp(40px, 5vw, 64px);
     }
-    
-    /* Search bar адаптивность */
+
     .documents-hero .documents-search {
         width: 100%;
         max-width: 580px;
     }
-    
+
     .twist-container {
         flex-direction: column;
         padding: 40px 24px;
         gap: 24px;
     }
-    
+
     .twist-sidebar {
         width: 100%;
         display: flex;
         flex-direction: column;
         gap: 2px;
     }
-    
-    .sidebar-categories {
-        width: 100%;
-        padding: 24px 0;
-    }
-    
+
+    .sidebar-categories,
     .sidebar-year {
         width: 100%;
-        margin-top: 2px;
-    }
-    
-    .document-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .events-table-header,
-    .events-table-row {
-        grid-template-columns: 2fr 1fr 0.6fr 0.6fr 0.8fr;
-        padding: 16px;
-        gap: 12px;
-    }
-
-    .document-icon-top {
-        position: absolute !important;
-        top: 16px !important;
-        left: 16px !important;
-        font-size: 20px !important;
-        z-index: 1 !important;
-    }
-    
-    .document-content {
-        padding-top: 48px !important;
     }
 }
 
@@ -765,41 +594,55 @@
     .documents-hero {
         padding: 60px 20px;
     }
-    
+
     .documents-hero .documents-search {
         width: 100%;
         max-width: 100%;
     }
-    
+
     .twist-container {
         padding: 30px 16px;
     }
-    
-    .twist-sidebar {
-        flex-direction: column;
-        gap: 2px;
+
+    .docs-acc-header {
+        padding: 18px 20px;
     }
-    
-    .document-container {
-        grid-template-columns: repeat(2, 1fr);
+
+    .docs-acc-title {
+        font-size: 18px;
     }
-    
-    .documents-top {
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
+
+    .docs-acc-body {
+        padding: 0 20px 20px 20px;
     }
-    
-    .documents-sort {
-        margin-left: 0;
-        width: 100%;
+
+    /* Файл: иконка + название/дата·размер + PDF. Версия, кол-во загрузок и «глаз» скрыты */
+    .docs-file {
+        gap: 14px;
+        align-items: center;
     }
-    
+
+    .docs-file-meta {
+        display: none;
+    }
+
+    .docs-file-meta-mobile {
+        display: block;
+    }
+
+    .docs-file-version,
+    .docs-file-date,
+    .docs-file-view {
+        display: none;
+    }
+
+    .docs-file-pdf {
+        margin-left: auto;
+    }
 }
 
 /* 480px */
 @media (max-width: 480px) {
-
     .documents-hero {
         padding: 40px 10px;
     }
@@ -808,166 +651,28 @@
         padding: 20px 10px;
     }
 
-    .document-container {
-        grid-template-columns: 1fr;
-    }
-
-    .document {
-        min-height: auto;
-    }
-
-    .document-content {
-        padding: 16px;
-        padding-top: 14px;
-        gap: 10px;
-    }
-
-    .document-icon-top {
-        display: none;
-    }
-
-    .doc-header {
-        align-items: flex-start;
-    }
-
-    .doc-type-tag {
-        font-size: 9px;
-    }
-
-    .doc-version {
-        font-size: 10px;
-        background: rgba(255,255,255,.08);
-        padding: 2px 6px;
-        border-radius: 3px;
-    }
-
-    .document-title {
-        font-size: 24px;
-        line-height: 1.05;
-    }
-
-    .document-description {
-        display: none;
-    }
-
-    .document-footer {
-        padding-top: 10px;
-    }
-
-    .doc-date,
-    .doc-size {
-        font-size: 10px;
-    }
-
-    .download-btn {
-        width: 66px;
-        height: 28px;
-        font-size: 10px;
-    }
-
-    .download-btn i {
-        font-size: 10px;
-    }
-
-    /* TABLE */
-
-    .events-table-header {
-        display: none;
-    }
-
-    .events-table-row {
-        display: grid;
-        grid-template-columns: 1fr auto;
+    .docs-top {
+        flex-direction: column;
         gap: 12px;
-        padding: 14px 12px;
-        background: #091A2E;
-        border-bottom: 1px solid rgba(255,255,255,.05);
-    }
-
-    .events-table-row .col-category,
-    .events-table-row .col-version,
-    .events-table-row .col-date {
-        display: none;
-    }
-
-    .doc-info {
-        gap: 10px;
         align-items: flex-start;
     }
 
-    .doc-icon {
-        font-size: 14px;
-        color: #00d8f5;
-        margin-top: 2px;
+    .docs-sort {
+        width: 100%;
     }
 
-    .doc-details {
-        gap: 3px;
-    }
-
-    .doc-name {
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        line-height: 1.3;
-    }
-
-    .doc-meta {
-        display: none;
-    }
-
-    .doc-meta-mobile {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .doc-category-mobile,
-    .doc-date-mobile {
-        font-size: 10px;
-        color: rgba(255,255,255,.4);
-    }
-
-    .doc-category-mobile::after {
-        content: "·";
-        margin-left: 4px;
-    }
-
-    .view-btn {
-        display: none;
-    }
-
-    .pdf-btn {
-        width: 40px;
-        height: 28px;
-        font-size: 10px;
-        padding: 0;
-    }
-
-    .pdf-btn i {
-        display: none;
+    .sort-select {
+        width: 100%;
     }
 
     .sidebar-categories,
     .sidebar-year {
         display: none;
     }
-}
 
-/* 360px */
-@media (max-width: 360px) {
-    .doc-name {
-        font-size: 12px;
-    }
-    
-    .doc-mobile-category,
-    .doc-mobile-date {
-        font-size: 10px;
-    }
-    
-    .pdf-btn {
-        width: 45px;
-        height: 26px;
-        font-size: 10px;
+    .docs-page-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 13px;
     }
 }
