@@ -112,6 +112,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [rankingsDetailLevel, setRankingsDetailLevel] = useState(false);
   const [selectedDiscipline, setSelectedDiscipline] = useState('10m Air Pistol');
   const [selectedEvent, setSelectedEvent] = useState('');
+  const [selectedEventSlug, setSelectedEventSlug] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('World Records');
   const [rankings, setRankings] = useState([]);
   const [resultDetails, setResultDetails] = useState([]);
@@ -187,12 +188,15 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     setDisciplineLevel(false);
     setResultsLevel(false);
     setRankingsDetailLevel(false);
+    setSelectedEventSlug('');
   };
 
+  // Результаты привязаны к выбранному событию (eventSlug), затем по дисциплине/полу
   const filteredResults = resultDetails.filter(r => {
+    const matchEvent = !selectedEventSlug || r.eventSlug === selectedEventSlug;
     const matchDiscipline = r.discipline?.toLowerCase() === selectedDiscipline.toLowerCase();
     const matchGender = gender === 'ALL' || r.category?.toUpperCase() === gender;
-    return matchDiscipline && matchGender;
+    return matchEvent && matchDiscipline && matchGender;
   });
 
   // Пока нет реальных данных — показываем тестовых участников
@@ -355,7 +359,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           </div>
           <div className="events-list">
             {filteredEvents.map((ev) => (
-              <div key={ev.id} className={`event-card ${ev.statusEvent?.toUpperCase() === 'UPCOMING' ? 'event-upcoming' : 'event-completed'}`} onClick={() => { setDisciplineLevel(true); setSelectedEvent(ev.name); }}>
+              <div key={ev.id} className={`event-card ${ev.statusEvent?.toUpperCase() === 'UPCOMING' ? 'event-upcoming' : 'event-completed'}`} onClick={() => { setDisciplineLevel(true); setSelectedEvent(ev.name); setSelectedEventSlug(ev.slug || ''); }}>
                 <div className="event-card-left">
                   <div className="event-tags">
                     <span className={`event-status ${ev.statusEvent?.toUpperCase() === 'UPCOMING' ? 'status-upcoming' : 'status-completed'}`}>{ev.statusEvent}</span>
