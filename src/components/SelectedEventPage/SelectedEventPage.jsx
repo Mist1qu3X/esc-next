@@ -55,7 +55,11 @@ const SelectedEventPage = ({ slug }) => {
   const [schedule, setSchedule] = useState([]);
   const [eventResults, setEventResults] = useState([]);
   const [eventPhotos, setEventPhotos] = useState([]);
+  const [resultDisc, setResultDisc] = useState(null);
   const router = useRouter();
+
+  // При смене вкладки/события сбрасываем выбранную дисциплину в RESULTS
+  useEffect(() => { setResultDisc(null); }, [activeTab, slug]);
 
   const tabs = ['OVERVIEW', 'DOCUMENTS', 'RESULTS', 'LIVE & MEDIA'];
 
@@ -261,14 +265,38 @@ const SelectedEventPage = ({ slug }) => {
             {activeTab === 'RESULTS' && (
               <>
                 <h2 className="event-section-title">RESULTS</h2>
-                <p className="event-description">Official results for {event.name}.</p>
-                {Object.keys(resultGroups).length > 0 ? (
-                  Object.entries(resultGroups).map(([disc, rows]) => (
-                    <div className="event-result-block" key={disc}>
-                      <h3 className="event-subtitle">{disc}</h3>
+                {Object.keys(resultGroups).length === 0 ? (
+                  <div className="stream-scheduled" style={{ maxWidth: 480 }}>
+                    <i className="fa-regular fa-clock stream-scheduled-icon"></i>
+                    <span className="stream-scheduled-title">RESULTS PENDING</span>
+                    <span className="stream-scheduled-text">Official results will appear here once the competition is complete.</span>
+                  </div>
+                ) : !resultDisc ? (
+                  <>
+                    <p className="event-description">Select a discipline to view official results for {event.name}.</p>
+                    <div className="se-disc-grid">
+                      {Object.entries(resultGroups).map(([disc, rows]) => {
+                        const [main, sub] = disc.split(' — ');
+                        return (
+                          <div className="se-disc-card" key={disc} onClick={() => setResultDisc(disc)}>
+                            <h3 className="se-disc-title"><span className="se-disc-main">{main}</span><span className="se-disc-sub">{sub} · {rows.length} athletes</span></h3>
+                            <span className="se-disc-arrow">›</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="se-results-breadcrumb">
+                      <span className="se-bc-link" onClick={() => setResultDisc(null)}>Results</span>
+                      <span className="se-bc-sep">›</span>
+                      <span className="se-bc-active">{resultDisc}</span>
+                    </div>
+                    <div className="event-result-block">
                       <div className="event-result-table">
                         <div className="er-head"><span>RANK</span><span>ATHLETE</span><span>FED</span><span>TOTAL</span><span>INNER 10s</span></div>
-                        {rows.map((r, i) => (
+                        {resultGroups[resultDisc].map((r, i) => (
                           <div className={`er-row ${i < 3 ? 'er-medal er-medal-' + (i + 1) : ''}`} key={r.id}>
                             <span className="er-rank">{r.position}</span>
                             <span className="er-name">{r.athleteName}</span>
@@ -279,13 +307,7 @@ const SelectedEventPage = ({ slug }) => {
                         ))}
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="stream-scheduled" style={{ maxWidth: 480 }}>
-                    <i className="fa-regular fa-clock stream-scheduled-icon"></i>
-                    <span className="stream-scheduled-title">RESULTS PENDING</span>
-                    <span className="stream-scheduled-text">Official results will appear here once the competition is complete.</span>
-                  </div>
+                  </>
                 )}
                 <button className="event-tab-cta" onClick={() => router.push('/results')}>FULL RESULTS &amp; RANKINGS ›</button>
               </>
