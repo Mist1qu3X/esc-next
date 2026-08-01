@@ -22,7 +22,8 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
     const fetchDocuments = async () => {
       const deepPopulate =
         'populate[file]=true&populate[attachments][populate]=file';
-      const eventFilter = eventSlug ? `&filters[eventSlug][$eq]=${eventSlug}` : '';
+      // событие → только его документы; общая библиотека → только не-событийные
+      const eventFilter = eventSlug ? `&filters[eventSlug][$eq]=${eventSlug}` : `&filters[eventSlug][$null]=true`;
       const buildUrl = (populate) =>
         `${config.API_URL}/api/docs?${populate}${eventFilter}&sort=date:desc&pagination[limit]=100`;
 

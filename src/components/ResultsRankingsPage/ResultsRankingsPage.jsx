@@ -132,18 +132,31 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      // Strapi ограничивает pageSize (макс 100). Records/rankings/results > 100 строк,
+      // поэтому листаем страницы, иначе часть дисциплин выпадает и показываются TEST-данные.
+      const fetchAll = async (path) => {
+        let page = 1, all = [];
+        while (page <= 15) {
+          const res = await axios.get(`${config.API_URL}${path}&pagination[pageSize]=100&pagination[page]=${page}`);
+          all.push(...(res.data?.data || []));
+          const pc = res.data?.meta?.pagination?.pageCount || 1;
+          if (page >= pc) break;
+          page++;
+        }
+        return all;
+      };
       try {
         // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
         const [eventsRes, rankingsRes, resultsRes, recordsRes] = await Promise.allSettled([
           axios.get(`${config.API_URL}/api/events?populate=*&sort=date:desc&pagination[limit]=100`),
-          axios.get(`${config.API_URL}/api/ranking-details?populate=*&sort=position:asc&pagination[limit]=100`),
-          axios.get(`${config.API_URL}/api/result-details?populate=*&sort=position:asc&pagination[limit]=100`),
-          axios.get(`${config.API_URL}/api/records?populate=*&sort=date:desc&pagination[limit]=100`),
+          fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
+          fetchAll(`/api/result-details?populate=*&sort=position:asc`),
+          fetchAll(`/api/records?populate=*&sort=date:desc`),
         ]);
         if (eventsRes.status === 'fulfilled' && eventsRes.value.data?.data) setEvents(eventsRes.value.data.data);
-        if (rankingsRes.status === 'fulfilled' && rankingsRes.value.data?.data) setRankings(rankingsRes.value.data.data);
-        if (resultsRes.status === 'fulfilled' && resultsRes.value.data?.data) setResultDetails(resultsRes.value.data.data);
-        if (recordsRes.status === 'fulfilled' && recordsRes.value.data?.data) setRecords(recordsRes.value.data.data);
+        if (rankingsRes.status === 'fulfilled') setRankings(rankingsRes.value);
+        if (resultsRes.status === 'fulfilled') setResultDetails(resultsRes.value);
+        if (recordsRes.status === 'fulfilled') setRecords(recordsRes.value);
         [eventsRes, rankingsRes, resultsRes, recordsRes]
           .filter((r) => r.status === 'rejected')
           .forEach((r) => console.error('Ошибка загрузки раздела:', r.reason?.message || r.reason));
