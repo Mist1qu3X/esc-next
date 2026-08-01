@@ -79,7 +79,7 @@ const FullInfo = () => {
         const fetchRankings = async () => {
             try {
                 const response = await axios.get(
-                    `${config.API_URL}/api/ranking-details?sort=position:asc`
+                    `${config.API_URL}/api/ranking-details?filters[discipline][$eq]=10m Air Rifle&sort=position:asc&pagination[pageSize]=50`
                 );
                 setRankings(response.data.data);
             } catch (error) { console.error('Ошибка загрузки рейтинга:', error); }
