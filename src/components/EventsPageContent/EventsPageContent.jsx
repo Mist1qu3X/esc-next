@@ -72,23 +72,14 @@ const EventsPageContent = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
+                // Текущий сезон: события с начала прошлого года и дальше (актуальные + ближайшие),
+                // по возрастанию даты — чтобы показывать текущий/предстоящий сезон, а не архив 2001 г.
+                const seasonFrom = `${new Date().getFullYear() - 1}-01-01`;
                 const res = await axios.get(
-                    `${config.API_URL}/api/events?populate[image]=true&sort=date:asc&pagination[limit]=100`
+                    `${config.API_URL}/api/events?populate[image]=true&filters[date][$gte]=${seasonFrom}&sort=date:asc&pagination[limit]=200`
                 );
                 if (res.data?.data) {
-                    // Сортировка: сначала по году (от большего к меньшему), потом по дате (от большей к меньшей)
-                    const sortedEvents = [...res.data.data].sort((a, b) => {
-                        const dateA = parseDate(a.date);
-                        const dateB = parseDate(b.date);
-                        
-                        // Сначала по году (от большего к меньшему)
-                        if (dateA.getFullYear() !== dateB.getFullYear()) {
-                            return dateB.getFullYear() - dateA.getFullYear();
-                        }
-                        // Если год одинаковый - по дате от большей к меньшей (Ноябрь, Сентябрь, Июнь...)
-                        return dateB - dateA;
-                    });
-                    setEvents(sortedEvents);
+                    setEvents(res.data.data);
                 }
             } catch (e) { console.error(e); }
         };
@@ -134,19 +125,21 @@ const EventsPageContent = () => {
         router.push(`/results`);
     };
 
-    const featuredEvents = filteredEvents.slice(0, 4);
+    // FEATURED — ближайшие предстоящие события (а не первые из архива)
+    const upcomingEvents = filteredEvents.filter((e) => getEventStatus(e.date) === 'UPCOMING');
+    const featuredEvents = (upcomingEvents.length ? upcomingEvents : filteredEvents).slice(0, 4);
 
-    // Season progress (dynamic)
-    const seasonSegments = [
-        { label: '10m Rifle & Pistol', done: true },
-        { label: '25m / 50m / 300m', done: true },
-        { label: 'Moving Target', done: true },
-        { label: 'Shotgun', done: true },
-        { label: 'Youth Events', done: true },
-        { label: 'ESC Leagues', done: false, active: true },
-    ];
-    const seasonProgress = 72;
-    const completedSegments = seasonSegments.filter((s) => s.done).length;
+    // SEASON PROGRESS — динамически: доля завершённых событий текущего сезона (года)
+    const seasonYear = new Date().getFullYear();
+    const seasonEvents = events.filter((e) => parseDate(e.date).getFullYear() === seasonYear);
+    const seasonDoneCount = seasonEvents.filter((e) => getEventStatus(e.date) === 'FINISHED').length;
+    const seasonProgress = seasonEvents.length ? Math.round((seasonDoneCount / seasonEvents.length) * 100) : 0;
+
+    // Чек-лист блоков сезона — отмечаем по проценту прогресса
+    const seasonSegmentLabels = ['10m Rifle & Pistol', '25m / 50m / 300m', 'Moving Target', 'Shotgun', 'Youth Events', 'ESC Leagues'];
+    const doneSegCount = Math.round((seasonProgress / 100) * seasonSegmentLabels.length);
+    const seasonSegments = seasonSegmentLabels.map((label, i) => ({ label, done: i < doneSegCount, active: i === doneSegCount }));
+    const completedSegments = doneSegCount;
 
     const getMonthShort = (dateString) => {
         const date = parseDate(dateString);
