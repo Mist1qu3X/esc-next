@@ -6,7 +6,7 @@ import './DocumentsPage.css';
 
 const DOCS_PER_PAGE = 8;
 
-const DocumentsPage = () => {
+const DocumentsPage = ({ embedded = false }) => {
   const [documents, setDocuments] = useState([]);
   const [filteredDocs, setFilteredDocs] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All Documents');
@@ -155,6 +155,7 @@ const DocumentsPage = () => {
   return (
     <>
       {/* ========== DOCUMENTS HERO ========== */}
+      {!embedded && (
       <section className="documents-hero">
         <div className="breadcrumbs-row">
           <span className="breadcrumb-home">HOME</span>
@@ -177,6 +178,7 @@ const DocumentsPage = () => {
           />
         </div>
       </section>
+      )}
 
       {/* ========== MAIN CONTENT ========== */}
       <section className="twist-container">

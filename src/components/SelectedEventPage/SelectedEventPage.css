@@ -157,12 +157,18 @@
     opacity: 0.5;
 }
 
-/* Кнопка Entry System - по центру справа */
+/* Инфо-строка + кнопка в одну горизонталь (десктоп) */
+.event-info-bar {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-wrap: wrap;
+}
+
+/* Кнопка Entry System — инлайн после инфо (десктоп) */
 .event-entry-btn {
-    position: absolute;
-    right: 32px;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;
+    flex-shrink: 0;
     height: 44px;
     padding: 0 20px;
     background: #00d8f5;
@@ -769,13 +775,16 @@
         font-size: clamp(28px, 4vw, 42px);
     }
     
+    /* Средний экран — кнопка как раньше на десктопе (справа по центру) */
     .event-entry-btn {
-        position: static;
-        transform: none;
+        position: absolute;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-top: 0;
         width: fit-content;
-        margin-top: 16px;
     }
-    
+
     /* Фильтры */
     .event-filters-nav {
         padding: 0 24px;
@@ -875,10 +884,9 @@
         font-size: 10px;
     }
     
+    /* Телефон — кнопки нет */
     .event-entry-btn {
-        height: 38px;
-        font-size: 10px;
-        margin-top: 12px;
+        display: none;
     }
     
     .event-status-upcoming,
@@ -1016,10 +1024,7 @@
     }
     
     .event-entry-btn {
-        height: 34px;
-        padding: 0 14px;
-        font-size: 9px;
-        margin-top: 10px;
+        display: none;
     }
     
     /* Фильтры */
@@ -1105,4 +1110,324 @@
     .venue-location {
         font-size: 11px;
     }
+}
+/* ============================================================
+   ALL EVENTS (расписание) — заменяет VENUE
+   ============================================================ */
+.ae-title { margin-top: 48px; }
+
+.all-events-table {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.ae-header {
+    display: grid;
+    grid-template-columns: 80px 140px 1fr 150px;
+    gap: 12px;
+    padding: 0 0 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.ae-group {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 12px;
+    padding: 22px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ae-date {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    color: #ffffff;
+}
+
+.ae-date-mon { font-size: 14px; font-weight: 600; color: rgba(255, 255, 255, 0.6); }
+.ae-date-day { font-size: 30px; font-weight: 900; line-height: 1; }
+
+.ae-items { display: flex; flex-direction: column; gap: 12px; }
+
+.ae-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 150px;
+    gap: 12px;
+    align-items: baseline;
+}
+
+.ae-time {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+}
+
+.ae-event {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.ae-stage {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.ae-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 32px;
+}
+
+.ae-page-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    background: #0C233D;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ae-page-btn:hover { border-color: rgba(0, 216, 245, 0.4); color: #fff; }
+.ae-page-btn.active { background: #00d8f5; color: #06121f; border-color: #00d8f5; }
+
+/* ============================================================
+   LIVE STREAM — состояния UPCOMING / SCHEDULED
+   ============================================================ */
+.upcoming-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.upcoming-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.stream-scheduled {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 36px 20px;
+}
+
+.stream-scheduled-icon {
+    font-size: 34px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.stream-scheduled-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.stream-scheduled-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.4);
+    max-width: 260px;
+}
+
+/* ============================================================
+   ТАБЫ: DOCUMENTS / RESULTS / LIVE & MEDIA
+   ============================================================ */
+.event-docs-list { display: flex; flex-direction: column; margin-top: 20px; }
+
+.event-doc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.event-doc-info { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.event-doc-info > i { font-size: 20px; color: rgba(255, 255, 255, 0.35); flex-shrink: 0; }
+.event-doc-info > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+
+.event-doc-name { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; color: #fff; text-transform: uppercase; }
+.event-doc-meta { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(255, 255, 255, 0.4); }
+
+.event-doc-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 16px;
+    background: #00d8f5;
+    border: none;
+    border-radius: 4px;
+    color: #06121f;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.event-doc-btn:hover { background: #0ee0ff; }
+
+.event-empty { color: rgba(255, 255, 255, 0.4); padding: 24px 0; }
+
+.event-tab-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
+    height: 48px;
+    padding: 0 24px;
+    background: transparent;
+    border: 1px solid rgba(0, 216, 245, 0.4);
+    border-radius: 4px;
+    color: #00d8f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.event-tab-cta:hover { background: rgba(0, 216, 245, 0.1); border-color: #00d8f5; }
+
+.event-media-streams {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.event-media-card {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 6px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-color: #0C233D;
+    cursor: pointer;
+}
+
+.event-media-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(6, 16, 28, 0.9) 0%, rgba(6, 16, 28, 0.2) 60%, transparent 100%);
+}
+
+.event-media-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: rgba(6, 16, 28, 0.7);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+.event-media-info {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.event-media-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; color: #fff; }
+.event-media-meta { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(255, 255, 255, 0.6); }
+
+/* ---------- Адаптив ALL EVENTS / media ---------- */
+@media (max-width: 768px) {
+    .ae-header { display: none; }
+
+    .ae-group {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 20px 0;
+    }
+
+    .ae-date { gap: 6px; }
+
+    .ae-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+        padding-left: 2px;
+        border-left: 2px solid rgba(0, 216, 245, 0.25);
+        padding: 4px 0 4px 12px;
+    }
+
+    .ae-time { order: 0; }
+    .ae-event { order: 1; font-size: 15px; }
+    .ae-stage { order: 2; }
+
+    .event-media-streams { grid-template-columns: 1fr; }
+}
+
+/* ===== Полноширинные вкладки DOCUMENTS / RESULTS (встроенные страницы) ===== */
+/* На этих вкладках .event-content отдаёт всю ширину встроенной странице,
+   у которой уже есть собственный контейнер (max-width 1440 + padding + margin auto). */
+.event-content:has(.event-content-full) {
+    max-width: none;
+    padding: 0;
+    background-color: #06101C;
+}
+
+.event-content-full {
+    display: block;
+}
+
+.event-content-full .event-main-body {
+    width: 100%;
+    flex: none;
+    min-width: 0;
+}
+
+.event-embed {
+    width: 100%;
 }

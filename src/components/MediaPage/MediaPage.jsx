@@ -66,7 +66,7 @@ const MediaPage = () => {
           axios.get(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&limit=20`),
           axios.get(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100`),
           axios.get(`${config.API_URL}/api/docs?populate=*&limit=20`),
-          axios.get(`${config.API_URL}/api/live-streams?populate=*&limit=10`),
+          axios.get(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`),
           axios.get(`${config.API_URL}/api/spotlight-items?populate=*&limit=4`),
           // Фолбэк на пустой ответ, пока коллекция photos не создана/Strapi не перезапущен
           axios.get(`${config.API_URL}/api/photos?populate=*&sort=date:desc&limit=40`).catch(() => ({ data: { data: [] } })),

@@ -606,15 +606,30 @@
 .epc-featured-container {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 16px;
     width: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+}
+
+.epc-featured-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.epc-featured-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
 }
 
 .epc-featured-card {
     width: 320px;
     height: 340px;
     flex: 0 0 320px;
+    scroll-snap-align: start;
     position: relative;
     overflow: hidden;
     cursor: pointer;
@@ -1179,14 +1194,15 @@
     }
     
     .epc-featured-container {
-        flex-direction: column;
-        gap: 16px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 12px;
     }
 
     .epc-featured-card {
-        flex: 0 0 auto;
-        width: 100%;
-        height: 340px;
+        flex: 0 0 82%;
+        width: 82%;
+        height: 300px;
     }
 
     .epc-sp-title,
