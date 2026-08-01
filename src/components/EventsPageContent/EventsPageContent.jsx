@@ -73,7 +73,7 @@ const EventsPageContent = () => {
         const fetchEvents = async () => {
             try {
                 const res = await axios.get(
-                    `${config.API_URL}/api/events?populate=*&sort=date:asc&pagination[limit]=100`
+                    `${config.API_URL}/api/events?populate[image]=true&sort=date:asc&pagination[limit]=100`
                 );
                 if (res.data?.data) {
                     // Сортировка: сначала по году (от большего к меньшему), потом по дате (от большей к меньшей)
@@ -260,7 +260,8 @@ const EventsPageContent = () => {
                     </div>
                     <div className="epc-featured-container">
                         {featuredEvents.map((event) => {
-                            const imgUrl = event.image?.url?.startsWith('http') ? event.image.url : `${config.API_URL}${event.image?.url}`;
+                            const rawImg = event.image?.url || event.image?.data?.attributes?.url;
+                            const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : `${config.API_URL}${rawImg}`) : null;
                             const eventStatus = getEventStatus(event.date);
                             return (
                                 <div className="epc-featured-card" key={event.id} onClick={() => handleDetails(event)}>

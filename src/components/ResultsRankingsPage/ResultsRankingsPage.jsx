@@ -84,7 +84,7 @@ const TEST_RECORDS = [
   { type: 'EWR', athleteName: 'MÜLLER HANS', federationCode: 'AUT', flagEmoji: '🇦🇹', record: '103', location: 'EWR World Cup Lahti (FIN)', date: '2008-07-09', category: 'MEN' },
 ];
 
-const ResultsRankingsPage = () => {
+const ResultsRankingsPage = ({ embedded = false }) => {
   const [activeTab, setActiveTab] = useState('results');
   const [events, setEvents] = useState([]);
   const [disciplineLevel, setDisciplineLevel] = useState(false);
@@ -277,6 +277,7 @@ const ResultsRankingsPage = () => {
   return (
     <>
       {/* HERO */}
+      {!embedded && (
       <section className="results-hero">
         <div className="results-breadcrumbs"><span className="breadcrumb-home">HOME</span><span className="breadcrumb-separator">›</span><span className="breadcrumb-active">RESULTS & RANKINGS</span></div>
         <div className="results-subtitle-row"><span className="results-line"></span><span className="results-subtitle">SPORTS DATA HUB</span></div>
@@ -286,6 +287,7 @@ const ResultsRankingsPage = () => {
           {tabs.map((t) => <button key={t} className={`filter-btn ${activeTab === t ? 'active' : ''}`} onClick={() => switchTab(t)}>{t.toUpperCase()}</button>)}
         </div>
       </section>
+      )}
 
       {/* RESULTS TAB - Level 1 */}
       {activeTab === 'results' && !disciplineLevel && !resultsLevel && (
