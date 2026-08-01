@@ -244,16 +244,18 @@ const FullInfo = () => {
                         </p>
                         <div className="ranking-list" key={activeCategory}>
                             {rankings
-                                .filter((item) => item.category === activeCategory)
-                                .map((item) => {
-                                    const { position, athleteName, country, points } = item;
+                                .filter((item) => item.discipline === '10m Air Rifle' && item.category === activeCategory)
+                                .sort((a, b) => a.position - b.position)
+                                .slice(0, 5)
+                                .map((item, idx) => {
+                                    const { athleteName, country, points } = item;
                                     return (
                                         <div
-                                            className={`ranking-item ${position === 1 ? 'first-place' : ''}`}
+                                            className={`ranking-item ${idx === 0 ? 'first-place' : ''}`}
                                             key={item.id}
                                         >
                                             <div className="rank-info">
-                                                <span className="rank">{position}</span>
+                                                <span className="rank">{idx + 1}</span>
                                                 <div className="athlete-info">
                                                     <span className="name">{athleteName}</span>
                                                     <span className="country">{country}</span>
