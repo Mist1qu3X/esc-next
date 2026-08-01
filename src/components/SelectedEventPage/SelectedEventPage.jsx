@@ -266,7 +266,7 @@ const SelectedEventPage = ({ slug }) => {
               <>
                 <h2 className="event-section-title">RESULTS</h2>
                 {Object.keys(resultGroups).length === 0 ? (
-                  <div className="stream-scheduled" style={{ maxWidth: 480 }}>
+                  <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
                     <i className="fa-regular fa-clock stream-scheduled-icon"></i>
                     <span className="stream-scheduled-title">RESULTS PENDING</span>
                     <span className="stream-scheduled-text">Official results will appear here once the competition is complete.</span>
@@ -334,7 +334,7 @@ const SelectedEventPage = ({ slug }) => {
                     ))}
                   </div>
                 ) : (
-                  <div className="stream-scheduled" style={{ maxWidth: 480 }}>
+                  <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
                     <i className="fa-regular fa-circle-play stream-scheduled-icon"></i>
                     <span className="stream-scheduled-title">STREAM SCHEDULED</span>
                     <span className="stream-scheduled-text">Goes live when the event begins. Available on YouTube &amp; Facebook.</span>
