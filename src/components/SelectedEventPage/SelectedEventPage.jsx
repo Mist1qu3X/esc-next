@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import DocumentsPage from '@/components/DocumentsPage/DocumentsPage';
-import ResultsRankingsPage from '@/components/ResultsRankingsPage/ResultsRankingsPage';
 import './SelectedEventPage.css';
 
 // Расписание ALL EVENTS (пока нет отдельного поля/коллекции — демо-данные)
@@ -54,6 +53,8 @@ const SelectedEventPage = ({ slug }) => {
   const [activeTab, setActiveTab] = useState('OVERVIEW');
   const [streams, setStreams] = useState([]);
   const [schedule, setSchedule] = useState([]);
+  const [eventResults, setEventResults] = useState([]);
+  const [eventPhotos, setEventPhotos] = useState([]);
   const router = useRouter();
 
   const tabs = ['OVERVIEW', 'DOCUMENTS', 'RESULTS', 'LIVE & MEDIA'];
@@ -74,11 +75,17 @@ const SelectedEventPage = ({ slug }) => {
 
   useEffect(() => {
     const fetchExtra = async () => {
-      const sRes = await axios.get(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } }));
+      const [sRes, rRes, pRes] = await Promise.all([
+        axios.get(`${config.API_URL}/api/live-streams?filters[eventSlug][$eq]=${slug}&populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
+        axios.get(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${slug}&sort=position:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
+        axios.get(`${config.API_URL}/api/photos?filters[eventSlug][$eq]=${slug}&populate=*&pagination[pageSize]=30`).catch(() => ({ data: { data: [] } })),
+      ]);
       setStreams(sRes.data?.data || []);
+      setEventResults(rRes.data?.data || []);
+      setEventPhotos(pRes.data?.data || []);
     };
     fetchExtra();
-  }, []);
+  }, [slug]);
 
   if (!event) {
     return (
@@ -111,6 +118,13 @@ const SelectedEventPage = ({ slug }) => {
     return Object.values(groups).sort((a, b) => a.date.localeCompare(b.date));
   };
   const displaySchedule = schedule.length > 0 ? groupSchedule(schedule) : SCHEDULE;
+
+  // RESULTS этого события — сгруппированы по дисциплине + полу
+  const resultGroups = eventResults.reduce((acc, r) => {
+    const key = `${r.discipline} — ${r.category}`;
+    (acc[key] = acc[key] || []).push(r);
+    return acc;
+  }, {});
 
   const platformClass = (p) => ((p || '').toLowerCase() === 'facebook' ? 'facebook' : 'youtube');
 
@@ -199,7 +213,7 @@ const SelectedEventPage = ({ slug }) => {
 
       {/* CONTENT */}
       <section className="event-content">
-        <div className={`event-content-wrapper ${(activeTab === 'DOCUMENTS' || activeTab === 'RESULTS') ? 'event-content-full' : ''}`}>
+        <div className={`event-content-wrapper ${activeTab === 'DOCUMENTS' ? 'event-content-full' : ''}`}>
           <div className="event-main-body">
             {activeTab === 'OVERVIEW' && (
               <>
@@ -241,11 +255,40 @@ const SelectedEventPage = ({ slug }) => {
             )}
 
             {activeTab === 'DOCUMENTS' && (
-              <div className="event-embed"><DocumentsPage embedded /></div>
+              <div className="event-embed"><DocumentsPage embedded eventSlug={slug} /></div>
             )}
 
             {activeTab === 'RESULTS' && (
-              <div className="event-embed"><ResultsRankingsPage embedded /></div>
+              <>
+                <h2 className="event-section-title">RESULTS</h2>
+                <p className="event-description">Official results for {event.name}.</p>
+                {Object.keys(resultGroups).length > 0 ? (
+                  Object.entries(resultGroups).map(([disc, rows]) => (
+                    <div className="event-result-block" key={disc}>
+                      <h3 className="event-subtitle">{disc}</h3>
+                      <div className="event-result-table">
+                        <div className="er-head"><span>RANK</span><span>ATHLETE</span><span>FED</span><span>TOTAL</span><span>INNER 10s</span></div>
+                        {rows.map((r, i) => (
+                          <div className={`er-row ${i < 3 ? 'er-medal er-medal-' + (i + 1) : ''}`} key={r.id}>
+                            <span className="er-rank">{r.position}</span>
+                            <span className="er-name">{r.athleteName}</span>
+                            <span className="er-fed">{r.federationCode}</span>
+                            <span className="er-total">{r.total}</span>
+                            <span className="er-inner">{r.inner10s}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="stream-scheduled" style={{ maxWidth: 480 }}>
+                    <i className="fa-regular fa-clock stream-scheduled-icon"></i>
+                    <span className="stream-scheduled-title">RESULTS PENDING</span>
+                    <span className="stream-scheduled-text">Official results will appear here once the competition is complete.</span>
+                  </div>
+                )}
+                <button className="event-tab-cta" onClick={() => router.push('/results')}>FULL RESULTS &amp; RANKINGS ›</button>
+              </>
             )}
 
             {activeTab === 'LIVE & MEDIA' && (
@@ -275,13 +318,30 @@ const SelectedEventPage = ({ slug }) => {
                     <span className="stream-scheduled-text">Goes live when the event begins. Available on YouTube &amp; Facebook.</span>
                   </div>
                 )}
+
+                {eventPhotos.length > 0 && (
+                  <>
+                    <h3 className="event-subtitle" style={{ marginTop: 28 }}>PHOTO GALLERY</h3>
+                    <div className="event-photo-grid">
+                      {eventPhotos.map((p) => (
+                        <div key={p.id} className="event-photo-card" style={{ backgroundImage: `url(${getImageUrl(p.image)})` }} onClick={() => p.slug && router.push(`/media/photo/${p.slug}`)}>
+                          <div className="event-photo-overlay"></div>
+                          <div className="event-photo-info">
+                            <span className="event-photo-title">{p.title}</span>
+                            <span className="event-photo-count"><i className="fa-regular fa-images"></i> {Array.isArray(p.images) ? p.images.length : (p.photoCount || 0)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
                 <button className="event-tab-cta" onClick={() => router.push('/media')}>GO TO MEDIA &amp; NEWS ›</button>
               </>
             )}
           </div>
 
           {/* SIDEBAR (скрыт на DOCUMENTS/RESULTS — там встроенные страницы во всю ширину) */}
-          {activeTab !== 'DOCUMENTS' && activeTab !== 'RESULTS' && (
+          {activeTab !== 'DOCUMENTS' && (
           <aside className="event-sidebar">
             <div className="sidebar-block">
               <h4 className="sidebar-block-title">EVENT DETAILS</h4>
