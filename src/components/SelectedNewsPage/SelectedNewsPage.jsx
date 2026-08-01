@@ -221,8 +221,8 @@ const SelectedNewsPage = ({ slug }) => {
             <div className="sidebar-block">
               <h4 className="sidebar-block-title">ARTICLE ACTIONS</h4>
               <div className="sidebar-actions">
-                <button className="action-btn save-btn"><i className="fa-regular fa-bookmark"></i>SAVE ARTICLE</button>
-                <button className="action-btn share-btn"><i className="fa-solid fa-share-nodes"></i>SHARE</button>
+                <button className="action-btn save-btn" onClick={() => { try { const k = 'esc-saved-articles'; const s = JSON.parse(localStorage.getItem(k) || '[]'); const p = window.location.pathname; if (!s.includes(p)) { s.push(p); localStorage.setItem(k, JSON.stringify(s)); } } catch (e) {} }}><i className="fa-regular fa-bookmark"></i>SAVE ARTICLE</button>
+                <button className="action-btn share-btn" onClick={() => { if (navigator.share) { navigator.share({ title: document.title, url: window.location.href }).catch(() => {}); } else if (navigator.clipboard) { navigator.clipboard.writeText(window.location.href); } }}><i className="fa-solid fa-share-nodes"></i>SHARE</button>
               </div>
             </div>
 

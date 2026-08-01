@@ -181,8 +181,8 @@ const SelectedEventPage = ({ slug }) => {
       <section className="selected-event-header" style={{ backgroundImage: `url(${getImageUrl(event.image) || '/img/event1.png'})` }}>
         <div className="event-overlay"></div>
         <div className="event-breadcrumbs">
-          <span className="event-breadcrumb">HOME</span><span className="event-breadcrumb-sep">›</span>
-          <span className="event-breadcrumb">EVENTS</span><span className="event-breadcrumb-sep">›</span>
+          <span className="event-breadcrumb" onClick={() => router.push('/')}>HOME</span><span className="event-breadcrumb-sep">›</span>
+          <span className="event-breadcrumb" onClick={() => router.push('/events')}>EVENTS</span><span className="event-breadcrumb-sep">›</span>
           <span className="event-breadcrumb-active">DETAIL</span>
         </div>
         <div className="event-status-row">
@@ -199,7 +199,7 @@ const SelectedEventPage = ({ slug }) => {
               <span className="event-info-sep">·</span>
               <div className="event-info-item"><i className="fa-solid fa-users"></i><span>{event.athletes || '480+'} athletes · {event.nations || '38'} nations</span></div>
             </div>
-            <button className="event-entry-btn">
+            <button className="event-entry-btn" onClick={() => router.push('/events')}>
               <i className="fa-solid fa-arrow-up-right-from-square"></i>ENTRY SYSTEM
             </button>
           </div>
@@ -251,9 +251,6 @@ const SelectedEventPage = ({ slug }) => {
                       </div>
                     </div>
                   ))}
-                </div>
-                <div className="ae-pagination">
-                  {[1, 2, 3].map((p) => <button key={p} className={`ae-page-btn ${p === 1 ? 'active' : ''}`}>{p}</button>)}
                 </div>
               </>
             )}
@@ -385,9 +382,9 @@ const SelectedEventPage = ({ slug }) => {
               <h4 className="sidebar-block-title">QUICK ACTIONS</h4>
               <div className="sidebar-divider"></div>
               <div className="quick-actions-list">
-                <button className="quick-action-btn"><i className="fa-solid fa-arrow-up-right-from-square"></i><span>ENTRY SYSTEM</span></button>
+                <button className="quick-action-btn" onClick={() => router.push('/events')}><i className="fa-solid fa-arrow-up-right-from-square"></i><span>ENTRY SYSTEM</span></button>
                 <div className="sidebar-divider"></div>
-                <button className="quick-action-btn"><i className="fa-solid fa-download"></i><span>TECHNICAL PACKAGE</span></button>
+                <button className="quick-action-btn" onClick={() => setActiveTab('DOCUMENTS')}><i className="fa-solid fa-download"></i><span>TECHNICAL PACKAGE</span></button>
                 <div className="sidebar-divider"></div>
                 <button className="quick-action-btn" onClick={() => router.push('/results')}><i className="fa-solid fa-trophy"></i><span>VIEW RESULTS</span></button>
               </div>

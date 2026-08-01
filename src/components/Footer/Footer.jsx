@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import axios from 'axios';
 import config from '@/lib/config';
 import './Footer.css';
@@ -62,27 +63,27 @@ const Footer = () => {
                 </div>
                 <div className="the-esc">
                     <h4 className="title-links">THE ESC</h4>
-                    <a href="#">About ESC</a>
-                    <a href="#">Governance</a>
-                    <a href="#">Executive Committee</a>
-                    <a href="#">Technical Committee</a>
-                    <a href="#">Contact</a>
+                    <Link href="/discover">About ESC</Link>
+                    <Link href="/discover">Governance</Link>
+                    <Link href="/members">Executive Committee</Link>
+                    <Link href="/members">Technical Committee</Link>
+                    <Link href="/members">Contact</Link>
                 </div>
                 <div className="media">
                     <h4 className="title-links">MEDIA</h4>
-                    <a href="#">News</a>
-                    <a href="#">Videos</a>
-                    <a href="#">Photos</a>
-                    <a href="#">Press Releases</a>
-                    <a href="#">Newsletter</a>
+                    <Link href="/media?filter=NEWS">News</Link>
+                    <Link href="/media?filter=VIDEOS">Videos</Link>
+                    <Link href="/media?filter=PHOTO">Photos</Link>
+                    <Link href="/media?filter=PRESS RELEASES">Press Releases</Link>
+                    <Link href="/media">Newsletter</Link>
                 </div>
                 <div className="related-links">
                     <h4 className="title-links">RELATED LINKS</h4>
-                    <a href="#">Events Calendar</a>
-                    <a href="#">Results & Rankings</a>
-                    <a href="#">Documents Library</a>
-                    <a href="#">Member Federations</a>
-                    <a href="#">Entry System 🡥</a>
+                    <Link href="/events">Events Calendar</Link>
+                    <Link href="/results">Results & Rankings</Link>
+                    <Link href="/documents">Documents Library</Link>
+                    <Link href="/members">Member Federations</Link>
+                    <Link href="/events">Entry System 🡥</Link>
                 </div>
             </div>
 
