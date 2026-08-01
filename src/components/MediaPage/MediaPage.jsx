@@ -64,7 +64,7 @@ const MediaPage = () => {
       try {
         const [newsRes, videosRes, docsRes, streamsRes, spotlightsRes, photosRes] = await Promise.all([
           axios.get(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&limit=20`),
-          axios.get(`${config.API_URL}/api/videos?populate=*&limit=20`),
+          axios.get(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100`),
           axios.get(`${config.API_URL}/api/docs?populate=*&limit=20`),
           axios.get(`${config.API_URL}/api/live-streams?populate=*&limit=10`),
           axios.get(`${config.API_URL}/api/spotlight-items?populate=*&limit=4`),
@@ -90,9 +90,12 @@ const MediaPage = () => {
 
   const getImageUrl = (img) => {
     if (!img) return null;
-    if (typeof img === 'string') return img.startsWith('http') ? img : `${config.API_URL}${img}`;
-    if (img.url) return img.url.startsWith('http') ? img.url : `${config.API_URL}${img.url}`;
-    if (img[0]?.url) return img[0].url.startsWith('http') ? img[0].url : `${config.API_URL}${img[0].url}`;
+    const abs = (u) => (u && (u.startsWith('http') ? u : `${config.API_URL}${u}`));
+    if (typeof img === 'string') return abs(img);
+    if (img.url) return abs(img.url);
+    if (img.data?.attributes?.url) return abs(img.data.attributes.url); // Strapi v4 single
+    if (Array.isArray(img.data) && img.data[0]?.attributes?.url) return abs(img.data[0].attributes.url); // v4 multiple
+    if (img[0]?.url) return abs(img[0].url);
     return null;
   };
 
