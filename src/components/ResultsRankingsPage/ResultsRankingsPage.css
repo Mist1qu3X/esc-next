@@ -1684,48 +1684,71 @@
     .rt-fed span {
         font-size: clamp(9px, 2.4vw, 11px);
     }
+
+    /* планшет: серия выстрелов ужимается, чтобы не уезжала за край */
+    .shots-row { gap: 2px; }
+    .shot { font-size: clamp(7px, 1.5vw, 9px); padding: 1px 2px; min-width: 0; }
+    .results-table-header .rt-col,
+    .rankings-table-header .rt-col { font-size: 9px; letter-spacing: 0.3px; }
+    .rt-total .total-value,
+    .rt-points .points-value,
+    .rt-best .best-value { font-size: clamp(12px, 2.4vw, 15px); }
 }
 
-/* Телефон: показываем упрощённые колонки (как на макетах) */
+/* Телефон: упрощённые колонки — имя атлета всегда видно, ничего не уезжает */
 @media (max-width: 600px) {
-    /* RESULTS → RANK | ATHLETE | FED | SHOTS */
+    /* RESULTS → RANK | ATHLETE | FED | TOTAL (серия выстрелов уезжает — прячем) */
     .results-table-header,
     .results-table-row {
-        grid-template-columns: 28px minmax(0, 1.3fr) auto minmax(0, 1.5fr);
+        grid-template-columns: 26px minmax(0, 1.5fr) auto minmax(0, 0.75fr);
         gap: 8px;
+        padding: 12px 10px;
     }
     .results-table-header .rt-spacer,
-    .results-table-header .rt-total,
+    .results-table-header .rt-series,
     .results-table-header .rt-inner,
     .results-table-row .rt-spacer,
-    .results-table-row .rt-total,
+    .results-table-row .rt-series,
     .results-table-row .rt-inner {
         display: none;
     }
 
-    /* RANKINGS → RANK | FED | POINTS | EVENTS */
+    /* RANKINGS → RANK | ATHLETE | FED | POINTS (имя обязательно) */
     .rankings-table-header:not(.records-grid),
     .rankings-table-row:not(.records-grid) {
-        grid-template-columns: 34px auto minmax(0, 1.5fr) auto;
+        grid-template-columns: 32px minmax(0, 1.4fr) auto minmax(0, 0.9fr);
         gap: 8px;
+        padding: 12px 10px;
     }
-    .rankings-table-header:not(.records-grid) .rt-athlete,
     .rankings-table-header:not(.records-grid) .rt-spacer-wide,
+    .rankings-table-header:not(.records-grid) .rt-events,
     .rankings-table-header:not(.records-grid) .rt-best,
-    .rankings-table-row:not(.records-grid) .rt-athlete,
     .rankings-table-row:not(.records-grid) .rt-spacer-wide,
+    .rankings-table-row:not(.records-grid) .rt-events,
     .rankings-table-row:not(.records-grid) .rt-best {
         display: none;
     }
+    .rt-points .points-bar { display: none; }
 
     /* RECORDS → TYPE | ATHLETE | RECORD */
     .rankings-table-header.records-grid,
     .rankings-table-row.records-grid {
-        grid-template-columns: 44px minmax(0, 1.6fr) auto;
+        grid-template-columns: 40px minmax(0, 1.6fr) minmax(0, 0.7fr);
         gap: 10px;
+        padding: 12px 10px;
     }
     .rt-hide-sm {
         display: none;
+    }
+
+    /* имя не обрезаем в ноль — многоточие, чтобы влезало */
+    .rt-athlete, .rankings-table-row .rt-col, .results-table-row .rt-athlete { min-width: 0; }
+    .athlete-name {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        max-width: 100%;
     }
 }
 
