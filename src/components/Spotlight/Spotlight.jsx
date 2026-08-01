@@ -13,14 +13,10 @@ const Spotlight = () => {
     useEffect(() => {
         const fetchSpotlights = async () => {
             try {
-                console.log('Fetching spotlights from:', `${config.API_URL}/api/spotlight-items?populate=*&pagination[limit]=4`);
-                
                 const response = await axios.get(
                     `${config.API_URL}/api/spotlight-items?populate=*&pagination[limit]=4`
                 );
-                
-                console.log('Spotlights response:', response.data);
-                
+
                 // Проверяем структуру ответа
                 if (response.data && response.data.data) {
                     setMiniNews(response.data.data);

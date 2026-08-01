@@ -34,6 +34,13 @@ const MediaPage = () => {
 
   const filters = ['ALL', 'NEWS', 'FEATURES', 'INTERVIEWS', 'PHOTO', 'VIDEOS', 'PRESS RELEASES'];
 
+  // Предвыбор вкладки из ?filter= (ссылки из хедера/футера)
+  useEffect(() => {
+    const f = new URLSearchParams(window.location.search).get('filter');
+    if (f && filters.includes(f)) setActiveFilter(f);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const scrollToElement = (element) => {
     if (!element) return;
     const elementPosition = element.getBoundingClientRect().top;

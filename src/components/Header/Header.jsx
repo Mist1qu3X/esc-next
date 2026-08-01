@@ -114,7 +114,8 @@ const Header = () => {
     };
 
     const handleEntrySystem = () => {
-        window.open('/entry-system', '_blank');
+        // TODO: заменить на реальный внешний URL портала заявок, когда будет
+        router.push('/events');
     };
 
     return (

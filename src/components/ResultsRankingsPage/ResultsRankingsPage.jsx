@@ -128,13 +128,14 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [resultsPage, setResultsPage] = useState(1);
   const [rankingsPage, setRankingsPage] = useState(1);
   const [recordsPage, setRecordsPage] = useState(1);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
         const [eventsRes, rankingsRes, resultsRes, recordsRes] = await Promise.allSettled([
-          axios.get(`${config.API_URL}/api/events?populate=*&sort=date:asc&pagination[limit]=100`),
+          axios.get(`${config.API_URL}/api/events?populate=*&sort=date:desc&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/ranking-details?populate=*&sort=position:asc&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/result-details?populate=*&sort=position:asc&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/records?populate=*&sort=date:desc&pagination[limit]=100`),
@@ -147,6 +148,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           .filter((r) => r.status === 'rejected')
           .forEach((r) => console.error('Ошибка загрузки раздела:', r.reason?.message || r.reason));
       } catch (e) { console.error('Ошибка загрузки:', e); }
+      finally { setLoaded(true); }
     };
     fetchData();
   }, []);
@@ -201,7 +203,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
   // Пока нет реальных данных — показываем тестовых участников
   const testResults = TEST_RESULTS.filter(r => gender === 'ALL' || r.category === gender);
-  const displayResults = filteredResults.length > 0 ? filteredResults : testResults;
+  const displayResults = filteredResults.length > 0 ? filteredResults : (loaded ? testResults : []);
 
   // Прогресс выстрелов — по числу сделанных выстрелов у лидера
   const totalShots = 24;
@@ -226,7 +228,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const testRankings = testRankingsBase.filter(
     r => !rankingsSearchTerm || r.athleteName.toLowerCase().includes(rankingsSearchTerm.toLowerCase())
   );
-  const displayRankings = filteredRankings.length > 0 ? filteredRankings : testRankings;
+  const displayRankings = filteredRankings.length > 0 ? filteredRankings : (loaded ? testRankings : []);
 
   // Рекорды: реальные по дисциплине/полу, иначе тестовые
   const filteredRecords = records.filter((r) => {
@@ -235,7 +237,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     return disciplineMatch && genderMatch;
   });
   const testRecords = TEST_RECORDS.filter((r) => gender === 'ALL' || r.category === gender);
-  const displayRecords = filteredRecords.length > 0 ? filteredRecords : testRecords;
+  const displayRecords = filteredRecords.length > 0 ? filteredRecords : (loaded ? testRecords : []);
 
   // Пагинация по 10 на страницу
   const pagedResults = displayResults.slice((resultsPage - 1) * PER_PAGE, resultsPage * PER_PAGE);
@@ -247,8 +249,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   useEffect(() => { setRankingsPage(1); }, [selectedDiscipline, rankingsGender, rankingsSearchTerm, rankings.length]);
   useEffect(() => { setRecordsPage(1); }, [selectedDiscipline, gender, records.length]);
 
-  // Пока нет реальных соревнований — показываем тестовые, чтобы флоу работал
-  const eventsSource = events.length > 0 ? events : TEST_EVENTS;
+  // Пока идёт загрузка — не показываем тестовые (иначе мелькают 6 фейковых событий)
+  const eventsSource = events.length > 0 ? events : (loaded ? TEST_EVENTS : []);
   const filteredEvents = eventsSource.filter(ev => {
     const eventDate = new Date(ev.date);
     const matchType = filterType === 'ALL TYPES' || ev.type?.toUpperCase() === filterType;
@@ -269,7 +271,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   };
 
   const handleExportPDF = () => {
-    console.log('Exporting to PDF...');
+    if (typeof window !== 'undefined') window.print();
   };
 
   const currentMonthLabel = filterMonth === 'all' ? '' : months.find(m => m.value === filterMonth)?.label;
@@ -293,7 +295,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             onChange={(e) => setRankingsSearchTerm(e.target.value)}
           />
         </div>
-        <select className="events-select" defaultValue="">
+        <select className="events-select" value="" onChange={(e) => {
+          const d = RANKING_DISCIPLINES.find((x) => `${x.main} ${x.sub}`.trim() === e.target.value);
+          if (d) { setSelectedDiscipline(d.discipline); setRankingsGender(d.gender); setGender(d.gender); setRankingsDetailLevel(true); }
+        }}>
           <option value="">Discipline</option>
           {rankingDisciplineOptions.map((o) => <option key={o}>{o}</option>)}
         </select>
@@ -301,10 +306,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           <option value="ALL">Gender</option>
           <option value="MEN">Men</option>
           <option value="WOMEN">Women</option>
-        </select>
-        <select className="events-select" defaultValue="">
-          <option value="">Year</option>
-          {years.filter((y) => y !== 'all').map((y) => <option key={y}>{y}</option>)}
         </select>
       </div>
       <button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button>
@@ -383,11 +384,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       {activeTab === 'results' && disciplineLevel && !resultsLevel && (
         <section className="discipline-level">
           <div className="discipline-filter-bar">
-            <div className="discipline-filter-left">
-              <select className="events-select events-select-sm"><option>JAN 2026</option></select>
-              <select className="events-select events-select-md"><option>ALL TYPES</option></select>
-              <select className="events-select events-select-md"><option>ALL STATUSES</option></select>
-            </div>
+            <div className="discipline-filter-left"></div>
             <div className="discipline-filter-right"><button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button></div>
           </div>
           <div className="discipline-breadcrumbs"><span className="disc-breadcrumb-parent" onClick={() => setDisciplineLevel(false)}>Results</span><span className="disc-breadcrumb-separator">›</span><span className="disc-breadcrumb-active">{selectedEvent || 'Competitions'}</span></div>
