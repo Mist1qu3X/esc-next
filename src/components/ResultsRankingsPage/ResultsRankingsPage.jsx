@@ -72,6 +72,18 @@ const TEST_RANKINGS_WOMEN = [
   { position: 8, athleteName: 'MÜLLER PETRA', country: 'AUT', flagEmoji: '🇦🇹', points: '1,030', events: '4', best: '239.8', category: 'WOMEN' },
 ];
 
+// Тестовые рекорды (fallback)
+const TEST_RECORDS = [
+  { type: 'WR', athleteName: 'QUIQUAMPOIX JEAN', federationCode: 'FRA', flagEmoji: '🇫🇷', record: '138', location: 'World Cup Munich (GER)', date: '1995-06-09', category: 'MEN' },
+  { type: 'WR', athleteName: 'KOROSTELYOV MIKAEL', federationCode: 'SWE', flagEmoji: '🇸🇪', record: '129', location: 'Olympic Games Tokyo (JPN)', date: '1996-06-11', category: 'MEN' },
+  { type: 'OR', athleteName: 'GRÜN STEFAN', federationCode: 'GER', flagEmoji: '🇩🇪', record: '124', location: 'Olympic Games Paris (FRA)', date: '1998-07-23', category: 'MEN' },
+  { type: 'ER', athleteName: 'PETROV SERGEI', federationCode: 'BUL', flagEmoji: '🇧🇬', record: '119', location: 'European Championships Osijek (CRO)', date: '2005-08-10', category: 'MEN' },
+  { type: 'EWR', athleteName: 'NAGY PÉTER', federationCode: 'HUN', flagEmoji: '🇭🇺', record: '115', location: 'World Cup Suhl (GER)', date: '2006-10-04', category: 'MEN' },
+  { type: 'AR', athleteName: 'FERRARI MARCO', federationCode: 'ITA', flagEmoji: '🇮🇹', record: '110', location: 'Asian Games Hangzhou (CHN)', date: '1998-05-14', category: 'MEN' },
+  { type: 'GR', athleteName: 'HERNANDEZ CARLOS', federationCode: 'ESP', flagEmoji: '🇪🇸', record: '107', location: 'European Games Kraków (POL)', date: '1994-04-01', category: 'MEN' },
+  { type: 'EWR', athleteName: 'MÜLLER HANS', federationCode: 'AUT', flagEmoji: '🇦🇹', record: '103', location: 'EWR World Cup Lahti (FIN)', date: '2008-07-09', category: 'MEN' },
+];
+
 const ResultsRankingsPage = () => {
   const [activeTab, setActiveTab] = useState('results');
   const [events, setEvents] = useState([]);
@@ -188,6 +200,15 @@ const ResultsRankingsPage = () => {
     r => !rankingsSearchTerm || r.athleteName.toLowerCase().includes(rankingsSearchTerm.toLowerCase())
   );
   const displayRankings = filteredRankings.length > 0 ? filteredRankings : testRankings;
+
+  // Рекорды: реальные по дисциплине/полу, иначе тестовые
+  const filteredRecords = records.filter((r) => {
+    const disciplineMatch = r.discipline?.trim().toLowerCase() === selectedDiscipline?.trim().toLowerCase();
+    const genderMatch = gender === 'ALL' || r.category?.trim().toUpperCase() === gender;
+    return disciplineMatch && genderMatch;
+  });
+  const testRecords = TEST_RECORDS.filter((r) => gender === 'ALL' || r.category === gender);
+  const displayRecords = filteredRecords.length > 0 ? filteredRecords : testRecords;
 
   // Пока нет реальных соревнований — показываем тестовые, чтобы флоу работал
   const eventsSource = events.length > 0 ? events : TEST_EVENTS;
@@ -482,6 +503,7 @@ const ResultsRankingsPage = () => {
           {/* RECORDS — LEVEL 1: выбор категории */}
           {!disciplineLevel && !resultsLevel && (
             <section className="rankings-level">
+              {rankingsFilterBar}
               <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RECORDS</span></div>
               <h2 className="discipline-title">SELECT A CATEGORY</h2>
               <p className="discipline-desc">Select a category</p>
@@ -501,6 +523,7 @@ const ResultsRankingsPage = () => {
           {/* RECORDS — LEVEL 2: выбор дисциплины */}
           {activeTab === 'records' && disciplineLevel && !resultsLevel && (
             <section className="discipline-level">
+              {rankingsFilterBar}
               <div className="discipline-breadcrumbs">
                 <span className="disc-breadcrumb-parent" onClick={() => setDisciplineLevel(false)}>Records</span>
                 <span className="disc-breadcrumb-separator">›</span>
@@ -523,6 +546,7 @@ const ResultsRankingsPage = () => {
           {/* RECORDS — LEVEL 3: таблица рекордов */}
           {activeTab === 'records' && resultsLevel && (
             <section className="results-detail">
+              {rankingsFilterBar}
               <div className="results-detail-header"><span className="results-detail-line"></span><span className="results-detail-subtitle">ESC SEASON RECORDS</span></div>
               <div className="results-detail-breadcrumbs" style={{ marginBottom: '16px' }}>
                 <span className="rd-breadcrumb" onClick={() => { setResultsLevel(false); }}>Records</span>
@@ -532,36 +556,28 @@ const ResultsRankingsPage = () => {
                 <span className="rd-breadcrumb-active">{selectedDiscipline}</span>
               </div>
               <div className="rankings-detail-topbar">
-                <h2 className="rankings-detail-title">{selectedDiscipline.toUpperCase()}</h2>
-                <div className="results-detail-gender">
-                  {['ALL', 'MEN', 'WOMEN'].map((g) => <button key={g} className={`gender-btn ${gender === g ? 'active' : ''}`} onClick={() => setGender(g)}>{g}</button>)}
-                </div>
+                <h2 className="rankings-detail-title">{selectedDiscipline.toUpperCase()}{gender !== 'ALL' ? ` — ${gender}` : ''}</h2>
+                <select className="records-category-select" value={gender} onChange={(e) => setGender(e.target.value)}>
+                  <option value="ALL">CATEGORY: ALL</option>
+                  <option value="MEN">CATEGORY: MEN</option>
+                  <option value="WOMEN">CATEGORY: WOMEN</option>
+                </select>
               </div>
               <div className="rankings-table-container">
-                <div className="rankings-table-header" style={{ gridTemplateColumns: '80px 1fr 350px 120px 120px 1.5fr 120px' }}>
-                  <div className="rt-col">TYPE</div><div className="rt-col">ATHLETE</div><div className="rt-col"></div>
-                  <div className="rt-col">FEDERATION</div><div className="rt-col">RECORD</div><div className="rt-col">LOCATION</div><div className="rt-col">DATE</div>
+                <div className="rankings-table-header records-grid">
+                  <div className="rt-col">TYPE</div><div className="rt-col">ATHLETE</div>
+                  <div className="rt-col rt-hide-sm">FEDERATION</div><div className="rt-col">RECORD</div><div className="rt-col rt-hide-sm">LOCATION</div><div className="rt-col rt-hide-sm">DATE</div>
                 </div>
-                {records.length > 0 ? records
-                  .filter((r) => {
-                    const disciplineMatch = r.discipline?.trim().toLowerCase() === selectedDiscipline?.trim().toLowerCase();
-                    const genderMatch = gender === 'ALL' || r.category?.trim().toUpperCase() === gender;
-                    const categoryMatch = selectedCategory === 'World Records' ? r.type === 'WR' : r.type === 'OR';
-                    return disciplineMatch && genderMatch && categoryMatch;
-                  })
-                  .map((r) => (
-                    <div key={r.id} className="rankings-table-row" style={{ gridTemplateColumns: '80px 1fr 350px 120px 120px 1.5fr 120px' }}>
-                      <div className="rt-col">
-                        <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: '20px', lineHeight: '30px', color: r.type === 'WR' ? '#FFA500' : '#00d8f5', textTransform: 'uppercase' }}>{r.type}</span>
-                      </div>
-                      <div className="rt-col"><span className="athlete-name">{r.athleteName}</span></div>
-                      <div className="rt-col"></div>
-                      <div className="rt-col rt-fed">{r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />}<span>{r.federationCode}</span></div>
-                      <div className="rt-col"><span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: '22px', color: '#fff' }}>{r.record}</span></div>
-                      <div className="rt-col"><span style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.6)' }}>{r.location}</span></div>
-                      <div className="rt-col"><span style={{ fontFamily: "'Inter', sans-serif", fontSize: '13px', color: 'rgba(255,255,255,0.5)' }}>{formatDate(r.date)}</span></div>
-                    </div>
-                  )) : (
+                {displayRecords.length > 0 ? displayRecords.map((r, i) => (
+                  <div key={r.id || i} className="rankings-table-row records-grid">
+                    <div className="rt-col"><span className="record-type">{r.type}</span></div>
+                    <div className="rt-col"><span className="athlete-name">{r.athleteName}</span></div>
+                    <div className="rt-col rt-fed rt-hide-sm">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
+                    <div className="rt-col"><span className="record-value">{r.record}</span></div>
+                    <div className="rt-col rt-hide-sm"><span className="record-location">{r.location}</span></div>
+                    <div className="rt-col rt-hide-sm"><span className="record-date">{formatDate(r.date)}</span></div>
+                  </div>
+                )) : (
                   <div style={{ textAlign: 'center', padding: '60px', color: 'rgba(255,255,255,0.5)' }}>No records available</div>
                 )}
               </div>

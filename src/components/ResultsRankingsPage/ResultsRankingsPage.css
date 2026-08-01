@@ -294,8 +294,8 @@
 
 .event-card-title {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 900;
     color: #ffffff;
     text-transform: uppercase;
     margin: 0;
@@ -504,6 +504,19 @@
     transform: translateY(-2px);
 }
 
+/* RANKINGS: карточки дисциплин — border (белый 14%), без скругления, боковой отступ 8px */
+.ranking-grid {
+    column-gap: 8px;
+}
+
+.ranking-grid .discipline-card {
+    height: 123px;
+    border-radius: 0;
+    border: 0.65px solid rgba(255, 255, 255, 0.14);
+    border-left-width: 2.59px;
+    box-sizing: border-box;
+}
+
 .disc-card-title {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 28px;
@@ -706,9 +719,9 @@
 .results-table-header,
 .results-table-row {
     display: grid;
-    grid-template-columns: 50px 1fr 200px 80px 2fr 80px 70px;
-    gap: 8px;
-    padding: 14px 20px;
+    grid-template-columns: clamp(34px, 4vw, 50px) minmax(0, 1.6fr) minmax(0, 0.5fr) minmax(0, 0.8fr) minmax(0, 2.4fr) minmax(0, 0.8fr) minmax(0, 0.7fr);
+    gap: clamp(4px, 0.8vw, 8px);
+    padding: clamp(12px, 1.4vw, 14px) clamp(10px, 1.6vw, 20px);
     align-items: center;
 }
 
@@ -734,7 +747,7 @@
 .rt-athlete { justify-content: flex-start; }
 .rt-spacer { justify-content: center; }
 .rt-fed { justify-content: center; gap: 6px; }
-.rt-series { justify-content: center; }
+.rt-series { justify-content: center; overflow: hidden; }
 .rt-total { justify-content: center; }
 .rt-inner { justify-content: center; }
 
@@ -779,20 +792,25 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .shots-row {
     display: flex;
-    gap: 2px;
+    gap: clamp(1px, 0.3vw, 2px);
     flex-wrap: nowrap;
+    min-width: 0;
 }
 
 .shot {
     font-family: 'Inter', sans-serif;
-    font-size: 10px;
+    font-size: clamp(9px, 1vw, 10px);
     font-weight: 500;
-    min-width: 24px;
+    min-width: clamp(17px, 2.2vw, 24px);
     text-align: center;
+    flex-shrink: 0;
 }
 
 .shot-high { color: #C9F0FF; }
@@ -1149,8 +1167,8 @@
 .rankings-table-header,
 .rankings-table-row {
     display: grid;
-    grid-template-columns: 60px 1fr 550px 100px 120px 80px 100px;
-    gap: 12px;
+    grid-template-columns: clamp(40px, 4vw, 60px) minmax(0, 1.5fr) minmax(0, 0.4fr) minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 0.6fr) minmax(0, 0.8fr);
+    gap: clamp(6px, 1vw, 12px);
     padding: 14px 20px;
     align-items: center;
     background: #06101C;
@@ -1175,7 +1193,85 @@
     background: rgba(255, 255, 255, 0.02);
 }
 
-.rt-spacer-wide { }
+.rt-spacer-wide {
+    min-width: 0;
+}
+
+/* Колонки/текст усаживаются пропорционально, а не съезжают */
+.rt-col {
+    min-width: 0;
+}
+
+.athlete-name,
+.record-location,
+.rt-fed span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+/* ===== RECORDS table (fluid grid) ===== */
+.rankings-table-header.records-grid,
+.rankings-table-row.records-grid {
+    grid-template-columns: clamp(44px, 5vw, 70px) minmax(0, 1.5fr) minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 1.8fr) minmax(0, 0.9fr);
+}
+
+.record-type {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(14px, 1.6vw, 18px);
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.45);
+    text-transform: uppercase;
+}
+
+.record-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(16px, 1.8vw, 22px);
+    color: #ffffff;
+}
+
+.record-location {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(11px, 1.2vw, 13px);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.record-date {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(11px, 1.2vw, 13px);
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+}
+
+.records-category-select {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 32px 10px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    white-space: nowrap;
+}
+
+.records-category-select option {
+    background: #0B1E33;
+    color: rgba(255, 255, 255, 0.85);
+}
 
 /* Points */
 .points-block {
@@ -1564,33 +1660,66 @@
     }
     
     .results-table-header,
-    .results-table-row {
-        grid-template-columns: 50px 1fr 150px 60px 1fr 70px 50px;
-        gap: 8px;
-        padding: 14px;
-    }
-    
+    .results-table-row,
     .rankings-table-header,
     .rankings-table-row {
-        grid-template-columns: 50px 1fr 300px 80px 100px 60px 80px;
-        gap: 8px;
+        padding: 14px 12px;
     }
 }
 
+/* Планшет/мобилка: таблицы усаживаются пропорционально (grid minmax(0,fr)),
+   горизонтальный скролл больше не нужен */
 @media (max-width: 768px) {
-    .results-table-container,
-    .rankings-table-container {
-        overflow-x: auto;
+    .rankings-detail-title,
+    .results-detail-title {
+        font-size: clamp(24px, 6vw, 34px);
     }
-    
+
+    .rt-fed span {
+        font-size: clamp(9px, 2.4vw, 11px);
+    }
+}
+
+/* Телефон: показываем упрощённые колонки (как на макетах) */
+@media (max-width: 600px) {
+    /* RESULTS → RANK | ATHLETE | FED | SHOTS */
     .results-table-header,
     .results-table-row {
-        min-width: 900px;
+        grid-template-columns: 28px minmax(0, 1.3fr) auto minmax(0, 1.5fr);
+        gap: 8px;
     }
-    
-    .rankings-table-header,
-    .rankings-table-row {
-        min-width: 750px;
+    .results-table-header .rt-spacer,
+    .results-table-header .rt-total,
+    .results-table-header .rt-inner,
+    .results-table-row .rt-spacer,
+    .results-table-row .rt-total,
+    .results-table-row .rt-inner {
+        display: none;
+    }
+
+    /* RANKINGS → RANK | FED | POINTS | EVENTS */
+    .rankings-table-header:not(.records-grid),
+    .rankings-table-row:not(.records-grid) {
+        grid-template-columns: 34px auto minmax(0, 1.5fr) auto;
+        gap: 8px;
+    }
+    .rankings-table-header:not(.records-grid) .rt-athlete,
+    .rankings-table-header:not(.records-grid) .rt-spacer-wide,
+    .rankings-table-header:not(.records-grid) .rt-best,
+    .rankings-table-row:not(.records-grid) .rt-athlete,
+    .rankings-table-row:not(.records-grid) .rt-spacer-wide,
+    .rankings-table-row:not(.records-grid) .rt-best {
+        display: none;
+    }
+
+    /* RECORDS → TYPE | ATHLETE | RECORD */
+    .rankings-table-header.records-grid,
+    .rankings-table-row.records-grid {
+        grid-template-columns: 44px minmax(0, 1.6fr) auto;
+        gap: 10px;
+    }
+    .rt-hide-sm {
+        display: none;
     }
 }
 
@@ -1671,53 +1800,8 @@
     }
 }
 
-/* ============================================
-   RECORDS — АДАПТИВ
-   ============================================ */
+/* (устаревшие правила records-таблицы удалены — теперь fluid-grid + скрытие колонок на ≤600px) */
 
-@media (max-width: 1024px) {
-    .rankings-table-header[style*="80px"],
-    .rankings-table-row[style*="80px"] {
-        grid-template-columns: 60px 1fr 200px 90px 90px 1fr 100px !important;
-        gap: 8px;
-        padding: 12px 14px;
-        font-size: 10px;
-    }
-    
-    .rankings-table-header[style*="80px"] .rt-col {
-        font-size: 9px;
-        letter-spacing: 1px;
-    }
-}
-
-@media (max-width: 768px) {
-    .rankings-table-container {
-        overflow-x: auto;
-    }
-    
-    .rankings-table-header[style*="80px"],
-    .rankings-table-row[style*="80px"] {
-        min-width: 650px;
-    }
-}
-
-@media (max-width: 480px) {
-    .rankings-table-header[style*="80px"],
-    .rankings-table-row[style*="80px"] {
-        min-width: 580px;
-        grid-template-columns: 50px 1fr 150px 70px 70px 1fr 80px !important;
-        gap: 6px;
-        padding: 10px 12px;
-    }
-    
-    .rankings-table-row[style*="80px"] .athlete-name {
-        font-size: 11px;
-    }
-    
-    .rankings-table-row[style*="80px"] .rt-fed span {
-        font-size: 10px;
-    }
-}
 /* RANKINGS grid: 2 ряда без отступа → 8px → ещё 2 ряда без отступа (десктоп, 3 колонки) */
 @media (min-width: 1025px) {
     .ranking-grid {
