@@ -104,6 +104,7 @@ const PhotoAlbumPage = ({ slug }) => {
           <div className="pa-track" ref={trackRef} onScroll={onTrackScroll}>
             {photos.map((ph, i) => (
               <div className="pa-slide" key={ph.id || i}>
+                <div className="pa-slide-bg" style={{ backgroundImage: `url(${getImageUrl(ph)})` }}></div>
                 <img className="pa-slide-img" src={getImageUrl(ph)} alt={album.title} draggable={false} />
               </div>
             ))}
