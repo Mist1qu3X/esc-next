@@ -6,7 +6,7 @@ import './DocumentsPage.css';
 
 const DOCS_PER_PAGE = 8;
 
-const DocumentsPage = ({ embedded = false }) => {
+const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const [documents, setDocuments] = useState([]);
   const [filteredDocs, setFilteredDocs] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All Documents');
@@ -22,8 +22,9 @@ const DocumentsPage = ({ embedded = false }) => {
     const fetchDocuments = async () => {
       const deepPopulate =
         'populate[file]=true&populate[attachments][populate]=file';
+      const eventFilter = eventSlug ? `&filters[eventSlug][$eq]=${eventSlug}` : '';
       const buildUrl = (populate) =>
-        `${config.API_URL}/api/docs?${populate}&sort=date:desc&pagination[limit]=100`;
+        `${config.API_URL}/api/docs?${populate}${eventFilter}&sort=date:desc&pagination[limit]=100`;
 
       try {
         let res;
@@ -70,7 +71,8 @@ const DocumentsPage = ({ embedded = false }) => {
       }
     };
     fetchDocuments();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventSlug]);
 
   // Фильтрация
   useEffect(() => {
