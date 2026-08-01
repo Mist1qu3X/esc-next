@@ -109,7 +109,7 @@ const SelectedEventPage = ({ slug }) => {
             <h3 className="event-subtitle">Competition Disciplines</h3>
             <div className="disciplines-grid">
               {disciplines.map((d, i) => (
-                <div className="discipline-card" key={i}><span className="discipline-dot"></span><span className="discipline-name">{d.trim()}</span></div>
+                <div className="se-discipline-card" key={i}><span className="discipline-dot"></span><span className="discipline-name">{d.trim()}</span></div>
               ))}
             </div>
 

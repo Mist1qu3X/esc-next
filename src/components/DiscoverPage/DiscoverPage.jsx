@@ -53,7 +53,7 @@ const DiscoverPage = () => {
 
   const togglePanel = (id) => setOpenPanels(prev => ({ ...prev, [id]: !prev[id] }));
 
-  const regions = ['ALL', 'W.EUROPE', 'SCANDINAVIA', 'C.EUROPE', 'E.EUROPE', 'S.EUROPE', 'CAUCASUS'];
+  const regions = ['ALL', 'C.EUROPE', 'S.EUROPE', 'SCANDINAVIA', 'W.EUROPE', 'E.EUROPE'];
   const filteredFeds = filterRegion === 'ALL'
     ? federations
     : federations.filter(f => f.region === filterRegion);

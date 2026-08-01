@@ -679,7 +679,7 @@
     margin-bottom: 40px;
 }
 
-.discipline-card {
+.se-discipline-card {
     height: 46px;
     background: #0C233D;
     border-radius: 4px;
@@ -817,7 +817,7 @@
         line-height: 28px;
     }
     
-    .discipline-card {
+    .se-discipline-card {
         height: 42px;
     }
     
@@ -938,7 +938,7 @@
         margin-bottom: 30px;
     }
     
-    .discipline-card {
+    .se-discipline-card {
         height: 38px;
         padding: 0 12px;
         gap: 8px;
@@ -1078,7 +1078,7 @@
         margin-bottom: 24px;
     }
     
-    .discipline-card {
+    .se-discipline-card {
         height: 40px;
     }
     

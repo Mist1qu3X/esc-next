@@ -4,36 +4,48 @@ import axios from 'axios';
 import config from '@/lib/config';
 import './MembersPage.css';
 
+// Дефолтные статы (fallback, пока коллекция member-stats пуста)
+const DEFAULT_STATS = [
+  { number: '16+', label: 'ANNUAL EVENTS' },
+  { number: '55+', label: 'YEARS' },
+  { number: '58', label: 'MEMBER' },
+  { number: '10000+', label: 'ATHLETES' },
+];
+
 const MembersPage = () => {
   const [federations, setFederations] = useState([]);
   const [filteredFeds, setFilteredFeds] = useState([]);
+  const [stats, setStats] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeRegion, setActiveRegion] = useState('All Regions');
   const [viewMode, setViewMode] = useState('grid');
   const [loading, setLoading] = useState(true);
 
-  const regions = ['All Regions', 'Western Europe', 'Central Europe', 'Northern Europe', 'Southern Europe', 'Eastern Europe', 'Caucasus'];
+  const regions = ['All Regions', 'Central Europe', 'Southern Europe', 'Northern Europe', 'Western Europe', 'Eastern Europe'];
 
   const regionMapping = {
     'All Regions': 'ALL',
-    'Western Europe': 'W.EUROPE',
     'Central Europe': 'C.EUROPE',
-    'Northern Europe': 'SCANDINAVIA',
     'Southern Europe': 'S.EUROPE',
-    'Eastern Europe': 'E.EUROPE',
-    'Caucasus': 'CAUCASUS'
+    'Northern Europe': 'SCANDINAVIA',
+    'Western Europe': 'W.EUROPE',
+    'Eastern Europe': 'E.EUROPE'
   };
 
   useEffect(() => {
     const fetchFederations = async () => {
       try {
-        const res = await axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`);
+        const [res, statsRes] = await Promise.all([
+          axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
+          axios.get(`${config.API_URL}/api/member-stats?sort=order:asc&pagination[limit]=20`).catch(() => ({ data: { data: [] } })),
+        ]);
         if (res.data?.data) {
           setFederations(res.data.data);
           setFilteredFeds(res.data.data);
         }
+        setStats(statsRes.data?.data || []);
         setLoading(false);
-      } catch (e) { 
+      } catch (e) {
         console.error('Ошибка загрузки федераций:', e);
         setLoading(false);
       }
@@ -75,18 +87,12 @@ const MembersPage = () => {
         <div className="mp-header-row">
           <h1 className="mp-title">MEMBER FEDERATIONS</h1>
           <div className="mp-stats">
-            <div className="mp-stat-item">
-              <span className="mp-stat-number">{loading ? '...' : federations.length}</span>
-              <span className="mp-stat-label">FULL MEMBERS</span>
-            </div>
-            <div className="mp-stat-item">
-              <span className="mp-stat-number">{loading ? '...' : '38'}</span>
-              <span className="mp-stat-label">NATIONS</span>
-            </div>
-            <div className="mp-stat-item">
-              <span className="mp-stat-number">{loading ? '...' : '12,400+'}</span>
-              <span className="mp-stat-label">ATHLETES</span>
-            </div>
+            {(stats.length > 0 ? stats : DEFAULT_STATS).map((s, i) => (
+              <div className="mp-stat-item" key={s.id || i}>
+                <span className="mp-stat-number">{s.number}</span>
+                <span className="mp-stat-label">{s.label}</span>
+              </div>
+            ))}
           </div>
         </div>
         <div className="mp-divider"></div>

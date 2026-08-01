@@ -193,13 +193,32 @@ const Header = () => {
             </header>
 
             <div className={`mobile-nav ${isMobileMenuOpen ? 'active' : ''}`}>
-                <ul>
+                <div className="mobile-nav-top">
+                    <Link href="/" className="mobile-nav-logo" onClick={() => setIsMobileMenuOpen(false)}>
+                        <img src="/img/Frame%20175.svg" alt="European Shooting Confederation" />
+                    </Link>
+                    <button className="mobile-nav-close" onClick={() => setIsMobileMenuOpen(false)} aria-label="Close menu">
+                        <i className="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <ul className="mobile-nav-list">
                     {navItems.map((item, i) => (
                         <li key={i} className={pathname === item.href ? 'active' : ''} onClick={() => setIsMobileMenuOpen(false)}>
                             <Link href={item.href}>{item.label}</Link>
+                            {pathname === item.href && <span className="mobile-nav-dot"></span>}
                         </li>
                     ))}
                 </ul>
+                <div className="mobile-nav-footer">
+                    <button className="mobile-nav-entry" onClick={() => { setIsMobileMenuOpen(false); handleEntrySystem(); }}>
+                        ENTRY SYSTEM<img src="/img/ArrowUpRight.png" alt="" className="arrow" />
+                    </button>
+                    <div className="mobile-nav-langs">
+                        <button className="mobile-lang active">EN</button>
+                        <button className="mobile-lang">CN</button>
+                        <button className="mobile-lang mobile-signin"><i className="fa-solid fa-right-to-bracket"></i> SIGN IN</button>
+                    </div>
+                </div>
             </div>
         </>
     );

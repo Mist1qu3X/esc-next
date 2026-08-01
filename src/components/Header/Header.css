@@ -223,37 +223,154 @@
         color: #fff;
     }
 
-    /* Мобильное меню */
+    /* Мобильное меню — полноэкранный оверлей */
     .mobile-nav {
         display: none;
         position: fixed;
-        top: 68px;
-        left: 0;
+        inset: 0;
         width: 100%;
-        background: rgba(6, 18, 31, 0.98);
-        backdrop-filter: blur(10px);
-        padding: 20px;
-        z-index: 99;
+        height: 100vh;
+        height: 100dvh;
+        background: #06121F;
+        padding: 20px 24px 24px;
+        z-index: 200;
+        flex-direction: column;
+        overflow-y: auto;
     }
 
     .mobile-nav.active {
+        display: flex;
+    }
+
+    .mobile-nav-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .mobile-nav-logo img {
+        height: 44px;
+        width: auto;
         display: block;
     }
 
-    .mobile-nav ul {
+    .mobile-nav-close {
+        width: 48px;
+        height: 48px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 4px;
+        background: transparent;
+        color: #ffffff;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .mobile-nav-list {
         list-style: none;
+        margin: 0;
+        padding: 0;
+        flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 16px;
     }
 
-    .mobile-nav a {
-        color: #fff;
+    .mobile-nav-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .mobile-nav-list a {
+        color: #ffffff;
         text-decoration: none;
-        font-size: 18px;
-        font-weight: 500;
-        display: block;
-        padding: 8px 0;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: clamp(24px, 6vw, 34px);
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        line-height: 1;
+    }
+
+    .mobile-nav-list li.active a {
+        color: #00d8f5;
+    }
+
+    .mobile-nav-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #00d8f5;
+        flex-shrink: 0;
+    }
+
+    .mobile-nav-footer {
+        padding-top: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .mobile-nav-entry {
+        width: 100%;
+        height: 56px;
+        margin-bottom: 10px;
+        background: #00d8f5;
+        border: none;
+        border-radius: 2px;
+        color: #06121f;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .mobile-nav-entry .arrow {
+        width: 14px;
+        height: 14px;
+        object-fit: contain;
+    }
+
+    .mobile-nav-langs {
+        display: flex;
+        gap: 2px;
+    }
+
+    .mobile-lang {
+        flex: 1;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.55);
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .mobile-lang.active {
+        background: #00d8f5;
+        color: #06121f;
+        border-color: #00d8f5;
     }
 
     /* Подсказки поиска */
@@ -445,6 +562,7 @@
         }
         
         .mobile-nav {
-            top: 60px;
+            top: 0;
+            padding: 16px 16px 20px;
         }
     }

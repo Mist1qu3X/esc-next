@@ -226,7 +226,7 @@
 }
 
 .mp-featured-card {
-    height: 340px;
+    aspect-ratio: 687 / 386;
     background-size: cover;
     background-position: center;
     border-radius: 4px;
@@ -1371,9 +1371,9 @@
     }
     
     .mp-featured-card {
-        height: 300px;
+        height: auto;
     }
-    
+
     .mp-featured-title {
         font-size: 22px;
         line-height: 24px;
@@ -1518,7 +1518,7 @@
     }
     
     .mp-featured-card {
-        height: 240px;
+        height: auto;
     }
     
     .mp-featured-overlay {
@@ -1718,7 +1718,7 @@
     }
     
     .mp-featured-card {
-        height: 200px;
+        height: auto;
     }
     
     .mp-featured-overlay {
