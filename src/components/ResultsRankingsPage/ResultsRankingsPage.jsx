@@ -438,7 +438,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
                   <div className="rt-col rt-spacer"></div>
                   <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
-                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shots.slice(0, 12).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>)}</div><div className="shots-row">{shots.slice(12, 24).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div></div></div>
+                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shots.slice(0, 10).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div><div className="shots-row">{shots.slice(10, 20).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div></div></div>
                   <div className="rt-col rt-total"><span className={`total-value ${gi === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
                   <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
                 </div>
