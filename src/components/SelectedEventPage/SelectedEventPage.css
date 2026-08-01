@@ -424,6 +424,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ON AIR — красный акцент только когда есть живой стрим */
+.live-stream-header.live-on {
     background: rgba(255, 68, 68, 0.1);
     border-bottom: 2px solid rgba(255, 68, 68, 0.2);
 }
@@ -451,10 +457,17 @@
 }
 
 .live-waves {
-    color: #FF4444;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.55);
+    -webkit-mask: url('/img/signal-icon.png') no-repeat center / contain;
+    mask: url('/img/signal-icon.png') no-repeat center / contain;
+}
+
+.live-on .live-waves {
+    background-color: #FF4444;
 }
 
 .live-stream-text {
@@ -463,6 +476,10 @@
     font-size: 9px;
     letter-spacing: 1.44px;
     text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.live-on .live-stream-text {
     color: #FF4444;
 }
 
@@ -500,10 +517,10 @@
 .live-platform-card {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    height: 56px;
-    border-radius: 4px;
+    gap: 12px;
+    padding: 12px 14px;
+    min-height: 64px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -532,20 +549,20 @@
 
 /* Иконки платформ */
 .platform-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 14px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 12px;
+    font-size: 15px;
     color: #ffffff;
     background: rgba(0, 0, 0, 0.3);
 }
 
 .platform-icon i {
-    font-size: 12px;
+    font-size: 15px;
 }
 
 .youtube-icon i {
@@ -563,70 +580,41 @@
 .platform-info {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
 .platform-name {
     font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.platform-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2px;
-}
-
 .platform-stream {
     font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.platform-stats {
-    display: flex;
-    align-items: center;
-}
-
-.stats-col {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 1px;
-}
-
-.viewers-count {
-    font-family: 'Inter', sans-serif;
     font-size: 11px;
-    font-weight: 700;
-    line-height: 1;
-    color: #ff0000;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .watching-text {
     font-family: 'Inter', sans-serif;
-    font-size: 9px;
+    font-size: 11px;
     color: rgba(255, 255, 255, 0.4);
-    line-height: 1;
-}
-
-.twitch-card .viewers-count {
-    color: #9146FF;
-}
-
-.facebook-card .viewers-count {
-    color: #1877F2;
+    flex-shrink: 0;
 }
 
 .platform-go-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     background: transparent;
     cursor: pointer;
     display: flex;

@@ -120,9 +120,9 @@ const SelectedEventPage = ({ slug }) => {
 
   const liveStreamBlock = (
     <div className="sidebar-block live-stream-block">
-      <div className="live-stream-header">
+      <div className={`live-stream-header ${anyLive ? 'live-on' : ''}`}>
         <div className="live-stream-indicator">
-          <span className="live-waves"><i className="fa-solid fa-wifi"></i></span>
+          <span className="live-waves" aria-hidden="true"></span>
           <span className="live-stream-text">LIVE STREAM</span>
         </div>
         {liveStreams.length > 0 && (
@@ -140,16 +140,9 @@ const SelectedEventPage = ({ slug }) => {
               </div>
               <div className="platform-info">
                 <span className="platform-name">{platformClass(s.platform).toUpperCase()}</span>
-                <div className="platform-meta">
-                  <span className="platform-stream">{s.title}</span>
-                  <div className="platform-stats">
-                    <div className="stats-col">
-                      <span className="viewers-count">{s.views}</span>
-                      <span className="watching-text">watching</span>
-                    </div>
-                  </div>
-                </div>
+                <span className="platform-stream">{s.title}</span>
               </div>
+              <span className="watching-text">watching</span>
               <button className="platform-go-btn"><i className="fa-solid fa-arrow-up-right-from-square"></i></button>
             </div>
           ))}
