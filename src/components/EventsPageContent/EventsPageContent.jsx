@@ -156,7 +156,8 @@ const EventsPageContent = () => {
             return `${s.getDate()}-${e.getDate()}`;
         }
         const eMonth = e.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-        return `${s.getDate()}-${eMonth} ${e.getDate()}`;
+        // Кросс-месяц: второй месяц (напр. FEB) в стиле главного месяца, а не дня
+        return <>{s.getDate()}-<span className="epc-date-month">{eMonth}</span> {e.getDate()}</>;
     };
 
     const currentMonthLabel = filterMonth === 'all' ? '' : months.find(m => m.value === filterMonth)?.label;
