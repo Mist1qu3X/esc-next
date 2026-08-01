@@ -1480,3 +1480,83 @@
     .er-head, .er-row { grid-template-columns: 44px 1fr 60px 70px; }
     .er-inner, .er-head span:nth-child(5) { display: none; }
 }
+
+/* ===== RESULTS — discipline selection cards (как на странице Results) ===== */
+.se-disc-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+}
+.se-disc-card {
+    position: relative;
+    height: 120px;
+    background: #0B1E33;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 22px;
+    display: flex;
+    align-items: flex-end;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+.se-disc-card:hover {
+    border-color: rgba(0, 216, 245, 0.4);
+    background: #0d2440;
+}
+.se-disc-title {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    z-index: 1;
+}
+.se-disc-main {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #fff;
+}
+.se-disc-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+.se-disc-arrow {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    font-size: 22px;
+    color: #00d8f5;
+    line-height: 1;
+}
+
+.se-results-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.se-bc-link { color: #00d8f5; cursor: pointer; }
+.se-bc-link:hover { text-decoration: underline; }
+.se-bc-sep { color: rgba(255, 255, 255, 0.3); }
+.se-bc-active { color: rgba(255, 255, 255, 0.6); }
+
+@media (max-width: 768px) {
+    .se-disc-grid { grid-template-columns: 1fr 1fr; }
+    .se-disc-main { font-size: 24px; }
+}
+@media (max-width: 480px) {
+    .se-disc-grid { grid-template-columns: 1fr; }
+}
