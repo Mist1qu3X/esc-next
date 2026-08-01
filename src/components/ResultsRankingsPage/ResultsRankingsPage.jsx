@@ -84,6 +84,26 @@ const TEST_RECORDS = [
   { type: 'EWR', athleteName: 'MÜLLER HANS', federationCode: 'AUT', flagEmoji: '🇦🇹', record: '103', location: 'EWR World Cup Lahti (FIN)', date: '2008-07-09', category: 'MEN' },
 ];
 
+const PER_PAGE = 10;
+
+// Пагинация со скользящим окном: 1,2,3 › NEXT, затем 2,3,4 › NEXT (без длинного ряда)
+const Pager = ({ page, setPage, total, perPage = PER_PAGE }) => {
+  const pageCount = Math.ceil(total / perPage);
+  if (pageCount <= 1) return null;
+  const start = Math.min(Math.max(1, page), Math.max(1, pageCount - 2));
+  const nums = [];
+  for (let p = start; p < start + 3 && p <= pageCount; p++) nums.push(p);
+  return (
+    <div className="results-pagination">
+      {page > 1 && <button className="page-btn prev" onClick={() => setPage(page - 1)}>&lt; PREV</button>}
+      {nums.map((p) => (
+        <button key={p} className={`page-btn ${p === page ? 'active' : ''}`} onClick={() => setPage(p)}>{p}</button>
+      ))}
+      {page < pageCount && <button className="page-btn next" onClick={() => setPage(page + 1)}>NEXT &gt;</button>}
+    </div>
+  );
+};
+
 const ResultsRankingsPage = ({ embedded = false }) => {
   const [activeTab, setActiveTab] = useState('results');
   const [events, setEvents] = useState([]);
@@ -104,6 +124,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [filterStatus, setFilterStatus] = useState('ALL STATUSES');
   const [rankingsSearchTerm, setRankingsSearchTerm] = useState('');
   const [showDateFilter, setShowDateFilter] = useState(false);
+  const [resultsPage, setResultsPage] = useState(1);
+  const [rankingsPage, setRankingsPage] = useState(1);
+  const [recordsPage, setRecordsPage] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -209,6 +232,16 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   });
   const testRecords = TEST_RECORDS.filter((r) => gender === 'ALL' || r.category === gender);
   const displayRecords = filteredRecords.length > 0 ? filteredRecords : testRecords;
+
+  // Пагинация по 10 на страницу
+  const pagedResults = displayResults.slice((resultsPage - 1) * PER_PAGE, resultsPage * PER_PAGE);
+  const pagedRankings = displayRankings.slice((rankingsPage - 1) * PER_PAGE, rankingsPage * PER_PAGE);
+  const pagedRecords = displayRecords.slice((recordsPage - 1) * PER_PAGE, recordsPage * PER_PAGE);
+
+  // Сброс на первую страницу при смене фильтров
+  useEffect(() => { setResultsPage(1); }, [selectedDiscipline, gender, selectedEvent, resultDetails.length]);
+  useEffect(() => { setRankingsPage(1); }, [selectedDiscipline, rankingsGender, rankingsSearchTerm, rankings.length]);
+  useEffect(() => { setRecordsPage(1); }, [selectedDiscipline, gender, records.length]);
 
   // Пока нет реальных соревнований — показываем тестовые, чтобы флоу работал
   const eventsSource = events.length > 0 ? events : TEST_EVENTS;
@@ -390,19 +423,20 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">ATHLETE</div><div className="rt-col rt-spacer"></div>
               <div className="rt-col rt-fed">FED</div><div className="rt-col rt-series">SERIES (SHOT BY SHOT)</div><div className="rt-col rt-total">TOTAL</div><div className="rt-col rt-inner">INNER<br />10S</div>
             </div>
-            {displayResults.map((r, i) => {
+            {pagedResults.map((r, i) => {
+              const gi = (resultsPage - 1) * PER_PAGE + i;
               const medals = ['medal-gold', 'medal-silver', 'medal-bronze'];
-              const medalClass = i < 3 ? `medal-row ${medals[i]}` : '';
+              const medalClass = gi < 3 ? `medal-row ${medals[gi]}` : '';
               const shots = Array.isArray(r.shots) ? r.shots : [];
               return (
                 <div key={r.id || r.athleteName} className={`results-table-row ${medalClass}`}>
-                  <div className="rt-col rt-rank">{i < 3 ? <img src={`/img/${['First', 'Second', 'Third'][i]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{i + 1}</span>}</div>
+                  <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
                   <div className="rt-col rt-spacer"></div>
                   <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
                   <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shots.slice(0, 12).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>)}</div><div className="shots-row">{shots.slice(12, 24).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div></div></div>
-                  <div className="rt-col rt-total"><span className={`total-value ${i === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
-                  <div className="rt-col rt-inner"><span className={`inner-value ${i === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
+                  <div className="rt-col rt-total"><span className={`total-value ${gi === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
+                  <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
                 </div>
               );
             })}
@@ -438,10 +472,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             </button>
           </div>
 
-          <div className="results-pagination">
-            {[1, 2, 3].map((p) => <button key={p} className={`page-btn ${p === 1 ? 'active' : ''}`}>{p}</button>)}
-            <button className="page-btn next">NEXT &gt;</button>
-          </div>
+          <Pager page={resultsPage} setPage={setResultsPage} total={displayResults.length} />
         </section>
       )}
 
@@ -475,28 +506,26 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">ATHLETE</div><div className="rt-col rt-spacer-wide"></div>
               <div className="rt-col rt-fed">FEDERATION</div><div className="rt-col rt-points">POINTS</div><div className="rt-col rt-events">EVENTS</div><div className="rt-col rt-best">BEST</div>
             </div>
-            {displayRankings.length > 0 ? displayRankings.map((r, i) => {
+            {displayRankings.length > 0 ? pagedRankings.map((r, i) => {
+              const gi = (rankingsPage - 1) * PER_PAGE + i;
               const medals = ['medal-row medal-gold', 'medal-row medal-silver', 'medal-row medal-bronze'];
-              const medalClass = i < 3 ? medals[i] : '';
+              const medalClass = gi < 3 ? medals[gi] : '';
               const maxPoints = parseFloat(String(displayRankings[0]?.points).replace(',', '')) || 1;
               const barWidth = (parseFloat(String(r.points).replace(',', '')) / maxPoints) * 100;
               return (
                 <div key={r.id || r.athleteName} className={`rankings-table-row ${medalClass}`}>
-                  <div className="rt-col rt-rank">{i < 3 ? <img src={`/img/${['First', 'Second', 'Third'][i]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{i + 1}</span>}</div>
+                  <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
                   <div className="rt-col rt-spacer-wide"></div>
                   <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.country}</span></div>
-                  <div className="rt-col rt-points"><div className="points-block"><span className={`points-value ${i === 0 ? 'gold-value' : ''}`}>{r.points}</span><div className="points-bar"><div className="points-bar-fill" style={{ width: `${barWidth}%` }}></div></div></div></div>
+                  <div className="rt-col rt-points"><div className="points-block"><span className={`points-value ${gi === 0 ? 'gold-value' : ''}`}>{r.points}</span><div className="points-bar"><div className="points-bar-fill" style={{ width: `${barWidth}%` }}></div></div></div></div>
                   <div className="rt-col rt-events"><span className="events-value">{r.events}</span></div>
-                  <div className="rt-col rt-best"><span className={`best-value ${i === 0 ? 'gold-value' : ''}`}>{r.best}</span></div>
+                  <div className="rt-col rt-best"><span className={`best-value ${gi === 0 ? 'gold-value' : ''}`}>{r.best}</span></div>
                 </div>
               );
             }) : <div style={{ textAlign: 'center', padding: '60px', color: 'rgba(255,255,255,0.5)' }}>No ranking data available</div>}
           </div>
-          <div className="results-pagination">
-            {[1, 2, 3].map((p) => <button key={p} className={`page-btn ${p === 1 ? 'active' : ''}`}>{p}</button>)}
-            <button className="page-btn next">NEXT &gt;</button>
-          </div>
+          <Pager page={rankingsPage} setPage={setRankingsPage} total={displayRankings.length} />
         </section>
       )}
 
@@ -571,7 +600,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   <div className="rt-col">TYPE</div><div className="rt-col">ATHLETE</div>
                   <div className="rt-col rt-hide-sm">FEDERATION</div><div className="rt-col">RECORD</div><div className="rt-col rt-hide-sm">LOCATION</div><div className="rt-col rt-hide-sm">DATE</div>
                 </div>
-                {displayRecords.length > 0 ? displayRecords.map((r, i) => (
+                {displayRecords.length > 0 ? pagedRecords.map((r, i) => (
                   <div key={r.id || i} className="rankings-table-row records-grid">
                     <div className="rt-col"><span className="record-type">{r.type}</span></div>
                     <div className="rt-col"><span className="athlete-name">{r.athleteName}</span></div>
@@ -584,10 +613,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   <div style={{ textAlign: 'center', padding: '60px', color: 'rgba(255,255,255,0.5)' }}>No records available</div>
                 )}
               </div>
-              <div className="results-pagination">
-                {[1, 2, 3, 4, '...', 12].map((p, i) => <button key={i} className={`page-btn ${p === 1 ? 'active' : ''}`}>{p}</button>)}
-                <button className="page-btn next">NEXT &gt;</button>
-              </div>
+              <Pager page={recordsPage} setPage={setRecordsPage} total={displayRecords.length} />
             </section>
           )}
         </>
