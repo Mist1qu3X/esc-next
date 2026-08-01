@@ -427,6 +427,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           {/* Data source / Download — как было до правок */}
           <div className="data-source-bar">
             <div className="data-source-left">
+              <span className="source-icon" aria-hidden="true"></span>
               <span className="source-label">Data source:</span>
               <span className="source-text">SIUS Scoring System</span>
               <span className="source-dot">·</span>

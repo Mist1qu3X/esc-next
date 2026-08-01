@@ -943,9 +943,13 @@
 }
 
 .source-icon {
-    width: 20px;
-    height: 20px;
-    opacity: 0.6;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.55);
+    -webkit-mask: url('/img/signal-icon.png') no-repeat center / contain;
+    mask: url('/img/signal-icon.png') no-repeat center / contain;
 }
 
 .source-label {
