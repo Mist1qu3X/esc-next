@@ -1052,7 +1052,8 @@
     border-color: #00d8f5;
 }
 
-.page-btn.next {
+.page-btn.next,
+.page-btn.prev {
     width: auto;
     padding: 0 clamp(12px, 1.5vw, 16px);
     font-size: clamp(10px, 1vw, 11px);
@@ -1062,7 +1063,8 @@
     border-color: rgba(0, 216, 245, 0.3);
 }
 
-.page-btn.next:hover {
+.page-btn.next:hover,
+.page-btn.prev:hover {
     background: rgba(0, 216, 245, 0.1);
     border-color: rgba(0, 216, 245, 0.6);
 }
