@@ -608,6 +608,8 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    /* центрируем карточки, когда влезают; при переполнении (планшет/моб.) — обычная прокрутка без обрезки */
+    justify-content: safe center;
     gap: 16px;
     width: 100%;
     overflow-x: auto;
