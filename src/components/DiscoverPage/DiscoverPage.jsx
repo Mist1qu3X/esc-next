@@ -211,7 +211,7 @@ const DiscoverPage = () => {
           <span className="federations-subtitle">MEMBER FEDERATIONS</span>
         </div>
         <div className="federations-header">
-          <h2 className="federations-title">47 NATIONS,<br />ONE CONFEDERATION</h2>
+          <h2 className="federations-title">UNITED BY PRECISION</h2>
           <button className="federations-directory-btn" onClick={handleFullDirectory}>
             FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
           </button>

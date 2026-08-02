@@ -410,11 +410,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       {/* RESULTS - Level 2 */}
       {activeTab === 'results' && disciplineLevel && !resultsLevel && (
         <section className="discipline-level">
+          <div className="discipline-breadcrumbs"><span className="disc-breadcrumb-parent" onClick={() => setDisciplineLevel(false)}>Results</span><span className="disc-breadcrumb-separator">›</span><span className="disc-breadcrumb-active">{selectedEvent || 'Competitions'}</span></div>
           <div className="discipline-filter-bar">
             <div className="discipline-filter-left"></div>
             <div className="discipline-filter-right"><button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button></div>
           </div>
-          <div className="discipline-breadcrumbs"><span className="disc-breadcrumb-parent" onClick={() => setDisciplineLevel(false)}>Results</span><span className="disc-breadcrumb-separator">›</span><span className="disc-breadcrumb-active">{selectedEvent || 'Competitions'}</span></div>
           <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RANKING</span></div>
           <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
           <p className="discipline-desc">Choose a discipline to view season rankings</p>
@@ -631,7 +631,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <div className="rankings-table-container">
                 <div className="rankings-table-header records-grid">
                   <div className="rt-col">TYPE</div><div className="rt-col">ATHLETE</div>
-                  <div className="rt-col rt-hide-sm">FEDERATION</div><div className="rt-col">RECORD</div><div className="rt-col rt-hide-sm">LOCATION</div><div className="rt-col rt-hide-sm">DATE</div>
+                  <div className="rt-col rt-fed rt-hide-sm">FEDERATION</div><div className="rt-col">RECORD</div><div className="rt-col rt-hide-sm">LOCATION</div><div className="rt-col rt-hide-sm">DATE</div>
                 </div>
                 {displayRecords.length > 0 ? pagedRecords.map((r, i) => (
                   <div key={r.id || i} className="rankings-table-row records-grid">
