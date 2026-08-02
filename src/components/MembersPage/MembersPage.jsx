@@ -138,7 +138,18 @@ const MembersPage = () => {
       {loading ? (
         <section className="mp-grid-section" style={{ paddingTop: 48 }}>
           <div className="mp-federations-grid">
-            {Array.from({ length: 8 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 135, borderRadius: 4 }}></div>)}
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div className="mp-federation-card skeleton-card" key={i}>
+                <div className="mp-card-top-row">
+                  <div className="skeleton" style={{ width: 46, height: 46, borderRadius: 8 }}></div>
+                  <div className="skeleton" style={{ width: 30, height: 14, borderRadius: 3 }}></div>
+                </div>
+                <div className="mp-federation-info">
+                  <div className="skeleton" style={{ width: '75%', height: 16, borderRadius: 3, marginTop: 4 }}></div>
+                  <div className="skeleton" style={{ width: '45%', height: 12, borderRadius: 3, marginTop: 8 }}></div>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       ) : (<>

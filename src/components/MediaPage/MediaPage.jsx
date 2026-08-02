@@ -216,11 +216,23 @@ const MediaPage = () => {
 
       {loading ? (
       <section className="mp-news-content" style={{ paddingTop: 40 }}>
-        <div className="mp-featured-container">
+        <div className="mp-section-label"><span className="mp-section-line mp-blue"></span><span className="mp-section-text">FEATURED</span></div>
+        <div className="mp-featured-container" style={{ marginTop: 16 }}>
           {Array.from({ length: 2 }).map((_, i) => <div className="skeleton" key={i} style={{ aspectRatio: '687 / 386', borderRadius: 4 }}></div>)}
         </div>
-        <div className="mp-latest-news-grid" style={{ marginTop: 32 }}>
-          {Array.from({ length: 4 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 250, borderRadius: 4 }}></div>)}
+        <div className="mp-section-label" style={{ marginTop: 40 }}><span className="mp-section-line mp-grey"></span><span className="mp-section-text mp-grey-text">LATEST NEWS</span></div>
+        <div className="mp-latest-news-grid" style={{ marginTop: 16 }}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div className="mp-news-card skeleton-card" key={i}>
+              <div className="mp-news-card-image skeleton"></div>
+              <div className="mp-news-card-content">
+                <div className="skeleton" style={{ width: 70, height: 16, borderRadius: 3 }}></div>
+                <div className="skeleton" style={{ width: '92%', height: 15, borderRadius: 3, marginTop: 12 }}></div>
+                <div className="skeleton" style={{ width: '72%', height: 15, borderRadius: 3, marginTop: 6 }}></div>
+                <div className="skeleton" style={{ width: 90, height: 12, borderRadius: 3, marginTop: 14 }}></div>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
       ) : (

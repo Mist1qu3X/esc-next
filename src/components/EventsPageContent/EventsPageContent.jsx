@@ -275,15 +275,55 @@ const EventsPageContent = () => {
               <>
                 <section className="epc-featured-events">
                   <div className="epc-featured-container">
-                    {Array.from({ length: 4 }).map((_, i) => <div className="skeleton" key={i} style={{ width: 320, height: 340, flex: '0 0 320px', borderRadius: 8 }}></div>)}
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <div className="epc-featured-card skeleton-card" key={i} style={{ width: 320, height: 340, flex: '0 0 320px', borderRadius: 8, overflow: 'hidden' }}>
+                        <div className="skeleton" style={{ height: 150 }}></div>
+                        <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <div className="skeleton" style={{ width: 68, height: 18, borderRadius: 3 }}></div>
+                            <div className="skeleton" style={{ width: 90, height: 18, borderRadius: 3 }}></div>
+                          </div>
+                          <div className="skeleton" style={{ width: '85%', height: 18, borderRadius: 3 }}></div>
+                          <div className="skeleton" style={{ width: '60%', height: 13, borderRadius: 3 }}></div>
+                          <div className="skeleton" style={{ width: 120, height: 34, borderRadius: 4, marginTop: 6 }}></div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </section>
                 <section className="epc-season-wrapper">
-                  <div className="skeleton" style={{ minHeight: 200, borderRadius: 8 }}></div>
+                  <div className="epc-season-progress skeleton-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div className="skeleton" style={{ width: 180, height: 22, borderRadius: 4 }}></div>
+                      <div className="skeleton" style={{ width: 48, height: 22, borderRadius: 4 }}></div>
+                    </div>
+                    <div className="skeleton" style={{ width: 130, height: 12, borderRadius: 3, marginTop: 14 }}></div>
+                    <div className="skeleton" style={{ width: '100%', height: 8, borderRadius: 4, marginTop: 18 }}></div>
+                    <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
+                      {Array.from({ length: 5 }).map((_, k) => <div className="skeleton" key={k} style={{ flex: 1, height: 40, borderRadius: 4 }}></div>)}
+                    </div>
+                  </div>
                 </section>
                 <section className="epc-all-events">
                   <div className="epc-events-table-wrapper">
-                    {Array.from({ length: 8 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 54, borderRadius: 4, marginBottom: 8 }}></div>)}
+                    <div className="epc-events-table-header">
+                      <div className="epc-col epc-col-date">DATES</div>
+                      <div className="epc-col epc-col-event">EVENT</div>
+                      <div className="epc-col epc-col-location">LOCATION</div>
+                      <div className="epc-col epc-col-type">TYPE</div>
+                      <div className="epc-col epc-col-status">STATUS</div>
+                      <div className="epc-col epc-col-actions">ACTIONS</div>
+                    </div>
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div className="epc-events-table-row" key={i}>
+                        <div className="epc-col epc-col-date"><div className="skeleton" style={{ width: 46, height: 40, borderRadius: 4 }}></div></div>
+                        <div className="epc-col epc-col-event"><div className="skeleton" style={{ width: '80%', height: 15, borderRadius: 3 }}></div></div>
+                        <div className="epc-col epc-col-location"><div className="skeleton" style={{ width: '70%', height: 13, borderRadius: 3 }}></div></div>
+                        <div className="epc-col epc-col-type"><div className="skeleton" style={{ width: 60, height: 20, borderRadius: 3 }}></div></div>
+                        <div className="epc-col epc-col-status"><div className="skeleton" style={{ width: 72, height: 20, borderRadius: 3 }}></div></div>
+                        <div className="epc-col epc-col-actions"><div className="skeleton" style={{ width: 80, height: 30, borderRadius: 4 }}></div></div>
+                      </div>
+                    ))}
                   </div>
                 </section>
               </>
