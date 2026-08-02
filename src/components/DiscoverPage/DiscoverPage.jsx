@@ -172,7 +172,7 @@ const DiscoverPage = () => {
           <div className="who-left">
             <div className="who-next-layer">
               <span className="who-line"></span>
-              <span className="who-subtitle">WHO WE ARE</span>
+              <span className="who-subtitle">OUR TARGET</span>
             </div>
             <h2 className="who-title">{pageData?.missionTitle}</h2>
             <p className="who-text">{pageData?.missionText1}</p>
