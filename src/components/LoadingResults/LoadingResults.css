@@ -1,0 +1,190 @@
+/* Скелет загрузки для Results & Rankings — без фона (сидит на тёмном фоне страницы) */
+.lr-section {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    background: transparent;
+}
+
+.lr-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #4aa3ff;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+.lr-subline {
+    width: 28px;
+    height: 2px;
+    background: #4aa3ff;
+    border-radius: 2px;
+}
+
+.lr-title-bar {
+    width: clamp(220px, 30vw, 360px);
+    height: 34px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+    margin-bottom: 18px;
+}
+
+.lr-crumbs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+}
+
+.lr-crumb {
+    height: 10px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.06);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.lr-crumb-sep {
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 12px;
+}
+
+/* ---- таблица-скелет ---- */
+.lr-table {
+    width: 100%;
+}
+
+.lr-head,
+.lr-row {
+    display: grid;
+    grid-template-columns: 56px minmax(120px, 1.25fr) 56px minmax(180px, 1.7fr) 96px 76px;
+    align-items: center;
+    gap: 0 24px;
+}
+
+.lr-head {
+    padding: 0 4px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.lr-h {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.lr-h-total,
+.lr-h-inner {
+    text-align: left;
+}
+
+.lr-body {
+    position: relative;
+}
+
+.lr-row {
+    height: 68px;
+}
+
+.lr-rank {
+    display: flex;
+    align-items: center;
+}
+
+.lr-medal {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.lr-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.35);
+    padding-left: 6px;
+}
+
+.lr-athlete {
+    height: 22px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.08);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+/* FED и INNER — на макете пусто под шапкой */
+.lr-fed,
+.lr-inner {
+    height: 0;
+}
+
+.lr-series {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+}
+
+.lr-series-line {
+    display: flex;
+    justify-content: space-between;
+}
+
+.lr-dash {
+    width: 14px;
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.lr-total {
+    height: 26px;
+    width: 46px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.08);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes lr-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+}
+
+/* ---- анимация-мишень по центру таблицы, без фона ---- */
+.lr-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.lr-video {
+    width: clamp(150px, 20vw, 230px);
+    height: auto;
+    /* убираем тёмный фон ролика — тёмные пиксели становятся прозрачными */
+    mix-blend-mode: screen;
+}
+
+@media (max-width: 720px) {
+    .lr-section { padding: 24px 16px 48px; }
+    .lr-head, .lr-row {
+        grid-template-columns: 44px 1fr 64px;
+        gap: 0 12px;
+    }
+    /* на мобиле прячем серии/тоталы-скелеты, оставляем ранг + имя (как реальная адаптация таблиц) */
+    .lr-h-fed, .lr-h-series, .lr-h-inner,
+    .lr-fed, .lr-series, .lr-inner { display: none; }
+    .lr-h-total { text-align: right; }
+    .lr-total { justify-self: end; }
+}

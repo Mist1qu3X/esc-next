@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
+import LoadingResults from '@/components/LoadingResults/LoadingResults';
 import './ResultsRankingsPage.css';
 
 // Детерминированная генерация выстрелов (9.5–10.9) без Math.random.
@@ -340,6 +341,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       </section>
       )}
 
+      {!loaded && <LoadingResults />}
+
+      {loaded && (<>
       {/* RESULTS TAB - Level 1 */}
       {activeTab === 'results' && !disciplineLevel && !resultsLevel && (
         <section className="results-events">
@@ -632,6 +636,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           )}
         </>
       )}
+      </>)}
     </>
   );
 };
