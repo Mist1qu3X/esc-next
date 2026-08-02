@@ -911,9 +911,9 @@
     flex-shrink: 0;
 }
 
-/* UPCOMING — не эфир: янтарный статус вместо красного, без метрик рядом */
+/* UPCOMING — не эфир: серый статус вместо красного, без метрик рядом */
 .mp-live-pill.is-upcoming .mp-live-pill-status {
-    background: #C9832B;
+    background: #525C6B;
 }
 
 .mp-live-pill-text {

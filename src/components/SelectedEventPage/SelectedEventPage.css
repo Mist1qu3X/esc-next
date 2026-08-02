@@ -610,13 +610,6 @@
     flex-shrink: 0;
 }
 
-.watching-text.watching-upcoming {
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 10px;
-    font-weight: 700;
-    color: #C9832B;
-}
 
 .platform-go-btn {
     width: 28px;
@@ -1408,7 +1401,7 @@
 }
 
 .event-media-status.is-live { background: rgba(255, 45, 85, 0.92); }
-.event-media-status.is-upcoming { background: rgba(201, 131, 43, 0.92); }
+.event-media-status.is-upcoming { background: rgba(82, 92, 107, 0.92); }
 
 .event-media-status.is-live .event-media-status-dot {
     animation: em-pulse 1.4s ease-in-out infinite;
