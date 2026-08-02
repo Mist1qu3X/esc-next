@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
+import StreamPlayer, { canEmbed } from '@/components/StreamPlayer/StreamPlayer';
 import './MediaPage.css';
 
 // Универсальная функция для извлечения данных из любого ответа Strapi
@@ -26,6 +27,7 @@ const MediaPage = () => {
   const [spotlights, setSpotlights] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
   
   const router = useRouter();
   const latestNewsRef = useRef(null);
@@ -166,13 +168,13 @@ const MediaPage = () => {
     return 'youtube';
   };
 
-  // Показываем только реально ЛАЙВ-стримы (upcoming/запланированные не выводим).
-  const liveNow = streams.filter((s) => (s.streamStatus || '').toLowerCase() === 'live');
-  const youtubeStream = liveNow.find((s) => normPlatform(s.platform) === 'youtube');
-  const facebookStream = liveNow.find((s) => normPlatform(s.platform) === 'facebook');
+  // Показываем стримы (live + upcoming). Метрики (зрители/хронометраж) — только у реального эфира.
+  const liveCount = streams.filter((s) => (s.streamStatus || '').toLowerCase() === 'live').length;
+  const youtubeStream = streams.find((s) => normPlatform(s.platform) === 'youtube');
+  const facebookStream = streams.find((s) => normPlatform(s.platform) === 'facebook');
   let liveStreams = [youtubeStream, facebookStream].filter(Boolean);
   if (liveStreams.length < 2) {
-    const rest = liveNow.filter((s) => !liveStreams.includes(s));
+    const rest = streams.filter((s) => !liveStreams.includes(s));
     liveStreams = [...liveStreams, ...rest].slice(0, 2);
   }
 
@@ -404,45 +406,53 @@ const MediaPage = () => {
         {/* LIVE STREAMS */}
         {showLiveStreams && streams.length > 0 && (
           <div className="mp-live-block">
-            <div className="mp-live-header">
+            <div className={`mp-live-header ${liveCount > 0 ? '' : 'is-idle'}`}>
               <span className="mp-live-dot"></span>
-              <span className="mp-live-text">LIVE NOW</span>
-              <span className="mp-live-streams">{streams.filter(s => s.streamStatus === 'live').length} streams</span>
+              <span className="mp-live-text">{liveCount > 0 ? 'LIVE NOW' : 'STREAMS'}</span>
+              <span className="mp-live-streams">
+                {liveCount > 0 ? `${liveCount} live` : `${liveStreams.length} upcoming`}
+              </span>
             </div>
             <div className="mp-live-grid">
-              {liveStreams.map((s) => (
+              {liveStreams.map((s) => {
+                const isLive = (s.streamStatus || '').toLowerCase() === 'live';
+                const open = () => (canEmbed(s) ? setPlaying(s) : s.url && window.open(s.url, '_blank'));
+                return (
                 <div key={s.id} className={`mp-live-card-main ${platformClass(s.platform)}`} style={{ backgroundImage: `url(${getImageUrl(s.thumbnail)})` }}>
                   <div className="mp-live-card-top">
                     <div className={`mp-platform-badge ${platformClass(s.platform)}`}>
                       <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
                       <span>{platformClass(s.platform)}</span>
                     </div>
-                    <div className="mp-live-pill">
+                    <div className={`mp-live-pill ${isLive ? 'is-live' : 'is-upcoming'}`}>
                       <div className="mp-live-pill-status">
                         <span className="mp-live-pill-dot"></span>
-                        <span className="mp-live-pill-text">{s.streamStatus?.toUpperCase()}</span>
+                        <span className="mp-live-pill-text">{isLive ? 'LIVE' : 'UPCOMING'}</span>
                       </div>
-                      <div className="mp-live-pill-stats">
-                        <i className="fa-regular fa-eye"></i>
-                        <span className="mp-views-count">{s.views}</span>
-                        <span className="mp-stat-separator">·</span>
-                        <span className="mp-duration">{s.duration}</span>
-                      </div>
+                      {/* Зрители/хронометраж — только у реального эфира (для upcoming это нелогично) */}
+                      {isLive && (s.views || s.duration) && (
+                        <div className="mp-live-pill-stats">
+                          {s.views && (<><i className="fa-regular fa-eye"></i><span className="mp-views-count">{s.views}</span></>)}
+                          {s.views && s.duration && <span className="mp-stat-separator">·</span>}
+                          {s.duration && <span className="mp-duration">{s.duration}</span>}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="mp-live-play-btn" onClick={() => window.open(s.url, '_blank')}>
+                  <div className="mp-live-play-btn" onClick={open}>
                     <i className="fa-solid fa-play"></i>
                   </div>
                   <div className="mp-live-card-bottom">
                     <span className="mp-live-event">{s.eventName}</span>
                     <h3 className="mp-live-title">{s.title}</h3>
-                    <button className={`mp-watch-btn ${platformClass(s.platform)}-btn`} onClick={() => window.open(s.url, '_blank')}>
-                      <i className="fa-solid fa-arrow-up-right-from-square"></i>
-                      WATCH ON {s.platform?.toUpperCase()}
+                    <button className={`mp-watch-btn ${platformClass(s.platform)}-btn`} onClick={open}>
+                      <i className="fa-solid fa-play"></i>
+                      {isLive ? 'WATCH LIVE' : 'WATCH'}
                     </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -478,6 +488,8 @@ const MediaPage = () => {
           </div>
         )}
       </section>
+
+      <StreamPlayer stream={playing} onClose={() => setPlaying(null)} />
     </>
   );
 };
