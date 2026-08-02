@@ -157,9 +157,35 @@
     color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 0.3px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+
+.sp-stats {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.sp-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-variant-numeric: tabular-nums;
+}
+
+.sp-stat i { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
 
 @media (max-width: 640px) {
     .sp-overlay { padding: 16px; }
     .sp-title { font-size: 15px; }
+    .sp-stats { display: none; }
 }

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
-import StreamPlayer, { canEmbed } from '@/components/StreamPlayer/StreamPlayer';
+import StreamPlayer, { canEmbed, ytThumb, LiveElapsed } from '@/components/StreamPlayer/StreamPlayer';
 import './MediaPage.css';
 
 // Универсальная функция для извлечения данных из любого ответа Strapi
@@ -433,8 +433,10 @@ const MediaPage = () => {
               {liveStreams.map((s) => {
                 const isLive = (s.streamStatus || '').toLowerCase() === 'live';
                 const open = () => (canEmbed(s) ? setPlaying(s) : s.url && window.open(s.url, '_blank'));
+                // превью: своё залитое, иначе стоп-кадр самого стрима (YouTube)
+                const cover = getImageUrl(s.thumbnail) || ytThumb(s.url);
                 return (
-                <div key={s.id} className={`mp-live-card-main ${platformClass(s.platform)}`} style={{ backgroundImage: `url(${getImageUrl(s.thumbnail)})` }}>
+                <div key={s.id} className={`mp-live-card-main ${platformClass(s.platform)}`} style={cover ? { backgroundImage: `url(${cover})` } : undefined}>
                   <div className="mp-live-card-top">
                     <div className={`mp-platform-badge ${platformClass(s.platform)}`}>
                       <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
@@ -445,12 +447,14 @@ const MediaPage = () => {
                         <span className="mp-live-pill-dot"></span>
                         <span className="mp-live-pill-text">{isLive ? 'LIVE' : 'UPCOMING'}</span>
                       </div>
-                      {/* Зрители/хронометраж — только у реального эфира (для upcoming это нелогично) */}
-                      {isLive && (s.views || s.duration) && (
+                      {/* Зрители + живой хронометраж — только у реального эфира */}
+                      {isLive && (
                         <div className="mp-live-pill-stats">
                           {s.views && (<><i className="fa-regular fa-eye"></i><span className="mp-views-count">{s.views}</span></>)}
-                          {s.views && s.duration && <span className="mp-stat-separator">·</span>}
-                          {s.duration && <span className="mp-duration">{s.duration}</span>}
+                          {s.views && <span className="mp-stat-separator">·</span>}
+                          <span className="mp-duration">
+                            {s.duration ? s.duration : <LiveElapsed since={s.publishedAt || s.createdAt} />}
+                          </span>
                         </div>
                       )}
                     </div>
