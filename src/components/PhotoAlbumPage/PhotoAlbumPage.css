@@ -95,6 +95,7 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    isolation: isolate;
     background: #0A1B2E;
 }
 
@@ -126,6 +127,7 @@
 .pa-arrow {
     position: absolute;
     top: 50%;
+    z-index: 5;
     transform: translateY(-50%);
     width: 56px;
     height: 56px;
