@@ -1479,6 +1479,14 @@
     border-radius: 2px;
 }
 
+/* Логотипы федераций в блоке MEMBER FEDERATIONS — 48x48 */
+.member-federations .fed-flag-img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
 .leader-flag-img {
     width: 20px;
     height: 14px;
