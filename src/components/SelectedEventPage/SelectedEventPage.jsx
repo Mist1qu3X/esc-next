@@ -54,7 +54,8 @@ const SelectedEventPage = ({ slug }) => {
   const [activeTab, setActiveTab] = useState('OVERVIEW');
   const [streams, setStreams] = useState([]);
   const [schedule, setSchedule] = useState([]);
-  const [eventResults, setEventResults] = useState([]);
+  const [eventResults, setEventResults] = useState([]); // старые result-details (fallback)
+  const [resultBoards, setResultBoards] = useState([]); // новые event-results (event relation + leaders[])
   const [eventPhotos, setEventPhotos] = useState([]);
   const [resultDisc, setResultDisc] = useState(null);
   const [playing, setPlaying] = useState(null); // стрим во встроенном плеере
@@ -81,14 +82,16 @@ const SelectedEventPage = ({ slug }) => {
 
   useEffect(() => {
     const fetchExtra = async () => {
-      const [sRes, rRes, pRes] = await Promise.all([
+      const [sRes, rRes, pRes, brRes] = await Promise.all([
         axios.get(`${config.API_URL}/api/live-streams?filters[eventSlug][$eq]=${slug}&populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
         axios.get(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${slug}&sort=position:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
         axios.get(`${config.API_URL}/api/photos?filters[eventSlug][$eq]=${slug}&populate=*&pagination[pageSize]=30`).catch(() => ({ data: { data: [] } })),
+        axios.get(`${config.API_URL}/api/event-results?filters[event][slug][$eq]=${slug}&populate[leaders]=true&sort=discipline:asc&pagination[pageSize]=100`).catch(() => ({ data: { data: [] } })),
       ]);
       setStreams(sRes.data?.data || []);
       setEventResults(rRes.data?.data || []);
       setEventPhotos(pRes.data?.data || []);
+      setResultBoards(brRes.data?.data || []);
     };
     fetchExtra();
   }, [slug]);
@@ -125,12 +128,20 @@ const SelectedEventPage = ({ slug }) => {
   };
   const displaySchedule = schedule.length > 0 ? groupSchedule(schedule) : SCHEDULE;
 
-  // RESULTS этого события — сгруппированы по дисциплине + полу
-  const resultGroups = eventResults.reduce((acc, r) => {
-    const key = `${r.discipline} — ${r.category}`;
-    (acc[key] = acc[key] || []).push(r);
-    return acc;
-  }, {});
+  // RESULTS этого события. Приоритет — новые event-results (event relation + leaders[]),
+  // сгруппированы по дисциплине+категории; если их ещё нет — старые result-details (fallback до миграции).
+  const resultGroups = resultBoards.length > 0
+    ? resultBoards.reduce((acc, b) => {
+        const key = `${b.discipline} — ${b.category}`;
+        const rows = [...(b.leaders || [])].sort((a, z) => (a.position || 0) - (z.position || 0));
+        acc[key] = (acc[key] || []).concat(rows);
+        return acc;
+      }, {})
+    : eventResults.reduce((acc, r) => {
+        const key = `${r.discipline} — ${r.category}`;
+        (acc[key] = acc[key] || []).push(r);
+        return acc;
+      }, {});
 
   const platformClass = (p) => ((p || '').toLowerCase() === 'facebook' ? 'facebook' : 'youtube');
 
@@ -297,7 +308,7 @@ const SelectedEventPage = ({ slug }) => {
                       <div className="event-result-table">
                         <div className="er-head"><span>RANK</span><span>ATHLETE</span><span>FED</span><span>TOTAL</span><span>INNER 10s</span></div>
                         {resultGroups[resultDisc].map((r, i) => (
-                          <div className={`er-row ${i < 3 ? 'er-medal er-medal-' + (i + 1) : ''}`} key={r.id}>
+                          <div className={`er-row ${i < 3 ? 'er-medal er-medal-' + (i + 1) : ''}`} key={r.id || i}>
                             <span className="er-rank">{r.position}</span>
                             <span className="er-name">{r.athleteName}</span>
                             <span className="er-fed">{r.federationCode}</span>
