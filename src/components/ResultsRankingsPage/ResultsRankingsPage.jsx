@@ -431,7 +431,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
       {/* RESULTS - Level 3 */}
       {activeTab === 'results' && resultsLevel && (
-        (detailLoading || !loaded) ? <LoadingResults variant="results" onDone={() => setDetailLoading(false)} /> : (
+        (detailLoading || !loaded) ? <LoadingResults key={`res-${selectedDiscipline}-${gender}`} variant="results" onDone={() => setDetailLoading(false)} /> : (
         <section className="results-detail">
           <div className="results-detail-header"><span className="results-detail-line"></span><span className="results-detail-subtitle">ESC RESULTS</span></div>
           <h2 className="results-detail-title">{selectedDiscipline.toUpperCase()}{gender !== 'ALL' ? ` — ${gender}` : ''}</h2>
@@ -526,7 +526,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
       {/* RANKINGS DETAIL - Level 2 */}
       {activeTab === 'ranking' && rankingsDetailLevel && (
-        (detailLoading || !loaded) ? <LoadingResults variant="ranking" onDone={() => setDetailLoading(false)} /> : (
+        (detailLoading || !loaded) ? <LoadingResults key={`rank-${selectedDiscipline}-${rankingsGender}`} variant="ranking" onDone={() => setDetailLoading(false)} /> : (
         <section className="rankings-detail">
           {rankingsFilterBar}
           <div className="rankings-detail-breadcrumbs"><span className="rd-breadcrumb" onClick={() => setRankingsDetailLevel(false)}>Rankings</span><span className="rd-breadcrumb-sep">›</span><span className="rd-breadcrumb-active">{selectedDiscipline}</span></div>
@@ -609,7 +609,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
           {/* RECORDS — LEVEL 3: таблица рекордов */}
           {activeTab === 'records' && resultsLevel && (
-            (detailLoading || !loaded) ? <LoadingResults variant="records" onDone={() => setDetailLoading(false)} /> : (
+            (detailLoading || !loaded) ? <LoadingResults key={`rec-${selectedDiscipline}-${gender}`} variant="records" onDone={() => setDetailLoading(false)} /> : (
             <section className="results-detail">
               {rankingsFilterBar}
               <div className="results-detail-header"><span className="results-detail-line"></span><span className="results-detail-subtitle">ESC SEASON RECORDS</span></div>
