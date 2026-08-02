@@ -12,7 +12,7 @@ const VARIANTS = {
   records: { subtitle: 'ESC SEASON RECORDS', cols: ['TYPE', 'ATHLETE', 'FED', 'RECORD', 'LOCATION', 'DATE'], series: false },
 };
 
-export default function LoadingResults({ variant = 'results' }) {
+export default function LoadingResults({ variant = 'results', onDone = () => {} }) {
   const v = VARIANTS[variant] || VARIANTS.results;
 
   return (
@@ -55,7 +55,7 @@ export default function LoadingResults({ variant = 'results' }) {
 
           {/* анимация-мишень по центру, без фона (тёмный фон видео убираем блендом) */}
           <div className="lr-loader">
-            <video className="lr-video" src="/img/target-loader.mp4" autoPlay loop muted playsInline aria-hidden="true"></video>
+            <video className="lr-video" src="/img/target-loader.mp4" autoPlay muted playsInline aria-hidden="true" onEnded={onDone}></video>
           </div>
         </div>
       </div>
