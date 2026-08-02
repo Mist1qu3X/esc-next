@@ -138,7 +138,7 @@ const MembersPage = () => {
       {loading ? (
         <section className="mp-grid-section">
           <div className="mp-federations-grid">
-            {Array.from({ length: 9 }).map((_, i) => <div className="mp-federation-card skeleton" key={i} style={{ minHeight: 150 }}></div>)}
+            {Array.from({ length: 8 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 135, borderRadius: 4 }}></div>)}
           </div>
         </section>
       ) : (<>

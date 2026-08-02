@@ -217,10 +217,10 @@ const MediaPage = () => {
       {loading ? (
       <section className="mp-news-content">
         <div className="mp-featured-container">
-          {Array.from({ length: 3 }).map((_, i) => <div className="mp-featured-card skeleton" key={i} style={{ minHeight: 260 }}></div>)}
+          {Array.from({ length: 2 }).map((_, i) => <div className="skeleton" key={i} style={{ aspectRatio: '687 / 386', borderRadius: 4 }}></div>)}
         </div>
-        <div className="mp-latest-news-grid" style={{ marginTop: 40 }}>
-          {Array.from({ length: 6 }).map((_, i) => <div className="mp-news-card skeleton" key={i} style={{ minHeight: 300 }}></div>)}
+        <div className="mp-latest-news-grid" style={{ marginTop: 32 }}>
+          {Array.from({ length: 4 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 250, borderRadius: 4 }}></div>)}
         </div>
       </section>
       ) : (

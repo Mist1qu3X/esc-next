@@ -275,12 +275,15 @@ const EventsPageContent = () => {
               <>
                 <section className="epc-featured-events">
                   <div className="epc-featured-container">
-                    {Array.from({ length: 4 }).map((_, i) => <div className="epc-featured-card skeleton" key={i} style={{ minHeight: 340 }}></div>)}
+                    {Array.from({ length: 4 }).map((_, i) => <div className="skeleton" key={i} style={{ width: 320, height: 340, flex: '0 0 320px', borderRadius: 8 }}></div>)}
                   </div>
+                </section>
+                <section className="epc-season-wrapper">
+                  <div className="skeleton" style={{ minHeight: 200, borderRadius: 8 }}></div>
                 </section>
                 <section className="epc-all-events">
                   <div className="epc-events-table-wrapper">
-                    {Array.from({ length: 8 }).map((_, i) => <div className="epc-events-table-row skeleton" key={i} style={{ minHeight: 60 }}></div>)}
+                    {Array.from({ length: 8 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 54, borderRadius: 4, marginBottom: 8 }}></div>)}
                   </div>
                 </section>
               </>
