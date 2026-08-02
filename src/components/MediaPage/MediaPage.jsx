@@ -178,14 +178,21 @@ const MediaPage = () => {
     liveStreams = [...liveStreams, ...rest].slice(0, 2);
   }
 
+  // Тематические разделы (NEWS/FEATURES/INTERVIEWS) — единый список «NEWS» со всеми новостями темы
+  const themeView = ['NEWS', 'FEATURES', 'INTERVIEWS'].includes(activeFilter);
+
   // Проверка, нужно ли показывать секции
-  const showFeatured = activeFilter === 'ALL' || ['NEWS', 'FEATURES', 'INTERVIEWS'].includes(activeFilter);
-  const showLatestNews = activeFilter === 'ALL' || ['NEWS', 'FEATURES', 'INTERVIEWS'].includes(activeFilter);
+  const showFeatured = activeFilter === 'ALL';        // большие featured-карточки — только на ALL
+  const showLatestNews = activeFilter === 'ALL' || themeView;
   const showVideos = activeFilter === 'ALL';          // превью-ряд видео на ALL
   const showVideoGallery = activeFilter === 'VIDEOS'; // отдельная галерея видео (как PHOTO)
   const showLiveStreams = activeFilter === 'ALL' && liveStreams.length > 0; // только если реально идёт эфир
   const showPressReleases = activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES';
   const showPhotos = activeFilter === 'PHOTO';
+
+  // Новостная сетка: на теме — заголовок «NEWS» и ВСЕ новости темы; на ALL — «LATEST NEWS» (обрезка)
+  const newsGridItems = themeView ? filteredNews : latestNews;
+  const newsGridHeading = themeView ? 'NEWS' : 'LATEST NEWS';
 
   return (
     <>
@@ -354,19 +361,21 @@ const MediaPage = () => {
           </div>
         )}
 
-        {/* LATEST NEWS */}
+        {/* NEWS (на теме — все новости темы; на ALL — LATEST NEWS) */}
         {showLatestNews && (
           <div ref={latestNewsRef}>
             <div className="mp-section-header" id="latest-news">
               <div className="mp-section-label">
                 <span className="mp-section-line mp-grey"></span>
-                <span className="mp-section-text mp-grey-text">LATEST NEWS</span>
+                <span className="mp-section-text mp-grey-text">{newsGridHeading}</span>
               </div>
-              <button className="mp-all-articles-btn" onClick={() => router.push('/media')}>ALL ARTICLES ›</button>
+              {!themeView && (
+                <button className="mp-all-articles-btn" onClick={() => router.push('/media')}>ALL ARTICLES ›</button>
+              )}
             </div>
             <div className="mp-latest-news-grid">
-              {latestNews.length > 0 ? (
-                latestNews.map((item) => (
+              {newsGridItems.length > 0 ? (
+                newsGridItems.map((item) => (
                   <div key={item.id} className="mp-news-card" onClick={() => goToNews(item.slug)} style={{ cursor: 'pointer' }}>
                     <div className="mp-news-card-image" style={{ backgroundImage: `url(${getImageUrl(item.image)})` }}></div>
                     <div className="mp-news-card-content">
@@ -379,7 +388,7 @@ const MediaPage = () => {
                 ))
               ) : (
                 <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
-                  No latest {activeFilter !== 'ALL' ? activeFilter.toLowerCase() : ''} news available
+                  No {activeFilter !== 'ALL' ? activeFilter.toLowerCase() + ' ' : ''}news available
                 </p>
               )}
             </div>
