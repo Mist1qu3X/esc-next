@@ -135,10 +135,6 @@ const DiscoverPage = () => {
     router.push('/members');
   };
 
-  const handleShowAllMembers = () => {
-    router.push('/members');
-  };
-
   const handleLeaderClick = (leaderId) => {
     router.push(`/leaders/${leaderId}`);
   };
@@ -213,7 +209,7 @@ const DiscoverPage = () => {
         <div className="federations-header">
           <h2 className="federations-title">UNITED BY PRECISION</h2>
           <button className="federations-directory-btn" onClick={handleFullDirectory}>
-            FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
+            ALL {federations.length} MEMBERS <i className="fa-solid fa-chevron-right"></i>
           </button>
         </div>
         <div className="federations-filter">
@@ -242,11 +238,6 @@ const DiscoverPage = () => {
               <span className="fed-region">{fed.region}</span>
             </div>
           ))}
-        </div>
-        <div className="federations-show-all">
-          <button className="show-all-btn" onClick={handleShowAllMembers}>
-            SHOW ALL {federations.length} MEMBERS <i className="fa-solid fa-chevron-down"></i>
-          </button>
         </div>
       </section>
 

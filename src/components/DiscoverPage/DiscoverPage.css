@@ -1009,7 +1009,7 @@
 }
 
 .federations-directory-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     font-family: 'Inter', sans-serif;
@@ -1020,16 +1020,19 @@
     background: transparent;
     text-decoration: none;
     text-transform: uppercase;
-    padding: 10px 20px;
-    border: 1px solid rgba(0, 216, 245, 0.4);
-    border-radius: 4px;
-    transition: all 0.2s ease;
+    border: none;
+    padding: 0;
+    transition: opacity 0.2s ease;
     white-space: nowrap;
     cursor: pointer;
 }
 
+.federations-directory-btn i {
+    font-size: 10px;
+}
+
 .federations-directory-btn:hover {
-    background: rgba(0, 216, 245, 0.1);
+    opacity: 0.75;
 }
 
 .federations-filter {
