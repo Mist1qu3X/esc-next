@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
+import PageLoader from '@/components/LoadingResults/PageLoader';
 import './SelectedVideoPage.css';
 
 const mediaUrl = (m) => {
@@ -29,6 +30,7 @@ const SelectedVideoPage = ({ id }) => {
   const [video, setVideo] = useState(null);
   const [more, setMore] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [videoDone, setVideoDone] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -51,12 +53,8 @@ const SelectedVideoPage = ({ id }) => {
     fetchData();
   }, [id]);
 
-  if (loading) {
-    return (
-      <section className="sv-header">
-        <p className="sv-loading">Loading video...</p>
-      </section>
-    );
+  if (loading || !videoDone) {
+    return <PageLoader variant="detail" dataReady={!loading} onDone={() => setVideoDone(true)} />;
   }
 
   if (!video) {

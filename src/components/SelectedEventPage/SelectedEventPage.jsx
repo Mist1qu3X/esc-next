@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import DocumentsPage from '@/components/DocumentsPage/DocumentsPage';
 import StreamPlayer, { canEmbed } from '@/components/StreamPlayer/StreamPlayer';
+import PageLoader from '@/components/LoadingResults/PageLoader';
 import './SelectedEventPage.css';
 
 // Расписание ALL EVENTS (пока нет отдельного поля/коллекции — демо-данные)
@@ -51,6 +52,7 @@ const getImageUrl = (img) => {
 
 const SelectedEventPage = ({ slug }) => {
   const [event, setEvent] = useState(null);
+  const [videoDone, setVideoDone] = useState(false);
   const [activeTab, setActiveTab] = useState('OVERVIEW');
   const [streams, setStreams] = useState([]);
   const [schedule, setSchedule] = useState([]);
@@ -96,12 +98,8 @@ const SelectedEventPage = ({ slug }) => {
     fetchExtra();
   }, [slug]);
 
-  if (!event) {
-    return (
-      <section className="selected-event-header" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: '#fff', fontSize: '20px' }}>Loading...</p>
-      </section>
-    );
+  if (!event || !videoDone) {
+    return <PageLoader variant="detail" dataReady={!!event} onDone={() => setVideoDone(true)} />;
   }
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';

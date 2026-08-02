@@ -4,6 +4,7 @@ import axios from 'axios';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
 import StreamPlayer, { canEmbed } from '@/components/StreamPlayer/StreamPlayer';
+import PageLoader from '@/components/LoadingResults/PageLoader';
 import './MediaPage.css';
 
 // Универсальная функция для извлечения данных из любого ответа Strapi
@@ -27,6 +28,7 @@ const MediaPage = () => {
   const [spotlights, setSpotlights] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [videoDone, setVideoDone] = useState(false); // дать анимации-мишени доиграть до конца
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
   
   const router = useRouter();
@@ -187,23 +189,8 @@ const MediaPage = () => {
   const showPressReleases = activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES';
   const showPhotos = activeFilter === 'PHOTO';
 
-  if (loading) {
-    return (
-      <section className="mp-media-header">
-        <div className="mp-breadcrumbs-row">
-          <span className="mp-breadcrumb-home">Home</span>
-          <span className="mp-breadcrumb-separator">›</span>
-          <span className="mp-breadcrumb-active">Media</span>
-        </div>
-        <div className="mp-next-layer">
-          <span className="mp-breadcrumb-line"></span>
-          <span className="mp-breadcrumb-subtitle">ESC NEWSROOM</span>
-        </div>
-        <h1 className="mp-media-title">MEDIA & NEWS</h1>
-        <div className="mp-media-divider"></div>
-        <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center' }}>Loading media...</p>
-      </section>
-    );
+  if (loading || !videoDone) {
+    return <PageLoader variant="grid" dataReady={!loading} onDone={() => setVideoDone(true)} />;
   }
 
   return (

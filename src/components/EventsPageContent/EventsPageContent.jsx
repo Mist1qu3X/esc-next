@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
+import PageLoader from '@/components/LoadingResults/PageLoader';
 import './EventsPageContent.css';
 
 // Фолбэк-вкладки фильтра, пока в Strapi не заданы свои (коллекция event-category)
@@ -14,6 +15,8 @@ const DEFAULT_CATEGORIES = [
 
 const EventsPageContent = () => {
     const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [videoDone, setVideoDone] = useState(false);
     const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
     const [filterType, setFilterType] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
@@ -90,6 +93,7 @@ const EventsPageContent = () => {
                     setEvents(res.data.data);
                 }
             } catch (e) { console.error(e); }
+            finally { setLoading(false); }
         };
         fetchEvents();
     }, []);
@@ -189,6 +193,10 @@ const EventsPageContent = () => {
     const dateButtonLabel = filterMonth === 'all' && filterYear === 'all'
         ? 'DATE ▼'
         : `${currentMonthLabel} ${currentYearLabel} ▼`;
+
+    if (loading || !videoDone) {
+        return <PageLoader variant="grid" dataReady={!loading} onDone={() => setVideoDone(true)} />;
+    }
 
     return (
         <>

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
+import PageLoader from '@/components/LoadingResults/PageLoader';
 import './PhotoAlbumPage.css';
 
 const getImageUrl = (img) => {
@@ -16,6 +17,7 @@ const getImageUrl = (img) => {
 const PhotoAlbumPage = ({ slug }) => {
   const [album, setAlbum] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [videoDone, setVideoDone] = useState(false);
   const [selected, setSelected] = useState(0);
   const trackRef = useRef(null);
   const router = useRouter();
@@ -64,12 +66,8 @@ const PhotoAlbumPage = ({ slug }) => {
     setSelected((prev) => (prev !== idx ? idx : prev));
   };
 
-  if (loading) {
-    return (
-      <section className="pa-header">
-        <p className="pa-loading">Loading album...</p>
-      </section>
-    );
+  if (loading || !videoDone) {
+    return <PageLoader variant="detail" dataReady={!loading} onDone={() => setVideoDone(true)} />;
   }
 
   if (!album) {

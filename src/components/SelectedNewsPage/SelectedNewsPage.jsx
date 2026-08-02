@@ -4,6 +4,7 @@ import axios from 'axios';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
+import PageLoader from '@/components/LoadingResults/PageLoader';
 import './SelectedNewsPage.css';
 
 // Универсальная функция для извлечения данных
@@ -22,6 +23,7 @@ const SelectedNewsPage = ({ slug }) => {
   const [article, setArticle] = useState(null);
   const [relatedNews, setRelatedNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [videoDone, setVideoDone] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const router = useRouter();
 
@@ -129,15 +131,8 @@ const SelectedNewsPage = ({ slug }) => {
     });
   };
 
-  if (loading) {
-    return (
-      <section className="selected_media_head" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="media-loader">
-          <div className="loader-spinner"></div>
-          <p style={{ color: '#fff', fontSize: '20px', marginTop: '20px' }}>Loading article...</p>
-        </div>
-      </section>
-    );
+  if (loading || !videoDone) {
+    return <PageLoader variant="detail" dataReady={!loading} onDone={() => setVideoDone(true)} />;
   }
 
   if (notFound || !article) {
