@@ -222,22 +222,25 @@ const DiscoverPage = () => {
           <div className="filter-count"><i className="fa-solid fa-users"></i><span>{filteredFeds.length} federations</span></div>
         </div>
         <div className="federations-grid">
-          {filteredFeds.slice(0, 12).map((fed) => (
-            <div className="federation-card" key={fed.id}>
-              <img 
-                src={getFlagUrl(fed.flag || fed.countryCode)} 
-                alt={fed.countryCode}
-                className="fed-flag-img"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-              <div className="fed-info">
-                <h3 className="fed-name">{fed.country}</h3>
-                <span className="fed-code">{fed.countryCode}</span>
-                <span className="fed-since">Since {fed.since}</span>
+          {filteredFeds.slice(0, 12).map((fed) => {
+            const raw = (fed.name || fed.country || '').trim();
+            const c = (fed.country || '').trim();
+            const fedName = c && raw.toUpperCase().startsWith(c.toUpperCase()) ? raw.slice(c.length).trim() : raw;
+            return (
+              <div className="federation-card" key={fed.id}>
+                <img
+                  src={getFlagUrl(fed.flag || fed.countryCode)}
+                  alt={fed.countryCode}
+                  className="fed-flag-img"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <div className="fed-info">
+                  <h3 className="fed-name">{fedName}</h3>
+                  <span className="fed-sub">{fed.country} · {fed.countryCode}</span>
+                </div>
               </div>
-              <span className="fed-region">{fed.region}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
