@@ -215,7 +215,7 @@ const MediaPage = () => {
       </section>
 
       {loading ? (
-      <section className="mp-news-content">
+      <section className="mp-news-content" style={{ paddingTop: 40 }}>
         <div className="mp-featured-container">
           {Array.from({ length: 2 }).map((_, i) => <div className="skeleton" key={i} style={{ aspectRatio: '687 / 386', borderRadius: 4 }}></div>)}
         </div>

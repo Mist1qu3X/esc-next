@@ -136,7 +136,7 @@ const MembersPage = () => {
       </section>
 
       {loading ? (
-        <section className="mp-grid-section">
+        <section className="mp-grid-section" style={{ paddingTop: 48 }}>
           <div className="mp-federations-grid">
             {Array.from({ length: 8 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 135, borderRadius: 4 }}></div>)}
           </div>
