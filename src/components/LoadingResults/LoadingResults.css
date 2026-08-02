@@ -82,11 +82,6 @@
     color: rgba(255, 255, 255, 0.35);
 }
 
-.lr-h-total,
-.lr-h-inner {
-    text-align: left;
-}
-
 .lr-body {
     position: relative;
 }
@@ -154,6 +149,14 @@
     animation: lr-pulse 1.4s ease-in-out infinite;
 }
 
+/* колонка вместо серий (ranking/records) */
+.lr-wide-box {
+    height: 22px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.08);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
 @keyframes lr-pulse {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 0.9; }
@@ -182,9 +185,112 @@
         grid-template-columns: 44px 1fr 64px;
         gap: 0 12px;
     }
-    /* на мобиле прячем серии/тоталы-скелеты, оставляем ранг + имя (как реальная адаптация таблиц) */
-    .lr-h-fed, .lr-h-series, .lr-h-inner,
-    .lr-fed, .lr-series, .lr-inner { display: none; }
-    .lr-h-total { text-align: right; }
+    /* на мобиле прячем средние колонки, оставляем ранг + имя + total (как реальная адаптация таблиц) */
+    .lr-h-2, .lr-h-3, .lr-h-5,
+    .lr-fed, .lr-series, .lr-wide-box, .lr-inner { display: none; }
+    .lr-h-4 { text-align: right; }
     .lr-total { justify-self: end; }
+}
+
+/* ================= Skeleton: список соревнований (Level 1) ================= */
+.sk-events {
+    width: 100%;
+    background: transparent;
+}
+
+.sk-filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.sk-filter-left {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.sk-filter-box {
+    display: inline-block;
+    height: 40px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.sk-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sk-event-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 24px 28px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    background: transparent;
+}
+
+.sk-ec-left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.sk-ec-tags {
+    display: flex;
+    gap: 8px;
+}
+
+.sk-chip {
+    display: inline-block;
+    height: 18px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.07);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.sk-ec-title {
+    height: 22px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.09);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.sk-ec-meta {
+    display: flex;
+    gap: 16px;
+}
+
+.sk-bar {
+    display: inline-block;
+    height: 12px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.06);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.sk-ec-right { flex-shrink: 0; }
+
+.sk-btn {
+    display: inline-block;
+    width: 90px;
+    height: 38px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+@media (max-width: 720px) {
+    .sk-event-card { padding: 18px; }
+    .sk-btn { width: 64px; }
 }

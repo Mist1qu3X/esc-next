@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
 import LoadingResults from '@/components/LoadingResults/LoadingResults';
+import SkeletonEvents from '@/components/LoadingResults/SkeletonEvents';
 import './ResultsRankingsPage.css';
 
 // Детерминированная генерация выстрелов (9.5–10.9) без Math.random.
@@ -130,6 +131,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [rankingsPage, setRankingsPage] = useState(1);
   const [recordsPage, setRecordsPage] = useState(1);
   const [loaded, setLoaded] = useState(false);
+  const [detailLoading, setDetailLoading] = useState(false); // короткая загрузка при входе на таблицу (3 уровень)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -166,6 +168,14 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     };
     fetchData();
   }, []);
+
+  // Короткая загрузка при входе на 3 уровень (таблица) — проигрываем анимацию-мишень
+  useEffect(() => {
+    if (!resultsLevel && !rankingsDetailLevel) return;
+    setDetailLoading(true);
+    const t = setTimeout(() => setDetailLoading(false), 700);
+    return () => clearTimeout(t);
+  }, [resultsLevel, rankingsDetailLevel, selectedDiscipline, activeTab, gender, rankingsGender]);
 
   const tabs = ['results', 'ranking', 'records'];
   const months = [
@@ -341,12 +351,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       </section>
       )}
 
-      {!loaded && <LoadingResults />}
-
-      {loaded && (<>
       {/* RESULTS TAB - Level 1 */}
       {activeTab === 'results' && !disciplineLevel && !resultsLevel && (
         <section className="results-events">
+          {!loaded ? <SkeletonEvents /> : (<>
           <div className="events-filter-bar">
             <div className="events-filter-left">
               <div className="epc-date-filter-wrapper">
@@ -394,6 +402,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               </div>
             ))}
           </div>
+          </>)}
         </section>
       )}
 
@@ -421,6 +430,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
       {/* RESULTS - Level 3 */}
       {activeTab === 'results' && resultsLevel && (
+        (detailLoading || !loaded) ? <LoadingResults variant="results" /> : (
         <section className="results-detail">
           <div className="results-detail-header"><span className="results-detail-line"></span><span className="results-detail-subtitle">ESC RESULTS</span></div>
           <h2 className="results-detail-title">{selectedDiscipline.toUpperCase()}{gender !== 'ALL' ? ` — ${gender}` : ''}</h2>
@@ -492,6 +502,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
           <Pager page={resultsPage} setPage={setResultsPage} total={displayResults.length} />
         </section>
+        )
       )}
 
       {/* RANKING TAB - Level 1 */}
@@ -514,6 +525,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
       {/* RANKINGS DETAIL - Level 2 */}
       {activeTab === 'ranking' && rankingsDetailLevel && (
+        (detailLoading || !loaded) ? <LoadingResults variant="ranking" /> : (
         <section className="rankings-detail">
           {rankingsFilterBar}
           <div className="rankings-detail-breadcrumbs"><span className="rd-breadcrumb" onClick={() => setRankingsDetailLevel(false)}>Rankings</span><span className="rd-breadcrumb-sep">›</span><span className="rd-breadcrumb-active">{selectedDiscipline}</span></div>
@@ -545,6 +557,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           </div>
           <Pager page={rankingsPage} setPage={setRankingsPage} total={displayRankings.length} />
         </section>
+        )
       )}
 
       {/* RECORDS TAB */}
@@ -595,6 +608,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
           {/* RECORDS — LEVEL 3: таблица рекордов */}
           {activeTab === 'records' && resultsLevel && (
+            (detailLoading || !loaded) ? <LoadingResults variant="records" /> : (
             <section className="results-detail">
               {rankingsFilterBar}
               <div className="results-detail-header"><span className="results-detail-line"></span><span className="results-detail-subtitle">ESC SEASON RECORDS</span></div>
@@ -633,10 +647,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               </div>
               <Pager page={recordsPage} setPage={setRecordsPage} total={displayRecords.length} />
             </section>
+            )
           )}
         </>
       )}
-      </>)}
     </>
   );
 };
