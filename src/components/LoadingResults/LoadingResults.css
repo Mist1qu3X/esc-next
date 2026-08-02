@@ -294,3 +294,94 @@
     .sk-event-card { padding: 18px; }
     .sk-btn { width: 64px; }
 }
+
+/* ================= Универсальный лоадер страницы (PageLoader) ================= */
+.pl-page {
+    position: relative;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+    min-height: 64vh;
+    background: transparent;
+}
+
+.pl-head { margin-bottom: 28px; }
+
+.pl-subline {
+    display: block;
+    width: 90px;
+    height: 10px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    margin-bottom: 14px;
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.pl-title {
+    display: block;
+    width: clamp(220px, 32vw, 380px);
+    height: 36px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.07);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.pl-body { position: relative; }
+
+.pl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.pl-list { display: flex; flex-direction: column; gap: 12px; }
+
+.pl-card {
+    display: block;
+    height: 180px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.pl-list .pl-card { height: 72px; }
+
+.pl-detail { display: flex; flex-direction: column; gap: 24px; }
+
+.pl-hero {
+    display: block;
+    height: clamp(220px, 34vw, 380px);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+.pl-lines { display: flex; flex-direction: column; gap: 14px; }
+
+.pl-line {
+    display: block;
+    height: 14px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    animation: lr-pulse 1.4s ease-in-out infinite;
+}
+
+/* анимация-мишень центрируется в верхней видимой части, поверх скелета */
+.pl-loader {
+    position: absolute;
+    top: 90px;
+    left: 0;
+    right: 0;
+    height: 460px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+@media (max-width: 720px) {
+    .pl-page { padding: 28px 16px 48px; min-height: 56vh; }
+    .pl-loader { height: 340px; }
+}

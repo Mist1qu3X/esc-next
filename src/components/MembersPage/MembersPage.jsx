@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
+import PageLoader from '@/components/LoadingResults/PageLoader';
 import './MembersPage.css';
 
 // Дефолтные статы (fallback, пока коллекция member-stats пуста)
@@ -20,6 +21,7 @@ const MembersPage = () => {
   const [activeRegion, setActiveRegion] = useState('All Regions');
   const [viewMode, setViewMode] = useState('grid');
   const [loading, setLoading] = useState(true);
+  const [videoDone, setVideoDone] = useState(false);
 
   const regions = ['All Regions', 'Central Europe', 'Southern Europe', 'Northern Europe', 'Western Europe', 'Eastern Europe'];
 
@@ -71,6 +73,10 @@ const MembersPage = () => {
     
     setFilteredFeds(result);
   }, [searchTerm, activeRegion, federations]);
+
+  if (loading || !videoDone) {
+    return <PageLoader variant="grid" dataReady={!loading} onDone={() => setVideoDone(true)} />;
+  }
 
   return (
     <>
@@ -136,13 +142,13 @@ const MembersPage = () => {
       </section>
 
       {/* GRID VIEW */}
-      {viewMode === 'grid' && (
-        <section className="mp-grid-section">
-          <div className="mp-showing-header">
-            <span className="mp-showing-label">Showing</span>
-            <span className="mp-showing-number">{filteredFeds.length}</span>
-            <span className="mp-showing-text">FEDERATIONS</span>
-          </div>
+        {viewMode === 'grid' && (
+          <section className="mp-grid-section">
+            <div className="mp-showing-header">
+              <span className="mp-showing-label">Showing</span>
+              <span className="mp-showing-number">{filteredFeds.length}</span>
+              <span className="mp-showing-text">FEDERATIONS</span>
+            </div>
           <div className="mp-federations-grid">
             {loading ? (
               <p style={{ textAlign: 'center', padding: '60px', color: 'rgba(255,255,255,0.5)', gridColumn: '1 / -1' }}>

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
+import PageLoader from '@/components/LoadingResults/PageLoader';
 import './DocumentsPage.css';
 
 const DOCS_PER_PAGE = 8;
@@ -17,6 +18,8 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const [years, setYears] = useState([]);
   const [expandedId, setExpandedId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [videoDone, setVideoDone] = useState(false);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -69,6 +72,8 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
         setYears(Array.from(yearMap.keys()).sort((a, b) => b - a));
       } catch (e) {
         console.error('Ошибка загрузки документов:', e);
+      } finally {
+        setLoading(false);
       }
     };
     fetchDocuments();
@@ -154,6 +159,10 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   };
 
   const toggleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
+
+  if (!embedded && (loading || !videoDone)) {
+    return <PageLoader variant="list" dataReady={!loading} onDone={() => setVideoDone(true)} />;
+  }
 
   return (
     <>
