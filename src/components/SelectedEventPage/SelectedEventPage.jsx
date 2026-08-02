@@ -50,6 +50,16 @@ const getImageUrl = (img) => {
   return null;
 };
 
+// иконка дисциплины (как на странице Results)
+const discIcon = (d = '') => {
+  const s = d.toLowerCase();
+  if (s.includes('rifle')) return '/img/Icon2.png';
+  if (s.includes('pistol')) return '/img/Icon1.png';
+  if (s.includes('moving') || s.includes('target')) return '/img/Icon3.png';
+  if (s.includes('shotgun') || s.includes('trap') || s.includes('skeet')) return '/img/Icon4.png';
+  return '/img/Icon1.png';
+};
+
 const SelectedEventPage = ({ slug }) => {
   const [event, setEvent] = useState(null);
   const [activeTab, setActiveTab] = useState('OVERVIEW');
@@ -289,6 +299,7 @@ const SelectedEventPage = ({ slug }) => {
                         return (
                           <div className="se-disc-card" key={disc} onClick={() => setResultDisc(disc)}>
                             <h3 className="se-disc-title"><span className="se-disc-main">{main}</span><span className="se-disc-sub">{sub} · {rows.length} athletes</span></h3>
+                            <div className="se-disc-icon"><img src={discIcon(main)} alt="" /></div>
                             <span className="se-disc-arrow">›</span>
                           </div>
                         );
