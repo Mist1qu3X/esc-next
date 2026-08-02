@@ -42,8 +42,12 @@ export default function LoadingResults({ variant = 'results', onDone = () => {} 
               <span className="lr-fed"></span>
               {v.series ? (
                 <span className="lr-series">
-                  <span className="lr-series-line">{Array.from({ length: 10 }).map((_, k) => <span className="lr-dash" key={k}></span>)}</span>
-                  <span className="lr-series-line lr-series-dots">{Array.from({ length: 10 }).map((_, k) => <span className="lr-dot" key={k}>•</span>)}</span>
+                  {Array.from({ length: 10 }).map((_, k) => (
+                    <span className="lr-pair" key={k}>
+                      <span className="lr-dash"></span>
+                      <span className="lr-dot">•</span>
+                    </span>
+                  ))}
                 </span>
               ) : (
                 <span className="lr-wide-box"></span>
