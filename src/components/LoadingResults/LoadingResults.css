@@ -398,3 +398,53 @@
     .pl-page { padding: 28px 16px 48px; min-height: 56vh; }
     .pl-loader { height: 340px; }
 }
+
+/* ================= Скелеты страниц Home / About ================= */
+.pg-skel { width: 100%; padding-bottom: 60px; }
+
+.pg-skel-hero {
+    width: 100%;
+    height: clamp(340px, 46vw, 560px);
+}
+
+.pg-skel-wrap {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+.pg-skel-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.pg-skel-card {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.pg-skel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.pg-skel-fed {
+    border-radius: 6px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 900px) {
+    .pg-skel-row,
+    .pg-skel-grid { grid-template-columns: 1fr 1fr; }
+    .pg-skel-wrap { padding: 0 16px; }
+}
+
+@media (max-width: 560px) {
+    .pg-skel-row,
+    .pg-skel-grid { grid-template-columns: 1fr; }
+}
