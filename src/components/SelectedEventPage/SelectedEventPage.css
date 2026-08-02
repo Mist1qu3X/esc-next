@@ -1480,7 +1480,8 @@
 /* На этих вкладках .event-content отдаёт всю ширину встроенной странице,
    у которой уже есть собственный контейнер (max-width 1440 + padding + margin auto). */
 .event-content:has(.event-content-full) {
-    max-width: none;
+    /* как на остальных вкладках: фон до 1440px, внутренний twist-container даёт свои отступы */
+    max-width: 1440px;
     padding: 0;
     background-color: #06101C;
 }
