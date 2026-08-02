@@ -218,7 +218,20 @@ const MediaPage = () => {
       <section className="mp-news-content" style={{ paddingTop: 40 }}>
         <div className="mp-section-label"><span className="mp-section-line mp-blue"></span><span className="mp-section-text">FEATURED</span></div>
         <div className="mp-featured-container" style={{ marginTop: 16 }}>
-          {Array.from({ length: 2 }).map((_, i) => <div className="skeleton" key={i} style={{ aspectRatio: '687 / 386', borderRadius: 4 }}></div>)}
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div className="mp-featured-card skeleton-card" key={i} style={{ aspectRatio: '687 / 386', position: 'relative', overflow: 'hidden', borderRadius: 4 }}>
+              <div className="skeleton" style={{ position: 'absolute', inset: 0 }}></div>
+              <div className="mp-featured-overlay" style={{ zIndex: 1 }}>
+                <span className="skel-bright" style={{ width: 100, height: 20 }}></span>
+                <div className="skel-bright" style={{ width: '78%', height: 26, marginTop: 14 }}></div>
+                <div className="skel-bright" style={{ width: '52%', height: 26, marginTop: 8 }}></div>
+                <div className="mp-featured-footer" style={{ marginTop: 18 }}>
+                  <span className="skel-bright" style={{ width: 90, height: 14 }}></span>
+                  <span className="skel-bright" style={{ width: 100, height: 14 }}></span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
         <div className="mp-section-label" style={{ marginTop: 40 }}><span className="mp-section-line mp-grey"></span><span className="mp-section-text mp-grey-text">LATEST NEWS</span></div>
         <div className="mp-latest-news-grid" style={{ marginTop: 16 }}>

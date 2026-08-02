@@ -47,3 +47,11 @@ body {
 .skeleton-card::after {
   display: none !important;
 }
+
+/* Плашка поверх «картинки» (например, текст на featured-карточке) — ярче, чтобы читалась на сером блоке. */
+.skel-bright {
+  display: block;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  animation: skel-pulse 1.4s ease-in-out infinite;
+}
