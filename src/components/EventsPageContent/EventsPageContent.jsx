@@ -5,8 +5,16 @@ import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import './EventsPageContent.css';
 
+// Фолбэк-вкладки фильтра, пока в Strapi не заданы свои (коллекция event-category)
+const DEFAULT_CATEGORIES = [
+    { label: 'COMPETITIONS', matchTypes: 'championship,competition,cup,league,grand prix,open,masters,memorial,final' },
+    { label: 'EDUCATION', matchTypes: 'education,course,seminar' },
+    { label: 'MEETINGS', matchTypes: 'meeting,assembly,congress,workshop' },
+];
+
 const EventsPageContent = () => {
     const [events, setEvents] = useState([]);
+    const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
     const [filterType, setFilterType] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterMonth, setFilterMonth] = useState('all');
@@ -86,10 +94,26 @@ const EventsPageContent = () => {
         fetchEvents();
     }, []);
 
+    // Вкладки фильтра из Strapi (коллекция event-category), иначе дефолтные
+    useEffect(() => {
+        axios.get(`${config.API_URL}/api/event-categories?sort=order:asc&pagination[pageSize]=50`)
+            .then((r) => {
+                const d = r.data?.data || [];
+                if (d.length) setCategories(d.map((c) => ({ label: c.label, matchTypes: c.matchTypes || '' })));
+            })
+            .catch(() => {});
+    }, []);
+
+    // Набор event.type для выбранной вкладки
+    const activeMatch = filterType === 'all'
+        ? null
+        : (categories.find((c) => c.label === filterType)?.matchTypes || '')
+            .split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
+
     // Фильтрация
     const filteredEvents = events.filter((event) => {
         const eventDate = parseDate(event.date);
-        const matchType = filterType === 'all' || event.type?.toLowerCase() === filterType;
+        const matchType = !activeMatch || activeMatch.some((m) => (event.type || '').toLowerCase().includes(m));
         const eventStatus = getEventStatus(event.date);
         const matchStatus = filterStatus === 'all' || eventStatus.toLowerCase() === filterStatus;
         const matchMonth = filterMonth === 'all' || eventDate.getMonth() === parseInt(filterMonth);
@@ -104,7 +128,7 @@ const EventsPageContent = () => {
         currentPage * eventsPerPage
     );
 
-    const types = ['all', 'championship', 'education', 'workshop'];
+    const types = ['all', ...categories.map((c) => c.label)];
     const statuses = ['all', 'upcoming', 'finished'];
     const months = [
         { value: '0', label: 'JAN' }, { value: '1', label: 'FEB' }, { value: '2', label: 'MAR' },
