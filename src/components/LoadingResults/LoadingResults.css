@@ -124,16 +124,17 @@
 
 .lr-series {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     padding-right: 22px;
 }
 
-.lr-series-line {
+/* пара: тире сверху, точка ровно под ним */
+.lr-pair {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
+    gap: 7px;
 }
 
 .lr-dash {
