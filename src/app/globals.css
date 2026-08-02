@@ -32,3 +32,18 @@ body {
 .skeleton > * {
   visibility: hidden !important;
 }
+
+/* Карточка-скелет: сохраняем раскладку настоящей карточки, но убираем её фон/картинку/градиент,
+   чтобы внутри показать плашки-заготовки (.skeleton). */
+.skeleton-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  background-image: none !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+  pointer-events: none;
+}
+
+.skeleton-card::before,
+.skeleton-card::after {
+  display: none !important;
+}
