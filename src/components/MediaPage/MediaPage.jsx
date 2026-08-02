@@ -192,7 +192,7 @@ const MediaPage = () => {
 
   // Новостная сетка: на теме — заголовок «NEWS» и ВСЕ новости темы; на ALL — «LATEST NEWS» (обрезка)
   const newsGridItems = themeView ? filteredNews : latestNews;
-  const newsGridHeading = themeView ? 'NEWS' : 'LATEST NEWS';
+  const newsGridHeading = themeView ? `ALL ${activeFilter}` : 'LATEST NEWS';
 
   return (
     <>
