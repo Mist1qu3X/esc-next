@@ -52,7 +52,6 @@ const getImageUrl = (img) => {
 
 const SelectedEventPage = ({ slug }) => {
   const [event, setEvent] = useState(null);
-  const [videoDone, setVideoDone] = useState(false);
   const [activeTab, setActiveTab] = useState('OVERVIEW');
   const [streams, setStreams] = useState([]);
   const [schedule, setSchedule] = useState([]);
@@ -98,8 +97,8 @@ const SelectedEventPage = ({ slug }) => {
     fetchExtra();
   }, [slug]);
 
-  if (!event || !videoDone) {
-    return <PageLoader variant="detail" dataReady={!!event} onDone={() => setVideoDone(true)} />;
+  if (!event) {
+    return <PageLoader variant="detail" />;
   }
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';

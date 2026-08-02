@@ -21,7 +21,6 @@ const MembersPage = () => {
   const [activeRegion, setActiveRegion] = useState('All Regions');
   const [viewMode, setViewMode] = useState('grid');
   const [loading, setLoading] = useState(true);
-  const [videoDone, setVideoDone] = useState(false);
 
   const regions = ['All Regions', 'Central Europe', 'Southern Europe', 'Northern Europe', 'Western Europe', 'Eastern Europe'];
 
@@ -73,10 +72,6 @@ const MembersPage = () => {
     
     setFilteredFeds(result);
   }, [searchTerm, activeRegion, federations]);
-
-  if (loading || !videoDone) {
-    return <PageLoader variant="grid" dataReady={!loading} onDone={() => setVideoDone(true)} />;
-  }
 
   return (
     <>
@@ -141,6 +136,7 @@ const MembersPage = () => {
         </div>
       </section>
 
+      {loading ? <PageLoader variant="grid" withHeader={false} /> : (<>
       {/* GRID VIEW */}
         {viewMode === 'grid' && (
           <section className="mp-grid-section">
@@ -233,6 +229,7 @@ const MembersPage = () => {
           </div>
         </section>
       )}
+      </>)}
     </>
   );
 };

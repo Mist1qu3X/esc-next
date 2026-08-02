@@ -16,7 +16,6 @@ const DEFAULT_CATEGORIES = [
 const EventsPageContent = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [videoDone, setVideoDone] = useState(false);
     const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
     const [filterType, setFilterType] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
@@ -194,10 +193,6 @@ const EventsPageContent = () => {
         ? 'DATE ▼'
         : `${currentMonthLabel} ${currentYearLabel} ▼`;
 
-    if (loading || !videoDone) {
-        return <PageLoader variant="grid" dataReady={!loading} onDone={() => setVideoDone(true)} />;
-    }
-
     return (
         <>
             {/* ========== EVENTS CALENDAR ========== */}
@@ -277,6 +272,7 @@ const EventsPageContent = () => {
                 </div>
             </section>
 
+            {loading ? <PageLoader variant="grid" withHeader={false} /> : (<>
             {/* ========== FEATURED EVENTS ========== */}
             {featuredEvents.length > 0 && (
                 <section className="epc-featured-events">
@@ -441,6 +437,7 @@ const EventsPageContent = () => {
                     </div>
                 )}
             </section>
+            </>)}
         </>
     );
 };

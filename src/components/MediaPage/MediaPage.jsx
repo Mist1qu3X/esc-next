@@ -28,7 +28,6 @@ const MediaPage = () => {
   const [spotlights, setSpotlights] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [videoDone, setVideoDone] = useState(false); // дать анимации-мишени доиграть до конца
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
   
   const router = useRouter();
@@ -189,10 +188,6 @@ const MediaPage = () => {
   const showPressReleases = activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES';
   const showPhotos = activeFilter === 'PHOTO';
 
-  if (loading || !videoDone) {
-    return <PageLoader variant="grid" dataReady={!loading} onDone={() => setVideoDone(true)} />;
-  }
-
   return (
     <>
       <section className="mp-media-header">
@@ -220,6 +215,7 @@ const MediaPage = () => {
         </div>
       </section>
 
+      {loading ? <PageLoader variant="grid" withHeader={false} /> : (
       <section className="mp-news-content">
         {/* FEATURED */}
         {showFeatured && (
@@ -475,6 +471,7 @@ const MediaPage = () => {
           </div>
         )}
       </section>
+      )}
 
       <StreamPlayer stream={playing} onClose={() => setPlaying(null)} />
     </>

@@ -306,6 +306,9 @@
     background: transparent;
 }
 
+/* когда скелет ставится под настоящую шапку — меньше верхний отступ */
+.pl-nohead { padding-top: 20px; min-height: 48vh; }
+
 .pl-head { margin-bottom: 28px; }
 
 .pl-subline {
