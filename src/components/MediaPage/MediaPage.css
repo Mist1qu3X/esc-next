@@ -760,6 +760,16 @@
     color: #FF4444;
 }
 
+/* Нет активного эфира — приглушаем заголовок (не «LIVE NOW», а «STREAMS») */
+.mp-live-header.is-idle .mp-live-dot {
+    background: rgba(255, 255, 255, 0.35);
+    animation: none;
+}
+
+.mp-live-header.is-idle .mp-live-text {
+    color: rgba(255, 255, 255, 0.6);
+}
+
 .mp-live-streams {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
@@ -899,6 +909,11 @@
     background: #ffffff;
     border-radius: 50%;
     flex-shrink: 0;
+}
+
+/* UPCOMING — не эфир: янтарный статус вместо красного, без метрик рядом */
+.mp-live-pill.is-upcoming .mp-live-pill-status {
+    background: #C9832B;
 }
 
 .mp-live-pill-text {

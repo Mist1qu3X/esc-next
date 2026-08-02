@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import DocumentsPage from '@/components/DocumentsPage/DocumentsPage';
+import StreamPlayer, { canEmbed } from '@/components/StreamPlayer/StreamPlayer';
 import './SelectedEventPage.css';
 
 // Расписание ALL EVENTS (пока нет отдельного поля/коллекции — демо-данные)
@@ -56,6 +57,7 @@ const SelectedEventPage = ({ slug }) => {
   const [eventResults, setEventResults] = useState([]);
   const [eventPhotos, setEventPhotos] = useState([]);
   const [resultDisc, setResultDisc] = useState(null);
+  const [playing, setPlaying] = useState(null); // стрим во встроенном плеере
   const router = useRouter();
 
   // При смене вкладки/события сбрасываем выбранную дисциплину в RESULTS
@@ -132,10 +134,10 @@ const SelectedEventPage = ({ slug }) => {
 
   const platformClass = (p) => ((p || '').toLowerCase() === 'facebook' ? 'facebook' : 'youtube');
 
-  // LIVE STREAM: twitch убран
-  // Только реально идущие эфиры — upcoming/запланированные не показываем
-  const liveStreams = streams.filter((s) => (s.platform || '').toLowerCase() !== 'twitch' && (s.streamStatus || '').toLowerCase() === 'live').slice(0, 3);
-  const anyLive = liveStreams.length > 0;
+  // LIVE STREAM: twitch убран. Показываем эфиры (live + upcoming); метрики — только у live.
+  const liveStreams = streams.filter((s) => (s.platform || '').toLowerCase() !== 'twitch').slice(0, 3);
+  const anyLive = liveStreams.some((s) => (s.streamStatus || '').toLowerCase() === 'live');
+  const openStream = (s) => (canEmbed(s) ? setPlaying(s) : s.url && window.open(s.url, '_blank'));
 
   const liveStreamBlock = (
     <div className="sidebar-block live-stream-block">
@@ -152,8 +154,10 @@ const SelectedEventPage = ({ slug }) => {
       </div>
       {liveStreams.length > 0 ? (
         <div className="live-platforms">
-          {liveStreams.map((s) => (
-            <div key={s.id} className={`live-platform-card ${platformClass(s.platform)}-card`} onClick={() => s.url && window.open(s.url, '_blank')}>
+          {liveStreams.map((s) => {
+            const isLive = (s.streamStatus || '').toLowerCase() === 'live';
+            return (
+            <div key={s.id} className={`live-platform-card ${platformClass(s.platform)}-card`} onClick={() => openStream(s)}>
               <div className={`platform-icon ${platformClass(s.platform)}-icon`}>
                 <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
               </div>
@@ -161,10 +165,14 @@ const SelectedEventPage = ({ slug }) => {
                 <span className="platform-name">{platformClass(s.platform).toUpperCase()}</span>
                 <span className="platform-stream">{s.title}</span>
               </div>
-              <span className="watching-text">watching</span>
-              <button className="platform-go-btn"><i className="fa-solid fa-arrow-up-right-from-square"></i></button>
+              {/* «watching» — только у реального эфира; у upcoming это нелогично */}
+              {isLive
+                ? <span className="watching-text">{s.views ? `${s.views} watching` : 'live'}</span>
+                : <span className="watching-text watching-upcoming">upcoming</span>}
+              <button className="platform-go-btn"><i className="fa-solid fa-play"></i></button>
             </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="stream-scheduled">
@@ -317,19 +325,29 @@ const SelectedEventPage = ({ slug }) => {
                 <p className="event-description">Live streams, highlights and media coverage for {event.name}.</p>
                 {liveStreams.length > 0 ? (
                   <div className="event-media-streams">
-                    {liveStreams.map((s) => (
-                      <div key={s.id} className={`event-media-card ${platformClass(s.platform)}-card`} style={{ backgroundImage: `url(${getImageUrl(s.thumbnail)})` }} onClick={() => s.url && window.open(s.url, '_blank')}>
+                    {liveStreams.map((s) => {
+                      const isLive = (s.streamStatus || '').toLowerCase() === 'live';
+                      return (
+                      <div key={s.id} className={`event-media-card ${platformClass(s.platform)}-card`} style={{ backgroundImage: `url(${getImageUrl(s.thumbnail)})` }} onClick={() => openStream(s)}>
                         <div className="event-media-overlay"></div>
                         <div className="event-media-badge">
                           <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
                           <span>{platformClass(s.platform).toUpperCase()}</span>
                         </div>
+                        <span className={`event-media-status ${isLive ? 'is-live' : 'is-upcoming'}`}>
+                          <span className="event-media-status-dot"></span>{isLive ? 'LIVE' : 'UPCOMING'}
+                        </span>
+                        <div className="event-media-play"><i className="fa-solid fa-play"></i></div>
                         <div className="event-media-info">
                           <span className="event-media-title">{s.title}</span>
-                          <span className="event-media-meta">{s.views} watching</span>
+                          {/* watching — только у эфира; у upcoming показываем нейтральный статус */}
+                          <span className="event-media-meta">
+                            {isLive ? (s.views ? `${s.views} watching` : 'Live now') : 'Goes live at event start'}
+                          </span>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
@@ -397,11 +415,13 @@ const SelectedEventPage = ({ slug }) => {
               <div className="contact-item-sidebar"><i className="fa-regular fa-envelope"></i><a href="mailto:technical@esc-shooting.eu">technical@esc-shooting.eu</a></div>
             </div>
 
-            {anyLive && liveStreamBlock}
+            {liveStreamBlock}
           </aside>
           )}
         </div>
       </section>
+
+      <StreamPlayer stream={playing} onClose={() => setPlaying(null)} />
     </>
   );
 };
