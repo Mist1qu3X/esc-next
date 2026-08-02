@@ -1358,6 +1358,22 @@
     background: linear-gradient(0deg, rgba(6, 16, 28, 0.9) 0%, rgba(6, 16, 28, 0.2) 60%, transparent 100%);
 }
 
+/* Бренд-обложка, когда своего превью нет (напр. Facebook — публичного кадра нет) */
+.event-media-fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.event-media-fallback i {
+    font-size: 72px;
+    color: rgba(255, 255, 255, 0.14);
+}
+
 .event-media-badge {
     position: absolute;
     top: 14px;

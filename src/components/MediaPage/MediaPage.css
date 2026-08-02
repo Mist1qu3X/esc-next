@@ -833,6 +833,22 @@
     pointer-events: none;
 }
 
+/* Бренд-обложка, когда своего превью нет (напр. Facebook — публичного кадра нет) */
+.mp-live-cover-fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.mp-live-cover-fallback i {
+    font-size: 128px;
+    color: rgba(255, 255, 255, 0.13);
+}
+
 .mp-live-card-top {
     display: flex;
     justify-content: space-between;

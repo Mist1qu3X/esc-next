@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import DocumentsPage from '@/components/DocumentsPage/DocumentsPage';
-import StreamPlayer, { canEmbed } from '@/components/StreamPlayer/StreamPlayer';
+import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import PageLoader from '@/components/LoadingResults/PageLoader';
 import './SelectedEventPage.css';
 
@@ -182,7 +182,6 @@ const SelectedEventPage = ({ slug }) => {
                 <span className="platform-name">{platformClass(s.platform).toUpperCase()}</span>
                 <span className="platform-stream">{s.title}</span>
               </div>
-              <span className="watching-text">watching</span>
               <button className="platform-go-btn"><i className="fa-solid fa-arrow-up-right-from-square"></i></button>
             </div>
           ))}
@@ -341,8 +340,15 @@ const SelectedEventPage = ({ slug }) => {
                   <div className="event-media-streams">
                     {liveStreams.map((s) => {
                       const isLive = (s.streamStatus || '').toLowerCase() === 'live';
+                      // превью: своё залитое, иначе стоп-кадр самого стрима (YouTube)
+                      const cover = getImageUrl(s.thumbnail) || ytThumb(s.url);
                       return (
-                      <div key={s.id} className={`event-media-card ${platformClass(s.platform)}-card`} style={{ backgroundImage: `url(${getImageUrl(s.thumbnail)})` }} onClick={() => openStream(s)}>
+                      <div key={s.id} className={`event-media-card ${platformClass(s.platform)}-card`} style={cover ? { backgroundImage: `url(${cover})` } : undefined} onClick={() => openStream(s)}>
+                        {!cover && (
+                          <div className="event-media-fallback" aria-hidden="true">
+                            <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
+                          </div>
+                        )}
                         <div className="event-media-overlay"></div>
                         <div className="event-media-badge">
                           <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
@@ -354,9 +360,8 @@ const SelectedEventPage = ({ slug }) => {
                         <div className="event-media-play"><i className="fa-solid fa-play"></i></div>
                         <div className="event-media-info">
                           <span className="event-media-title">{s.title}</span>
-                          {/* watching — только у эфира; у upcoming показываем нейтральный статус */}
                           <span className="event-media-meta">
-                            {isLive ? (s.views ? `${s.views} watching` : 'Live now') : 'Goes live at event start'}
+                            {isLive ? 'Live now' : 'Goes live at event start'}
                           </span>
                         </div>
                       </div>

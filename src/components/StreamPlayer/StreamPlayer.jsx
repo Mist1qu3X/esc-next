@@ -92,17 +92,6 @@ export default function StreamPlayer({ stream, onClose }) {
             <span className="sp-badge-dot"></span>{live ? 'LIVE' : 'UPCOMING'}
           </span>
           <span className="sp-title">{stream.title}</span>
-          {live && (
-            <span className="sp-stats">
-              {stream.views && (
-                <span className="sp-stat"><i className="fa-regular fa-eye"></i> {stream.views}</span>
-              )}
-              <span className="sp-stat">
-                <i className="fa-regular fa-clock"></i>{' '}
-                {stream.duration ? stream.duration : <LiveElapsed since={stream.publishedAt || stream.createdAt} />}
-              </span>
-            </span>
-          )}
         </div>
       </div>
     </div>

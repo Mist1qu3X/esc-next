@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
-import StreamPlayer, { canEmbed, ytThumb, LiveElapsed } from '@/components/StreamPlayer/StreamPlayer';
+import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import './MediaPage.css';
 
 // Универсальная функция для извлечения данных из любого ответа Strapi
@@ -437,6 +437,11 @@ const MediaPage = () => {
                 const cover = getImageUrl(s.thumbnail) || ytThumb(s.url);
                 return (
                 <div key={s.id} className={`mp-live-card-main ${platformClass(s.platform)}`} style={cover ? { backgroundImage: `url(${cover})` } : undefined}>
+                  {!cover && (
+                    <div className="mp-live-cover-fallback" aria-hidden="true">
+                      <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
+                    </div>
+                  )}
                   <div className="mp-live-card-top">
                     <div className={`mp-platform-badge ${platformClass(s.platform)}`}>
                       <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
@@ -447,16 +452,6 @@ const MediaPage = () => {
                         <span className="mp-live-pill-dot"></span>
                         <span className="mp-live-pill-text">{isLive ? 'LIVE' : 'UPCOMING'}</span>
                       </div>
-                      {/* Зрители + живой хронометраж — только у реального эфира */}
-                      {isLive && (
-                        <div className="mp-live-pill-stats">
-                          {s.views && (<><i className="fa-regular fa-eye"></i><span className="mp-views-count">{s.views}</span></>)}
-                          {s.views && <span className="mp-stat-separator">·</span>}
-                          <span className="mp-duration">
-                            {s.duration ? s.duration : <LiveElapsed since={s.publishedAt || s.createdAt} />}
-                          </span>
-                        </div>
-                      )}
                     </div>
                   </div>
                   <div className="mp-live-play-btn" onClick={open}>
