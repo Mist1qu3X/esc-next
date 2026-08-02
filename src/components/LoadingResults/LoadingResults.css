@@ -127,11 +127,13 @@
     flex-direction: column;
     gap: 12px;
     justify-content: center;
+    padding-right: 22px;
 }
 
 .lr-series-line {
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .lr-dash {
@@ -139,6 +141,13 @@
     height: 2px;
     border-radius: 2px;
     background: rgba(255, 255, 255, 0.1);
+}
+
+/* нижний ряд — точки, как в реальной таблице ({s || '•'}) */
+.lr-dot {
+    color: rgba(255, 255, 255, 0.22);
+    font-size: 13px;
+    line-height: 1;
 }
 
 .lr-total {
