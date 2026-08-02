@@ -166,13 +166,13 @@ const MediaPage = () => {
     return 'youtube';
   };
 
-  // Всегда показываем YouTube + Facebook (как на макете).
-  // Если чего-то не хватает — добираем из оставшихся стримов.
-  const youtubeStream = streams.find((s) => normPlatform(s.platform) === 'youtube');
-  const facebookStream = streams.find((s) => normPlatform(s.platform) === 'facebook');
+  // Показываем только реально ЛАЙВ-стримы (upcoming/запланированные не выводим).
+  const liveNow = streams.filter((s) => (s.streamStatus || '').toLowerCase() === 'live');
+  const youtubeStream = liveNow.find((s) => normPlatform(s.platform) === 'youtube');
+  const facebookStream = liveNow.find((s) => normPlatform(s.platform) === 'facebook');
   let liveStreams = [youtubeStream, facebookStream].filter(Boolean);
   if (liveStreams.length < 2) {
-    const rest = streams.filter((s) => !liveStreams.includes(s));
+    const rest = liveNow.filter((s) => !liveStreams.includes(s));
     liveStreams = [...liveStreams, ...rest].slice(0, 2);
   }
 
@@ -181,7 +181,7 @@ const MediaPage = () => {
   const showLatestNews = activeFilter === 'ALL' || ['NEWS', 'FEATURES', 'INTERVIEWS'].includes(activeFilter);
   const showVideos = activeFilter === 'ALL';          // превью-ряд видео на ALL
   const showVideoGallery = activeFilter === 'VIDEOS'; // отдельная галерея видео (как PHOTO)
-  const showLiveStreams = activeFilter === 'ALL';     // стримы только на ALL
+  const showLiveStreams = activeFilter === 'ALL' && liveStreams.length > 0; // только если реально идёт эфир
   const showPressReleases = activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES';
   const showPhotos = activeFilter === 'PHOTO';
 

@@ -133,8 +133,9 @@ const SelectedEventPage = ({ slug }) => {
   const platformClass = (p) => ((p || '').toLowerCase() === 'facebook' ? 'facebook' : 'youtube');
 
   // LIVE STREAM: twitch убран
-  const liveStreams = streams.filter((s) => (s.platform || '').toLowerCase() !== 'twitch').slice(0, 3);
-  const anyLive = liveStreams.some((s) => (s.streamStatus || '').toLowerCase() === 'live');
+  // Только реально идущие эфиры — upcoming/запланированные не показываем
+  const liveStreams = streams.filter((s) => (s.platform || '').toLowerCase() !== 'twitch' && (s.streamStatus || '').toLowerCase() === 'live').slice(0, 3);
+  const anyLive = liveStreams.length > 0;
 
   const liveStreamBlock = (
     <div className="sidebar-block live-stream-block">
@@ -396,7 +397,7 @@ const SelectedEventPage = ({ slug }) => {
               <div className="contact-item-sidebar"><i className="fa-regular fa-envelope"></i><a href="mailto:technical@esc-shooting.eu">technical@esc-shooting.eu</a></div>
             </div>
 
-            {liveStreamBlock}
+            {anyLive && liveStreamBlock}
           </aside>
           )}
         </div>
