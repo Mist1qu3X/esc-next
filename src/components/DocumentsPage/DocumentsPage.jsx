@@ -190,11 +190,38 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
       {(!embedded && loading) ? (
       <section className="twist-container">
         <aside className="twist-sidebar">
-          {Array.from({ length: 6 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 34, borderRadius: 6, marginBottom: 10 }}></div>)}
+          <div className="sidebar-categories">
+            <p className="sidebar-heading">CATEGORIES</p>
+            <div className="category-list">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div className="category-item" key={i} style={{ pointerEvents: 'none' }}>
+                  <span className="skeleton" style={{ width: `${52 + (i % 3) * 12}%`, height: 13, borderRadius: 3, display: 'inline-block' }}></span>
+                  <span className="skeleton" style={{ width: 20, height: 13, borderRadius: 3, display: 'inline-block' }}></span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="sidebar-year">
+            <p className="sidebar-heading">YEAR</p>
+            <div className="year-buttons">
+              {Array.from({ length: 5 }).map((_, i) => <span className="skeleton" key={i} style={{ width: 48, height: 30, borderRadius: 4, display: 'inline-block' }}></span>)}
+            </div>
+          </div>
         </aside>
         <div className="twist-main">
+          <div className="docs-top">
+            <span className="skeleton" style={{ width: 120, height: 14, borderRadius: 3, display: 'inline-block' }}></span>
+            <span className="skeleton" style={{ width: 140, height: 34, borderRadius: 4, display: 'inline-block' }}></span>
+          </div>
           <div className="docs-accordion">
-            {Array.from({ length: 7 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 64, borderRadius: 8, marginBottom: 10 }}></div>)}
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div className="docs-acc-item" key={i} style={{ pointerEvents: 'none' }}>
+                <div className="docs-acc-header">
+                  <span className="skeleton" style={{ width: `${45 + (i % 4) * 10}%`, height: 16, borderRadius: 3, display: 'inline-block' }}></span>
+                  <span className="skeleton" style={{ width: 16, height: 16, borderRadius: 3, display: 'inline-block' }}></span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
