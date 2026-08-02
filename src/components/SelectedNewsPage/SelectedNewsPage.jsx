@@ -23,7 +23,6 @@ const SelectedNewsPage = ({ slug }) => {
   const [article, setArticle] = useState(null);
   const [relatedNews, setRelatedNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [videoDone, setVideoDone] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const router = useRouter();
 
@@ -131,8 +130,8 @@ const SelectedNewsPage = ({ slug }) => {
     });
   };
 
-  if (loading || !videoDone) {
-    return <PageLoader variant="detail" dataReady={!loading} onDone={() => setVideoDone(true)} />;
+  if (loading) {
+    return <PageLoader variant="detail" />;
   }
 
   if (notFound || !article) {

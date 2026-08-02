@@ -1,30 +1,18 @@
 'use client';
 
-import { useRef } from 'react';
 import './LoadingResults.css';
 
-// Универсальный лоадер страницы: скелет контента + анимация-мишень по центру (без фона).
-// Анимация всегда доигрывает до конца: пока данные не готовы (dataReady=false) — крутится в петле,
-// как только готовы — доигрывает текущий цикл и вызывает onDone (страница показывает контент).
-export default function PageLoader({ variant = 'grid', rows = 8, dataReady = true, onDone = () => {} }) {
-  const readyRef = useRef(dataReady);
-  readyRef.current = dataReady;
-  const videoRef = useRef(null);
-
-  const handleEnded = () => {
-    if (readyRef.current) {
-      onDone();
-    } else if (videoRef.current) {
-      try { videoRef.current.currentTime = 0; videoRef.current.play(); } catch (_) { /* noop */ }
-    }
-  };
-
+// Скелет загрузки страницы БЕЗ анимации (крутилка-мишень живёт только в Results).
+// withHeader=false — когда ставим скелет под настоящую блок-шапку страницы.
+export default function PageLoader({ variant = 'grid', rows = 8, withHeader = true }) {
   return (
-    <div className="pl-page" aria-busy="true" aria-label="Loading">
-      <div className="pl-head">
-        <span className="pl-subline"></span>
-        <span className="pl-title"></span>
-      </div>
+    <div className={`pl-page ${withHeader ? '' : 'pl-nohead'}`} aria-busy="true" aria-label="Loading">
+      {withHeader && (
+        <div className="pl-head">
+          <span className="pl-subline"></span>
+          <span className="pl-title"></span>
+        </div>
+      )}
 
       <div className={`pl-body pl-${variant}`}>
         {variant === 'detail' ? (
@@ -40,20 +28,6 @@ export default function PageLoader({ variant = 'grid', rows = 8, dataReady = tru
         ) : (
           Array.from({ length: rows }).map((_, i) => <span className="pl-card" key={i}></span>)
         )}
-      </div>
-
-      {/* анимация-мишень по центру, без фона (тёмный фон видео убираем блендом) */}
-      <div className="pl-loader">
-        <video
-          ref={videoRef}
-          className="lr-video"
-          src="/img/target-loader.mp4"
-          autoPlay
-          muted
-          playsInline
-          aria-hidden="true"
-          onEnded={handleEnded}
-        ></video>
       </div>
     </div>
   );

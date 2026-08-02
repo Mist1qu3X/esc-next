@@ -30,7 +30,6 @@ const SelectedVideoPage = ({ id }) => {
   const [video, setVideo] = useState(null);
   const [more, setMore] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [videoDone, setVideoDone] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -53,8 +52,8 @@ const SelectedVideoPage = ({ id }) => {
     fetchData();
   }, [id]);
 
-  if (loading || !videoDone) {
-    return <PageLoader variant="detail" dataReady={!loading} onDone={() => setVideoDone(true)} />;
+  if (loading) {
+    return <PageLoader variant="detail" />;
   }
 
   if (!video) {

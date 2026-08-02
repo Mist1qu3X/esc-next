@@ -19,7 +19,6 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const [expandedId, setExpandedId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [videoDone, setVideoDone] = useState(false);
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -160,10 +159,6 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
 
   const toggleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
-  if (!embedded && (loading || !videoDone)) {
-    return <PageLoader variant="list" dataReady={!loading} onDone={() => setVideoDone(true)} />;
-  }
-
   return (
     <>
       {/* ========== DOCUMENTS HERO ========== */}
@@ -193,6 +188,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
       )}
 
       {/* ========== MAIN CONTENT ========== */}
+      {(!embedded && loading) ? <PageLoader variant="list" withHeader={false} /> : (
       <section className="twist-container">
         {/* Левый сайдбар */}
         <aside className="twist-sidebar">
@@ -331,6 +327,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
           )}
         </div>
       </section>
+      )}
     </>
   );
 };

@@ -17,7 +17,6 @@ const getImageUrl = (img) => {
 const PhotoAlbumPage = ({ slug }) => {
   const [album, setAlbum] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [videoDone, setVideoDone] = useState(false);
   const [selected, setSelected] = useState(0);
   const trackRef = useRef(null);
   const router = useRouter();
@@ -66,8 +65,8 @@ const PhotoAlbumPage = ({ slug }) => {
     setSelected((prev) => (prev !== idx ? idx : prev));
   };
 
-  if (loading || !videoDone) {
-    return <PageLoader variant="detail" dataReady={!loading} onDone={() => setVideoDone(true)} />;
+  if (loading) {
+    return <PageLoader variant="detail" />;
   }
 
   if (!album) {
