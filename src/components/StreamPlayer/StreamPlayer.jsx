@@ -1,11 +1,35 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import './StreamPlayer.css';
 
 // Достаём videoId из разных форм YouTube-ссылки
 function ytId(url) {
   const m = url.match(/(?:youtube\.com\/(?:watch\?v=|live\/|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
   return m ? m[1] : null;
+}
+
+// Превью-фолбэк: если своё превью не залито — у YouTube берём стоп-кадр самого видео
+export function ytThumb(url) {
+  const id = ytId(url || '');
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+}
+
+// Живой хронометраж эфира: тикает раз в секунду от момента since (H:MM:SS / M:SS)
+export function LiveElapsed({ since }) {
+  const [, force] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => force((n) => n + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+  if (!since) return null;
+  let sec = Math.floor((Date.now() - new Date(since).getTime()) / 1000);
+  if (!Number.isFinite(sec) || sec < 0) sec = 0;
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  const p = (n) => String(n).padStart(2, '0');
+  return <>{h > 0 ? `${h}:${p(m)}:${p(s)}` : `${m}:${p(s)}`}</>;
 }
 
 // Строим embed-URL. YouTube-плеер сам показывает эфир/премьеру/запись — «статус» подтягивается автоматически.
@@ -68,6 +92,17 @@ export default function StreamPlayer({ stream, onClose }) {
             <span className="sp-badge-dot"></span>{live ? 'LIVE' : 'UPCOMING'}
           </span>
           <span className="sp-title">{stream.title}</span>
+          {live && (
+            <span className="sp-stats">
+              {stream.views && (
+                <span className="sp-stat"><i className="fa-regular fa-eye"></i> {stream.views}</span>
+              )}
+              <span className="sp-stat">
+                <i className="fa-regular fa-clock"></i>{' '}
+                {stream.duration ? stream.duration : <LiveElapsed since={stream.publishedAt || stream.createdAt} />}
+              </span>
+            </span>
+          )}
         </div>
       </div>
     </div>
