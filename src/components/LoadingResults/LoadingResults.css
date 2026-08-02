@@ -399,19 +399,46 @@
     .pl-loader { height: 340px; }
 }
 
-/* ================= Скелеты страниц Home / About ================= */
+/* ============ Скелеты страниц Home / About (в контейнере 1440) ============ */
 .pg-skel { width: 100%; padding-bottom: 60px; }
-
-.pg-skel-hero {
-    width: 100%;
-    height: clamp(340px, 46vw, 560px);
-}
 
 .pg-skel-wrap {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 0 32px;
+    padding: 24px 32px 0;
+}
+
+.pg-skel-hero {
+    position: relative;
+    width: 100%;
+    height: clamp(320px, 40vw, 480px);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.pg-skel-hero-inner {
+    position: absolute;
+    left: 32px;
+    right: 32px;
+    bottom: 32px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.pg-skel-panel {
+    margin-top: 24px;
+    border-radius: 10px;
+    padding: 28px;
+}
+
+.pg-skel-panel-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
 .pg-skel-row {
@@ -420,9 +447,23 @@
     gap: 16px;
 }
 
-.pg-skel-card {
-    border-radius: 8px;
-    overflow: hidden;
+.pg-skel-card { border-radius: 8px; overflow: hidden; }
+
+.pg-skel-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.pg-skel-stat { border-radius: 8px; padding: 20px; }
+
+.pg-skel-sec-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 48px;
 }
 
 .pg-skel-grid {
@@ -433,18 +474,23 @@
 
 .pg-skel-fed {
     border-radius: 6px;
-    padding: 22px;
+    padding: 16px;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    height: 88px;
 }
 
 @media (max-width: 900px) {
     .pg-skel-row,
-    .pg-skel-grid { grid-template-columns: 1fr 1fr; }
-    .pg-skel-wrap { padding: 0 16px; }
+    .pg-skel-grid,
+    .pg-skel-stats { grid-template-columns: 1fr 1fr; }
+    .pg-skel-wrap { padding: 16px 16px 0; }
+    .pg-skel-hero-inner { left: 20px; right: 20px; bottom: 20px; }
 }
 
 @media (max-width: 560px) {
     .pg-skel-row,
-    .pg-skel-grid { grid-template-columns: 1fr; }
+    .pg-skel-grid,
+    .pg-skel-stats { grid-template-columns: 1fr; }
 }
