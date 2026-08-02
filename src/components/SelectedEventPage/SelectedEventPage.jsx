@@ -154,10 +154,8 @@ const SelectedEventPage = ({ slug }) => {
       </div>
       {liveStreams.length > 0 ? (
         <div className="live-platforms">
-          {liveStreams.map((s) => {
-            const isLive = (s.streamStatus || '').toLowerCase() === 'live';
-            return (
-            <div key={s.id} className={`live-platform-card ${platformClass(s.platform)}-card`} onClick={() => openStream(s)}>
+          {liveStreams.map((s) => (
+            <div key={s.id} className={`live-platform-card ${platformClass(s.platform)}-card`} onClick={() => s.url && window.open(s.url, '_blank')}>
               <div className={`platform-icon ${platformClass(s.platform)}-icon`}>
                 <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
               </div>
@@ -165,14 +163,10 @@ const SelectedEventPage = ({ slug }) => {
                 <span className="platform-name">{platformClass(s.platform).toUpperCase()}</span>
                 <span className="platform-stream">{s.title}</span>
               </div>
-              {/* «watching» — только у реального эфира; у upcoming это нелогично */}
-              {isLive
-                ? <span className="watching-text">{s.views ? `${s.views} watching` : 'live'}</span>
-                : <span className="watching-text watching-upcoming">upcoming</span>}
-              <button className="platform-go-btn"><i className="fa-solid fa-play"></i></button>
+              <span className="watching-text">watching</span>
+              <button className="platform-go-btn"><i className="fa-solid fa-arrow-up-right-from-square"></i></button>
             </div>
-            );
-          })}
+          ))}
         </div>
       ) : (
         <div className="stream-scheduled">
