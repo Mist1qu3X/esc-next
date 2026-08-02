@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
-import PageLoader from '@/components/LoadingResults/PageLoader';
 import './EventsPageContent.css';
 
 // Фолбэк-вкладки фильтра, пока в Strapi не заданы свои (коллекция event-category)
@@ -272,7 +271,20 @@ const EventsPageContent = () => {
                 </div>
             </section>
 
-            {loading ? <PageLoader variant="grid" withHeader={false} /> : (<>
+            {loading ? (
+              <>
+                <section className="epc-featured-events">
+                  <div className="epc-featured-container">
+                    {Array.from({ length: 4 }).map((_, i) => <div className="epc-featured-card skeleton" key={i} style={{ minHeight: 340 }}></div>)}
+                  </div>
+                </section>
+                <section className="epc-all-events">
+                  <div className="epc-events-table-wrapper">
+                    {Array.from({ length: 8 }).map((_, i) => <div className="epc-events-table-row skeleton" key={i} style={{ minHeight: 60 }}></div>)}
+                  </div>
+                </section>
+              </>
+            ) : (<>
             {/* ========== FEATURED EVENTS ========== */}
             {featuredEvents.length > 0 && (
                 <section className="epc-featured-events">

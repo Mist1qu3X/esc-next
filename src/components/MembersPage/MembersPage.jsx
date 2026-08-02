@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
-import PageLoader from '@/components/LoadingResults/PageLoader';
 import './MembersPage.css';
 
 // Дефолтные статы (fallback, пока коллекция member-stats пуста)
@@ -136,7 +135,13 @@ const MembersPage = () => {
         </div>
       </section>
 
-      {loading ? <PageLoader variant="grid" withHeader={false} /> : (<>
+      {loading ? (
+        <section className="mp-grid-section">
+          <div className="mp-federations-grid">
+            {Array.from({ length: 9 }).map((_, i) => <div className="mp-federation-card skeleton" key={i} style={{ minHeight: 150 }}></div>)}
+          </div>
+        </section>
+      ) : (<>
       {/* GRID VIEW */}
         {viewMode === 'grid' && (
           <section className="mp-grid-section">

@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
-import PageLoader from '@/components/LoadingResults/PageLoader';
 import './DocumentsPage.css';
 
 const DOCS_PER_PAGE = 8;
@@ -188,7 +187,18 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
       )}
 
       {/* ========== MAIN CONTENT ========== */}
-      {(!embedded && loading) ? <PageLoader variant="list" withHeader={false} /> : (
+      {(!embedded && loading) ? (
+      <section className="twist-container">
+        <aside className="twist-sidebar">
+          {Array.from({ length: 6 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 34, borderRadius: 6, marginBottom: 10 }}></div>)}
+        </aside>
+        <div className="twist-main">
+          <div className="docs-accordion">
+            {Array.from({ length: 7 }).map((_, i) => <div className="skeleton" key={i} style={{ height: 64, borderRadius: 8, marginBottom: 10 }}></div>)}
+          </div>
+        </div>
+      </section>
+      ) : (
       <section className="twist-container">
         {/* Левый сайдбар */}
         <aside className="twist-sidebar">

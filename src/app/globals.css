@@ -6,7 +6,29 @@
   box-sizing: border-box; 
 }
 
-body { 
-  background-color: #06121f; 
-  font-family: 'Inter', sans-serif; 
+body {
+  background-color: #06121f;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ===== Скелет загрузки: добавь класс .skeleton к настоящему блоку —
+   он станет пульсирующей серой заготовкой той же формы (контент прячется). ===== */
+@keyframes skel-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.skeleton {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  background-image: none !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  color: transparent !important;
+  box-shadow: none !important;
+  animation: skel-pulse 1.4s ease-in-out infinite;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.skeleton > * {
+  visibility: hidden !important;
 }

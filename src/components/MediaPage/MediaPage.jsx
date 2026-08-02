@@ -4,7 +4,6 @@ import axios from 'axios';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
 import StreamPlayer, { canEmbed } from '@/components/StreamPlayer/StreamPlayer';
-import PageLoader from '@/components/LoadingResults/PageLoader';
 import './MediaPage.css';
 
 // Универсальная функция для извлечения данных из любого ответа Strapi
@@ -215,7 +214,16 @@ const MediaPage = () => {
         </div>
       </section>
 
-      {loading ? <PageLoader variant="grid" withHeader={false} /> : (
+      {loading ? (
+      <section className="mp-news-content">
+        <div className="mp-featured-container">
+          {Array.from({ length: 3 }).map((_, i) => <div className="mp-featured-card skeleton" key={i} style={{ minHeight: 260 }}></div>)}
+        </div>
+        <div className="mp-latest-news-grid" style={{ marginTop: 40 }}>
+          {Array.from({ length: 6 }).map((_, i) => <div className="mp-news-card skeleton" key={i} style={{ minHeight: 300 }}></div>)}
+        </div>
+      </section>
+      ) : (
       <section className="mp-news-content">
         {/* FEATURED */}
         {showFeatured && (
