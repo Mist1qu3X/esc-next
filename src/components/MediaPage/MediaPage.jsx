@@ -74,11 +74,12 @@ const MediaPage = () => {
         const [newsRes, videosRes, docsRes, streamsRes, spotlightsRes, photosRes] = await Promise.all([
           axios.get(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`),
           axios.get(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100`),
-          // docs/streams/photos: только общие (без привязки к событию) — событийные живут на странице события
+          // docs/streams: только общие (событийные живут на странице события).
           axios.get(`${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`),
           axios.get(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10&filters[eventSlug][$null]=true`),
           axios.get(`${config.API_URL}/api/spotlight-items?populate=*&pagination[pageSize]=4`),
-          axios.get(`${config.API_URL}/api/photos?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`).catch(() => ({ data: { data: [] } })),
+          // photos: показываем ВСЕ альбомы (событийные тоже) — в сетке нужна только обложка + счётчик
+          axios.get(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100`).catch(() => ({ data: { data: [] } })),
         ]);
 
         setNews(extractData(newsRes));
@@ -87,7 +88,19 @@ const MediaPage = () => {
         setStreams(extractData(streamsRes));
         setSpotlights(extractData(spotlightsRes));
         setPhotos(extractData(photosRes));
-        
+
+        // дозагружаем остальные страницы альбомов в фоне (Strapi капит pageSize на 100)
+        (async () => {
+          try {
+            const pageCount = photosRes.data?.meta?.pagination?.pageCount || 1;
+            for (let page = 2; page <= pageCount; page++) {
+              const r = await axios.get(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
+              const batch = extractData(r);
+              if (batch.length) setPhotos((prev) => [...prev, ...batch]);
+            }
+          } catch (_) { /* оставляем то, что успели загрузить */ }
+        })();
+
         setLoading(false);
       } catch (e) { 
         console.error('Ошибка загрузки Media:', e);
