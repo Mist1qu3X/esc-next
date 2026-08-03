@@ -4,6 +4,7 @@ import axios from 'axios';
 import config from '@/lib/config';
 import LoadingResults from '@/components/LoadingResults/LoadingResults';
 import SkeletonEvents from '@/components/LoadingResults/SkeletonEvents';
+import Pagination from '@/components/Pagination/Pagination';
 import './ResultsRankingsPage.css';
 
 // Детерминированная генерация выстрелов (9.5–10.9) без Math.random.
@@ -88,23 +89,10 @@ const TEST_RECORDS = [
 
 const PER_PAGE = 10;
 
-// Пагинация со скользящим окном: 1,2,3 › NEXT, затем 2,3,4 › NEXT (без длинного ряда)
-const Pager = ({ page, setPage, total, perPage = PER_PAGE }) => {
-  const pageCount = Math.ceil(total / perPage);
-  if (pageCount <= 1) return null;
-  const start = Math.min(Math.max(1, page), Math.max(1, pageCount - 2));
-  const nums = [];
-  for (let p = start; p < start + 3 && p <= pageCount; p++) nums.push(p);
-  return (
-    <div className="results-pagination">
-      {page > 1 && <button className="page-btn prev" onClick={() => setPage(page - 1)}>&lt; PREV</button>}
-      {nums.map((p) => (
-        <button key={p} className={`page-btn ${p === page ? 'active' : ''}`} onClick={() => setPage(p)}>{p}</button>
-      ))}
-      {page < pageCount && <button className="page-btn next" onClick={() => setPage(page + 1)}>NEXT &gt;</button>}
-    </div>
-  );
-};
+// Обёртка над общей пагинацией (принимает total → считает pageCount)
+const Pager = ({ page, setPage, total, perPage = PER_PAGE }) => (
+  <Pagination page={page} pageCount={Math.ceil(total / perPage)} onChange={setPage} />
+);
 
 const ResultsRankingsPage = ({ embedded = false }) => {
   const [activeTab, setActiveTab] = useState('results');

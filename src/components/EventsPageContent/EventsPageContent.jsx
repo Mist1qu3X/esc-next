@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
+import Pagination from '@/components/Pagination/Pagination';
 import './EventsPageContent.css';
 
 // Фолбэк-вкладки фильтра, пока в Strapi не заданы свои (коллекция event-category)
@@ -469,25 +470,7 @@ const EventsPageContent = () => {
                     })}
                 </div>
 
-                {totalPages > 1 && (
-                    <div className="epc-pagination">
-                        {currentPage > 1 && (
-                            <button className="epc-page-btn epc-next" onClick={() => setCurrentPage(currentPage - 1)}>&lt; PREV</button>
-                        )}
-                        {(() => {
-                            const start = Math.min(Math.max(1, currentPage), Math.max(1, totalPages - 2));
-                            return Array.from({ length: Math.min(3, totalPages) }, (_, i) => start + i)
-                                .filter((p) => p <= totalPages)
-                                .map((p) => (
-                                    <button key={p} className={`epc-page-btn ${currentPage === p ? 'epc-active' : ''}`}
-                                        onClick={() => setCurrentPage(p)}>{p}</button>
-                                ));
-                        })()}
-                        {currentPage < totalPages && (
-                            <button className="epc-page-btn epc-next" onClick={() => setCurrentPage(currentPage + 1)}>NEXT &gt;</button>
-                        )}
-                    </div>
-                )}
+                <Pagination page={currentPage} pageCount={totalPages} onChange={setCurrentPage} />
             </section>
             </>)}
         </>

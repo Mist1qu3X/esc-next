@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
+import Pagination from '@/components/Pagination/Pagination';
 import './DocumentsPage.css';
 
 const DOCS_PER_PAGE = 8;
@@ -121,16 +122,6 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
     currentPage * DOCS_PER_PAGE
   );
 
-  // Окно страниц: 1 … (cur-1) cur (cur+1) … last — чтобы не было «кучи переключателей»
-  const pageWindow = () => {
-    const out = [];
-    out.push(1);
-    if (currentPage - 1 > 2) out.push('…');
-    for (let p = Math.max(2, currentPage - 1); p <= Math.min(totalPages - 1, currentPage + 1); p++) out.push(p);
-    if (currentPage + 1 < totalPages - 1) out.push('…');
-    if (totalPages > 1) out.push(totalPages);
-    return out;
-  };
 
   // По умолчанию раскрываем первый документ на странице
   useEffect(() => {
@@ -367,19 +358,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
             )}
           </div>
 
-          {totalPages > 1 && (
-            <div className="docs-pagination">
-              <button className="docs-page-btn docs-page-nav" disabled={currentPage === 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} aria-label="Previous">‹</button>
-              {pageWindow().map((p, i) =>
-                p === '…' ? (
-                  <span key={`e${i}`} className="docs-page-ellipsis">…</span>
-                ) : (
-                  <button key={p} className={`docs-page-btn ${currentPage === p ? 'active' : ''}`} onClick={() => setCurrentPage(p)}>{p}</button>
-                )
-              )}
-              <button className="docs-page-btn docs-page-nav" disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} aria-label="Next">›</button>
-            </div>
-          )}
+          <Pagination page={currentPage} pageCount={totalPages} onChange={setCurrentPage} />
         </div>
       </section>
       )}
