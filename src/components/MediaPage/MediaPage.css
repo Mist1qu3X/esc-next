@@ -849,41 +849,6 @@
     color: rgba(255, 255, 255, 0.13);
 }
 
-/* счётчик у заголовка + кнопка «показать ещё» */
-.mp-count {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.4);
-    margin-left: 8px;
-}
-
-.mp-showmore-wrap {
-    display: flex;
-    justify-content: center;
-    margin-top: 28px;
-}
-
-.mp-showmore-btn {
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #4aa3ff;
-    background: transparent;
-    border: 1px solid rgba(74, 163, 255, 0.4);
-    border-radius: 6px;
-    padding: 12px 28px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.mp-showmore-btn:hover {
-    background: rgba(74, 163, 255, 0.12);
-    border-color: rgba(74, 163, 255, 0.7);
-}
-
 .mp-live-card-top {
     display: flex;
     justify-content: space-between;

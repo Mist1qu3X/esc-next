@@ -28,11 +28,6 @@ const MediaPage = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
-  const [newsShown, setNewsShown] = useState(12);   // «показать ещё» для новостей темы
-  const [videosShown, setVideosShown] = useState(12); // «показать ещё» для видео
-
-  // при смене вкладки сбрасываем счётчики показа
-  useEffect(() => { setNewsShown(12); setVideosShown(12); }, [activeFilter]);
 
   const router = useRouter();
   const latestNewsRef = useRef(null);
@@ -225,7 +220,7 @@ const MediaPage = () => {
   const themeView = ['NEWS', 'FEATURES', 'INTERVIEWS'].includes(activeFilter);
 
   // Проверка, нужно ли показывать секции
-  const showFeatured = activeFilter === 'ALL';        // большие featured-карточки — только на ALL
+  const showFeatured = activeFilter === 'ALL' || themeView; // FEATURED — на ALL и на темах
   const showLatestNews = activeFilter === 'ALL' || themeView;
   const showVideos = activeFilter === 'ALL';          // превью-ряд видео на ALL
   const showVideoGallery = activeFilter === 'VIDEOS'; // отдельная галерея видео (как PHOTO)
@@ -233,9 +228,9 @@ const MediaPage = () => {
   const showPressReleases = activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES';
   const showPhotos = activeFilter === 'PHOTO';
 
-  // Новостная сетка: на теме — заголовок «NEWS» и ВСЕ новости темы; на ALL — «LATEST NEWS» (обрезка)
+  // Новостная сетка: на теме — «ALL N THEME» и ВСЕ новости темы; на ALL — «LATEST NEWS» (обрезка)
   const newsGridItems = themeView ? filteredNews : latestNews;
-  const newsGridHeading = themeView ? `ALL ${activeFilter}` : 'LATEST NEWS';
+  const newsGridHeading = themeView ? `ALL ${newsGridItems.length} ${activeFilter}` : 'LATEST NEWS';
 
   return (
     <>
@@ -373,10 +368,10 @@ const MediaPage = () => {
         {/* VIDEO GALLERY (вкладка VIDEOS — чистое видео, как PHOTO) */}
         {showVideoGallery && (
           <div>
-            <h2 className="mp-photo-heading">VIDEOS <span className="mp-count">{videos.length}</span></h2>
+            <h2 className="mp-photo-heading">VIDEOS</h2>
             <div className="mp-photo-grid">
               {videos.length > 0 ? (
-                videos.slice(0, videosShown).map((v) => (
+                videos.map((v) => (
                   <div
                     key={v.id}
                     className="mp-photo-card"
@@ -401,11 +396,6 @@ const MediaPage = () => {
                 </p>
               )}
             </div>
-            {videos.length > videosShown && (
-              <div className="mp-showmore-wrap">
-                <button className="mp-showmore-btn" onClick={() => setVideosShown((n) => n + 24)}>SHOW MORE ({videos.length - videosShown})</button>
-              </div>
-            )}
           </div>
         )}
 
@@ -416,7 +406,6 @@ const MediaPage = () => {
               <div className="mp-section-label">
                 <span className="mp-section-line mp-grey"></span>
                 <span className="mp-section-text mp-grey-text">{newsGridHeading}</span>
-                {themeView && <span className="mp-count">{newsGridItems.length}</span>}
               </div>
               {!themeView && (
                 <button className="mp-all-articles-btn" onClick={() => router.push('/media')}>ALL ARTICLES ›</button>
@@ -424,7 +413,7 @@ const MediaPage = () => {
             </div>
             <div className="mp-latest-news-grid">
               {newsGridItems.length > 0 ? (
-                (themeView ? newsGridItems.slice(0, newsShown) : newsGridItems).map((item) => (
+                newsGridItems.map((item) => (
                   <div key={item.id} className="mp-news-card" onClick={() => goToNews(item.slug)} style={{ cursor: 'pointer' }}>
                     <div className="mp-news-card-image" style={{ backgroundImage: `url(${getImageUrl(item.image)})` }}></div>
                     <div className="mp-news-card-content">
@@ -441,11 +430,6 @@ const MediaPage = () => {
                 </p>
               )}
             </div>
-            {themeView && newsGridItems.length > newsShown && (
-              <div className="mp-showmore-wrap">
-                <button className="mp-showmore-btn" onClick={() => setNewsShown((n) => n + 12)}>SHOW MORE ({newsGridItems.length - newsShown})</button>
-              </div>
-            )}
           </div>
         )}
 
