@@ -46,8 +46,8 @@ const MustSeeAction = () => {
             <div className="action-container">
                 {videos.map((video, index) => {
                     const { title, category, description, thumbnail, videoUrl } = video;
-                    const thumbnailUrl = thumbnail?.url 
-                        ? `${config.API_URL}${thumbnail.url}` 
+                    const thumbnailUrl = thumbnail?.url
+                        ? (thumbnail.url.startsWith('http') ? thumbnail.url : `${config.API_URL}${thumbnail.url}`)
                         : null;
                     return (
                         <div 

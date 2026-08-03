@@ -69,7 +69,7 @@ const Ad = () => {
                     <div className="ad-track" ref={trackRef} style={{ animationDuration }}>
                         {marqueeLogos.map((item, index) => {
                             const { name, url, logo: image } = item;
-                            const imageUrl = image?.url ? `${config.API_URL}${image.url}` : null;
+                            const imageUrl = image?.url ? (image.url.startsWith('http') ? image.url : `${config.API_URL}${image.url}`) : null;
                             if (!imageUrl) return null;
                             return (
                                 <img

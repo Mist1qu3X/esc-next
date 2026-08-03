@@ -30,7 +30,7 @@ const FeaturedDocuments = () => {
     const handleDownload = (doc) => {
         const file = doc.file;
         if (file && file.url) {
-            window.open(`${config.API_URL}${file.url}`, '_blank');
+            window.open(file.url.startsWith('http') ? file.url : `${config.API_URL}${file.url}`, '_blank');
         } else {
             console.log('Файл не найден');
         }
