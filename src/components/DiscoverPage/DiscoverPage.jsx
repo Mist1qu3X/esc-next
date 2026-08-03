@@ -5,20 +5,6 @@ import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import './DiscoverPage.css';
 
-// 3-буквенный код федерации -> 2-буквенный ISO (имя файла флага в /public/img/flag)
-const CODE2ISO = { ALB:'al', AND:'ad', ARM:'am', AUT:'at', AZE:'az', BEL:'be', BIH:'ba', BLR:'by',
-  BUL:'bg', CRO:'hr', CYP:'cy', CZE:'cz', DEN:'dk', ESP:'es', EST:'ee', FIN:'fi', FRA:'fr', FRO:'fo',
-  GBR:'gb', GEO:'ge', GER:'de', GRE:'gr', HUN:'hu', IRL:'ie', ISL:'is', ISR:'il', ITA:'it', KOS:'xk',
-  LAT:'lv', LIE:'li', LTU:'lt', LUX:'lu', MDA:'md', MKD:'mk', MLT:'mt', MNE:'me', MON:'mc', NED:'nl',
-  NOR:'no', POL:'pl', POR:'pt', ROU:'ro', RUS:'ru', SLO:'si', SMR:'sm', SRB:'rs', SUI:'ch', SVK:'sk',
-  SWE:'se', TUR:'tr', UKR:'ua' };
-// Флаг из папки /public/img/flag (для GENERAL ASSEMBLY). RUS — .webp, остальные .png
-const folderFlag = (code) => {
-  const iso = CODE2ISO[code];
-  if (!iso) return null;
-  return `/img/flag/${iso}.${iso === 'ru' ? 'webp' : 'png'}`;
-};
-
 const DiscoverPage = () => {
   const [pageData, setPageData] = useState(null);
   const [leaders, setLeaders] = useState([]);
@@ -345,7 +331,7 @@ const DiscoverPage = () => {
                   {federations.slice(0, 46).map((fed) => (
                     <div className="assembly-member" key={fed.id}>
                       <img
-                        src={folderFlag(fed.countryCode) || getFlagUrl(fed.flag || fed.countryCode)}
+                        src={getFlagUrl(fed.assemblyFlag) || getFlagUrl(fed.flag || fed.countryCode)}
                         alt={fed.countryCode}
                         className="assembly-flag-img"
                         onError={(e) => { e.target.style.display = 'none'; }}
