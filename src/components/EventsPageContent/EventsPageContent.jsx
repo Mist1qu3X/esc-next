@@ -81,17 +81,19 @@ const EventsPageContent = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                // Текущий сезон: события с начала прошлого года и дальше (актуальные + ближайшие),
-                // по возрастанию даты — чтобы показывать текущий/предстоящий сезон, а не архив 2001 г.
-                const seasonFrom = `${new Date().getFullYear() - 1}-01-01`;
-                const res = await axios.get(
-                    `${config.API_URL}/api/events?populate[image]=true&filters[date][$gte]=${seasonFrom}&sort=date:asc&pagination[limit]=200`
-                );
-                if (res.data?.data) {
-                    setEvents(res.data.data);
+                // Грузим ВСЕ события (включая архив), новые сверху. Strapi капит pageSize на 100 —
+                // берём первую страницу сразу, остальные догружаем в фоне.
+                const url = (page) => `${config.API_URL}/api/events?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`;
+                const first = await axios.get(url(1));
+                setEvents(first.data?.data || []);
+                setLoading(false);
+                const pageCount = first.data?.meta?.pagination?.pageCount || 1;
+                for (let page = 2; page <= pageCount; page++) {
+                    const res = await axios.get(url(page));
+                    const batch = res.data?.data || [];
+                    if (batch.length) setEvents((prev) => [...prev, ...batch]);
                 }
-            } catch (e) { console.error(e); }
-            finally { setLoading(false); }
+            } catch (e) { console.error(e); setLoading(false); }
         };
         fetchEvents();
     }, []);
@@ -131,8 +133,10 @@ const EventsPageContent = () => {
         { value: '6', label: 'JUL' }, { value: '7', label: 'AUG' }, { value: '8', label: 'SEP' },
         { value: '9', label: 'OCT' }, { value: '10', label: 'NOV' }, { value: '11', label: 'DEC' },
     ];
-    const currentYear = new Date().getFullYear();
-    const years = ['all', currentYear - 1, currentYear, currentYear + 1, currentYear + 2].map(String);
+    // Годы для фильтра — все, что реально есть в данных (по убыванию)
+    const years = ['all', ...Array.from(new Set(
+        events.map((e) => parseDate(e.date).getFullYear()).filter((y) => !isNaN(y))
+    )).sort((a, b) => b - a).map(String)];
 
     const handleDetails = (event) => {
         if (event.slug) {
