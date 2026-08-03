@@ -15,7 +15,7 @@ const DEFAULT_CATEGORIES = [
 const EventsPageContent = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+    const [categories] = useState(DEFAULT_CATEGORIES);
     const [filterType, setFilterType] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterMonth, setFilterMonth] = useState('all');
@@ -96,15 +96,8 @@ const EventsPageContent = () => {
         fetchEvents();
     }, []);
 
-    // Вкладки фильтра из Strapi (коллекция event-category), иначе дефолтные
-    useEffect(() => {
-        axios.get(`${config.API_URL}/api/event-categories?sort=order:asc&pagination[pageSize]=50`)
-            .then((r) => {
-                const d = r.data?.data || [];
-                if (d.length) setCategories(d.map((c) => ({ label: c.label, matchTypes: c.matchTypes || '' })));
-            })
-            .catch(() => {});
-    }, []);
+    // Коллекция event-category откатана на проде → используем DEFAULT_CATEGORIES
+    // (не дёргаем несуществующий эндпоинт, чтобы не сыпать 404 в консоль).
 
     // Набор event.type для выбранной вкладки
     const activeMatch = filterType === 'all'
