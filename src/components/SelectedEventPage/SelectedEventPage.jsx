@@ -97,7 +97,7 @@ const SelectedEventPage = ({ slug }) => {
         // LIVE & MEDIA — общий для всех событий (глобальные стримы/фото, как на Media)
         axios.get(`${config.API_URL}/api/live-streams?filters[eventSlug][$null]=true&populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
         axios.get(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${slug}&sort=position:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
-        axios.get(`${config.API_URL}/api/photos?filters[eventSlug][$null]=true&populate=*&pagination[pageSize]=30`).catch(() => ({ data: { data: [] } })),
+        axios.get(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
         axios.get(`${config.API_URL}/api/event-results?filters[event][slug][$eq]=${slug}&populate[leaders]=true&sort=discipline:asc&pagination[pageSize]=100`).catch(() => ({ data: { data: [] } })),
       ]);
       setStreams(sRes.data?.data || []);
