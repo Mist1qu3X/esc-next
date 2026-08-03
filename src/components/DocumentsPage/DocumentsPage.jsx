@@ -25,24 +25,25 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
         'populate[file]=true&populate[attachments][populate]=file';
       // событие → только его документы; общая библиотека → только не-событийные
       const eventFilter = eventSlug ? `&filters[eventSlug][$eq]=${eventSlug}` : `&filters[eventSlug][$null]=true`;
-      const buildUrl = (populate) =>
-        `${config.API_URL}/api/docs?${populate}${eventFilter}&sort=date:desc&pagination[limit]=100`;
+      const pageUrl = (populate, page) =>
+        `${config.API_URL}/api/docs?${populate}${eventFilter}&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`;
+      const extract = (res) => res.data?.data || (Array.isArray(res.data) ? res.data : []);
 
       try {
-        let res;
+        // Грузим ВСЕ документы постранично (Strapi капит pageSize на 100)
+        let populate = deepPopulate;
+        let first;
         try {
-          // Полный populate с вложенными файлами вложений
-          res = await axios.get(buildUrl(deepPopulate));
+          first = await axios.get(pageUrl(deepPopulate, 1));
         } catch {
-          // Фолбэк, если бэкенд ещё не знает про attachments
-          res = await axios.get(buildUrl('populate=*'));
+          populate = 'populate=*'; // фолбэк, если бэкенд ещё не знает про attachments
+          first = await axios.get(pageUrl('populate=*', 1));
         }
-
-        let docs = [];
-        if (res.data?.data) {
-          docs = res.data.data;
-        } else if (Array.isArray(res.data)) {
-          docs = res.data;
+        let docs = extract(first);
+        const pageCount = first.data?.meta?.pagination?.pageCount || 1;
+        for (let page = 2; page <= pageCount; page++) {
+          const res = await axios.get(pageUrl(populate, page));
+          docs = docs.concat(extract(res));
         }
 
         setDocuments(docs);
@@ -119,6 +120,17 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
     (currentPage - 1) * DOCS_PER_PAGE,
     currentPage * DOCS_PER_PAGE
   );
+
+  // Окно страниц: 1 … (cur-1) cur (cur+1) … last — чтобы не было «кучи переключателей»
+  const pageWindow = () => {
+    const out = [];
+    out.push(1);
+    if (currentPage - 1 > 2) out.push('…');
+    for (let p = Math.max(2, currentPage - 1); p <= Math.min(totalPages - 1, currentPage + 1); p++) out.push(p);
+    if (currentPage + 1 < totalPages - 1) out.push('…');
+    if (totalPages > 1) out.push(totalPages);
+    return out;
+  };
 
   // По умолчанию раскрываем первый документ на странице
   useEffect(() => {
@@ -225,6 +237,12 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
           </div>
         </div>
       </section>
+      ) : (embedded && !loading && documents.length === 0) ? (
+      <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
+        <i className="fa-regular fa-clock stream-scheduled-icon"></i>
+        <span className="stream-scheduled-title">DOCUMENTS PENDING</span>
+        <span className="stream-scheduled-text">Official documents will appear here once the competition is complete.</span>
+      </div>
       ) : (
       <section className="twist-container">
         {/* Левый сайдбар */}
@@ -351,15 +369,15 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
 
           {totalPages > 1 && (
             <div className="docs-pagination">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  className={`docs-page-btn ${currentPage === i + 1 ? 'active' : ''}`}
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              ))}
+              <button className="docs-page-btn docs-page-nav" disabled={currentPage === 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} aria-label="Previous">‹</button>
+              {pageWindow().map((p, i) =>
+                p === '…' ? (
+                  <span key={`e${i}`} className="docs-page-ellipsis">…</span>
+                ) : (
+                  <button key={p} className={`docs-page-btn ${currentPage === p ? 'active' : ''}`} onClick={() => setCurrentPage(p)}>{p}</button>
+                )
+              )}
+              <button className="docs-page-btn docs-page-nav" disabled={currentPage === totalPages} onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} aria-label="Next">›</button>
             </div>
           )}
         </div>

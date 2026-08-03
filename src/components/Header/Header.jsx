@@ -11,6 +11,7 @@ const Header = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
     const searchRef = useRef(null);
     const pathname = usePathname();
     const router = useRouter();
@@ -25,68 +26,45 @@ const Header = () => {
         { label: 'Contacts', href: '/members' },
     ];
 
-    // Поиск подсказок при вводе текста
+    // Реальный поиск по контенту Strapi (новости/события/документы/федерации/видео)
     useEffect(() => {
-        const fetchSuggestions = async () => {
-            if (!searchQuery.trim()) {
-                setSuggestions([]);
-                return;
-            }
-
-            const query = searchQuery.toLowerCase();
-            const suggestionsList = [];
-
-            // Проверяем категории
-            const categories = [
-                { name: 'News', keyword: 'news', path: '/media', filter: 'NEWS' },
-                { name: 'Documents', keyword: 'documents', path: '/documents', filter: null },
-                { name: 'Events', keyword: 'events', path: '/events', filter: null },
-                { name: 'Results', keyword: 'results', path: '/results', filter: null },
-                { name: 'Rankings', keyword: 'rankings', path: '/results', filter: null },
-                { name: 'Media', keyword: 'media', path: '/media', filter: null },
-                { name: 'Members', keyword: 'members', path: '/members', filter: null },
-                { name: 'Federations', keyword: 'federations', path: '/members', filter: null },
-                { name: 'Calendar', keyword: 'calendar', path: '/events', filter: null },
-                { name: 'About', keyword: 'about', path: '/discover', filter: null },
-                { name: 'Contact', keyword: 'contact', path: '/members', filter: null },
-            ];
-
-            // Проверяем соответствие категориям
-            categories.forEach(cat => {
-                if (cat.keyword.startsWith(query) || cat.name.toLowerCase().startsWith(query)) {
-                    suggestionsList.push({
-                        type: 'category',
-                        label: cat.name,
-                        path: cat.path,
-                        filter: cat.filter
-                    });
-                }
-            });
-
-            // Добавляем быстрые ссылки
-            const quickLinks = [
-                { name: 'European Championship 2026', keyword: 'championship', path: '/events/european-championship-2026' },
-                { name: 'Latest News', keyword: 'latest', path: '/media' },
-                { name: 'Press Releases', keyword: 'press', path: '/media' },
-                { name: 'Technical Rules', keyword: 'rules', path: '/documents' },
-            ];
-
-            quickLinks.forEach(link => {
-                if (link.keyword.startsWith(query) || link.name.toLowerCase().startsWith(query)) {
-                    suggestionsList.push({
-                        type: 'link',
-                        label: link.name,
-                        path: link.path
-                    });
-                }
-            });
-
-            setSuggestions(suggestionsList.slice(0, 8));
+        const q = searchQuery.trim();
+        if (!q) { setSuggestions([]); setIsSearching(false); return; }
+        const controller = new AbortController();
+        const enc = encodeURIComponent(q);
+        const ql = q.toLowerCase();
+        const match = (s) => (s || '').toLowerCase().includes(ql);
+        const run = async () => {
+            setIsSearching(true);
+            const get = (url) =>
+                axios.get(`${config.API_URL}${url}`, { signal: controller.signal }).then((r) => r.data).catch(() => null);
+            const arr = (d) => (d?.data ? d.data : (Array.isArray(d) ? d : []));
+            try {
+                const [news, events, docs, feds, videos] = await Promise.all([
+                    get(`/api/news-items?filters[title][$containsi]=${enc}&pagination[pageSize]=5`),
+                    get(`/api/events?filters[name][$containsi]=${enc}&sort=date:desc&pagination[pageSize]=5`),
+                    get(`/api/docs?filters[title][$containsi]=${enc}&pagination[pageSize]=5`),
+                    get(`/api/federations?filters[name][$containsi]=${enc}&pagination[pageSize]=5`),
+                    get(`/api/videos?filters[title][$containsi]=${enc}&pagination[pageSize]=4`),
+                ]);
+                const out = [];
+                arr(news).forEach((n) => n.slug && match(n.title) && out.push({ type: 'News', label: n.title, path: `/media/${n.slug}` }));
+                arr(events).forEach((e) => e.slug && match(e.name) && out.push({ type: 'Event', label: e.name, path: `/events/${e.slug}` }));
+                arr(docs).forEach((d) => match(d.title) && out.push({ type: 'Document', label: d.title, path: `/documents` }));
+                arr(feds).forEach((f) => match(f.name || f.country) && out.push({ type: 'Federation', label: f.name || f.country, path: `/members` }));
+                arr(videos).forEach((v) => v.documentId && match(v.title) && out.push({ type: 'Video', label: v.title, path: `/media/video/${v.documentId}` }));
+                setSuggestions(out.slice(0, 8));
+            } catch (_) { /* отменённый/сетевой — игнор */ }
+            finally { setIsSearching(false); }
         };
-
-        const debounce = setTimeout(fetchSuggestions, 200);
-        return () => clearTimeout(debounce);
+        const debounce = setTimeout(run, 250);
+        return () => { clearTimeout(debounce); controller.abort(); };
     }, [searchQuery]);
+
+    const typeIcon = (type) => ({
+        News: 'fa-newspaper', Event: 'fa-calendar-day', Document: 'fa-file-lines',
+        Federation: 'fa-flag', Video: 'fa-play',
+    }[type] || 'fa-magnifying-glass');
 
     // Закрытие подсказок при клике вне
     useEffect(() => {
@@ -102,15 +80,10 @@ const Header = () => {
 
     const handleSuggestionClick = (suggestion) => {
         setSearchQuery('');
+        setSuggestions([]);
         setShowSuggestions(false);
         setIsSearchActive(false);
-        
-        if (suggestion.filter) {
-            // Если есть фильтр, переходим на страницу с параметром
-            router.push(`${suggestion.path}?filter=${suggestion.filter}`);
-        } else {
-            router.push(suggestion.path);
-        }
+        router.push(suggestion.path);
     };
 
     const handleEntrySystem = () => {
@@ -155,32 +128,37 @@ const Header = () => {
                                 setShowSuggestions(true);
                                 setIsSearchActive(true);
                             }}
-                            onKeyDown={(e) => e.key === 'Escape' && setIsSearchActive(false)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Escape') { setIsSearchActive(false); setShowSuggestions(false); }
+                                if (e.key === 'Enter' && suggestions.length > 0) handleSuggestionClick(suggestions[0]);
+                            }}
                         />
                         
-                        {/* Выпадающий список подсказок */}
-                        {showSuggestions && suggestions.length > 0 && (
+                        {/* Выпадающий список результатов поиска */}
+                        {showSuggestions && searchQuery.trim() && (
                             <div className="search-suggestions">
-                                {suggestions.map((suggestion, index) => (
-                                    <div
-                                        key={index}
-                                        className="search-suggestion-item"
-                                        onClick={() => handleSuggestionClick(suggestion)}
-                                    >
-                                        <div className="suggestion-icon">
-                                            {suggestion.type === 'category' ? (
-                                                <i className="fa-solid fa-folder"></i>
-                                            ) : (
-                                                <i className="fa-solid fa-link"></i>
-                                            )}
+                                {suggestions.length > 0 ? (
+                                    suggestions.map((suggestion, index) => (
+                                        <div
+                                            key={index}
+                                            className="search-suggestion-item"
+                                            onClick={() => handleSuggestionClick(suggestion)}
+                                        >
+                                            <div className="suggestion-icon">
+                                                <i className={`fa-solid ${typeIcon(suggestion.type)}`}></i>
+                                            </div>
+                                            <div className="suggestion-content">
+                                                <span className="suggestion-label">{suggestion.label}</span>
+                                                <span className="suggestion-type">{suggestion.type}</span>
+                                            </div>
+                                            <i className="fa-solid fa-arrow-right suggestion-arrow"></i>
                                         </div>
-                                        <div className="suggestion-content">
-                                            <span className="suggestion-label">{suggestion.label}</span>
-                                            <span className="suggestion-type">{suggestion.type === 'category' ? 'Category' : 'Quick link'}</span>
-                                        </div>
-                                        <i className="fa-solid fa-arrow-right suggestion-arrow"></i>
+                                    ))
+                                ) : (
+                                    <div className="search-suggestion-empty">
+                                        {isSearching ? 'Searching…' : 'No results found'}
                                     </div>
-                                ))}
+                                )}
                             </div>
                         )}
                     </div>

@@ -541,6 +541,24 @@
     color: #06101C;
 }
 
+.docs-page-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+    pointer-events: none;
+}
+
+.docs-page-nav {
+    font-size: 18px;
+}
+
+.docs-page-ellipsis {
+    min-width: 22px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: 700;
+    user-select: none;
+}
+
 /* ========== АДАПТИВНОСТЬ ========== */
 
 /* 1024px */

@@ -405,6 +405,14 @@
     background: rgba(0, 216, 245, 0.1);
 }
 
+.search-suggestion-empty {
+    padding: 16px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
 .suggestion-icon {
     width: 32px;
     height: 32px;
