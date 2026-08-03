@@ -75,8 +75,8 @@ const Spotlight = () => {
                 {miniNews && miniNews.length > 0 ? (
                     miniNews.map((item) => {
                         const { title, theme, image, slug } = item;
-                        const imageUrl = image?.url 
-                            ? `${config.API_URL}${image.url}` 
+                        const imageUrl = image?.url
+                            ? (image.url.startsWith('http') ? image.url : `${config.API_URL}${image.url}`)
                             : null;
                         const linkSlug = slug || item.documentId || item.id;
                         

@@ -29,7 +29,7 @@ const Footer = () => {
                     <p className="social-text">FOLLOW ESC</p>
                     {socialLinks.map((link) => {
                         const { id, platform, url, icon } = link;
-                        const iconUrl = icon?.url ? `${config.API_URL}${icon.url}` : null;
+                        const iconUrl = icon?.url ? (icon.url.startsWith('http') ? icon.url : `${config.API_URL}${icon.url}`) : null;
                         return (
                             <a
                                 key={id}

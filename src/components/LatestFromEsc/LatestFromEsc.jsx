@@ -97,8 +97,8 @@ const LatestFromEsc = () => {
                 {news && news.length > 0 ? (
                     news.map((item) => {
                         const { title, theme, date, image, slug } = item;
-                        const imageUrl = image?.url 
-                            ? `${config.API_URL}${image.url}` 
+                        const imageUrl = image?.url
+                            ? (image.url.startsWith('http') ? image.url : `${config.API_URL}${image.url}`)
                             : null;
                         // Используем documentId или id если slug отсутствует
                         const linkSlug = slug || item.documentId || item.id;

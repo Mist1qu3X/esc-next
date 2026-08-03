@@ -43,7 +43,7 @@ const Info = () => {
     if (loading) return <section className="info-section"></section>;
 
     const heroImg = championship?.image?.url
-        ? `${config.API_URL}${championship.image.url}`
+        ? (championship.image.url.startsWith('http') ? championship.image.url : `${config.API_URL}${championship.image.url}`)
         : null;
 
     return (
