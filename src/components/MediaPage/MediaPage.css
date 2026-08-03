@@ -1263,6 +1263,15 @@
     margin: 0;
 }
 
+.mp-press-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 4px 0 6px;
+    max-width: 640px;
+}
+
 .mp-press-meta {
     font-family: 'Inter', sans-serif;
     font-size: 11px;

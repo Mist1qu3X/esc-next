@@ -187,13 +187,11 @@ const MediaPage = () => {
 
   const filteredVideos = getFilteredVideos();
 
-  // Фильтр для PRESS RELEASES
+  // Фильтр для PRESS RELEASES: на вкладке — все, на ALL — превью 4
   const getFilteredPressReleases = () => {
-    if (activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES') {
-      return docs
-        .filter((d) => d.theme === 'PRESS RELEASES' || d.theme === 'RELEASES')
-        .slice(0, 4);
-    }
+    const all = docs.filter((d) => d.theme === 'PRESS RELEASES' || d.theme === 'RELEASES');
+    if (activeFilter === 'PRESS RELEASES') return all;
+    if (activeFilter === 'ALL') return all.slice(0, 4);
     return [];
   };
 
@@ -534,14 +532,17 @@ const MediaPage = () => {
                 <div key={doc.id} className="mp-press-item">
                   <div className="mp-press-info">
                     <h4 className="mp-press-title">{doc.title}</h4>
-                    <span className="mp-press-meta">{formatDate(doc.date)} · PDF {doc.fileSize || '0.3 MB'}</span>
+                    {doc.description && <p className="mp-press-desc">{doc.description}</p>}
+                    <span className="mp-press-meta">{formatDate(doc.date)}{doc.file ? ` · PDF ${doc.fileSize || '0.3 MB'}` : ''}</span>
                   </div>
-                  <button className="mp-download-btn-press" onClick={() => {
-                    const url = doc.file?.url;
-                    if (url) window.open(url.startsWith('http') ? url : `${config.API_URL}${url}`, '_blank');
-                  }}>
-                    <i className="fa-solid fa-download"></i>DOWNLOAD
-                  </button>
+                  {doc.file && (
+                    <button className="mp-download-btn-press" onClick={() => {
+                      const url = doc.file?.url;
+                      if (url) window.open(url.startsWith('http') ? url : `${config.API_URL}${url}`, '_blank');
+                    }}>
+                      <i className="fa-solid fa-download"></i>DOWNLOAD
+                    </button>
+                  )}
                 </div>
               )) : (
                 <p style={{ color: 'rgba(255,255,255,0.4)', padding: '20px 0' }}>No {activeFilter !== 'ALL' ? activeFilter.toLowerCase() : ''} documents available</p>

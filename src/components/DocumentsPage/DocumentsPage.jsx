@@ -228,7 +228,12 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
           </div>
         </div>
       </section>
-      ) : (embedded && !loading && documents.length === 0) ? (
+      ) : (embedded && loading) ? (
+      <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
+        <i className="fa-solid fa-spinner fa-spin stream-scheduled-icon"></i>
+        <span className="stream-scheduled-text">Loading documents…</span>
+      </div>
+      ) : (embedded && documents.length === 0) ? (
       <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
         <i className="fa-regular fa-clock stream-scheduled-icon"></i>
         <span className="stream-scheduled-title">DOCUMENTS PENDING</span>
