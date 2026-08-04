@@ -4,7 +4,7 @@ import axios from 'axios';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
-import PageLoader from '@/components/LoadingResults/PageLoader';
+import NewsDetailSkeleton from './NewsDetailSkeleton';
 import './SelectedNewsPage.css';
 
 // Универсальная функция для извлечения данных
@@ -23,6 +23,7 @@ const SelectedNewsPage = ({ slug }) => {
   const [article, setArticle] = useState(null);
   const [relatedNews, setRelatedNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [animDone, setAnimDone] = useState(false); // мишень доиграла
   const [notFound, setNotFound] = useState(false);
   const router = useRouter();
 
@@ -130,8 +131,8 @@ const SelectedNewsPage = ({ slug }) => {
     });
   };
 
-  if (loading) {
-    return <PageLoader variant="detail" />;
+  if (loading || !animDone) {
+    return <NewsDetailSkeleton onEnded={() => setAnimDone(true)} />;
   }
 
   if (notFound || !article) {

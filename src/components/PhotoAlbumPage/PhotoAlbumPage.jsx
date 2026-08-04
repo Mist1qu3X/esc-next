@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
-import PageLoader from '@/components/LoadingResults/PageLoader';
+import PhotoAlbumSkeleton from './PhotoAlbumSkeleton';
 import './PhotoAlbumPage.css';
 
 const getImageUrl = (img) => {
@@ -17,6 +17,7 @@ const getImageUrl = (img) => {
 const PhotoAlbumPage = ({ slug }) => {
   const [album, setAlbum] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [animDone, setAnimDone] = useState(false); // мишень доиграла
   const [selected, setSelected] = useState(0);
   const trackRef = useRef(null);
   const router = useRouter();
@@ -65,8 +66,8 @@ const PhotoAlbumPage = ({ slug }) => {
     setSelected((prev) => (prev !== idx ? idx : prev));
   };
 
-  if (loading) {
-    return <PageLoader variant="detail" />;
+  if (loading || !animDone) {
+    return <PhotoAlbumSkeleton onEnded={() => setAnimDone(true)} />;
   }
 
   if (!album) {
