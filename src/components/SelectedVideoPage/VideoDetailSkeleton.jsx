@@ -2,10 +2,11 @@
 import TargetLoader from '@/components/LoadingResults/TargetLoader';
 import './SelectedVideoPage.css';
 
-// Скелет открытого видео: шапка + большой плеер (мишень по центру) + сетка «MORE VIDEOS».
+// Скелет открытого видео: шапка + большой плеер + сетка «MORE VIDEOS».
+// Мишень — сиблингом (не внутри пульсирующих .ds-block), по центру экрана.
 export default function VideoDetailSkeleton({ onEnded = () => {} }) {
   return (
-    <>
+    <div style={{ position: 'relative' }}>
       <section className="sv-header">
         <div className="sv-breadcrumbs">
           <span className="skeleton" style={{ width: 40, height: 12, borderRadius: 3 }}></span>
@@ -18,9 +19,7 @@ export default function VideoDetailSkeleton({ onEnded = () => {} }) {
       </section>
 
       <section className="sv-content">
-        <div className="ds-block" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: 6, overflow: 'hidden' }}>
-          <TargetLoader onEnded={onEnded} screen />
-        </div>
+        <div className="ds-block" style={{ width: '100%', aspectRatio: '16 / 9', borderRadius: 6 }}></div>
 
         <div className="sv-more-label" style={{ opacity: 0.4 }}>MORE VIDEOS</div>
         <div className="sv-grid">
@@ -35,6 +34,8 @@ export default function VideoDetailSkeleton({ onEnded = () => {} }) {
           ))}
         </div>
       </section>
-    </>
+
+      <TargetLoader onEnded={onEnded} />
+    </div>
   );
 }

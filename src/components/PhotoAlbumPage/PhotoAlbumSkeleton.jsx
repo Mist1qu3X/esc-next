@@ -2,10 +2,11 @@
 import TargetLoader from '@/components/LoadingResults/TargetLoader';
 import './PhotoAlbumPage.css';
 
-// Скелет открытого альбома: шапка + большой вьюер (мишень по центру) + сетка миниатюр.
+// Скелет открытого альбома: шапка + большой вьюер + сетка миниатюр.
+// Мишень — сиблингом (не внутри пульсирующих .ds-block), по центру экрана.
 export default function PhotoAlbumSkeleton({ onEnded = () => {} }) {
   return (
-    <>
+    <div style={{ position: 'relative' }}>
       <section className="pa-header">
         <div className="pa-breadcrumbs">
           <span className="skeleton" style={{ width: 40, height: 12, borderRadius: 3 }}></span>
@@ -18,9 +19,7 @@ export default function PhotoAlbumSkeleton({ onEnded = () => {} }) {
       </section>
 
       <section className="pa-content">
-        <div className="pa-viewer ds-block" style={{ position: 'relative', aspectRatio: '16 / 9' }}>
-          <TargetLoader onEnded={onEnded} screen />
-        </div>
+        <div className="pa-viewer ds-block" style={{ aspectRatio: '16 / 9' }}></div>
 
         <div className="pa-all-label" style={{ opacity: 0.4 }}>ALL PHOTO</div>
         <div className="pa-grid">
@@ -29,6 +28,8 @@ export default function PhotoAlbumSkeleton({ onEnded = () => {} }) {
           ))}
         </div>
       </section>
-    </>
+
+      <TargetLoader onEnded={onEnded} />
+    </div>
   );
 }
