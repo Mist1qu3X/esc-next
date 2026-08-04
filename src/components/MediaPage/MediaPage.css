@@ -2020,3 +2020,31 @@
         height: 1.5px;
     }
 }
+
+/* ==== Лоудер подразделов: скелетон + анимация-мишень ==== */
+.mp-loader-wrap {
+    position: relative;
+    min-height: 62vh;
+}
+
+.mp-loader-target {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 9vh;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.mp-loader-video {
+    width: clamp(160px, 22vw, 260px);
+    height: auto;
+    /* тёмный фон ролика убираем — светлые пиксели мишени остаются */
+    mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mp-loader-video { display: none; }
+}
