@@ -19,7 +19,7 @@ export default function VideoDetailSkeleton({ onEnded = () => {} }) {
 
       <section className="sv-content">
         <div className="ds-block" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9', borderRadius: 6, overflow: 'hidden' }}>
-          <TargetLoader onEnded={onEnded} />
+          <TargetLoader onEnded={onEnded} screen />
         </div>
 
         <div className="sv-more-label" style={{ opacity: 0.4 }}>MORE VIDEOS</div>

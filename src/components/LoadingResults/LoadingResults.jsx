@@ -1,5 +1,6 @@
 'use client';
 
+import TargetLoader from './TargetLoader';
 import './LoadingResults.css';
 
 // Скелет таблицы + анимация-мишень по центру (пока грузится 3 уровень).
@@ -57,10 +58,8 @@ export default function LoadingResults({ variant = 'results', onDone = () => {} 
             </div>
           ))}
 
-          {/* анимация-мишень по центру, без фона (тёмный фон видео убираем блендом) */}
-          <div className="lr-loader">
-            <video className="lr-video" src="/img/target-loader.mp4" autoPlay muted playsInline aria-hidden="true" onEnded={onDone}></video>
-          </div>
+          {/* анимация-мишень по центру (тёмный ореол скрывает чёрный фон ролика) */}
+          <TargetLoader onEnded={onDone} />
         </div>
       </div>
     </section>

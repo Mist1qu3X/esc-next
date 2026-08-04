@@ -19,7 +19,7 @@ export default function PhotoAlbumSkeleton({ onEnded = () => {} }) {
 
       <section className="pa-content">
         <div className="pa-viewer ds-block" style={{ position: 'relative', aspectRatio: '16 / 9' }}>
-          <TargetLoader onEnded={onEnded} />
+          <TargetLoader onEnded={onEnded} screen />
         </div>
 
         <div className="pa-all-label" style={{ opacity: 0.4 }}>ALL PHOTO</div>

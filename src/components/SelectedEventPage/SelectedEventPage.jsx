@@ -6,6 +6,7 @@ import config from '@/lib/config';
 import DocumentsPage from '@/components/DocumentsPage/DocumentsPage';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import PageLoader from '@/components/LoadingResults/PageLoader';
+import TargetLoader from '@/components/LoadingResults/TargetLoader';
 import './SelectedEventPage.css';
 
 // Расписание ALL EVENTS (пока нет отдельного поля/коллекции — демо-данные)
@@ -70,6 +71,7 @@ const SelectedEventPage = ({ slug }) => {
   const [eventPhotos, setEventPhotos] = useState([]);
   const [resultDisc, setResultDisc] = useState(null);
   const [playing, setPlaying] = useState(null); // стрим во встроенном плеере
+  const [animDone, setAnimDone] = useState(false); // мишень доиграла
   const router = useRouter();
 
   // При смене вкладки/события сбрасываем выбранную дисциплину в RESULTS
@@ -108,8 +110,13 @@ const SelectedEventPage = ({ slug }) => {
     fetchExtra();
   }, [slug]);
 
-  if (!event) {
-    return <PageLoader variant="detail" />;
+  if (!event || !animDone) {
+    return (
+      <>
+        <PageLoader variant="detail" />
+        <TargetLoader screen onEnded={() => setAnimDone(true)} />
+      </>
+    );
   }
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
