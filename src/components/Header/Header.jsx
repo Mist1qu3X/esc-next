@@ -23,7 +23,7 @@ const Header = () => {
         { label: 'Results & Ranking', href: '/results' },
         { label: 'Documents', href: '/documents' },
         { label: 'Media', href: '/media' },
-        { label: 'Contacts', href: '/members' },
+        { label: 'Members', href: '/members' },
     ];
 
     // Реальный поиск по контенту Strapi (новости/события/документы/федерации/видео)
