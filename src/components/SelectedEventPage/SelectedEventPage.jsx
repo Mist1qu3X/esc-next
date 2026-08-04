@@ -112,10 +112,10 @@ const SelectedEventPage = ({ slug }) => {
 
   if (!event || !animDone) {
     return (
-      <div style={{ position: 'relative' }}>
+      <>
         <PageLoader variant="detail" />
         <TargetLoader onEnded={() => setAnimDone(true)} />
-      </div>
+      </>
     );
   }
 
