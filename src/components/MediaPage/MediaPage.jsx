@@ -4,6 +4,7 @@ import axios from 'axios';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
+import LoadingMedia from './LoadingMedia';
 import './MediaPage.css';
 
 // Универсальная функция для извлечения данных из любого ответа Strapi
@@ -27,6 +28,7 @@ const MediaPage = () => {
   const [spotlights, setSpotlights] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sectionLoading, setSectionLoading] = useState(true); // лоудер-мишень при переключении подразделов
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
 
   const router = useRouter();
@@ -42,6 +44,11 @@ const MediaPage = () => {
     if (f && filters.includes(f)) setActiveFilter(f);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // При смене подраздела показываем лоудер-мишень (снимается по окончании ролика)
+  useEffect(() => {
+    setSectionLoading(true);
+  }, [activeFilter]);
 
   const scrollToElement = (element) => {
     if (!element) return;
@@ -257,40 +264,8 @@ const MediaPage = () => {
         </div>
       </section>
 
-      {loading ? (
-      <section className="mp-news-content" style={{ paddingTop: 40 }}>
-        <div className="mp-section-label"><span className="mp-section-line mp-blue"></span><span className="mp-section-text">FEATURED</span></div>
-        <div className="mp-featured-container" style={{ marginTop: 16 }}>
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div className="mp-featured-card skeleton-card" key={i} style={{ aspectRatio: '687 / 386', position: 'relative', overflow: 'hidden', borderRadius: 4 }}>
-              <div className="skeleton" style={{ position: 'absolute', inset: 0 }}></div>
-              <div className="mp-featured-overlay" style={{ zIndex: 1 }}>
-                <span className="skel-bright" style={{ width: 100, height: 20 }}></span>
-                <div className="skel-bright" style={{ width: '78%', height: 26, marginTop: 14 }}></div>
-                <div className="skel-bright" style={{ width: '52%', height: 26, marginTop: 8 }}></div>
-                <div className="mp-featured-footer" style={{ marginTop: 18 }}>
-                  <span className="skel-bright" style={{ width: 90, height: 14 }}></span>
-                  <span className="skel-bright" style={{ width: 100, height: 14 }}></span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mp-section-label" style={{ marginTop: 40 }}><span className="mp-section-line mp-grey"></span><span className="mp-section-text mp-grey-text">LATEST NEWS</span></div>
-        <div className="mp-latest-news-grid" style={{ marginTop: 16 }}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div className="mp-news-card skeleton-card" key={i}>
-              <div className="mp-news-card-image skeleton"></div>
-              <div className="mp-news-card-content">
-                <div className="skeleton" style={{ width: 70, height: 16, borderRadius: 3 }}></div>
-                <div className="skeleton" style={{ width: '92%', height: 15, borderRadius: 3, marginTop: 12 }}></div>
-                <div className="skeleton" style={{ width: '72%', height: 15, borderRadius: 3, marginTop: 6 }}></div>
-                <div className="skeleton" style={{ width: 90, height: 12, borderRadius: 3, marginTop: 14 }}></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {(loading || sectionLoading) ? (
+        <LoadingMedia onDone={() => setSectionLoading(false)} />
       ) : (
       <section className="mp-news-content">
         {/* FEATURED */}
