@@ -28,7 +28,7 @@ const MediaPage = () => {
   const [spotlights, setSpotlights] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sectionLoading, setSectionLoading] = useState(true); // лоудер-мишень при переключении подразделов
+  const [sectionLoading, setSectionLoading] = useState(false); // лоудер-мишень при переключении подразделов (не на ALL)
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
 
   const router = useRouter();
@@ -45,9 +45,9 @@ const MediaPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // При смене подраздела показываем лоудер-мишень (снимается по окончании ролика)
+  // Крутящийся лоудер-мишень только на разделах; при выборе Media (ALL) его нет
   useEffect(() => {
-    setSectionLoading(true);
+    setSectionLoading(activeFilter !== 'ALL');
   }, [activeFilter]);
 
   const scrollToElement = (element) => {
@@ -272,6 +272,7 @@ const MediaPage = () => {
               : activeFilter === 'PRESS RELEASES' ? 'press'
               : 'articles'
           }
+          showTarget={activeFilter !== 'ALL'}
           onDone={() => setSectionLoading(false)}
         />
       ) : (

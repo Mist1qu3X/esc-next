@@ -1,8 +1,9 @@
 'use client';
 import './MediaPage.css';
 
-// Лоудер подразделов MEDIA & NEWS: скелетон повторяет раскладку конкретной вкладки
-// + анимация-мишень поверх. Ролик играет один раз, по onEnded — onDone.
+// Лоудер подразделов MEDIA & NEWS: скелетон повторяет раскладку конкретной вкладки.
+// Крутящаяся мишень показывается только на разделах (showTarget) и центрируется
+// по блоку с картинками (FEATURED / сетка / список).
 //   variant: 'photo' | 'video' | 'press' | 'articles'
 
 const Target = ({ onDone }) => (
@@ -12,11 +13,11 @@ const Target = ({ onDone }) => (
 );
 
 // Сетка карточек-обложек (PHOTO / VIDEOS)
-function GridSkeleton({ heading, video }) {
+function GridSkeleton({ heading, video, target }) {
   return (
     <div>
       <h2 className="mp-photo-heading">{heading}</h2>
-      <div className="mp-photo-grid">
+      <div className="mp-photo-grid" style={{ position: 'relative' }}>
         {Array.from({ length: 8 }).map((_, i) => (
           <div className="mp-photo-card" key={i}>
             <div className={`${video ? 'mp-vgal-cover' : 'mp-photo-cover'} skeleton`}></div>
@@ -29,13 +30,14 @@ function GridSkeleton({ heading, video }) {
             </div>
           </div>
         ))}
+        {target}
       </div>
     </div>
   );
 }
 
 // Список пресс-релизов
-function PressSkeleton() {
+function PressSkeleton({ target }) {
   return (
     <div>
       <div className="mp-section-header">
@@ -45,7 +47,7 @@ function PressSkeleton() {
         </div>
       </div>
       <div className="mp-press-divider"></div>
-      <div className="mp-press-list">
+      <div className="mp-press-list" style={{ position: 'relative' }}>
         {Array.from({ length: 6 }).map((_, i) => (
           <div className="mp-press-item" key={i}>
             <div className="mp-press-info" style={{ flex: 1 }}>
@@ -55,17 +57,19 @@ function PressSkeleton() {
             </div>
           </div>
         ))}
+        {target}
       </div>
     </div>
   );
 }
 
 // Featured + сетка новостей (ALL / NEWS / FEATURES / INTERVIEWS)
-function ArticlesSkeleton() {
+function ArticlesSkeleton({ target }) {
   return (
     <>
       <div className="mp-section-label"><span className="mp-section-line mp-blue"></span><span className="mp-section-text">FEATURED</span></div>
-      <div className="mp-featured-container" style={{ marginTop: 16 }}>
+      {/* мишень центрируется по этому блоку — на уровне середины фотографий FEATURED */}
+      <div className="mp-featured-container" style={{ marginTop: 16, position: 'relative' }}>
         {Array.from({ length: 2 }).map((_, i) => (
           <div className="mp-featured-card skeleton-card" key={i} style={{ aspectRatio: '687 / 386', position: 'relative', overflow: 'hidden', borderRadius: 4 }}>
             <div className="skeleton" style={{ position: 'absolute', inset: 0 }}></div>
@@ -80,6 +84,7 @@ function ArticlesSkeleton() {
             </div>
           </div>
         ))}
+        {target}
       </div>
       <div className="mp-section-label" style={{ marginTop: 40 }}><span className="mp-section-line mp-grey"></span><span className="mp-section-text mp-grey-text">LATEST NEWS</span></div>
       <div className="mp-latest-news-grid" style={{ marginTop: 16 }}>
@@ -99,14 +104,14 @@ function ArticlesSkeleton() {
   );
 }
 
-export default function LoadingMedia({ variant = 'articles', onDone = () => {} }) {
+export default function LoadingMedia({ variant = 'articles', showTarget = false, onDone = () => {} }) {
+  const target = showTarget ? <Target onDone={onDone} /> : null;
   return (
     <section className="mp-news-content mp-loader-wrap" aria-busy="true" aria-label="Loading">
-      {variant === 'photo' && <GridSkeleton heading="PHOTO" />}
-      {variant === 'video' && <GridSkeleton heading="VIDEOS" video />}
-      {variant === 'press' && <PressSkeleton />}
-      {variant === 'articles' && <ArticlesSkeleton />}
-      <Target onDone={onDone} />
+      {variant === 'photo' && <GridSkeleton heading="PHOTO" target={target} />}
+      {variant === 'video' && <GridSkeleton heading="VIDEOS" video target={target} />}
+      {variant === 'press' && <PressSkeleton target={target} />}
+      {variant === 'articles' && <ArticlesSkeleton target={target} />}
     </section>
   );
 }
