@@ -2,11 +2,12 @@
 import TargetLoader from '@/components/LoadingResults/TargetLoader';
 import './SelectedNewsPage.css';
 
-// Скелет открытой новости: герой с картинкой + тело статьи + сайдбар. Мишень — по центру героя.
+// Скелет открытой новости: герой + тело статьи + сайдбар.
+// Мишень — сиблингом (не внутри пульсирующего .ds-block), по центру экрана.
 export default function NewsDetailSkeleton({ onEnded = () => {} }) {
   return (
-    <>
-      <section className="selected_media_head ds-block" style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }}>
+      <section className="selected_media_head ds-block">
         <div className="selected-media-content">
           <div className="selected-meta-row">
             <span className="skel-bright" style={{ width: 70, height: 18 }}></span>
@@ -19,7 +20,6 @@ export default function NewsDetailSkeleton({ onEnded = () => {} }) {
             <span className="skel-bright" style={{ width: 150, height: 14 }}></span>
           </div>
         </div>
-        <TargetLoader onEnded={onEnded} screen />
       </section>
 
       <section className="media_main_content">
@@ -41,6 +41,8 @@ export default function NewsDetailSkeleton({ onEnded = () => {} }) {
           </aside>
         </div>
       </section>
-    </>
+
+      <TargetLoader onEnded={onEnded} />
+    </div>
   );
 }
