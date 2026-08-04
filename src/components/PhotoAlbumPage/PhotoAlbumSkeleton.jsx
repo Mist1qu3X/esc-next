@@ -6,7 +6,7 @@ import './PhotoAlbumPage.css';
 // Мишень — сиблингом (не внутри пульсирующих .ds-block), по центру экрана.
 export default function PhotoAlbumSkeleton({ onEnded = () => {} }) {
   return (
-    <div style={{ position: 'relative' }}>
+    <>
       <section className="pa-header">
         <div className="pa-breadcrumbs">
           <span className="skeleton" style={{ width: 40, height: 12, borderRadius: 3 }}></span>
@@ -30,6 +30,6 @@ export default function PhotoAlbumSkeleton({ onEnded = () => {} }) {
       </section>
 
       <TargetLoader onEnded={onEnded} />
-    </div>
+    </>
   );
 }

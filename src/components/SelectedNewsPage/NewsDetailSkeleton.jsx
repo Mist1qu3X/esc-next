@@ -6,7 +6,7 @@ import './SelectedNewsPage.css';
 // Мишень — сиблингом (не внутри пульсирующего .ds-block), по центру экрана.
 export default function NewsDetailSkeleton({ onEnded = () => {} }) {
   return (
-    <div style={{ position: 'relative' }}>
+    <>
       <section className="selected_media_head ds-block">
         <div className="selected-media-content">
           <div className="selected-meta-row">
@@ -43,6 +43,6 @@ export default function NewsDetailSkeleton({ onEnded = () => {} }) {
       </section>
 
       <TargetLoader onEnded={onEnded} />
-    </div>
+    </>
   );
 }

@@ -6,7 +6,7 @@ import './SelectedVideoPage.css';
 // Мишень — сиблингом (не внутри пульсирующих .ds-block), по центру экрана.
 export default function VideoDetailSkeleton({ onEnded = () => {} }) {
   return (
-    <div style={{ position: 'relative' }}>
+    <>
       <section className="sv-header">
         <div className="sv-breadcrumbs">
           <span className="skeleton" style={{ width: 40, height: 12, borderRadius: 3 }}></span>
@@ -36,6 +36,6 @@ export default function VideoDetailSkeleton({ onEnded = () => {} }) {
       </section>
 
       <TargetLoader onEnded={onEnded} />
-    </div>
+    </>
   );
 }

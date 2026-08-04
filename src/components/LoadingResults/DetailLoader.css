@@ -1,27 +1,35 @@
 /* Общий лоудер деталей (SelectedNews / SelectedPhoto / SelectedVideo / SelectedEvent):
-   крутящаяся мишень по ЦЕНТРУ ЭКРАНА поверх полупрозрачного затемнения всего экрана.
-   Затемнение — это НЕ прямоугольный фон под роликом, а равномерный dim всего вьюпорта;
-   чёрный фон ролика сливается с тёмным центром (dark-on-dark) + добивается mix-blend. */
+   затемнение всего экрана + мишень по центру экрана. Чёрный фон ролика полностью
+   вырезается mix-blend-mode: screen — для этого у tl-target нет stacking-context предков. */
 
-.tl-target {
+/* Равномерное затемнение всего вьюпорта (отдельный сиблинг — не мешает блендингу). */
+.tl-dim {
     position: fixed;
     inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at center,
+        rgba(6, 10, 18, 0.86),
+        rgba(6, 10, 18, 0.76));
+}
+
+/* Мишень по центру экрана. absolute без позиционированных предков => отсчёт от
+   initial containing block (вьюпорт). НИКАКИХ z-index/opacity/transform/fixed. */
+.tl-target {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: none;
-    z-index: 60;
-    /* затемнение всего экрана, темнее в центре (под мишенью), мягко светлее к краям */
-    background: radial-gradient(circle at center,
-        rgba(6, 10, 18, 0.93) 0%,
-        rgba(6, 10, 18, 0.88) 42%,
-        rgba(6, 10, 18, 0.74) 100%);
 }
 
 .tl-video {
     width: clamp(180px, 22vw, 260px);
     height: auto;
-    mix-blend-mode: screen;    /* добивает выбивание чёрного на тёмном затемнении */
+    mix-blend-mode: screen;    /* выбивает чёрный фон ролика */
 }
 
 /* Пульсирующий серый блок, НЕ прячущий детей (в отличие от .skeleton). */
