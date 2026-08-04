@@ -2,10 +2,14 @@
    затемнение всего экрана + мишень по центру экрана. Чёрный фон ролика полностью
    вырезается mix-blend-mode: screen — для этого у tl-target нет stacking-context предков. */
 
-/* Равномерное затемнение всего вьюпорта (отдельный сиблинг — не мешает блендингу). */
+/* Затемнение первого экрана. absolute + height:100vh (как у мишени), чтобы дим и
+   мишень скроллились вместе, а не разъезжались (отдельный сиблинг — не мешает блендингу). */
 .tl-dim {
-    position: fixed;
-    inset: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
     pointer-events: none;
     background: radial-gradient(circle at center,
         rgba(6, 10, 18, 0.86),
