@@ -1,0 +1,32 @@
+/* Общий лоудер деталей (SelectedNews / SelectedPhoto / SelectedVideo):
+   анимация-мишень поверх + пульсирующие блоки-скелета. */
+
+.tl-target {
+    /* центрируется по родительскому блоку (герой / вьюер / плеер) */
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    /* без z-index: любой z-index создаёт stacking context и ломает
+       mix-blend-mode: screen у ролика (чёрный фон перестаёт «выбиваться») */
+}
+
+.tl-video {
+    width: clamp(160px, 20vw, 240px);
+    height: auto;
+    mix-blend-mode: screen;
+}
+
+/* Пульсирующий серый блок, НЕ прячущий детей (в отличие от .skeleton) —
+   на него можно класть плашки-заготовки и саму мишень. */
+.ds-block {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    background-image: none !important;
+    animation: skel-pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tl-video { display: none; }
+}
