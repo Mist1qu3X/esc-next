@@ -193,8 +193,6 @@ const Header = () => {
                         ENTRY SYSTEM<img src="/img/ArrowUpRight.png" alt="" className="arrow" />
                     </button>
                     <div className="mobile-nav-langs">
-                        <button className="mobile-lang active">EN</button>
-                        <button className="mobile-lang">CN</button>
                         <button className="mobile-lang mobile-signin"><i className="fa-solid fa-right-to-bracket"></i> SIGN IN</button>
                     </div>
                 </div>
