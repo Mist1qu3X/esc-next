@@ -446,9 +446,6 @@ const MediaPage = () => {
             <div className={`mp-live-header ${liveCount > 0 ? '' : 'is-idle'}`}>
               <span className="mp-live-dot"></span>
               <span className="mp-live-text">{liveCount > 0 ? 'LIVE NOW' : 'STREAMS'}</span>
-              <span className="mp-live-streams">
-                {liveCount > 0 ? `${liveCount} live` : `${liveStreams.length} upcoming`}
-              </span>
             </div>
             <div className="mp-live-grid">
               {liveStreams.map((s) => {
@@ -467,12 +464,6 @@ const MediaPage = () => {
                     <div className={`mp-platform-badge ${platformClass(s.platform)}`}>
                       <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
                       <span>{platformClass(s.platform)}</span>
-                    </div>
-                    <div className={`mp-live-pill ${isLive ? 'is-live' : 'is-upcoming'}`}>
-                      <div className="mp-live-pill-status">
-                        <span className="mp-live-pill-dot"></span>
-                        <span className="mp-live-pill-text">{isLive ? 'LIVE' : 'UPCOMING'}</span>
-                      </div>
                     </div>
                   </div>
                   <div className="mp-live-play-btn" onClick={open}>
