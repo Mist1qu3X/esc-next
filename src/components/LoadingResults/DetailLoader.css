@@ -13,18 +13,29 @@
        mix-blend-mode: screen у ролика (чёрный фон перестаёт «выбиваться») */
 }
 
+/* Режим «по центру экрана» (SelectedNews) */
+.tl-target.tl-screen {
+    position: fixed;
+    z-index: 50;
+}
+
+/* Тёмный мягкий ореол под роликом: его чёрный фон сливается с ореолом,
+   даже если mix-blend-mode на <video> не срабатывает. */
+.tl-halo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(28px, 6vh, 64px) clamp(40px, 8vw, 110px);
+    background: radial-gradient(closest-side,
+        rgba(6, 10, 18, 0.96),
+        rgba(6, 10, 18, 0.82) 55%,
+        rgba(6, 10, 18, 0) 100%);
+}
+
 .tl-video {
     width: clamp(160px, 20vw, 240px);
     height: auto;
     mix-blend-mode: screen;
-}
-
-/* Пульсирующий серый блок, НЕ прячущий детей (в отличие от .skeleton) —
-   на него можно класть плашки-заготовки и саму мишень. */
-.ds-block {
-    background-color: rgba(255, 255, 255, 0.06) !important;
-    background-image: none !important;
-    animation: skel-pulse 1.4s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

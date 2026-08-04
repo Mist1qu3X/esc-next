@@ -19,7 +19,7 @@ export default function NewsDetailSkeleton({ onEnded = () => {} }) {
             <span className="skel-bright" style={{ width: 150, height: 14 }}></span>
           </div>
         </div>
-        <TargetLoader onEnded={onEnded} />
+        <TargetLoader onEnded={onEnded} screen />
       </section>
 
       <section className="media_main_content">
