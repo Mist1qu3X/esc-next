@@ -265,7 +265,15 @@ const MediaPage = () => {
       </section>
 
       {(loading || sectionLoading) ? (
-        <LoadingMedia onDone={() => setSectionLoading(false)} />
+        <LoadingMedia
+          variant={
+            activeFilter === 'PHOTO' ? 'photo'
+              : activeFilter === 'VIDEOS' ? 'video'
+              : activeFilter === 'PRESS RELEASES' ? 'press'
+              : 'articles'
+          }
+          onDone={() => setSectionLoading(false)}
+        />
       ) : (
       <section className="mp-news-content">
         {/* FEATURED */}
