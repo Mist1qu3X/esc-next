@@ -443,9 +443,11 @@ const MediaPage = () => {
         {/* LIVE STREAMS */}
         {showLiveStreams && streams.length > 0 && (
           <div className="mp-live-block">
-            <div className={`mp-live-header ${liveCount > 0 ? '' : 'is-idle'}`}>
-              <span className="mp-live-dot"></span>
-              <span className="mp-live-text">{liveCount > 0 ? 'LIVE NOW' : 'STREAMS'}</span>
+            <div className="mp-live-header">
+              <span className="mp-live-text">WATCH</span>
+              {liveCount > 0 && (
+                <span className="mp-live-badge"><span className="mp-live-dot"></span>LIVE</span>
+              )}
             </div>
             <div className="mp-live-grid">
               {liveStreams.map((s) => {
