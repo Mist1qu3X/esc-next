@@ -1,24 +1,39 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import axios from 'axios';
+import config from '@/lib/config';
 import './ContactsPage.css';
 
-// Официальная почта для формы обратной связи.
+// Официальная почта ESC (фолбэк в сообщении об ошибке).
 const CONTACT_EMAIL = 'esc@escsport.eu';
 
+const EMPTY = { name: '', email: '', message: '', company: '' };
+
 const ContactsPage = () => {
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState(EMPTY);
+  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  // Пока нет backend-эндпоинта — собираем письмо и открываем почтовый клиент на esc@escsport.eu.
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Website enquiry from ${form.name.trim() || 'visitor'}`);
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
-    );
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+    if (status === 'sending') return;
+    setStatus('sending');
+    try {
+      await axios.post(`${config.API_URL}/api/contact-messages`, {
+        data: {
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          company: form.company, // honeypot — живые люди оставляют пустым
+        },
+      });
+      setStatus('sent');
+      setForm(EMPTY);
+    } catch (err) {
+      setStatus('error');
+    }
   };
 
   return (
@@ -66,11 +81,37 @@ const ContactsPage = () => {
               required
             ></textarea>
 
+            {/* Honeypot: скрыто от людей, ловит ботов. Не трогать. */}
+            <input
+              type="text"
+              className="contacts-hp"
+              name="company"
+              tabIndex={-1}
+              autoComplete="off"
+              value={form.company}
+              onChange={update('company')}
+              aria-hidden="true"
+            />
+
             <p className="contacts-privacy">
               By submitting this form, you agree to our Privacy Policy.
             </p>
 
-            <button type="submit" className="contacts-submit">SEND</button>
+            {status === 'sent' && (
+              <p className="contacts-note contacts-note-ok">
+                Thanks — your message has been sent. We&apos;ll get back to you soon.
+              </p>
+            )}
+            {status === 'error' && (
+              <p className="contacts-note contacts-note-err">
+                Something went wrong. Please try again, or email us directly at{' '}
+                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              </p>
+            )}
+
+            <button type="submit" className="contacts-submit" disabled={status === 'sending'}>
+              {status === 'sending' ? 'SENDING…' : 'SEND'}
+            </button>
           </form>
         </div>
       </section>

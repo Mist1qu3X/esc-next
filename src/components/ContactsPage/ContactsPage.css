@@ -135,6 +135,27 @@
     margin: 8px 0 4px;
 }
 
+/* Honeypot — вне потока, невидимо, недоступно с клавиатуры */
+.contacts-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.contacts-note {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 4px 0 0;
+}
+
+.contacts-note-ok { color: #00d8f5; }
+.contacts-note-err { color: #ff6b6b; }
+.contacts-note a { color: inherit; text-decoration: underline; }
+
 .contacts-submit {
     width: 100%;
     background-color: #00d8f5;
