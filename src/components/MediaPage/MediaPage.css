@@ -729,13 +729,6 @@
     margin-top: 60px;
 }
 
-.mp-live-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 24px;
-}
-
 .mp-live-dot {
     width: 10px;
     height: 10px;
@@ -748,16 +741,6 @@
     0% { opacity: 1; }
     50% { opacity: 0.5; }
     100% { opacity: 1; }
-}
-
-.mp-live-text {
-    font-family: 'Inter', sans-serif;
-    font-weight: 800;
-    font-size: 10px;
-    line-height: 15px;
-    letter-spacing: 1.6px;
-    text-transform: uppercase;
-    color: #ffffff;
 }
 
 /* Бейдж «LIVE» — показывается отдельно и только при реальном эфире */
