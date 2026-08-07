@@ -443,8 +443,9 @@ const MediaPage = () => {
         {/* LIVE STREAMS */}
         {showLiveStreams && streams.length > 0 && (
           <div className="mp-live-block">
-            <div className="mp-live-header">
-              <span className="mp-live-text">WATCH</span>
+            <div className="mp-section-label">
+              <span className="mp-section-line mp-grey"></span>
+              <span className="mp-section-text mp-grey-text">WATCH</span>
               {liveCount > 0 && (
                 <span className="mp-live-badge"><span className="mp-live-dot"></span>LIVE</span>
               )}
