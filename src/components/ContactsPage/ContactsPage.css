@@ -1,0 +1,193 @@
+/* ========== CONTACTS HERO (тот же баннер, что на Documents/Discover) ========== */
+.contacts-hero {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 100px 32px 64px;
+    background-color: #091A2E;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.contacts-hero .breadcrumbs-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 40px;
+}
+
+.contacts-hero .breadcrumb-home {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.32);
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.contacts-hero .breadcrumb-home:hover {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.contacts-hero .breadcrumb-separator {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.32);
+}
+
+.contacts-hero .breadcrumb-active {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+}
+
+.contacts-hero .contacts-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: 1px;
+    margin: 0;
+}
+
+/* ========== ФОРМА ОБРАТНОЙ СВЯЗИ ========== */
+.contacts-body {
+    width: 100%;
+    background-color: #06121f;
+    padding: 80px 32px 120px;
+}
+
+.contacts-form-wrap {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.contacts-form-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(36px, 4.5vw, 56px);
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+    margin: 0 0 20px;
+}
+
+.contacts-form-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(16px, 1.6vw, 19px);
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.6;
+    margin: 0 0 48px;
+}
+
+.contacts-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+}
+
+.contacts-input {
+    width: 100%;
+    background-color: #0c1f34;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 18px 20px;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.contacts-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.contacts-input:focus {
+    outline: none;
+    border-color: #00d8f5;
+    background-color: #0e2440;
+}
+
+.contacts-textarea {
+    min-height: 240px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.contacts-privacy {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 8px 0 4px;
+}
+
+.contacts-submit {
+    width: 100%;
+    background-color: #00d8f5;
+    color: #06121f;
+    border: none;
+    border-radius: 6px;
+    padding: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.05s ease;
+}
+
+.contacts-submit:hover {
+    background-color: #33e2ff;
+}
+
+.contacts-submit:active {
+    transform: translateY(1px);
+}
+
+/* ========== АДАПТИВ ========== */
+@media (max-width: 720px) {
+    .contacts-hero {
+        padding: 64px 16px 48px;
+    }
+
+    .contacts-hero .breadcrumbs-row {
+        margin-bottom: 28px;
+    }
+
+    .contacts-hero .breadcrumb-home,
+    .contacts-hero .breadcrumb-separator,
+    .contacts-hero .breadcrumb-active {
+        font-size: 12px;
+        letter-spacing: 1.5px;
+    }
+
+    .contacts-body {
+        padding: 56px 16px 88px;
+    }
+
+    .contacts-form-subtitle {
+        margin-bottom: 36px;
+    }
+
+    .contacts-input {
+        padding: 16px 18px;
+    }
+
+    .contacts-textarea {
+        min-height: 200px;
+    }
+}

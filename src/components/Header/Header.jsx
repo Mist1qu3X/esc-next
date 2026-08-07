@@ -23,7 +23,7 @@ const Header = () => {
         { label: 'Results & Ranking', href: '/results' },
         { label: 'Documents', href: '/documents' },
         { label: 'Media', href: '/media' },
-        { label: 'Members', href: '/members' },
+        { label: 'Contacts', href: '/contacts' },
     ];
 
     // Реальный поиск по контенту Strapi (новости/события/документы/федерации/видео)
@@ -53,7 +53,7 @@ const Header = () => {
                 arr(docs).forEach((d) => match(d.title) && out.push({ type: 'Document', label: d.title, path: `/documents` }));
                 arr(feds).forEach((f) => match(f.name || f.country) && out.push({ type: 'Federation', label: f.name || f.country, path: `/members` }));
                 arr(videos).forEach((v) => v.documentId && match(v.title) && out.push({ type: 'Video', label: v.title, path: `/media/video/${v.documentId}` }));
-                setSuggestions(out.slice(0, 8));
+                setSuggestions(out.slice(0, 3));
             } catch (_) { /* отменённый/сетевой — игнор */ }
             finally { setIsSearching(false); }
         };
