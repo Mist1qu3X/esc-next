@@ -67,7 +67,7 @@ const Footer = () => {
                     <Link href="/discover">Governance</Link>
                     <Link href="/members">Executive Committee</Link>
                     <Link href="/members">Technical Committee</Link>
-                    <Link href="/members">Contact</Link>
+                    <Link href="/contacts">Contact</Link>
                 </div>
                 <div className="media">
                     <h4 className="title-links">MEDIA</h4>
