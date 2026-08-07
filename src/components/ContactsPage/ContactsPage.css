@@ -122,9 +122,10 @@
 }
 
 .contacts-textarea {
-    min-height: 240px;
+    height: 240px;
     line-height: 1.5;
-    resize: vertical;
+    resize: none;
+    overflow-y: auto;
 }
 
 .contacts-privacy {
