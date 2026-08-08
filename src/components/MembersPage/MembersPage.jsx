@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
+import { getFederationWebsite } from '@/lib/federationWebsites';
 import './MembersPage.css';
 
 // Дефолтные статы (fallback, пока коллекция member-stats пуста)
@@ -185,7 +186,7 @@ const MembersPage = () => {
                         <span>{fed.phone || '—'}</span>
                       </div>
                     </div>
-                    <button className="mp-view-federation-btn">VIEW FEDERATION ›</button>
+                    <button className="mp-view-federation-btn" onClick={() => window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer')}>VIEW FEDERATION ›</button>
                   </div>
                 </div>
               ))
@@ -231,7 +232,7 @@ const MembersPage = () => {
                         {fed.phone && <div><i className="fa-solid fa-phone"></i> {fed.phone}</div>}
                       </td>
                       <td className="mp-list-actions">
-                        <button className="mp-view-federation-btn">VIEW ›</button>
+                        <button className="mp-view-federation-btn" onClick={() => window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer')}>VIEW ›</button>
                       </td>
                     </tr>
                   ))}
