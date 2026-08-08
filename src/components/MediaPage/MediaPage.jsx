@@ -199,8 +199,6 @@ const MediaPage = () => {
     return 'youtube';
   };
 
-  // Показываем стримы (live + upcoming). Метрики (зрители/хронометраж) — только у реального эфира.
-  const liveCount = streams.filter((s) => (s.streamStatus || '').toLowerCase() === 'live').length;
   const youtubeStream = streams.find((s) => normPlatform(s.platform) === 'youtube');
   const facebookStream = streams.find((s) => normPlatform(s.platform) === 'facebook');
   let liveStreams = [youtubeStream, facebookStream].filter(Boolean);
@@ -440,13 +438,9 @@ const MediaPage = () => {
             <div className="mp-section-label">
               <span className="mp-section-line mp-grey"></span>
               <span className="mp-section-text mp-grey-text">WATCH</span>
-              {liveCount > 0 && (
-                <span className="mp-live-badge"><span className="mp-live-dot"></span>LIVE</span>
-              )}
             </div>
             <div className="mp-live-grid">
               {liveStreams.map((s) => {
-                const isLive = (s.streamStatus || '').toLowerCase() === 'live';
                 const open = () => (canEmbed(s) ? setPlaying(s) : s.url && window.open(s.url, '_blank'));
                 // превью: своё залитое, иначе стоп-кадр самого стрима (YouTube)
                 const cover = getImageUrl(s.thumbnail) || ytThumb(s.url);
@@ -471,7 +465,7 @@ const MediaPage = () => {
                     <h3 className="mp-live-title">{s.title}</h3>
                     <button className={`mp-watch-btn ${platformClass(s.platform)}-btn`} onClick={open}>
                       <i className="fa-solid fa-play"></i>
-                      {isLive ? 'WATCH LIVE' : 'WATCH'}
+                      WATCH
                     </button>
                   </div>
                 </div>

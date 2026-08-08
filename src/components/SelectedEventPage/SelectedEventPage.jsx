@@ -157,21 +157,17 @@ const SelectedEventPage = ({ slug }) => {
 
   const platformClass = (p) => ((p || '').toLowerCase() === 'facebook' ? 'facebook' : 'youtube');
 
-  // LIVE STREAM: twitch убран. Показываем эфиры (live + upcoming); метрики — только у live.
+  // WATCH: twitch убран.
   const liveStreams = streams.filter((s) => (s.platform || '').toLowerCase() !== 'twitch').slice(0, 3);
-  const anyLive = liveStreams.some((s) => (s.streamStatus || '').toLowerCase() === 'live');
   const openStream = (s) => (canEmbed(s) ? setPlaying(s) : s.url && window.open(s.url, '_blank'));
 
   const liveStreamBlock = (
     <div className="sidebar-block live-stream-block">
-      <div className={`live-stream-header ${anyLive ? 'live-on' : ''}`}>
+      <div className="live-stream-header">
         <div className="live-stream-indicator">
           <span className="live-waves" aria-hidden="true"></span>
           <span className="live-stream-text">WATCH</span>
         </div>
-        {anyLive && (
-          <span className="on-air-badge"><span className="on-air-dot"></span>LIVE</span>
-        )}
       </div>
       {liveStreams.length > 0 ? (
         <div className="live-platforms">
@@ -341,7 +337,6 @@ const SelectedEventPage = ({ slug }) => {
                 {liveStreams.length > 0 ? (
                   <div className="event-media-streams">
                     {liveStreams.map((s) => {
-                      const isLive = (s.streamStatus || '').toLowerCase() === 'live';
                       // превью: своё залитое, иначе стоп-кадр самого стрима (YouTube)
                       const cover = getImageUrl(s.thumbnail) || ytThumb(s.url);
                       return (
@@ -356,16 +351,11 @@ const SelectedEventPage = ({ slug }) => {
                           <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
                           <span>{platformClass(s.platform).toUpperCase()}</span>
                         </div>
-                        {isLive && (
-                          <span className="event-media-status is-live">
-                            <span className="event-media-status-dot"></span>LIVE
-                          </span>
-                        )}
                         <div className="event-media-play"><i className="fa-solid fa-play"></i></div>
                         <div className="event-media-info">
                           <span className="event-media-title">{s.title}</span>
                           <span className="event-media-meta">
-                            {isLive ? 'Live now' : 'Goes live at event start'}
+                            Goes live at event start
                           </span>
                         </div>
                       </div>
