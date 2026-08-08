@@ -22,11 +22,8 @@ const MembersPage = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [loading, setLoading] = useState(true);
 
-  // Те же критерии, что в блоке MEMBER FEDERATIONS / UNITED BY PRECISION.
-  // В БД region = C./S./W./E.EUROPE + SCANDINAVIA + CAUCASUS;
-  // "EUROPE" объединяет все *.EUROPE, Скандинавия и Кавказ — отдельно.
-  const regions = ['ALL', 'EUROPE', 'SCANDINAVIA', 'CAUCASUS'];
-  const EUROPE_REGIONS = ['C.EUROPE', 'S.EUROPE', 'W.EUROPE', 'E.EUROPE'];
+  // Тот же набор, что в блоке MEMBER FEDERATIONS / UNITED BY PRECISION (DiscoverPage).
+  const regions = ['ALL', 'C.EUROPE', 'S.EUROPE', 'SCANDINAVIA', 'W.EUROPE', 'E.EUROPE'];
 
   useEffect(() => {
     const fetchFederations = async () => {
@@ -53,9 +50,7 @@ const MembersPage = () => {
     let result = [...federations];
     
     if (activeRegion !== 'ALL') {
-      result = result.filter((f) =>
-        activeRegion === 'EUROPE' ? EUROPE_REGIONS.includes(f.region) : f.region === activeRegion
-      );
+      result = result.filter((f) => f.region === activeRegion);
     }
     
     if (searchTerm) {
