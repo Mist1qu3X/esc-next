@@ -35,8 +35,3 @@ export const fetchVideos = async (limit = 3) => {
     const res = await api.get(`/videos?populate=*&pagination[limit]=${limit}`);
     return res.data.data;
 };
-
-export const fetchSpotlights = async (limit = 4) => {
-    const res = await api.get(`/spotlights?populate=*&pagination[limit]=${limit}`);
-    return res.data.data;
-};
