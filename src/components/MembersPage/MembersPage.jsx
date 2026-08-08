@@ -17,20 +17,15 @@ const MembersPage = () => {
   const [filteredFeds, setFilteredFeds] = useState([]);
   const [stats, setStats] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeRegion, setActiveRegion] = useState('All Regions');
+  const [activeRegion, setActiveRegion] = useState('ALL');
   const [viewMode, setViewMode] = useState('grid');
   const [loading, setLoading] = useState(true);
 
-  const regions = ['All Regions', 'Central Europe', 'Southern Europe', 'Northern Europe', 'Western Europe', 'Eastern Europe'];
-
-  const regionMapping = {
-    'All Regions': 'ALL',
-    'Central Europe': 'C.EUROPE',
-    'Southern Europe': 'S.EUROPE',
-    'Northern Europe': 'SCANDINAVIA',
-    'Western Europe': 'W.EUROPE',
-    'Eastern Europe': 'E.EUROPE'
-  };
+  // Те же критерии, что в блоке MEMBER FEDERATIONS / UNITED BY PRECISION.
+  // В БД region = C./S./W./E.EUROPE + SCANDINAVIA + CAUCASUS;
+  // "EUROPE" объединяет все *.EUROPE, Скандинавия и Кавказ — отдельно.
+  const regions = ['ALL', 'EUROPE', 'SCANDINAVIA', 'CAUCASUS'];
+  const EUROPE_REGIONS = ['C.EUROPE', 'S.EUROPE', 'W.EUROPE', 'E.EUROPE'];
 
   useEffect(() => {
     const fetchFederations = async () => {
@@ -56,9 +51,10 @@ const MembersPage = () => {
   useEffect(() => {
     let result = [...federations];
     
-    if (activeRegion !== 'All Regions') {
-      const regionValue = regionMapping[activeRegion];
-      result = result.filter((f) => f.region === regionValue);
+    if (activeRegion !== 'ALL') {
+      result = result.filter((f) =>
+        activeRegion === 'EUROPE' ? EUROPE_REGIONS.includes(f.region) : f.region === activeRegion
+      );
     }
     
     if (searchTerm) {

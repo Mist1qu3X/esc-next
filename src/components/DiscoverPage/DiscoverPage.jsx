@@ -53,10 +53,14 @@ const DiscoverPage = () => {
 
   const togglePanel = (id) => setOpenPanels(prev => ({ ...prev, [id]: !prev[id] }));
 
-  const regions = ['ALL', 'C.EUROPE', 'S.EUROPE', 'SCANDINAVIA', 'W.EUROPE', 'E.EUROPE'];
-  const filteredFeds = filterRegion === 'ALL'
-    ? federations
-    : federations.filter(f => f.region === filterRegion);
+  const regions = ['ALL', 'EUROPE', 'SCANDINAVIA', 'CAUCASUS'];
+  // В БД region = C./S./W./E.EUROPE + SCANDINAVIA + CAUCASUS.
+  // "EUROPE" объединяет все *.EUROPE; Скандинавия и Кавказ вынесены отдельно.
+  const EUROPE_REGIONS = ['C.EUROPE', 'S.EUROPE', 'W.EUROPE', 'E.EUROPE'];
+  const matchesRegion = (f) =>
+    filterRegion === 'ALL' ||
+    (filterRegion === 'EUROPE' ? EUROPE_REGIONS.includes(f.region) : f.region === filterRegion);
+  const filteredFeds = federations.filter(matchesRegion);
 
   const getImageUrl = (img) => {
     if (!img) return null;
