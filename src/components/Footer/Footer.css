@@ -204,9 +204,13 @@
 }
 
 .reading-links,
-.social-links,
 .other-links-container {
     overflow: hidden;
+}
+
+/* .social-links НЕ обрезаем — иначе hover (translateY -2px) подрезает иконки */
+.social-links {
+    overflow: visible;
 }
 
 /* Нижняя часть футера — копирайт */

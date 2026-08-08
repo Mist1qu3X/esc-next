@@ -227,7 +227,7 @@ const SelectedEventPage = ({ slug }) => {
               <span className="event-info-sep">·</span>
               <div className="event-info-item"><i className="fa-solid fa-users"></i><span>{event.athletes || '480+'} athletes · {event.nations || '38'} nations</span></div>
             </div>
-            <button className="event-entry-btn" onClick={() => router.push('/events')}>
+            <button className="event-entry-btn" onClick={() => window.open('https://esc-entry.eu', '_blank', 'noopener,noreferrer')}>
               <i className="fa-solid fa-arrow-up-right-from-square"></i>ENTRY SYSTEM
             </button>
           </div>

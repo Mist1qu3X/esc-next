@@ -83,7 +83,7 @@ const Footer = () => {
                     <Link href="/results">Results & Rankings</Link>
                     <Link href="/documents">Documents Library</Link>
                     <Link href="/members">Member Federations</Link>
-                    <Link href="/events">Entry System 🡥</Link>
+                    <a href="https://esc-entry.eu" target="_blank" rel="noopener noreferrer">Entry System 🡥</a>
                 </div>
             </div>
 
