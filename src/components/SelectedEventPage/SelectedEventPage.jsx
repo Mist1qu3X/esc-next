@@ -83,7 +83,8 @@ const SelectedEventPage = ({ slug }) => {
     const fetchEvent = async () => {
       try {
         const [evRes, schedRes] = await Promise.all([
-          axios.get(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true`),
+          axios.get(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[schedule]=true`),
+          // Фолбэк на старую коллекцию event-schedule, пока данные не перенесены в компонент event.schedule
           axios.get(`${config.API_URL}/api/event-schedules?filters[eventSlug][$eq]=${slug}&sort=order:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
         ]);
         if (evRes.data?.data?.length > 0) setEvent(evRes.data.data[0]);
@@ -141,7 +142,9 @@ const SelectedEventPage = ({ slug }) => {
     });
     return Object.values(groups).sort((a, b) => a.date.localeCompare(b.date));
   };
-  const displaySchedule = schedule.length > 0 ? groupSchedule(schedule) : SCHEDULE;
+  // Приоритет — встроенный компонент event.schedule; фолбэк — старая коллекция; иначе демо-SCHEDULE
+  const scheduleRows = event?.schedule?.length ? event.schedule : schedule;
+  const displaySchedule = scheduleRows.length > 0 ? groupSchedule(scheduleRows) : SCHEDULE;
 
   // RESULTS этого события. Приоритет — новые event-results (event relation + leaders[]),
   // сгруппированы по дисциплине+категории; если их ещё нет — старые result-details (fallback до миграции).
