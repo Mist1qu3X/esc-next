@@ -65,7 +65,7 @@ const Footer = () => {
                     <h4 className="title-links">THE ESC</h4>
                     <Link href="/discover">About ESC</Link>
                     <Link href="/discover">Governance</Link>
-                    <Link href="/members">Executive Committee</Link>
+                    <Link href="/members">Presidium</Link>
                     <Link href="/members">Technical Committee</Link>
                     <Link href="/contacts">Contact</Link>
                 </div>
