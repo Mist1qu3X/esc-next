@@ -83,7 +83,7 @@ const SelectedEventPage = ({ slug }) => {
     const fetchEvent = async () => {
       try {
         const [evRes, schedRes] = await Promise.all([
-          axios.get(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[venueImage]=true`),
+          axios.get(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true`),
           axios.get(`${config.API_URL}/api/event-schedules?filters[eventSlug][$eq]=${slug}&sort=order:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
         ]);
         if (evRes.data?.data?.length > 0) setEvent(evRes.data.data[0]);
@@ -412,8 +412,6 @@ const SelectedEventPage = ({ slug }) => {
               <div className="sidebar-divider"></div>
               <div className="event-detail-list">
                 <div className="detail-item"><i className="fa-regular fa-calendar detail-icon"></i><div className="detail-content"><span className="detail-label">DATES</span><span className="detail-value">{formatDate(event.date)} - {formatDate(event.endDate)}</span></div></div>
-                <div className="sidebar-divider"></div>
-                <div className="detail-item"><i className="fa-solid fa-location-dot detail-icon"></i><div className="detail-content"><span className="detail-label">VENUE</span><span className="detail-value">{event.venue || 'Sportovní hala Praha'}</span></div></div>
                 <div className="sidebar-divider"></div>
                 <div className="detail-item"><i className="fa-solid fa-location-dot detail-icon"></i><div className="detail-content"><span className="detail-label">LOCATION</span><span className="detail-value">{event.location}</span></div></div>
                 <div className="sidebar-divider"></div>
