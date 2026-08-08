@@ -63,7 +63,6 @@ export function canEmbed(stream) {
 export default function StreamPlayer({ stream, onClose }) {
   if (!stream) return null;
   const embed = getEmbedUrl(stream);
-  const live = (stream.streamStatus || '').toLowerCase() === 'live';
 
   return (
     <div className="sp-overlay" onClick={onClose}>
@@ -93,9 +92,6 @@ export default function StreamPlayer({ stream, onClose }) {
         )}
 
         <div className="sp-caption">
-          <span className={`sp-badge ${live ? 'sp-live' : 'sp-upcoming'}`}>
-            <span className="sp-badge-dot"></span>{live ? 'LIVE' : 'UPCOMING'}
-          </span>
           <span className="sp-title">{stream.title}</span>
         </div>
       </div>
