@@ -56,6 +56,14 @@ const DiscoverPage = () => {
     fetchData();
   }, []);
 
+  // Скролл к якорю из футера (#governance/#presidium/#committees). Секции рендерятся
+  // после загрузки данных, поэтому нативный скролл по хэшу не срабатывает — доводим сами.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.location.hash) return;
+    const el = document.querySelector(window.location.hash);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [governance, committees, leaders]);
+
   const togglePanel = (id) => setOpenPanels(prev => ({ ...prev, [id]: !prev[id] }));
 
   const filteredFeds = filterRegion === 'ALL'
@@ -308,7 +316,7 @@ const DiscoverPage = () => {
         </div>
       </section>
 
-      <section className="structure">
+      <section className="structure" id="governance">
         <div className="structure-next-layer">
           <span className="structure-line"></span>
           <span className="structure-subtitle">STRUCTURE</span>
@@ -357,7 +365,7 @@ const DiscoverPage = () => {
         {/* Executive Committee */}
         {executive && (
           <>
-            <div className={`structure-block block-accent ${openPanels['executive'] ? 'has-open-panel' : ''}`}>
+            <div id="presidium" className={`structure-block block-accent ${openPanels['executive'] ? 'has-open-panel' : ''}`}>
               <div className="block-label">EXECUTIVE</div>
               <div className="block-info">
                 <h3 className="block-name">{executive.name}</h3>
@@ -413,7 +421,7 @@ const DiscoverPage = () => {
         
         {/* Комитеты — названия и состав редактируются в Strapi (коллекция Committee) */}
         {committeeCards.length > 0 && (
-          <div className="committee-cards">
+          <div className="committee-cards" id="committees">
             {committeeCards.map((c) => (
               <div key={c.id} className="committee-card" onClick={() => togglePanel(c.id)}>
                 <div className="committee-card-content">
