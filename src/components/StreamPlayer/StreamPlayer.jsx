@@ -45,6 +45,11 @@ export function getEmbedUrl(stream) {
     return null;
   }
   if (p.includes('facebook') || url.includes('facebook')) {
+    // Встроить можно только конкретное видео/эфир. Ссылку на саму страницу/профиль
+    // (напр. profile.php?id=…) — нельзя: у Facebook нет аналога YouTube channel-live.
+    // В этом случае вернём null → кнопка WATCH просто откроет Facebook.
+    const isVideoUrl = /\/videos\/|\/live\/|\/watch\/?\?|video\.php|story_fbid=|[?&]v=/.test(url);
+    if (!isVideoUrl) return null;
     return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&autoplay=true&width=1280`;
   }
   return null;
