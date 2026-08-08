@@ -25,14 +25,12 @@ const MediaPage = () => {
   const [videos, setVideos] = useState([]);
   const [docs, setDocs] = useState([]);
   const [streams, setStreams] = useState([]);
-  const [spotlights, setSpotlights] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
 
   const router = useRouter();
   const latestNewsRef = useRef(null);
-  const spotlightRef = useRef(null);
   const videosRef = useRef(null);
 
   const filters = ['ALL', 'NEWS', 'FEATURES', 'INTERVIEWS', 'PHOTO', 'VIDEOS', 'PRESS RELEASES'];
@@ -57,8 +55,6 @@ const MediaPage = () => {
         const hash = window.location.hash;
         if (hash === '#latest-news' && latestNewsRef.current) {
           setTimeout(() => scrollToElement(latestNewsRef.current), 300);
-        } else if (hash === '#spotlight' && spotlightRef.current) {
-          setTimeout(() => scrollToElement(spotlightRef.current), 300);
         } else if (hash === '#videos' && videosRef.current) {
           setTimeout(() => scrollToElement(videosRef.current), 300);
         }
@@ -67,18 +63,17 @@ const MediaPage = () => {
     checkHashAndScroll();
     window.addEventListener('hashchange', checkHashAndScroll);
     return () => window.removeEventListener('hashchange', checkHashAndScroll);
-  }, [news, spotlights, videos]);
+  }, [news, videos]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [newsRes, videosRes, docsRes, streamsRes, spotlightsRes, photosRes] = await Promise.all([
+        const [newsRes, videosRes, docsRes, streamsRes, photosRes] = await Promise.all([
           axios.get(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`),
           axios.get(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100`),
           // docs/streams: только общие (событийные живут на странице события).
           axios.get(`${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`),
           axios.get(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10&filters[eventSlug][$null]=true`),
-          axios.get(`${config.API_URL}/api/spotlight-items?populate=*&pagination[pageSize]=4`),
           // photos: показываем ВСЕ альбомы (событийные тоже) — в сетке нужна только обложка + счётчик
           axios.get(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100`).catch(() => ({ data: { data: [] } })),
         ]);
@@ -87,7 +82,6 @@ const MediaPage = () => {
         setVideos(extractData(videosRes));
         setDocs(extractData(docsRes));
         setStreams(extractData(streamsRes));
-        setSpotlights(extractData(spotlightsRes));
         setPhotos(extractData(photosRes));
 
         // дозагружаем остальные страницы альбомов в фоне (Strapi капит pageSize на 100)
