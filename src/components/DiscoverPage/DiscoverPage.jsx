@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
+import { REGIONS } from '@/lib/regions';
 import './DiscoverPage.css';
 
 const DiscoverPage = () => {
@@ -57,7 +58,6 @@ const DiscoverPage = () => {
 
   const togglePanel = (id) => setOpenPanels(prev => ({ ...prev, [id]: !prev[id] }));
 
-  const regions = ['ALL', 'C.EUROPE', 'S.EUROPE', 'SCANDINAVIA', 'W.EUROPE', 'E.EUROPE'];
   const filteredFeds = filterRegion === 'ALL'
     ? federations
     : federations.filter(f => f.region === filterRegion);
@@ -222,9 +222,9 @@ const DiscoverPage = () => {
         </div>
         <div className="federations-filter">
           <div className="filter-tabs">
-            {regions.map((r) => (
-              <button key={r} className={`filter-tab ${filterRegion === r ? 'active' : ''}`}
-                onClick={() => setFilterRegion(r)}>{r}</button>
+            {REGIONS.map((r) => (
+              <button key={r.value} className={`filter-tab ${filterRegion === r.value ? 'active' : ''}`}
+                onClick={() => setFilterRegion(r.value)}>{r.label}</button>
             ))}
           </div>
           <div className="filter-count"><i className="fa-solid fa-users"></i><span>{filteredFeds.length} federations</span></div>

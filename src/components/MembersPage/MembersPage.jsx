@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
 import { getFederationWebsite } from '@/lib/federationWebsites';
+import { REGIONS } from '@/lib/regions';
 import './MembersPage.css';
 
 // Дефолтные статы (fallback, пока коллекция member-stats пуста)
@@ -22,8 +23,7 @@ const MembersPage = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [loading, setLoading] = useState(true);
 
-  // Тот же набор, что в блоке MEMBER FEDERATIONS / UNITED BY PRECISION (DiscoverPage).
-  const regions = ['ALL', 'C.EUROPE', 'S.EUROPE', 'SCANDINAVIA', 'W.EUROPE', 'E.EUROPE'];
+  // Набор регионов — общий с DiscoverPage (src/lib/regions.js).
 
   useEffect(() => {
     const fetchFederations = async () => {
@@ -100,13 +100,13 @@ const MembersPage = () => {
             />
           </div>
           <div className="mp-region-buttons">
-            {regions.map((r) => (
+            {REGIONS.map((r) => (
               <button
-                key={r}
-                className={`mp-region-btn ${activeRegion === r ? 'active' : ''}`}
-                onClick={() => setActiveRegion(r)}
+                key={r.value}
+                className={`mp-region-btn ${activeRegion === r.value ? 'active' : ''}`}
+                onClick={() => setActiveRegion(r.value)}
               >
-                {r}
+                {r.label}
               </button>
             ))}
           </div>
