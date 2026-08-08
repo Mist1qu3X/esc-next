@@ -5,6 +5,27 @@ import config from '@/lib/config';
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://esc-shooting.org';
 
+// Достаём одну запись для метаданных. Сначала пробуем populate компонента seo;
+// если бэкенд ещё без него (400) — повторяем без seo (name/description/image всё равно подтянутся).
+export async function fetchForMeta(collectionUrl, { bareArray = false } = {}) {
+  const urls = [
+    `${collectionUrl}&populate[image]=true&populate[seo][populate]=*`,
+    `${collectionUrl}&populate[image]=true`,
+  ];
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, { next: { revalidate: 3600 } });
+      if (!res.ok) continue;
+      const json = await res.json();
+      const arr = bareArray ? (Array.isArray(json) ? json : json?.data) : json?.data;
+      if (arr?.[0]) return arr[0];
+    } catch {
+      // пробуем следующий вариант
+    }
+  }
+  return null;
+}
+
 function absImage(media) {
   const url = media?.url;
   if (!url) return null;
