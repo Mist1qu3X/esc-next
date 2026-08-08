@@ -2,9 +2,19 @@ import './globals.css';
 import '@/components/Header/Header.css';
 import '@/components/Footer/Footer.css';
 
+const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://esc-shooting.org';
+
 export const metadata = {
+  metadataBase: new URL(SITE),
   title: 'ESC Shooting | European Shooting Confederation',
   description: 'Official website of the European Shooting Confederation',
+  openGraph: {
+    siteName: 'European Shooting Confederation',
+    type: 'website',
+    locale: 'en',
+    url: SITE,
+  },
+  twitter: { card: 'summary_large_image' },
 };
 
 export default function RootLayout({ children }) {
