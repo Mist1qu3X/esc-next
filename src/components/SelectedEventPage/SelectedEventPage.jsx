@@ -337,6 +337,7 @@ const SelectedEventPage = ({ slug }) => {
             {activeTab === 'LIVE & MEDIA' && (
               <>
                 <h2 className="event-section-title">LIVE &amp; MEDIA</h2>
+                <p className="event-description">Live streams, highlights and media coverage.</p>
                 {liveStreams.length > 0 ? (
                   <div className="event-media-streams">
                     {liveStreams.map((s) => {
