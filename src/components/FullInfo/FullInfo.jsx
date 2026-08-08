@@ -116,9 +116,9 @@ const FullInfo = () => {
     };
 
     const handleEntrySystem = () => {
-        const link = platform?.buttonLink || '/documents';
+        const link = platform?.buttonLink || 'https://esc-entry.eu';
         if (/^https?:\/\//.test(link)) {
-            window.open(link, '_blank');
+            window.open(link, '_blank', 'noopener,noreferrer');
         } else {
             router.push(link);
         }

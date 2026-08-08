@@ -87,8 +87,7 @@ const Header = () => {
     };
 
     const handleEntrySystem = () => {
-        // TODO: заменить на реальный внешний URL портала заявок, когда будет
-        router.push('/events');
+        window.open('https://esc-entry.eu', '_blank', 'noopener,noreferrer');
     };
 
     return (
