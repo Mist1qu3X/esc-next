@@ -337,7 +337,6 @@ const SelectedEventPage = ({ slug }) => {
             {activeTab === 'LIVE & MEDIA' && (
               <>
                 <h2 className="event-section-title">LIVE &amp; MEDIA</h2>
-                <p className="event-description">Live streams, highlights and media coverage for {event.name}.</p>
                 {liveStreams.length > 0 ? (
                   <div className="event-media-streams">
                     {liveStreams.map((s) => {
@@ -422,7 +421,7 @@ const SelectedEventPage = ({ slug }) => {
               <h4 className="sidebar-block-title">QUICK ACTIONS</h4>
               <div className="sidebar-divider"></div>
               <div className="quick-actions-list">
-                <button className="quick-action-btn" onClick={() => router.push('/events')}><i className="fa-solid fa-arrow-up-right-from-square"></i><span>ENTRY SYSTEM</span></button>
+                <button className="quick-action-btn" onClick={() => window.open('https://esc-entry.eu', '_blank', 'noopener,noreferrer')}><i className="fa-solid fa-arrow-up-right-from-square"></i><span>ENTRY SYSTEM</span></button>
                 <div className="sidebar-divider"></div>
                 <button className="quick-action-btn" onClick={() => setActiveTab('DOCUMENTS')}><i className="fa-solid fa-download"></i><span>TECHNICAL PACKAGE</span></button>
                 <div className="sidebar-divider"></div>

@@ -157,10 +157,7 @@ const DiscoverPage = () => {
 
   return (
     <>
-      <section
-        className={`about-hero ${pageData?.heroImage ? 'has-hero-image' : ''}`}
-        style={pageData?.heroImage ? { '--hero-img': `url(${getImageUrl(pageData.heroImage)})` } : undefined}
-      >
+      <section className="about-hero">
         <div className="breadcrumbs-row">
           <span className="breadcrumb-home">HOME</span>
           <span className="breadcrumb-separator">›</span>
@@ -267,19 +264,12 @@ const DiscoverPage = () => {
             <span className="heritage-subtitle">{pageData?.heritageSubtitle}</span>
           </div>
           <h2 className="heritage-title">{pageData?.heritageTitle}</h2>
-          {pageData?.heritageText && <p className="heritage-text">{pageData?.heritageText}</p>}
         </div>
         <div className="heritage-cards">
           {milestones.map((m) => (
             <div className="heritage-card" key={m.id}>
               <span className="heritage-card-head">
                 <span className="heritage-year">{m.year}</span>
-                {m.title && (
-                  <>
-                    <span className="heritage-sep">|</span>
-                    <span className="heritage-name">{m.title}</span>
-                  </>
-                )}
               </span>
               <span className="heritage-desc">{m.description}</span>
             </div>
