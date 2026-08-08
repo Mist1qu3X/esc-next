@@ -151,10 +151,6 @@ const DiscoverPage = () => {
     router.push('/members');
   };
 
-  const handleLeaderClick = (leaderId) => {
-    router.push(`/leaders/${leaderId}`);
-  };
-
   return (
     <>
       <section className="about-hero">
@@ -289,7 +285,7 @@ const DiscoverPage = () => {
         </div>
         <div className="leadership-cards">
           {leaders.slice(0, 3).map((l) => (
-            <div className="leader-card" key={l.id} onClick={() => handleLeaderClick(l.id)}>
+            <div className="leader-card" key={l.id}>
               <div className="leader-photo">
                 {l.image ? (
                   <img src={getImageUrl(l.image)} alt={l.name} className="leader-photo-img" />
