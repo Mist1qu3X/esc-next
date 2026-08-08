@@ -65,7 +65,6 @@ const SelectedEventPage = ({ slug }) => {
   const [event, setEvent] = useState(null);
   const [activeTab, setActiveTab] = useState('OVERVIEW');
   const [streams, setStreams] = useState([]);
-  const [schedule, setSchedule] = useState([]);
   const [eventResults, setEventResults] = useState([]); // старые result-details (fallback)
   const [resultBoards, setResultBoards] = useState([]); // новые event-results (event relation + leaders[])
   const [eventPhotos, setEventPhotos] = useState([]);
@@ -82,13 +81,8 @@ const SelectedEventPage = ({ slug }) => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const [evRes, schedRes] = await Promise.all([
-          axios.get(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[schedule]=true`),
-          // Фолбэк на старую коллекцию event-schedule, пока данные не перенесены в компонент event.schedule
-          axios.get(`${config.API_URL}/api/event-schedules?filters[eventSlug][$eq]=${slug}&sort=order:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
-        ]);
+        const evRes = await axios.get(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[schedule]=true`);
         if (evRes.data?.data?.length > 0) setEvent(evRes.data.data[0]);
-        setSchedule(schedRes.data?.data || []);
       } catch (e) { console.error(e); }
     };
     fetchEvent();
@@ -143,7 +137,7 @@ const SelectedEventPage = ({ slug }) => {
     return Object.values(groups).sort((a, b) => a.date.localeCompare(b.date));
   };
   // Приоритет — встроенный компонент event.schedule; фолбэк — старая коллекция; иначе демо-SCHEDULE
-  const scheduleRows = event?.schedule?.length ? event.schedule : schedule;
+  const scheduleRows = event?.schedule?.length ? event.schedule : [];
   const displaySchedule = scheduleRows.length > 0 ? groupSchedule(scheduleRows) : SCHEDULE;
 
   // RESULTS этого события. Приоритет — новые event-results (event relation + leaders[]),
