@@ -8,6 +8,7 @@ import './DiscoverPage.css';
 const DiscoverPage = () => {
   const [pageData, setPageData] = useState(null);
   const [leaders, setLeaders] = useState([]);
+  const [presidiumMembers, setPresidiumMembers] = useState([]);
   const [federations, setFederations] = useState([]);
   const [milestones, setMilestones] = useState([]);
   const [governance, setGovernance] = useState([]);
@@ -21,7 +22,7 @@ const DiscoverPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [aboutRes, leadersRes, fedsRes, milestonesRes, govRes, membersRes, committeesRes, coreRes] = await Promise.all([
+        const [aboutRes, leadersRes, fedsRes, milestonesRes, govRes, membersRes, committeesRes, coreRes, presidiumRes] = await Promise.all([
           axios.get(`${config.API_URL}/api/about-pages?populate=*`),
           axios.get(`${config.API_URL}/api/leaders?populate=*&sort=order:asc`),
           axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
@@ -30,6 +31,8 @@ const DiscoverPage = () => {
           axios.get(`${config.API_URL}/api/committee-members?populate=*&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/committees?populate=*&sort=order:asc&pagination[limit]=100`),
           axios.get(`${config.API_URL}/api/core-values?sort=order:asc`),
+          // Отдельный .catch: коллекция может ещё не существовать / без Public-прав — тогда пустой массив, страница не падает
+          axios.get(`${config.API_URL}/api/presidium-members?populate=*&sort=order:asc`).catch(() => ({ data: { data: [] } })),
         ]);
 
         setPageData(
@@ -38,6 +41,7 @@ const DiscoverPage = () => {
             : aboutRes.data?.data || null
         );
         setLeaders(leadersRes.data?.data || []);
+        setPresidiumMembers(presidiumRes.data?.data || []);
         setFederations(fedsRes.data?.data || []);
         setMilestones(milestonesRes.data?.data || []);
         setGovernance(govRes.data?.data || []);
@@ -110,6 +114,10 @@ const DiscoverPage = () => {
 
   const assembly = governance.find(g => g.type === 'legislative');
   const executive = governance.find(g => g.type === 'executive');
+
+  // PRESIDIUM: отдельная коллекция presidium-members. Пока она не заполнена
+  // (до миграции/редеплоя) — фолбэк на всех leaders, кроме первых 3 (те — в LEADERSHIP).
+  const presidiumPeople = presidiumMembers.length ? presidiumMembers : leaders.slice(3);
   
   // Участники комитета по связи (relation). У участника committee — объект { id, name, ... } или null
   const getCommitteeMembers = (committeeId) => {
@@ -370,7 +378,7 @@ const DiscoverPage = () => {
                   </button>
                 </div>
                 <div className="executive-cards-grid">
-                  {leaders.slice(0, 16).map((leader) => (
+                  {presidiumPeople.map((leader) => (
                     <div className="executive-new-card" key={leader.id}>
                       <div className="executive-card-image">
                         {leader.image ? (
