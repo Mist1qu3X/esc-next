@@ -111,6 +111,9 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
       result.sort((a, b) => a.title?.localeCompare(b.title));
     }
 
+    // Закреплённые («Актуальное») всегда вверху — стабильная сортировка сохраняет порядок внутри группы
+    result.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
+
     setFilteredDocs(result);
     setCurrentPage(1);
   }, [activeCategory, activeYear, searchTerm, sortOrder, documents]);
@@ -310,7 +313,14 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                       onClick={() => toggleExpand(doc.id)}
                       aria-expanded={isOpen}
                     >
-                      <span className="docs-acc-title">{doc.title}</span>
+                      <span className="docs-acc-title">
+                        {doc.title}
+                        {doc.pinned && (
+                          <span style={{ marginLeft: 10, fontSize: 10, fontWeight: 700, letterSpacing: 1, color: '#00d8f5', border: '1px solid rgba(0,216,245,0.4)', borderRadius: 4, padding: '2px 6px', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>
+                            <i className="fa-solid fa-thumbtack" style={{ marginRight: 4 }}></i>PINNED
+                          </span>
+                        )}
+                      </span>
                       <i
                         className={`fa-solid ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'} docs-acc-chevron`}
                       ></i>
