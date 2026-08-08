@@ -170,12 +170,10 @@ const SelectedEventPage = ({ slug }) => {
       <div className={`live-stream-header ${anyLive ? 'live-on' : ''}`}>
         <div className="live-stream-indicator">
           <span className="live-waves" aria-hidden="true"></span>
-          <span className="live-stream-text">LIVE STREAM</span>
+          <span className="live-stream-text">WATCH</span>
         </div>
-        {liveStreams.length > 0 && (
-          anyLive
-            ? <span className="on-air-badge"><span className="on-air-dot"></span>ON AIR</span>
-            : <span className="upcoming-badge"><span className="upcoming-dot"></span>UPCOMING</span>
+        {anyLive && (
+          <span className="on-air-badge"><span className="on-air-dot"></span>LIVE</span>
         )}
       </div>
       {liveStreams.length > 0 ? (
@@ -361,9 +359,11 @@ const SelectedEventPage = ({ slug }) => {
                           <i className={`fa-brands fa-${platformClass(s.platform)}`}></i>
                           <span>{platformClass(s.platform).toUpperCase()}</span>
                         </div>
-                        <span className={`event-media-status ${isLive ? 'is-live' : 'is-upcoming'}`}>
-                          <span className="event-media-status-dot"></span>{isLive ? 'LIVE' : 'UPCOMING'}
-                        </span>
+                        {isLive && (
+                          <span className="event-media-status is-live">
+                            <span className="event-media-status-dot"></span>LIVE
+                          </span>
+                        )}
                         <div className="event-media-play"><i className="fa-solid fa-play"></i></div>
                         <div className="event-media-info">
                           <span className="event-media-title">{s.title}</span>
