@@ -13,6 +13,7 @@ const Header = () => {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const searchRef = useRef(null);
+    const touchStart = useRef(null);
     const pathname = usePathname();
     const router = useRouter();
 
@@ -23,8 +24,11 @@ const Header = () => {
         { label: 'Results & Ranking', href: '/results' },
         { label: 'Documents', href: '/documents' },
         { label: 'Media', href: '/media' },
+        { label: 'Member Federations', href: '/members' },
         { label: 'Contacts', href: '/contacts' },
     ];
+
+    const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
     // Реальный поиск по контенту Strapi (новости/события/документы/федерации/видео)
     useEffect(() => {
@@ -78,11 +82,22 @@ const Header = () => {
         return () => document.removeEventListener('click', handleClickOutside);
     }, []);
 
+    // Мобильное меню: Escape закрывает, фон не скроллится пока меню открыто
+    useEffect(() => {
+        if (!isMobileMenuOpen) return;
+        const onKey = (e) => { if (e.key === 'Escape') setIsMobileMenuOpen(false); };
+        document.addEventListener('keydown', onKey);
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prevOverflow; };
+    }, [isMobileMenuOpen]);
+
     const handleSuggestionClick = (suggestion) => {
         setSearchQuery('');
         setSuggestions([]);
         setShowSuggestions(false);
         setIsSearchActive(false);
+        setIsMobileMenuOpen(false);
         router.push(suggestion.path);
     };
 
@@ -170,30 +185,65 @@ const Header = () => {
                 </div>
             </header>
 
-            <div className={`mobile-nav ${isMobileMenuOpen ? 'active' : ''}`}>
+            <div
+                className={`mobile-nav ${isMobileMenuOpen ? 'active' : ''}`}
+                onClick={(e) => { if (e.target === e.currentTarget) setIsMobileMenuOpen(false); }}
+                onTouchStart={(e) => { touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }}
+                onTouchEnd={(e) => {
+                    if (!touchStart.current) return;
+                    const dx = e.changedTouches[0].clientX - touchStart.current.x;
+                    const dy = e.changedTouches[0].clientY - touchStart.current.y;
+                    if (dx > 70 && Math.abs(dx) > Math.abs(dy)) setIsMobileMenuOpen(false); // свайп вправо — закрыть
+                    touchStart.current = null;
+                }}
+            >
                 <div className="mobile-nav-top">
-                    <Link href="/" className="mobile-nav-logo" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link href="/" className="mobile-nav-logo" onClick={closeMobileMenu}>
                         <img src="/img/Frame%20175.svg" alt="European Shooting Confederation" />
                     </Link>
-                    <button className="mobile-nav-close" onClick={() => setIsMobileMenuOpen(false)} aria-label="Close menu">
+                    <button className="mobile-nav-close" onClick={closeMobileMenu} aria-label="Close menu">
                         <i className="fa-solid fa-xmark"></i>
                     </button>
                 </div>
+
+                {/* Поиск в мобильном меню (на десктопе лупа в шапке — на мобильном она пропадала) */}
+                <div className="mobile-nav-search">
+                    <i className="fa-solid fa-magnifying-glass"></i>
+                    <input
+                        type="text"
+                        placeholder="Search…"
+                        value={searchQuery}
+                        onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && suggestions.length > 0) handleSuggestionClick(suggestions[0]); }}
+                    />
+                    {searchQuery.trim() && (
+                        <div className="mobile-nav-suggestions">
+                            {suggestions.length > 0 ? suggestions.map((s, i) => (
+                                <div key={i} className="mobile-nav-suggestion" onClick={() => handleSuggestionClick(s)}>
+                                    <i className={`fa-solid ${typeIcon(s.type)}`}></i>
+                                    <span className="mobile-nav-suggestion-label">{s.label}</span>
+                                    <span className="mobile-nav-suggestion-type">{s.type}</span>
+                                </div>
+                            )) : (
+                                <div className="mobile-nav-suggestion-empty">{isSearching ? 'Searching…' : 'No results found'}</div>
+                            )}
+                        </div>
+                    )}
+                </div>
+
                 <ul className="mobile-nav-list">
                     {navItems.map((item, i) => (
-                        <li key={i} className={pathname === item.href ? 'active' : ''} onClick={() => setIsMobileMenuOpen(false)}>
-                            <Link href={item.href}>{item.label}</Link>
+                        <li key={i} className={pathname === item.href ? 'active' : ''}>
+                            <Link href={item.href} onClick={closeMobileMenu}>{item.label}</Link>
                             {pathname === item.href && <span className="mobile-nav-dot"></span>}
                         </li>
                     ))}
                 </ul>
+
                 <div className="mobile-nav-footer">
                     <button className="mobile-nav-entry" onClick={() => { setIsMobileMenuOpen(false); handleEntrySystem(); }}>
                         ENTRY SYSTEM<img src="/img/ArrowUpRight.png" alt="" className="arrow" />
                     </button>
-                    <div className="mobile-nav-langs">
-                        <button className="mobile-lang mobile-signin"><i className="fa-solid fa-right-to-bracket"></i> SIGN IN</button>
-                    </div>
                 </div>
             </div>
         </>

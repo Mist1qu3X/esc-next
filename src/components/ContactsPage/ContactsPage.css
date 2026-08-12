@@ -128,6 +128,46 @@
     overflow-y: auto;
 }
 
+/* Поле = инпут + сообщение об ошибке/счётчик */
+.contacts-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.contacts-input-err,
+.contacts-input-err:focus {
+    border-color: #ff6b6b;
+    background-color: #2a1414;
+}
+.contacts-field-err {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #ff6b6b;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.contacts-field-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.contacts-counter {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-left: auto;
+    white-space: nowrap;
+}
+.contacts-counter-max { color: #ff6b6b; font-weight: 700; }
+.contacts-privacy-link {
+    color: #00d8f5;
+    text-decoration: underline;
+    font-weight: 600;
+}
+.contacts-privacy-link:hover { color: #0ee0ff; }
+
 .contacts-privacy {
     font-family: 'Inter', sans-serif;
     font-size: 15px;

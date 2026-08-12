@@ -148,6 +148,13 @@
     transform: translateY(-50%) scale(1.05);
 }
 
+/* Неактивная стрелка на первой/последней фотографии */
+.pa-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+}
+
 .pa-arrow-prev {
     left: 24px;
 }
@@ -155,6 +162,42 @@
 .pa-arrow-next {
     right: 24px;
 }
+
+/* Счётчик текущей фотографии */
+.pa-counter {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    z-index: 5;
+    padding: 6px 12px;
+    background: rgba(6, 16, 28, 0.7);
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+/* Пустой альбом */
+.pa-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 72px 24px;
+    gap: 10px;
+}
+.pa-empty-icon { font-size: 40px; color: rgba(0, 216, 245, 0.5); margin-bottom: 6px; }
+.pa-empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0;
+}
+.pa-empty-text { font-family: 'Inter', sans-serif; font-size: 14px; color: rgba(255, 255, 255, 0.5); margin: 0; }
 
 /* ALL PHOTO */
 .pa-all-label {

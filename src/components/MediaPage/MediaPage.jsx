@@ -29,6 +29,11 @@ const MediaPage = () => {
   const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
   const [savedSlugs, setSavedSlugs] = useState([]);       // сохранённые статьи (localStorage) — их наверх
+  // Фильтры/сортировка вкладки PHOTO
+  const [photoSearch, setPhotoSearch] = useState('');
+  const [photoYear, setPhotoYear] = useState('all');
+  const [photoEvent, setPhotoEvent] = useState('all');
+  const [photoSort, setPhotoSort] = useState('recent');
 
   const router = useRouter();
   const latestNewsRef = useRef(null);
@@ -236,9 +241,41 @@ const MediaPage = () => {
   const showPressReleases = activeFilter === 'ALL' || activeFilter === 'PRESS RELEASES';
   const showPhotos = activeFilter === 'PHOTO';
 
+  // В ALL NEWS (вкладка NEWS) сохранённые статьи ЛЮБОЙ темы — вперёд (иначе сохранённый
+  // Interview/Feature отфильтровывался бы по теме и наверх не попадал).
+  const savedFirstNews = (themeList) => {
+    if (!savedSlugs.length) return themeList;
+    const set = new Set(savedSlugs);
+    const saved = news.filter((n) => set.has(n.slug));       // сохранённые — любой темы, по дате
+    const rest = themeList.filter((n) => !set.has(n.slug));
+    return [...saved, ...rest];
+  };
+
   // Новостная сетка: на теме — «ALL N THEME» и ВСЕ новости темы; на ALL — «LATEST NEWS» (обрезка)
-  const newsGridItems = themeView ? savedFirst(filteredNews) : latestNews;
+  const newsGridItems = activeFilter === 'NEWS'
+    ? savedFirstNews(filteredNews)
+    : (themeView ? savedFirst(filteredNews) : latestNews);
   const newsGridHeading = themeView ? `ALL ${newsGridItems.length} ${activeFilter}` : 'LATEST NEWS';
+
+  // ---- PHOTO: фильтры (поиск / год / событие) + сортировка + счётчики ----
+  const photoCountOf = (p) => (Array.isArray(p.images) && p.images.length > 0 ? p.images.length : (p.photoCount || 0));
+  const photoYears = [...new Set(photos.filter((p) => p.date).map((p) => new Date(p.date).getFullYear().toString()))].sort((a, b) => b - a);
+  const formatEventName = (slug) => slug.replace(/-\d+$/, '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const photoEvents = [...new Set(photos.filter((p) => p.eventSlug).map((p) => p.eventSlug))];
+  const displayedPhotos = (() => {
+    let r = [...photos];
+    if (photoSearch.trim()) { const q = photoSearch.toLowerCase(); r = r.filter((p) => (p.title || '').toLowerCase().includes(q)); }
+    if (photoYear !== 'all') r = r.filter((p) => p.date && new Date(p.date).getFullYear().toString() === photoYear);
+    if (photoEvent !== 'all') r = r.filter((p) => p.eventSlug === photoEvent);
+    if (photoSort === 'recent') r.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    else if (photoSort === 'oldest') r.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+    else if (photoSort === 'count') r.sort((a, b) => photoCountOf(b) - photoCountOf(a));
+    else if (photoSort === 'az') r.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    return r;
+  })();
+  const photoFiltersActive = !!photoSearch.trim() || photoYear !== 'all' || photoEvent !== 'all';
+  const resetPhotoFilters = () => { setPhotoSearch(''); setPhotoYear('all'); setPhotoEvent('all'); };
+  const photoCountLabel = (n) => (n === 0 ? 'Empty' : n === 1 ? '1 photo' : `${n} photos`);
 
   return (
     <>
@@ -314,12 +351,42 @@ const MediaPage = () => {
         {/* PHOTO GALLERY */}
         {showPhotos && (
           <div>
-            <h2 className="mp-photo-heading">PHOTO</h2>
+            <div className="mp-photo-head-row">
+              <h2 className="mp-photo-heading">PHOTO</h2>
+              <span className="mp-photo-total">{displayedPhotos.length} ALBUM{displayedPhotos.length === 1 ? '' : 'S'}</span>
+            </div>
+
+            {/* Фильтры альбомов: поиск / событие / год / сортировка */}
+            {photos.length > 0 && (
+              <div className="mp-photo-filters">
+                <div className="mp-photo-search">
+                  <i className="fa-solid fa-magnifying-glass"></i>
+                  <input type="text" placeholder="Search albums…" value={photoSearch} onChange={(e) => setPhotoSearch(e.target.value)} />
+                </div>
+                {photoEvents.length > 0 && (
+                  <select className="mp-photo-select" value={photoEvent} onChange={(e) => setPhotoEvent(e.target.value)}>
+                    <option value="all">All events</option>
+                    {photoEvents.map((ev) => <option key={ev} value={ev}>{formatEventName(ev)}</option>)}
+                  </select>
+                )}
+                <select className="mp-photo-select" value={photoYear} onChange={(e) => setPhotoYear(e.target.value)}>
+                  <option value="all">All years</option>
+                  {photoYears.map((y) => <option key={y} value={y}>{y}</option>)}
+                </select>
+                <select className="mp-photo-select" value={photoSort} onChange={(e) => setPhotoSort(e.target.value)}>
+                  <option value="recent">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="count">Most photos</option>
+                  <option value="az">A–Z</option>
+                </select>
+              </div>
+            )}
+
             <div className="mp-photo-grid">
-              {photos.length > 0 ? (
-                photos.map((p) => {
+              {displayedPhotos.length > 0 ? (
+                displayedPhotos.map((p) => {
                   const cover = getImageUrl(p.image) || getImageUrl(p.images);
-                  const count = Array.isArray(p.images) && p.images.length > 0 ? p.images.length : (p.photoCount || 0);
+                  const count = photoCountOf(p);
                   return (
                     <div
                       key={p.id}
@@ -327,13 +394,15 @@ const MediaPage = () => {
                       onClick={() => p.slug && router.push(`/media/photo/${p.slug}`)}
                       style={{ cursor: p.slug ? 'pointer' : 'default' }}
                     >
-                      <div className="mp-photo-cover" style={{ backgroundImage: `url(${cover})` }}></div>
+                      <div className="mp-photo-cover" style={{ backgroundImage: `url(${cover})` }}>
+                        {count === 0 && <span className="mp-photo-empty-badge">Empty</span>}
+                      </div>
                       <div className="mp-photo-panel">
                         <h3 className="mp-photo-title">{p.title}</h3>
                         <div className="mp-photo-footer">
                           <span className="mp-photo-date">{formatDatePhoto(p.date)}</span>
-                          <span className="mp-photo-count">
-                            <i className="fa-regular fa-images"></i>{count}
+                          <span className={`mp-photo-count ${count === 0 ? 'mp-photo-count-empty' : ''}`}>
+                            <i className="fa-regular fa-images"></i>{photoCountLabel(count)}
                           </span>
                         </div>
                       </div>
@@ -341,9 +410,11 @@ const MediaPage = () => {
                   );
                 })
               ) : (
-                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
-                  No photos available
-                </p>
+                <div className="mp-empty-block">
+                  <i className="fa-regular fa-images mp-empty-block-icon"></i>
+                  <p className="mp-empty-block-title">{photos.length === 0 ? 'No albums yet' : 'No albums match your filters'}</p>
+                  {photoFiltersActive && <button className="mp-empty-block-btn" onClick={resetPhotoFilters}>Clear filters</button>}
+                </div>
               )}
             </div>
           </div>

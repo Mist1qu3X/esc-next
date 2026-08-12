@@ -50,7 +50,7 @@
     .navigation ul {
         display: flex;
         align-items: center;
-        gap: 32px;
+        gap: 24px;
         list-style: none;
     }
 
@@ -58,7 +58,7 @@
         position: relative;
         padding: 8px 0;
         color: #8b9bb0;
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 500;
         text-decoration: none;
         letter-spacing: 0.3px;
@@ -225,7 +225,7 @@
 
     /* Мобильное меню — полноэкранный оверлей */
     .mobile-nav {
-        display: none;
+        display: flex;
         position: fixed;
         inset: 0;
         width: 100%;
@@ -236,11 +236,96 @@
         z-index: 200;
         flex-direction: column;
         overflow-y: auto;
+        /* Состояния открытия/закрытия: плавное появление и скрытие */
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        pointer-events: none;
+        transition: opacity 0.26s ease, transform 0.26s ease, visibility 0.26s;
     }
 
     .mobile-nav.active {
-        display: flex;
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
     }
+
+    /* Поиск в мобильном меню */
+    .mobile-nav-search {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 18px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+    }
+    .mobile-nav-search > i {
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+    .mobile-nav-search input {
+        flex: 1;
+        min-width: 0;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        font-size: 15px;
+    }
+    .mobile-nav-search input::placeholder { color: rgba(255, 255, 255, 0.4); }
+    .mobile-nav-suggestions {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: #0C2138;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 6px;
+        overflow: hidden;
+        z-index: 5;
+    }
+    .mobile-nav-suggestion {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        cursor: pointer;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .mobile-nav-suggestion:hover { background: rgba(0, 216, 245, 0.08); }
+    .mobile-nav-suggestion > i { color: #00d8f5; font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+    .mobile-nav-suggestion-label {
+        flex: 1;
+        min-width: 0;
+        color: #fff;
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .mobile-nav-suggestion-type {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex-shrink: 0;
+    }
+    .mobile-nav-suggestion-empty {
+        padding: 14px;
+        color: rgba(255, 255, 255, 0.4);
+        font-family: 'Inter', sans-serif;
+        font-size: 13px;
+        text-align: center;
+    }
+
 
     .mobile-nav-top {
         display: flex;
@@ -459,6 +544,12 @@
 .search-suggestion-item:hover .suggestion-arrow {
     color: #00d8f5;
     transform: translateX(4px);
+}
+
+/* На более узком десктопе (пока не бургер) навигация чуть ужимается, чтобы 8 пунктов влезали */
+@media (max-width: 1200px) {
+    .navigation ul { gap: 18px; }
+    .navigation a { font-size: 12px; }
 }
 
 /* Адаптив для мобильных */

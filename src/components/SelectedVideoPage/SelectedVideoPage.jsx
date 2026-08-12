@@ -91,28 +91,31 @@ const SelectedVideoPage = ({ id }) => {
       <section className="sv-content">
         <VideoPlayer src={fileSrc || video.videoUrl} poster={poster} youtubeEmbed={embed} />
 
-        {otherVideos.length > 0 && (
-          <>
-            <div className="sv-more-label">MORE VIDEOS</div>
-            <div className="sv-grid">
-              {otherVideos.map((v) => (
-                <div
-                  key={v.id}
-                  className="sv-card"
-                  onClick={() => router.push(`/media/video/${v.documentId}`)}
-                >
-                  <div className="sv-card-cover" style={{ backgroundImage: `url(${mediaUrl(v.thumbnail)})` }}>
-                    <div className="sv-card-play"><i className="fa-solid fa-play"></i></div>
-                    {v.duration && <span className="sv-card-duration">{v.duration}</span>}
-                  </div>
-                  <div className="sv-card-panel">
-                    <h3 className="sv-card-title">{v.title}</h3>
-                    {v.date && <span className="sv-card-date">{formatDate(v.date)}</span>}
-                  </div>
+        <div className="sv-more-label">MORE VIDEOS</div>
+        {otherVideos.length > 0 ? (
+          <div className="sv-grid">
+            {otherVideos.map((v) => (
+              <div
+                key={v.id}
+                className="sv-card"
+                onClick={() => router.push(`/media/video/${v.documentId}`)}
+              >
+                <div className="sv-card-cover" style={{ backgroundImage: `url(${mediaUrl(v.thumbnail)})` }}>
+                  <div className="sv-card-play"><i className="fa-solid fa-play"></i></div>
+                  {v.duration && <span className="sv-card-duration">{v.duration}</span>}
                 </div>
-              ))}
-            </div>
-          </>
+                <div className="sv-card-panel">
+                  <h3 className="sv-card-title">{v.title}</h3>
+                  {v.date && <span className="sv-card-date">{formatDate(v.date)}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="sv-more-empty">
+            <i className="fa-regular fa-circle-play sv-more-empty-icon"></i>
+            <span>No other videos yet — check back soon.</span>
+          </div>
         )}
       </section>
     </>
