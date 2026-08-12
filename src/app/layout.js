@@ -2,6 +2,7 @@ import './globals.css';
 import '@/components/Header/Header.css';
 import '@/components/Footer/Footer.css';
 import CookieConsent from '@/components/CookieConsent/CookieConsent';
+import OfflineNotice from '@/components/OfflineNotice/OfflineNotice';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://esc-shooting.org';
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         {children}
+        <OfflineNotice />
         <CookieConsent />
       </body>
     </html>

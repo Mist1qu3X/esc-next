@@ -55,8 +55,9 @@ const PhotoAlbumPage = ({ slug }) => {
     if (track) track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
   };
 
-  const goPrev = () => total && scrollToIndex((selected - 1 + total) % total);
-  const goNext = () => total && scrollToIndex((selected + 1) % total);
+  // Без зацикливания: на первой/последней фотографии стрелка неактивна
+  const goPrev = () => { if (selected > 0) scrollToIndex(selected - 1); };
+  const goNext = () => { if (selected < total - 1) scrollToIndex(selected + 1); };
 
   // Прокрутка/свайп только обновляет активную миниатюру (никакого встречного скролла)
   const onTrackScroll = () => {
@@ -97,40 +98,51 @@ const PhotoAlbumPage = ({ slug }) => {
       </section>
 
       <section className="pa-content">
-        {/* Большое фото: стрелки на десктопе, свайп/прокрутка на ≤960 */}
-        <div className="pa-viewer">
-          <div className="pa-track" ref={trackRef} onScroll={onTrackScroll}>
-            {photos.map((ph, i) => (
-              <div className="pa-slide" key={ph.id || i}>
-                <div className="pa-slide-bg" style={{ backgroundImage: `url(${getImageUrl(ph)})` }}></div>
-                <img className="pa-slide-img" src={getImageUrl(ph)} alt={album.title} draggable={false} />
-              </div>
-            ))}
+        {total === 0 ? (
+          <div className="pa-empty">
+            <i className="fa-regular fa-images pa-empty-icon"></i>
+            <p className="pa-empty-title">No photos in this album yet</p>
+            <p className="pa-empty-text">Images will appear here once they&apos;re uploaded.</p>
           </div>
-          {total > 1 && (
-            <>
-              <button className="pa-arrow pa-arrow-prev" onClick={goPrev} aria-label="Previous">
-                <i className="fa-solid fa-chevron-left"></i>
-              </button>
-              <button className="pa-arrow pa-arrow-next" onClick={goNext} aria-label="Next">
-                <i className="fa-solid fa-chevron-right"></i>
-              </button>
-            </>
-          )}
-        </div>
+        ) : (
+          <>
+            {/* Большое фото: стрелки на десктопе, свайп/прокрутка на ≤960 */}
+            <div className="pa-viewer">
+              <div className="pa-track" ref={trackRef} onScroll={onTrackScroll}>
+                {photos.map((ph, i) => (
+                  <div className="pa-slide" key={ph.id || i}>
+                    <div className="pa-slide-bg" style={{ backgroundImage: `url(${getImageUrl(ph)})` }}></div>
+                    <img className="pa-slide-img" src={getImageUrl(ph)} alt={album.title} draggable={false} />
+                  </div>
+                ))}
+              </div>
+              {total > 1 && (
+                <>
+                  <button className="pa-arrow pa-arrow-prev" onClick={goPrev} disabled={selected === 0} aria-label="Previous">
+                    <i className="fa-solid fa-chevron-left"></i>
+                  </button>
+                  <button className="pa-arrow pa-arrow-next" onClick={goNext} disabled={selected >= total - 1} aria-label="Next">
+                    <i className="fa-solid fa-chevron-right"></i>
+                  </button>
+                </>
+              )}
+              <span className="pa-counter">{selected + 1} / {total}</span>
+            </div>
 
-        {/* Все фото альбома */}
-        <div className="pa-all-label">ALL PHOTO</div>
-        <div className="pa-grid">
-          {photos.map((ph, i) => (
-            <div
-              key={ph.id || i}
-              className={`pa-thumb ${i === selected ? 'pa-active' : ''}`}
-              style={{ backgroundImage: `url(${getImageUrl(ph)})` }}
-              onClick={() => scrollToIndex(i)}
-            ></div>
-          ))}
-        </div>
+            {/* Все фото альбома */}
+            <div className="pa-all-label">ALL PHOTO · {total} {total === 1 ? 'PHOTO' : 'PHOTOS'}</div>
+            <div className="pa-grid">
+              {photos.map((ph, i) => (
+                <div
+                  key={ph.id || i}
+                  className={`pa-thumb ${i === selected ? 'pa-active' : ''}`}
+                  style={{ backgroundImage: `url(${getImageUrl(ph)})` }}
+                  onClick={() => scrollToIndex(i)}
+                ></div>
+              ))}
+            </div>
+          </>
+        )}
       </section>
     </>
   );
