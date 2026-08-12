@@ -50,7 +50,7 @@
     .navigation ul {
         display: flex;
         align-items: center;
-        gap: 24px;
+        gap: 32px;
         list-style: none;
     }
 
@@ -58,7 +58,7 @@
         position: relative;
         padding: 8px 0;
         color: #8b9bb0;
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 500;
         text-decoration: none;
         letter-spacing: 0.3px;
@@ -546,10 +546,10 @@
     transform: translateX(4px);
 }
 
-/* На более узком десктопе (пока не бургер) навигация чуть ужимается, чтобы 8 пунктов влезали */
-@media (max-width: 1200px) {
-    .navigation ul { gap: 18px; }
-    .navigation a { font-size: 12px; }
+/* На обычном десктопе шрифт 14px; на более узком (но ещё не бургер) — 13px, чтобы 8 пунктов влезали */
+@media (max-width: 1260px) {
+    .navigation ul { gap: 24px; }
+    .navigation a { font-size: 13px; }
 }
 
 /* Адаптив для мобильных */

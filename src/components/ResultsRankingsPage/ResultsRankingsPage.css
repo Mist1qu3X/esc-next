@@ -340,6 +340,108 @@
     opacity: 0.7;
 }
 
+/* Кнопка сортировки с видимым направлением */
+.events-sort-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+}
+.events-sort-btn:hover { border-color: rgba(0, 216, 245, 0.4); color: #fff; }
+.events-sort-btn i { color: #00d8f5; font-size: 12px; }
+
+/* Несостоявшееся соревнование: результатов нет — вместо VIEW неактивная метка */
+.event-view-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+    white-space: nowrap;
+    cursor: default;
+}
+.event-view-pending i { font-size: 11px; }
+
+/* Пустое состояние списка соревнований */
+.events-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    gap: 8px;
+}
+.events-empty-icon { font-size: 34px; color: rgba(0, 216, 245, 0.5); margin-bottom: 4px; }
+.events-empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0;
+}
+.events-empty-text { font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(255, 255, 255, 0.5); margin: 0; }
+.events-empty-btn {
+    margin-top: 8px;
+    height: 36px;
+    padding: 0 18px;
+    background: transparent;
+    border: 1px solid rgba(0, 216, 245, 0.4);
+    border-radius: 4px;
+    color: #00d8f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.events-empty-btn:hover { background: rgba(0, 216, 245, 0.1); transform: translateY(-1px); }
+
+/* Пустые состояния таблиц: результаты / рейтинги / рекорды */
+.results-empty, .rt-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 64px 24px;
+    gap: 8px;
+}
+.results-empty-icon, .rt-empty-icon { font-size: 34px; color: rgba(0, 216, 245, 0.5); margin-bottom: 4px; }
+.results-empty-title, .rt-empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0;
+}
+.results-empty-text, .rt-empty-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 440px;
+    line-height: 1.5;
+    margin: 0;
+}
+
 /* ============================================
    2 УРОВЕНЬ — ДИСЦИПЛИНЫ
    ============================================ */

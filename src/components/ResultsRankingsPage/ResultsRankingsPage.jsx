@@ -7,23 +7,6 @@ import SkeletonEvents from '@/components/LoadingResults/SkeletonEvents';
 import Pagination from '@/components/Pagination/Pagination';
 import './ResultsRankingsPage.css';
 
-// Детерминированная генерация выстрелов (9.5–10.9) без Math.random.
-// count — сколько выстрелов уже сделано (остальные пустые: соревнование идёт)
-const genShots = (seed, count = 11) =>
-  Array.from({ length: 24 }, (_, i) => (i < count ? (9.5 + ((seed * 7 + i * 3) % 15) / 10).toFixed(1) : ''));
-
-// Тестовые участники для демонстрации таблицы результатов (level 3)
-const TEST_RESULTS = [
-  { position: 1, athleteName: 'KOVÁČOVÁ ANNA', federationCode: 'CZE', flagEmoji: '🇨🇿', total: '115.4', inner10s: '6', category: 'MEN', shots: genShots(1) },
-  { position: 2, athleteName: 'BECKER MARIE', federationCode: 'GER', flagEmoji: '🇩🇪', total: '113.8', inner10s: '5', category: 'WOMEN', shots: genShots(2) },
-  { position: 3, athleteName: 'BOSCHETTI ELENA', federationCode: 'ITA', flagEmoji: '🇮🇹', total: '112.5', inner10s: '3', category: 'MEN', shots: genShots(3) },
-  { position: 4, athleteName: 'NOVOTNÁ HANA', federationCode: 'SVK', flagEmoji: '🇸🇰', total: '110.0', inner10s: '4', category: 'WOMEN', shots: genShots(4) },
-  { position: 5, athleteName: 'HANSEN INGRID', federationCode: 'NOR', flagEmoji: '🇳🇴', total: '92.0', inner10s: '2', category: 'MEN', shots: genShots(5) },
-  { position: 6, athleteName: 'MÜLLER PETRA', federationCode: 'AUT', flagEmoji: '🇦🇹', total: '92.0', inner10s: '3', category: 'WOMEN', shots: genShots(6) },
-  { position: 7, athleteName: 'WIŚNIEWSKA KAROLINA', federationCode: 'POL', flagEmoji: '🇵🇱', total: '61.4', inner10s: '1', category: 'MEN', shots: genShots(7) },
-  { position: 8, athleteName: 'BERG INGRID', federationCode: 'SWE', flagEmoji: '🇸🇪', total: '80.8', inner10s: '2', category: 'WOMEN', shots: genShots(8) },
-];
-
 // Тестовые соревнования (fallback, если в Strapi пусто) — чтобы флоу Results работал целиком
 const TEST_EVENTS = [
   { id: 'te1', name: 'European Championship 10m 2026', location: 'Prague, Czech Republic', date: '2026-05-18', statusEvent: 'FINISHED', category: 'SENIOR', type: 'CHAMPIONSHIP' },
@@ -53,40 +36,6 @@ const RANKING_DISCIPLINES = [
   { main: 'SKEET WOMEN', sub: '', discipline: 'Skeet', gender: 'WOMEN', icon: IC_SHOTGUN },
 ];
 
-// Тестовые рейтинги (fallback), пока нет реальных данных по дисциплине/полу
-const TEST_RANKINGS_MEN = [
-  { position: 1, athleteName: 'QUIQUAMPOIX JEAN', country: 'FRA', flagEmoji: '🇫🇷', points: '1,380', events: '7', best: '245.3', category: 'MEN' },
-  { position: 2, athleteName: 'KOROSTELYOV MIKAEL', country: 'SWE', flagEmoji: '🇸🇪', points: '1,295', events: '6', best: '244.8', category: 'MEN' },
-  { position: 3, athleteName: 'GRÜN STEFAN', country: 'GER', flagEmoji: '🇩🇪', points: '1,244', events: '7', best: '244.2', category: 'MEN' },
-  { position: 4, athleteName: 'PETROV SERGEI', country: 'BUL', flagEmoji: '🇧🇬', points: '1,198', events: '5', best: '243.6', category: 'MEN' },
-  { position: 5, athleteName: 'NAGY PÉTER', country: 'HUN', flagEmoji: '🇭🇺', points: '1,154', events: '6', best: '243.0', category: 'MEN' },
-  { position: 6, athleteName: 'FERRARI MARCO', country: 'ITA', flagEmoji: '🇮🇹', points: '1,109', events: '5', best: '242.4', category: 'MEN' },
-  { position: 7, athleteName: 'HERNANDEZ CARLOS', country: 'ESP', flagEmoji: '🇪🇸', points: '1,072', events: '6', best: '241.8', category: 'MEN' },
-  { position: 8, athleteName: 'MÜLLER HANS', country: 'AUT', flagEmoji: '🇦🇹', points: '1,038', events: '4', best: '241.2', category: 'MEN' },
-];
-const TEST_RANKINGS_WOMEN = [
-  { position: 1, athleteName: 'KOVÁŘOVÁ ANNA', country: 'CZE', flagEmoji: '🇨🇿', points: '1,352', events: '7', best: '244.1', category: 'WOMEN' },
-  { position: 2, athleteName: 'BACOSI DIANA', country: 'ITA', flagEmoji: '🇮🇹', points: '1,288', events: '6', best: '243.5', category: 'WOMEN' },
-  { position: 3, athleteName: 'RUIZ FÁTIMA', country: 'ESP', flagEmoji: '🇪🇸', points: '1,230', events: '7', best: '242.9', category: 'WOMEN' },
-  { position: 4, athleteName: 'JANSEN NADINE', country: 'GER', flagEmoji: '🇩🇪', points: '1,190', events: '5', best: '242.2', category: 'WOMEN' },
-  { position: 5, athleteName: 'NOVOTNÁ HANA', country: 'SVK', flagEmoji: '🇸🇰', points: '1,148', events: '6', best: '241.6', category: 'WOMEN' },
-  { position: 6, athleteName: 'HANSEN SOFIA', country: 'SWE', flagEmoji: '🇸🇪', points: '1,102', events: '5', best: '241.0', category: 'WOMEN' },
-  { position: 7, athleteName: 'GRŽELJ ANA', country: 'SLO', flagEmoji: '🇸🇮', points: '1,065', events: '6', best: '240.4', category: 'WOMEN' },
-  { position: 8, athleteName: 'MÜLLER PETRA', country: 'AUT', flagEmoji: '🇦🇹', points: '1,030', events: '4', best: '239.8', category: 'WOMEN' },
-];
-
-// Тестовые рекорды (fallback)
-const TEST_RECORDS = [
-  { type: 'WR', athleteName: 'QUIQUAMPOIX JEAN', federationCode: 'FRA', flagEmoji: '🇫🇷', record: '138', location: 'World Cup Munich (GER)', date: '1995-06-09', category: 'MEN' },
-  { type: 'WR', athleteName: 'KOROSTELYOV MIKAEL', federationCode: 'SWE', flagEmoji: '🇸🇪', record: '129', location: 'Olympic Games Tokyo (JPN)', date: '1996-06-11', category: 'MEN' },
-  { type: 'OR', athleteName: 'GRÜN STEFAN', federationCode: 'GER', flagEmoji: '🇩🇪', record: '124', location: 'Olympic Games Paris (FRA)', date: '1998-07-23', category: 'MEN' },
-  { type: 'ER', athleteName: 'PETROV SERGEI', federationCode: 'BUL', flagEmoji: '🇧🇬', record: '119', location: 'European Championships Osijek (CRO)', date: '2005-08-10', category: 'MEN' },
-  { type: 'EWR', athleteName: 'NAGY PÉTER', federationCode: 'HUN', flagEmoji: '🇭🇺', record: '115', location: 'World Cup Suhl (GER)', date: '2006-10-04', category: 'MEN' },
-  { type: 'AR', athleteName: 'FERRARI MARCO', federationCode: 'ITA', flagEmoji: '🇮🇹', record: '110', location: 'Asian Games Hangzhou (CHN)', date: '1998-05-14', category: 'MEN' },
-  { type: 'GR', athleteName: 'HERNANDEZ CARLOS', federationCode: 'ESP', flagEmoji: '🇪🇸', record: '107', location: 'European Games Kraków (POL)', date: '1994-04-01', category: 'MEN' },
-  { type: 'EWR', athleteName: 'MÜLLER HANS', federationCode: 'AUT', flagEmoji: '🇦🇹', record: '103', location: 'EWR World Cup Lahti (FIN)', date: '2008-07-09', category: 'MEN' },
-];
-
 const PER_PAGE = 10;
 
 // Обёртка над общей пагинацией (принимает total → считает pageCount)
@@ -113,6 +62,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [filterYear, setFilterYear] = useState('all');
   const [filterType, setFilterType] = useState('ALL TYPES');
   const [filterStatus, setFilterStatus] = useState('ALL STATUSES');
+  const [sortDir, setSortDir] = useState('desc'); // desc = сначала новые
   const [rankingsSearchTerm, setRankingsSearchTerm] = useState('');
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [resultsPage, setResultsPage] = useState(1);
@@ -214,9 +164,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     return matchEvent && matchDiscipline && matchGender;
   });
 
-  // Пока нет реальных данных — показываем тестовых участников
-  const testResults = TEST_RESULTS.filter(r => gender === 'ALL' || r.category === gender);
-  const displayResults = filteredResults.length > 0 ? filteredResults : (loaded ? testResults : []);
+  // Только реальные данные: если для дисциплины/пола результатов нет — покажем пустое состояние
+  const displayResults = filteredResults;
 
   // Прогресс выстрелов — по числу сделанных выстрелов у лидера
   const totalShots = 24;
@@ -233,15 +182,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     return matchDiscipline && matchGender && matchSearch;
   });
 
-  // Fallback тестовых рейтингов по полу, если реальных данных нет
-  const testRankingsBase =
-    rankingsGender === 'MEN' ? TEST_RANKINGS_MEN
-      : rankingsGender === 'WOMEN' ? TEST_RANKINGS_WOMEN
-        : [...TEST_RANKINGS_MEN, ...TEST_RANKINGS_WOMEN];
-  const testRankings = testRankingsBase.filter(
-    r => !rankingsSearchTerm || r.athleteName.toLowerCase().includes(rankingsSearchTerm.toLowerCase())
-  );
-  const displayRankings = filteredRankings.length > 0 ? filteredRankings : (loaded ? testRankings : []);
+  const displayRankings = filteredRankings;
 
   // Рекорды: реальные по дисциплине/полу, иначе тестовые
   const filteredRecords = records.filter((r) => {
@@ -249,8 +190,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     const genderMatch = gender === 'ALL' || r.category?.trim().toUpperCase() === gender;
     return disciplineMatch && genderMatch;
   });
-  const testRecords = TEST_RECORDS.filter((r) => gender === 'ALL' || r.category === gender);
-  const displayRecords = filteredRecords.length > 0 ? filteredRecords : (loaded ? testRecords : []);
+  const displayRecords = filteredRecords;
 
   // Пагинация по 10 на страницу
   const pagedResults = displayResults.slice((resultsPage - 1) * PER_PAGE, resultsPage * PER_PAGE);
@@ -274,6 +214,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     const matchYear = filterYear === 'all' || eventDate.getFullYear() === parseInt(filterYear);
     return matchType && matchStatus && matchMonth && matchYear;
   });
+  // Сортировка по дате с видимым направлением
+  const sortedEvents = [...filteredEvents].sort((a, b) =>
+    sortDir === 'desc' ? new Date(b.date) - new Date(a.date) : new Date(a.date) - new Date(b.date)
+  );
+  const eventFiltersActive = filterMonth !== 'all' || filterYear !== 'all' || filterType !== 'ALL TYPES' || filterStatus !== 'ALL STATUSES';
+  const resetEventFilters = () => { setFilterMonth('all'); setFilterYear('all'); setFilterType('ALL TYPES'); setFilterStatus('ALL STATUSES'); };
 
   const getShotClass = (val) => {
     if (val === '-' || val === '•' || !val) return 'shot-miss';
@@ -369,15 +315,23 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               </div>
               <select className="events-select events-select-md" value={filterType} onChange={(e) => setFilterType(e.target.value)}>{types.map((t) => <option key={t}>{t}</option>)}</select>
               <select className="events-select events-select-md" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>{statuses.map((s) => <option key={s}>{s}</option>)}</select>
+              <button className="events-sort-btn" onClick={() => setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))} title="Change sort direction">
+                <i className={`fa-solid ${sortDir === 'desc' ? 'fa-arrow-down-wide-short' : 'fa-arrow-up-short-wide'}`}></i>
+                {sortDir === 'desc' ? 'Newest first' : 'Oldest first'}
+              </button>
             </div>
-            <div className="events-filter-right"><span className="events-count-num">{filteredEvents.length}</span><span className="events-count-label">competitions</span></div>
+            <div className="events-filter-right"><span className="events-count-num">{sortedEvents.length}</span><span className="events-count-label">competitions</span></div>
           </div>
           <div className="events-list">
-            {filteredEvents.map((ev) => (
-              <div key={ev.id} className={`event-card ${ev.statusEvent?.toUpperCase() === 'UPCOMING' ? 'event-upcoming' : 'event-completed'}`} onClick={() => { setDisciplineLevel(true); setSelectedEvent(ev.name); setSelectedEventSlug(ev.slug || ''); }}>
+            {sortedEvents.length > 0 ? sortedEvents.map((ev) => {
+              const isUpcoming = ev.statusEvent?.toUpperCase() === 'UPCOMING';
+              return (
+              <div key={ev.id} className={`event-card ${isUpcoming ? 'event-upcoming' : 'event-completed'}`}
+                onClick={isUpcoming ? undefined : () => { setDisciplineLevel(true); setSelectedEvent(ev.name); setSelectedEventSlug(ev.slug || ''); }}
+                style={{ cursor: isUpcoming ? 'default' : 'pointer' }}>
                 <div className="event-card-left">
                   <div className="event-tags">
-                    <span className={`event-status ${ev.statusEvent?.toUpperCase() === 'UPCOMING' ? 'status-upcoming' : 'status-completed'}`}>{ev.statusEvent}</span>
+                    <span className={`event-status ${isUpcoming ? 'status-upcoming' : 'status-completed'}`}>{ev.statusEvent}</span>
                     <span className="event-category">{ev.category || 'SENIOR'}</span>
                     <span className="event-year">{new Date(ev.date).getFullYear()}</span>
                   </div>
@@ -387,9 +341,21 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                     <span className="event-meta-item"><i className="fa-regular fa-calendar"></i>{formatDate(ev.date)}</span>
                   </div>
                 </div>
-                <div className="event-card-right"><button className="event-view-btn">VIEW &gt;</button></div>
+                <div className="event-card-right">
+                  {isUpcoming
+                    ? <span className="event-view-btn event-view-pending"><i className="fa-regular fa-clock"></i>RESULTS PENDING</span>
+                    : <button className="event-view-btn">VIEW &gt;</button>}
+                </div>
               </div>
-            ))}
+              );
+            }) : (
+              <div className="events-empty">
+                <i className="fa-regular fa-calendar-xmark events-empty-icon"></i>
+                <p className="events-empty-title">No competitions found</p>
+                <p className="events-empty-text">{eventFiltersActive ? 'Nothing matches the selected filters.' : 'No competitions to show yet.'}</p>
+                {eventFiltersActive && <button className="events-empty-btn" onClick={resetEventFilters}>Clear filters</button>}
+              </div>
+            )}
           </div>
           </>)}
         </section>
@@ -435,6 +401,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               {['ALL', 'MEN', 'WOMEN'].map((g) => <button key={g} className={`gender-btn ${gender === g ? 'active' : ''}`} onClick={() => setGender(g)}>{g}</button>)}
             </div>
           </div>
+          {displayResults.length > 0 ? (<>
           <div className="results-table-container">
             <div className="results-table-header">
               <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">ATHLETE</div><div className="rt-col rt-spacer"></div>
@@ -490,6 +457,13 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           </div>
 
           <Pager page={resultsPage} setPage={setResultsPage} total={displayResults.length} />
+          </>) : (
+            <div className="results-empty">
+              <i className="fa-regular fa-clock results-empty-icon"></i>
+              <p className="results-empty-title">Results pending</p>
+              <p className="results-empty-text">Official results for this discipline will appear here once the competition is complete.</p>
+            </div>
+          )}
         </section>
         )
       )}
@@ -542,7 +516,13 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   <div className="rt-col rt-best"><span className={`best-value ${gi === 0 ? 'gold-value' : ''}`}>{r.best}</span></div>
                 </div>
               );
-            }) : <div style={{ textAlign: 'center', padding: '60px', color: 'rgba(255,255,255,0.5)' }}>No ranking data available</div>}
+            }) : (
+              <div className="rt-empty">
+                <i className="fa-solid fa-ranking-star rt-empty-icon"></i>
+                <p className="rt-empty-title">No rankings yet</p>
+                <p className="rt-empty-text">Season rankings for this discipline will appear once results start coming in{rankingsSearchTerm ? ' — or try a different search' : ''}.</p>
+              </div>
+            )}
           </div>
           <Pager page={rankingsPage} setPage={setRankingsPage} total={displayRankings.length} />
         </section>
@@ -631,7 +611,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                     <div className="rt-col rt-hide-sm"><span className="record-date">{formatDate(r.date)}</span></div>
                   </div>
                 )) : (
-                  <div style={{ textAlign: 'center', padding: '60px', color: 'rgba(255,255,255,0.5)' }}>No records available</div>
+                  <div className="rt-empty">
+                    <i className="fa-solid fa-trophy rt-empty-icon"></i>
+                    <p className="rt-empty-title">No records set yet</p>
+                    <p className="rt-empty-text">No records have been registered for this discipline and category yet.</p>
+                  </div>
                 )}
               </div>
               <Pager page={recordsPage} setPage={setRecordsPage} total={displayRecords.length} />
