@@ -6,12 +6,21 @@ import config from '@/lib/config';
 import Pagination from '@/components/Pagination/Pagination';
 import './EventsPageContent.css';
 
-// Фолбэк-вкладки фильтра, пока в Strapi не заданы свои (коллекция event-category)
+// Фолбэк-вкладки фильтра типа (коллекция event-category откатана на проде)
 const DEFAULT_CATEGORIES = [
     { label: 'COMPETITIONS', matchTypes: 'championship,competition,cup,league,grand prix,open,masters,memorial,final' },
     { label: 'EDUCATION', matchTypes: 'education,course,seminar' },
     { label: 'MEETINGS', matchTypes: 'meeting,assembly,congress,workshop' },
 ];
+
+const STATUS_CLASS = {
+    UPCOMING: 'epc-upcoming', ONGOING: 'epc-ongoing', FINISHED: 'epc-finished',
+    POSTPONED: 'epc-postponed', CANCELLED: 'epc-cancelled',
+};
+const STATUS_LABEL = {
+    UPCOMING: 'UPCOMING', ONGOING: 'LIVE NOW', FINISHED: 'FINISHED',
+    POSTPONED: 'POSTPONED', CANCELLED: 'CANCELLED',
+};
 
 const EventsPageContent = () => {
     const [events, setEvents] = useState([]);
@@ -23,67 +32,65 @@ const EventsPageContent = () => {
     const [filterYear, setFilterYear] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [searchActive, setSearchActive] = useState(false);
-    const [showDateFilter, setShowDateFilter] = useState(false);
+    const [openFilter, setOpenFilter] = useState(null); // какой дропдаун открыт (month/year)
     const [currentPage, setCurrentPage] = useState(1);
     const [showSegments, setShowSegments] = useState(true);
     const eventsPerPage = 6;
     const router = useRouter();
 
-    // Универсальная функция парсинга даты
     const parseDate = (dateString) => {
         if (!dateString) return new Date(NaN);
-        
-        if (dateString.includes('-')) {
-            return new Date(dateString);
-        }
-        
+        if (dateString.includes('-')) return new Date(dateString);
         const parts = dateString.split('/');
         if (parts.length !== 3) return new Date(NaN);
-        
-        const first = parseInt(parts[0], 10);
-        const second = parseInt(parts[1], 10);
-        const year = parseInt(parts[2], 10);
-        
-        if (first > 12) {
-            return new Date(year, second - 1, first);
-        }
-        
-        if (second > 12) {
-            return new Date(year, first - 1, second);
-        }
-        
+        const first = parseInt(parts[0], 10), second = parseInt(parts[1], 10), year = parseInt(parts[2], 10);
+        if (first > 12) return new Date(year, second - 1, first);
+        if (second > 12) return new Date(year, first - 1, second);
         return new Date(year, first - 1, second);
     };
 
-    // Автоматическое определение статуса по дате
-    const getEventStatus = (dateString) => {
-        const eventDate = parseDate(dateString);
-        if (isNaN(eventDate.getTime())) return 'UPCOMING';
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        if (eventDate < today) return 'FINISHED';
-        return 'UPCOMING';
+    // Эффективный статус: ручной (перенесено/отменено) → иначе по датам (предстоит/идёт/завершено)
+    const getStatus = (event) => {
+        const manual = (event.status || 'SCHEDULED').toUpperCase();
+        if (manual === 'CANCELLED') return 'CANCELLED';
+        if (manual === 'POSTPONED') return 'POSTPONED';
+        const start = parseDate(event.date);
+        if (isNaN(start.getTime())) return 'UPCOMING';
+        const startDay = new Date(start); startDay.setHours(0, 0, 0, 0);
+        const endRaw = event.endDate ? parseDate(event.endDate) : start;
+        const endDay = new Date(isNaN(endRaw.getTime()) ? start : endRaw); endDay.setHours(23, 59, 59, 999);
+        const now = new Date();
+        if (now < startDay) return 'UPCOMING';
+        if (now <= endDay) return 'ONGOING';
+        return 'FINISHED';
     };
 
-    // Форматирование для отображения
     const formatDisplayDate = (dateString) => {
         const date = parseDate(dateString);
-        if (isNaN(date.getTime())) return 'Invalid date';
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        if (isNaN(date.getTime())) return '';
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     };
-
     const getYearFromDate = (dateString) => {
         const date = parseDate(dateString);
-        if (isNaN(date.getTime())) return null;
-        return date.getFullYear();
+        return isNaN(date.getTime()) ? null : date.getFullYear();
+    };
+    const getMonthShort = (dateString) => {
+        const date = parseDate(dateString);
+        return isNaN(date.getTime()) ? '' : date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+    };
+    const getDayRange = (startStr, endStr) => {
+        const s = parseDate(startStr);
+        if (isNaN(s.getTime())) return '';
+        const e = endStr ? parseDate(endStr) : null;
+        if (!e || isNaN(e.getTime()) || e.getTime() === s.getTime()) return `${s.getDate()}`;
+        if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) return `${s.getDate()}-${e.getDate()}`;
+        const eMonth = e.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+        return <>{s.getDate()}-<span className="epc-date-month">{eMonth}</span> {e.getDate()}</>;
     };
 
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                // Грузим ВСЕ события (включая архив), новые сверху. Strapi капит pageSize на 100 —
-                // берём первую страницу сразу, остальные догружаем в фоне.
                 const url = (page) => `${config.API_URL}/api/events?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`;
                 const first = await axios.get(url(1));
                 setEvents(first.data?.data || []);
@@ -99,21 +106,22 @@ const EventsPageContent = () => {
         fetchEvents();
     }, []);
 
-    // Коллекция event-category откатана на проде → используем DEFAULT_CATEGORIES
-    // (не дёргаем несуществующий эндпоинт, чтобы не сыпать 404 в консоль).
+    // Закрытие дропдаунов по клику вне
+    useEffect(() => {
+        const onDown = (e) => { if (!e.target.closest('[data-dd]')) setOpenFilter(null); };
+        document.addEventListener('mousedown', onDown);
+        return () => document.removeEventListener('mousedown', onDown);
+    }, []);
 
-    // Набор event.type для выбранной вкладки
     const activeMatch = filterType === 'all'
         ? null
         : (categories.find((c) => c.label === filterType)?.matchTypes || '')
             .split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
 
-    // Фильтрация
     const filteredEvents = events.filter((event) => {
         const eventDate = parseDate(event.date);
         const matchType = !activeMatch || activeMatch.some((m) => (event.type || '').toLowerCase().includes(m));
-        const eventStatus = getEventStatus(event.date);
-        const matchStatus = filterStatus === 'all' || eventStatus.toLowerCase() === filterStatus;
+        const matchStatus = filterStatus === 'all' || getStatus(event).toLowerCase() === filterStatus;
         const matchMonth = filterMonth === 'all' || eventDate.getMonth() === parseInt(filterMonth);
         const matchYear = filterYear === 'all' || eventDate.getFullYear() === parseInt(filterYear);
         const matchSearch = !searchTerm || event.name?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -121,78 +129,98 @@ const EventsPageContent = () => {
     });
 
     const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
-    const currentEvents = filteredEvents.slice(
-        (currentPage - 1) * eventsPerPage,
-        currentPage * eventsPerPage
-    );
+    const currentEvents = filteredEvents.slice((currentPage - 1) * eventsPerPage, currentPage * eventsPerPage);
 
-    const types = ['all', ...categories.map((c) => c.label)];
-    const statuses = ['all', 'upcoming', 'finished'];
     const months = [
         { value: '0', label: 'JAN' }, { value: '1', label: 'FEB' }, { value: '2', label: 'MAR' },
         { value: '3', label: 'APR' }, { value: '4', label: 'MAY' }, { value: '5', label: 'JUN' },
         { value: '6', label: 'JUL' }, { value: '7', label: 'AUG' }, { value: '8', label: 'SEP' },
         { value: '9', label: 'OCT' }, { value: '10', label: 'NOV' }, { value: '11', label: 'DEC' },
     ];
-    // Годы для фильтра — все, что реально есть в данных (по убыванию)
-    const years = ['all', ...Array.from(new Set(
-        events.map((e) => parseDate(e.date).getFullYear()).filter((y) => !isNaN(y))
-    )).sort((a, b) => b - a).map(String)];
+    const yearValues = Array.from(new Set(events.map((e) => parseDate(e.date).getFullYear()).filter((y) => !isNaN(y)))).sort((a, b) => b - a);
 
-    const handleDetails = (event) => {
-        if (event.slug) {
-            router.push(`/events/${event.slug}`);
-        }
+    // Type / Status — кнопки-группы (как в макете); Month / Year — дропдауны
+    const types = ['all', ...categories.map((c) => c.label)];
+    const statuses = ['all', 'upcoming', 'finished'];
+    const monthOptions = [{ value: 'all', label: 'ALL MONTHS' }, ...months];
+    const yearOptions = [{ value: 'all', label: 'ALL YEARS' }, ...yearValues.map((y) => ({ value: String(y), label: String(y) }))];
+
+    const renderDropdown = (id, value, options, onChange) => {
+        const current = options.find((o) => o.value === value) || options[0];
+        return (
+            <div className="epc-dd" data-dd>
+                <button type="button" className={`epc-filter-btn epc-dd-btn ${openFilter === id ? 'epc-open' : ''} ${value !== 'all' ? 'epc-dd-set' : ''}`}
+                    onClick={() => setOpenFilter(openFilter === id ? null : id)}>
+                    <span>{current.label}</span>
+                    <i className="fa-solid fa-chevron-down epc-dd-caret"></i>
+                </button>
+                {openFilter === id && (
+                    <div className="epc-dd-menu">
+                        {options.map((o) => (
+                            <button type="button" key={o.value}
+                                className={`epc-dd-opt ${value === o.value ? 'epc-active' : ''}`}
+                                onClick={() => { onChange(o.value); setOpenFilter(null); setCurrentPage(1); }}>
+                                {o.label}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
     };
-    
-    const handleResults = (event) => {
-        router.push(`/results`);
-    };
 
-    // FEATURED — ближайшие предстоящие события (а не первые из архива)
-    const upcomingEvents = filteredEvents.filter((e) => getEventStatus(e.date) === 'UPCOMING');
-    const featuredEvents = (upcomingEvents.length ? upcomingEvents : filteredEvents).slice(0, 4);
+    const handleDetails = (event) => { if (event.slug) router.push(`/events/${event.slug}`); };
+    const handleResults = (event) => { if (event.slug) router.push(`/events/${event.slug}`); };
 
-    // SEASON PROGRESS — динамически: доля завершённых событий текущего сезона (года)
+    // FEATURED — идущие сейчас первыми, затем ближайшие предстоящие
+    const byDateAsc = (a, b) => parseDate(a.date) - parseDate(b.date);
+    const ongoingAll = filteredEvents.filter((e) => getStatus(e) === 'ONGOING').sort(byDateAsc);
+    const upcomingAll = filteredEvents.filter((e) => getStatus(e) === 'UPCOMING').sort(byDateAsc);
+    const featuredEvents = [...ongoingAll, ...upcomingAll, ...filteredEvents].filter((e, i, arr) => arr.indexOf(e) === i).slice(0, 4);
+
+    // SEASON PROGRESS — доля завершённых событий текущего года (реальные цифры)
     const seasonYear = new Date().getFullYear();
     const seasonEvents = events.filter((e) => parseDate(e.date).getFullYear() === seasonYear);
-    const seasonDoneCount = seasonEvents.filter((e) => getEventStatus(e.date) === 'FINISHED').length;
-    const seasonProgress = seasonEvents.length ? Math.round((seasonDoneCount / seasonEvents.length) * 100) : 0;
+    const seasonDone = seasonEvents.filter((e) => getStatus(e) === 'FINISHED').length;
+    const seasonProgress = seasonEvents.length ? Math.round((seasonDone / seasonEvents.length) * 100) : 0;
 
-    // Чек-лист блоков сезона — отмечаем по проценту прогресса
-    const seasonSegmentLabels = ['10m Rifle & Pistol', '25m / 50m / 300m', 'Moving Target', 'Shotgun', 'Youth Events', 'ESC Leagues'];
-    const doneSegCount = Math.round((seasonProgress / 100) * seasonSegmentLabels.length);
-    const seasonSegments = seasonSegmentLabels.map((label, i) => ({ label, done: i < doneSegCount, active: i === doneSegCount }));
-    const completedSegments = doneSegCount;
+    // Сегменты сезона = группы дисциплин. Логика по реальным событиям:
+    // done — все события группы уже прошли (дисциплина завершена); active — текущая/ближайшая
+    // (одна на весь сезон); pending — впереди; empty — событий группы в этом сезоне нет.
+    const SEGMENT_DEFS = [
+        { label: '10m Rifle & Pistol', match: ['10m', 'air rifle', 'air pistol', 'air weapon'] },
+        { label: '25m / 50m / 300m', match: ['25m', '50m', '300m', 'rapid fire', '3 position', '3x40', '3x20'] },
+        { label: 'Moving Target', match: ['moving', 'running target'] },
+        { label: 'Shotgun', match: ['shotgun', 'trap', 'skeet'] },
+        { label: 'Youth Events', match: ['u-', 'u18', 'u21', 'u23', 'junior', 'youth'] },
+        { label: 'ESC Leagues', match: ['league', 'final', 'cup', 'grand prix'] },
+    ];
+    const segText = (e) => `${e.name || ''} ${e.type || ''} ${e.disciplines || ''}`.toLowerCase();
+    // Для каждой дисциплины считаем реальную долю завершённых событий (finished / total)
+    const seasonSegments = SEGMENT_DEFS.map((seg) => {
+        const matched = seasonEvents.filter((e) => seg.match.some((m) => segText(e).includes(m)));
+        if (!matched.length) return { label: seg.label, empty: true, total: 0, finished: 0, ratio: -1, done: false, active: false };
+        const finished = matched.filter((e) => getStatus(e) === 'FINISHED').length;
+        const ongoing = matched.some((e) => getStatus(e) === 'ONGOING');
+        return { label: seg.label, empty: false, total: matched.length, finished, ratio: finished / matched.length, ongoing, done: false, active: false };
+    });
+    // Сортируем по завершённости (доля завершённых событий) — трек заполняется слева направо без пробелов; пустые — в конец
+    seasonSegments.sort((a, b) => b.ratio - a.ratio);
+    const nonEmptySegs = seasonSegments.filter((s) => !s.empty);
+    const totalSegments = nonEmptySegs.length || seasonSegments.length;
+    // Кол-во «пройденных» сегментов = общий прогресс сезона, разложенный по дисциплинам (самые завершённые — первыми)
+    const doneSegments = Math.min(totalSegments, Math.round((seasonProgress / 100) * totalSegments));
+    nonEmptySegs.forEach((s, i) => {
+        if (i < doneSegments) s.done = true;            // пройденные дисциплины (галочка)
+        else if (i === doneSegments) s.active = true;   // текущая фаза (граница)
+    });
 
-    const getMonthShort = (dateString) => {
-        const date = parseDate(dateString);
-        if (isNaN(date.getTime())) return '';
-        return date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-    };
-
-    const getDayRange = (startStr, endStr) => {
-        const s = parseDate(startStr);
-        if (isNaN(s.getTime())) return '';
-        const e = endStr ? parseDate(endStr) : null;
-        if (!e || isNaN(e.getTime()) || e.getTime() === s.getTime()) return `${s.getDate()}`;
-        if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) {
-            return `${s.getDate()}-${e.getDate()}`;
-        }
-        const eMonth = e.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
-        // Кросс-месяц: второй месяц (напр. FEB) в стиле главного месяца, а не дня
-        return <>{s.getDate()}-<span className="epc-date-month">{eMonth}</span> {e.getDate()}</>;
-    };
-
-    const currentMonthLabel = filterMonth === 'all' ? '' : months.find(m => m.value === filterMonth)?.label;
-    const currentYearLabel = filterYear === 'all' ? '' : filterYear;
-    const dateButtonLabel = filterMonth === 'all' && filterYear === 'all'
-        ? 'DATE ▼'
-        : `${currentMonthLabel} ${currentYearLabel} ▼`;
+    // ON THE RANGE — реальное идущее событие (иначе — ближайшее предстоящее)
+    const liveEvent = events.filter((e) => getStatus(e) === 'ONGOING').sort(byDateAsc)[0] || null;
+    const nextEvent = events.filter((e) => getStatus(e) === 'UPCOMING').sort(byDateAsc)[0] || null;
 
     return (
         <>
-            {/* ========== EVENTS CALENDAR ========== */}
             <section className="epc-events-calendar">
                 <div className="epc-breadcrumbs-row">
                     <span className="epc-breadcrumb-home">HOME</span>
@@ -205,47 +233,18 @@ const EventsPageContent = () => {
                 </div>
                 <div className="epc-new-section-line"></div>
 
-                <div className="epc-filter">
+                <div className={`epc-filter ${searchActive ? 'epc-searching' : ''}`}>
                     <i className="fa-solid fa-filter epc-filter-icon"></i>
                     <span className="epc-filter-label">FILTER:</span>
-
-                    <div className="epc-date-filter-wrapper">
-                        <button className="epc-filter-btn epc-date-event" onClick={() => setShowDateFilter(!showDateFilter)}>
-                            {dateButtonLabel}
-                        </button>
-                        {showDateFilter && (
-                            <div className="epc-date-dropdown">
-                                <div className="epc-date-dropdown-section">
-                                    <span className="epc-date-dropdown-label">Month</span>
-                                    <div className="epc-date-dropdown-grid">
-                                        <button className={`epc-date-option ${filterMonth === 'all' ? 'epc-active' : ''}`}
-                                            onClick={() => { setFilterMonth('all'); setCurrentPage(1); setShowDateFilter(false); }}>ALL</button>
-                                        {months.map((m) => (
-                                            <button key={m.value} className={`epc-date-option ${filterMonth === m.value ? 'epc-active' : ''}`}
-                                                onClick={() => { setFilterMonth(m.value); setCurrentPage(1); setShowDateFilter(false); }}>{m.label}</button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="epc-date-dropdown-section">
-                                    <span className="epc-date-dropdown-label">Year</span>
-                                    <div className="epc-date-dropdown-grid">
-                                        {years.map((y) => (
-                                            <button key={y} className={`epc-date-option ${filterYear === y ? 'epc-active' : ''}`}
-                                                onClick={() => { setFilterYear(y); setCurrentPage(1); setShowDateFilter(false); }}>{y === 'all' ? 'ALL' : y}</button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <button className="epc-date-apply-btn" onClick={() => setShowDateFilter(false)}>APPLY</button>
-                            </div>
-                        )}
-                    </div>
+                    {renderDropdown('month', filterMonth, monthOptions, setFilterMonth)}
+                    {renderDropdown('year', filterYear, yearOptions, setFilterYear)}
                     <span className="epc-filter-divider"></span>
 
                     <div className="epc-filter-group">
                         {types.map((t) => (
                             <button key={t} className={`epc-filter-btn ${filterType === t ? 'epc-selected-filter' : 'epc-unselected-filter'}`}
                                 onClick={() => { setFilterType(t); setCurrentPage(1); }}>
-                                {t.toUpperCase()}
+                                {t === 'all' ? 'ALL TYPES' : t.toUpperCase()}
                             </button>
                         ))}
                     </div>
@@ -255,7 +254,7 @@ const EventsPageContent = () => {
                         {statuses.map((s) => (
                             <button key={s} className={`epc-filter-btn ${filterStatus === s ? 'epc-selected-filter' : 'epc-unselected-filter'}`}
                                 onClick={() => { setFilterStatus(s); setCurrentPage(1); }}>
-                                {s.toUpperCase()}
+                                {s === 'all' ? 'ALL STATUSES' : s.toUpperCase()}
                             </button>
                         ))}
                     </div>
@@ -287,19 +286,6 @@ const EventsPageContent = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                </section>
-                <section className="epc-season-wrapper">
-                  <div className="epc-season-progress skeleton-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div className="skeleton" style={{ width: 180, height: 22, borderRadius: 4 }}></div>
-                      <div className="skeleton" style={{ width: 48, height: 22, borderRadius: 4 }}></div>
-                    </div>
-                    <div className="skeleton" style={{ width: 130, height: 12, borderRadius: 3, marginTop: 14 }}></div>
-                    <div className="skeleton" style={{ width: '100%', height: 8, borderRadius: 4, marginTop: 18 }}></div>
-                    <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
-                      {Array.from({ length: 5 }).map((_, k) => <div className="skeleton" key={k} style={{ flex: 1, height: 40, borderRadius: 4 }}></div>)}
-                    </div>
                   </div>
                 </section>
                 <section className="epc-all-events">
@@ -337,11 +323,11 @@ const EventsPageContent = () => {
                         {featuredEvents.map((event) => {
                             const rawImg = event.image?.url || event.image?.data?.attributes?.url;
                             const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : `${config.API_URL}${rawImg}`) : null;
-                            const eventStatus = getEventStatus(event.date);
+                            const st = getStatus(event);
                             return (
                                 <div className="epc-featured-card" key={event.id} onClick={() => handleDetails(event)}>
                                     {imgUrl && <img src={imgUrl} alt={event.name} />}
-                                    <span className="epc-status">{eventStatus}</span>
+                                    <span className={`epc-status ${STATUS_CLASS[st]}`}>{STATUS_LABEL[st]}</span>
                                     <div className="epc-featured-content">
                                         <div className="epc-featured-tags">
                                             <span className="epc-tag epc-tag-accent">{event.category || 'SENIOR'}</span>
@@ -366,47 +352,73 @@ const EventsPageContent = () => {
             <section className="epc-season-wrapper">
                 <div className="epc-season-progress">
                     <div className="epc-sp-top">
-                        <h2 className="epc-sp-title">SEASON PROGRESS</h2>
-                        <span className="epc-sp-percent">{seasonProgress}%</span>
+                        <h2 className="epc-sp-title">SEASON {seasonYear} PROGRESS</h2>
+                        {seasonEvents.length > 0 && <span className="epc-sp-percent">{seasonProgress}%</span>}
                     </div>
-                    <span className="epc-sp-count">{completedSegments}/{seasonSegments.length} SEGMENTS</span>
-                    <div className="epc-sp-track">
-                        {seasonSegments.map((seg, i) => (
-                            <span className={`epc-sp-line ${seg.done ? 'epc-done' : 'epc-pending'} ${seg.active ? 'epc-active' : ''}`} key={i}></span>
-                        ))}
-                    </div>
+                    {seasonEvents.length === 0 ? (
+                        <p className="epc-sp-note">No events scheduled for the {seasonYear} season yet.</p>
+                    ) : (
+                        <>
+                            <span className="epc-sp-count">{doneSegments}/{totalSegments} SEGMENTS</span>
 
-                    {/* Desktop (>960px): labels under the track */}
-                    <div className="epc-sp-labels">
-                        {seasonSegments.map((seg, i) => (
-                            <span className={`epc-sp-label ${seg.active ? 'epc-active' : ''}`} key={i}>{seg.label}</span>
-                        ))}
-                    </div>
+                            {/* Трек: сегмент на группу дисциплин, заполняется слева направо */}
+                            <div className="epc-sp-track">
+                                {seasonSegments.map((seg, i) => (
+                                    <span className={`epc-sp-line ${seg.done ? 'epc-done' : seg.active ? 'epc-active' : seg.empty ? 'epc-empty' : 'epc-pending'}`} key={i}></span>
+                                ))}
+                            </div>
 
-                    {/* Mobile (<=960px): checklist */}
-                    {showSegments && (
-                        <ul className="epc-sp-list">
-                            {seasonSegments.map((seg, i) => (
-                                <li className={`epc-sp-item ${seg.active ? 'epc-active' : ''}`} key={i}>
-                                    <span className={`epc-sp-check ${seg.done ? 'epc-done' : ''}`}>
-                                        {seg.done && <i className="fa-solid fa-check"></i>}
-                                    </span>
-                                    <span className="epc-sp-item-label">{seg.label}</span>
-                                </li>
-                            ))}
-                        </ul>
+                            {/* Desktop: подписи дисциплин под треком */}
+                            <div className="epc-sp-labels">
+                                {seasonSegments.map((seg, i) => (
+                                    <span className={`epc-sp-label ${seg.active ? 'epc-active' : ''} ${seg.empty ? 'epc-empty' : ''}`} key={i}>{seg.label}</span>
+                                ))}
+                            </div>
+
+                            {/* Mobile: чек-лист (реальный статус каждой группы) */}
+                            {showSegments && (
+                                <ul className="epc-sp-list">
+                                    {seasonSegments.map((seg, i) => (
+                                        <li className={`epc-sp-item ${seg.active ? 'epc-active' : ''} ${seg.empty ? 'epc-empty' : ''}`} key={i}>
+                                            <span className={`epc-sp-check ${seg.done ? 'epc-done' : ''}`}>
+                                                {seg.done && <i className="fa-solid fa-check"></i>}
+                                            </span>
+                                            <span className="epc-sp-item-label">{seg.label}</span>
+                                            {!seg.empty && <span className="epc-sp-item-frac">{seg.finished}/{seg.total}</span>}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            <button className="epc-sp-toggle" onClick={() => setShowSegments(!showSegments)}>
+                                SHOW SEGMENTS
+                                <i className={`fa-solid ${showSegments ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+                            </button>
+                        </>
                     )}
-                    <button className="epc-sp-toggle" onClick={() => setShowSegments(!showSegments)}>
-                        SHOW SEGMENTS
-                        <i className={`fa-solid ${showSegments ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-                    </button>
                 </div>
                 <div className="epc-season-status">
-                    <div className="epc-ss-left">
-                        <span className="epc-ss-name">ESC Leagues</span>
-                        <span className="epc-ss-active">ACTIVE</span>
-                    </div>
-                    <button className="epc-ss-btn">ON THE RANGE</button>
+                    {liveEvent ? (
+                        <>
+                            <div className="epc-ss-left">
+                                <span className="epc-ss-name">{liveEvent.name}</span>
+                                <span className="epc-ss-active">ACTIVE</span>
+                            </div>
+                            <button className="epc-ss-btn" onClick={() => handleDetails(liveEvent)}>ON THE RANGE</button>
+                        </>
+                    ) : nextEvent ? (
+                        <>
+                            <div className="epc-ss-left">
+                                <span className="epc-ss-name">{nextEvent.name}</span>
+                                <span className="epc-ss-next">NEXT UP · {formatDisplayDate(nextEvent.date)}</span>
+                            </div>
+                            <button className="epc-ss-btn" onClick={() => handleDetails(nextEvent)}>VIEW EVENT</button>
+                        </>
+                    ) : (
+                        <div className="epc-ss-left">
+                            <span className="epc-ss-name">No live events</span>
+                            <span className="epc-ss-next">Check back soon</span>
+                        </div>
+                    )}
                 </div>
             </section>
 
@@ -429,14 +441,10 @@ const EventsPageContent = () => {
                         <div className="epc-col epc-col-actions">ACTIONS</div>
                     </div>
 
-                    {currentEvents.map((event) => {
-                        const { name, date, location, type, slug } = event;
-                        const eventStatus = getEventStatus(date);
-                        const isFinished = eventStatus === 'FINISHED';
-                        const eventDate = parseDate(date);
-                        const endDate = new Date(eventDate);
-                        endDate.setDate(endDate.getDate() + 2);
-
+                    {currentEvents.length > 0 ? currentEvents.map((event) => {
+                        const { name, date, location, type } = event;
+                        const st = getStatus(event);
+                        const reg = (event.registration || 'NONE').toUpperCase();
                         return (
                             <div className="epc-events-table-row" key={event.id}>
                                 <div className="epc-col epc-col-date">
@@ -447,7 +455,7 @@ const EventsPageContent = () => {
                                     <span className="epc-date-year">{getYearFromDate(date)}</span>
                                 </div>
                                 <div className="epc-col epc-col-event">
-                                    <span className="epc-event-name">{name}</span>
+                                    <span className="epc-event-name" title={name}>{name}</span>
                                 </div>
                                 <div className="epc-col epc-col-location">
                                     <i className="fa-solid fa-location-dot"></i>
@@ -457,20 +465,39 @@ const EventsPageContent = () => {
                                     <span className="epc-type-tag">{type?.toUpperCase() || 'CHAMPIONSHIP'}</span>
                                 </div>
                                 <div className="epc-col epc-col-status">
-                                    <span className={`epc-status-tag ${isFinished ? 'epc-finished' : 'epc-upcoming'}`}>{eventStatus}</span>
+                                    <span className={`epc-status-tag ${STATUS_CLASS[st]}`}>{STATUS_LABEL[st]}</span>
+                                    {st === 'UPCOMING' && reg !== 'NONE' && (
+                                        <span className={`epc-reg-tag ${reg === 'OPEN' ? 'epc-reg-open' : 'epc-reg-closed'}`}>
+                                            REG {reg}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="epc-col epc-col-actions">
                                     <button className="epc-action-btn epc-details-btn" onClick={() => handleDetails(event)}>DETAILS</button>
-                                    {isFinished && (
-                                        <button className="epc-action-btn epc-results-btn" onClick={() => handleResults(event)}>RESULTS</button>
+                                    {st === 'ONGOING' && (
+                                        <button className="epc-action-btn epc-live-btn" onClick={() => handleDetails(event)}>WATCH</button>
+                                    )}
+                                    {st === 'FINISHED' && (
+                                        event.resultsPending
+                                            ? <span className="epc-results-pending" title="Официальные результаты ещё не опубликованы">Results pending</span>
+                                            : <button className="epc-action-btn epc-results-btn" onClick={() => handleResults(event)}>RESULTS</button>
                                     )}
                                 </div>
                             </div>
                         );
-                    })}
+                    }) : (
+                        <div className="epc-events-empty">
+                            <i className="fa-regular fa-calendar-xmark"></i>
+                            <p>No events match your filters.</p>
+                            <button className="epc-events-empty-btn" onClick={() => {
+                                setFilterType('all'); setFilterStatus('all'); setFilterMonth('all'); setFilterYear('all');
+                                setSearchTerm(''); setCurrentPage(1);
+                            }}>Clear filters</button>
+                        </div>
+                    )}
                 </div>
 
-                <Pagination page={currentPage} pageCount={totalPages} onChange={setCurrentPage} />
+                {filteredEvents.length > 0 && <Pagination page={currentPage} pageCount={totalPages} onChange={setCurrentPage} />}
             </section>
             </>)}
         </>

@@ -160,6 +160,13 @@
     color: #ffffff;
     text-transform: uppercase;
     line-height: 1.3;
+    /* Длинные названия: максимум 2 строки с многоточием, без вылезания за колонку */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
 }
 
 /* Location Column */
@@ -591,6 +598,34 @@
 
 .epc-filter-search-input::placeholder {
     color: #5a6e85;
+}
+
+/* При открытом поиске держим фильтры в одной строке (не уезжают вниз),
+   немного ужимая текст кнопок/дропдаунов, чтобы освободить место под поле. */
+@media (min-width: 992px) {
+    .epc-filter.epc-searching {
+        flex-wrap: nowrap;
+        gap: clamp(4px, 0.6vw, 8px);
+    }
+    .epc-filter.epc-searching .epc-filter-group {
+        min-width: 0;
+    }
+    .epc-filter.epc-searching .epc-filter-btn {
+        font-size: clamp(8px, 0.85vw, 10px);
+        padding: clamp(4px, 0.5vw, 6px) clamp(6px, 0.9vw, 10px);
+        letter-spacing: 0.5px;
+    }
+    .epc-filter.epc-searching .epc-dd-btn {
+        font-size: clamp(8px, 0.85vw, 10px);
+        padding: clamp(4px, 0.5vw, 6px) clamp(6px, 0.9vw, 10px);
+        letter-spacing: 0.5px;
+    }
+    .epc-filter.epc-searching .epc-filter-search-wrapper {
+        flex-shrink: 0;
+    }
+    .epc-filter.epc-searching .epc-filter-search-wrapper.epc-active .epc-filter-search-input {
+        width: clamp(110px, 13vw, 160px);
+    }
 }
 
 /* ============================================================
@@ -1227,4 +1262,97 @@
     .epc-ss-btn {
         width: 100%;
     }
+}
+/* ==================== Правки по ревью тестировщика (Events) ==================== */
+
+/* --- Фильтры-дропдауны (единый формат: Type / Status / Month / Year) --- */
+.epc-dd { position: relative; }
+.epc-dd-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+}
+.epc-dd-btn:hover { border-color: rgba(255, 255, 255, 0.3); color: rgba(255, 255, 255, 0.8); }
+.epc-dd-btn .epc-dd-caret { font-size: 9px; opacity: 0.7; transition: transform 0.2s ease; }
+.epc-dd-btn.epc-open { border-color: rgba(0, 216, 245, 0.4); color: #00d8f5; }
+.epc-dd-btn.epc-open .epc-dd-caret { transform: rotate(180deg); }
+.epc-dd-btn.epc-dd-set { background: #00d8f5; border-color: #00d8f5; color: #06121f; }
+.epc-dd-menu {
+    position: absolute; top: calc(100% + 6px); left: 0; z-index: 40;
+    min-width: 100%; width: max-content; max-height: 320px; overflow-y: auto;
+    background: #0B1E33; border: 1px solid rgba(0, 216, 245, 0.2);
+    border-radius: 8px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); padding: 6px;
+    display: flex; flex-direction: column; gap: 2px;
+}
+.epc-dd-opt {
+    text-align: left; background: transparent; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; color: rgba(255, 255, 255, 0.7);
+    padding: 9px 14px; border-radius: 5px; white-space: nowrap; transition: all 0.15s ease;
+}
+.epc-dd-opt:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
+.epc-dd-opt.epc-active { background: rgba(0, 216, 245, 0.12); color: #00d8f5; }
+
+/* --- Статусы: дополнительные цвета --- */
+.epc-status-tag.epc-ongoing { color: #04121f; background: #00d8f5; }
+.epc-status-tag.epc-postponed { color: #ffb020; background: rgba(255, 176, 32, 0.12); }
+.epc-status-tag.epc-cancelled { color: #ff5c5c; background: rgba(255, 92, 92, 0.12); }
+.epc-status.epc-ongoing { color: #04121f; background: #00d8f5; }
+.epc-status.epc-postponed { color: #ffb020; }
+.epc-status.epc-cancelled { color: #ff5c5c; }
+
+/* --- Бейдж регистрации (под статусом у предстоящих) --- */
+.epc-reg-tag {
+    display: inline-block; margin-top: 5px;
+    font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
+}
+.epc-reg-open { color: #38d39f; background: rgba(56, 211, 159, 0.12); }
+.epc-reg-closed { color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.07); }
+
+/* --- Действия: WATCH (идёт) / Results pending (нет протокола) --- */
+.epc-live-btn { color: #04121f !important; background: #00d8f5 !important; border-color: #00d8f5 !important; }
+.epc-results-pending {
+    font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
+    text-transform: uppercase; color: rgba(255, 176, 32, 0.9); font-style: italic; white-space: nowrap;
+}
+
+/* --- Пустое состояние таблицы (нет событий под фильтры) --- */
+.epc-events-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    padding: 60px 20px; color: rgba(255, 255, 255, 0.5); text-align: center;
+}
+.epc-events-empty i { font-size: 32px; color: rgba(255, 255, 255, 0.25); }
+.epc-events-empty p { font-family: 'Inter', sans-serif; font-size: 15px; margin: 0; }
+.epc-events-empty-btn {
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+    text-transform: uppercase; color: #00d8f5; background: transparent;
+    border: 1px solid rgba(0, 216, 245, 0.4); border-radius: 6px; padding: 9px 18px; cursor: pointer;
+    transition: all 0.2s ease;
+}
+.epc-events-empty-btn:hover { background: rgba(0, 216, 245, 0.1); }
+
+/* --- Season progress: реальная полоса + пояснение (вместо декоративных сегментов) --- */
+/* Полоса прогресса сезона — сплошная, заполняется слева направо (тёмная на бирюзовом блоке) */
+.epc-sp-bar { width: 100%; height: 10px; border-radius: 5px; background: rgba(6, 18, 31, 0.18); overflow: hidden; margin: 16px 0 12px; }
+.epc-sp-bar-fill { display: block; height: 100%; background: #06121f; border-radius: 5px; transition: width 0.6s ease; }
+.epc-sp-note { font-family: 'Inter', sans-serif; font-size: 12px; color: #06121f; margin: 0; }
+.epc-ss-next { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); }
+
+/* --- Season segments: реальные статусы групп дисциплин --- */
+/* Активный сегмент — наполовину тёмный (идёт сейчас), pending — блёклый; на бирюзовом блоке */
+.epc-sp-line.epc-active { background: linear-gradient(to right, #06121f 0, #06121f 55%, rgba(6, 18, 31, 0.18) 55%, rgba(6, 18, 31, 0.18) 100%); opacity: 1; }
+.epc-sp-line.epc-pending { background: rgba(6, 18, 31, 0.18); opacity: 1; }
+.epc-sp-line.epc-empty { background: rgba(6, 18, 31, 0.07); opacity: 1; }
+.epc-sp-label.epc-empty { opacity: 0.4; }
+.epc-sp-item.epc-empty { opacity: 0.5; }
+.epc-sp-item-frac { margin-left: auto; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: rgba(6, 18, 31, 0.55); flex-shrink: 0; }
+.epc-sp-item-count {
+    margin-left: auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    white-space: nowrap;
 }
