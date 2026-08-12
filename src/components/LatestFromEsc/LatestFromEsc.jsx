@@ -114,9 +114,10 @@ const LatestFromEsc = () => {
                                 <p className="theme">{theme || 'NEWS'}</p>
                                 <p className="description">{title}</p>
                                 <p className="date">
-                                    {new Date(date).toLocaleDateString('en-US', { 
-                                        month: 'short', 
-                                        day: 'numeric' 
+                                    {new Date(date).toLocaleDateString('en-US', {
+                                        month: 'short',
+                                        day: 'numeric',
+                                        year: 'numeric'
                                     })}
                                 </p>
                             </div>

@@ -234,3 +234,18 @@
         font-size: 12px;
     }
 }
+/* ===== Правки по ревью ===== */
+.featured-docs-empty {
+    grid-column: 1 / -1;
+    padding: 40px 8px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 14px;
+    text-align: center;
+}
+.featured-docs-download-area.is-unavailable {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+.featured-docs-download-area.is-unavailable .featured-docs-download-text {
+    color: rgba(255, 255, 255, 0.5);
+}
