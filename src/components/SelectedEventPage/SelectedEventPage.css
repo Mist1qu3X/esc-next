@@ -2,7 +2,7 @@
 .selected-event-header {
     width: 100%;
     max-width: 1440px;
-    height: 480px;
+    min-height: 480px;
     margin: 0 auto;
     background-size: cover;
     background-position: center;
@@ -1197,6 +1197,51 @@
 
 .ae-page-btn:hover { border-color: rgba(0, 216, 245, 0.4); color: #fff; }
 .ae-page-btn.active { background: #00d8f5; color: #06121f; border-color: #00d8f5; }
+
+/* ---- День отдыха в расписании (пропуск дат читается как выходной, а не дыра) ---- */
+.ae-group.ae-rest { opacity: 0.72; }
+.ae-rest-row { display: flex; align-items: center; }
+.ae-rest-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.4);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.ae-rest-label i { color: rgba(0, 216, 245, 0.55); font-style: normal; }
+
+/* ---- «provisional» — числа участников/наций не финальные до закрытия регистрации ---- */
+.event-provisional {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #00d8f5;
+    background: rgba(0, 216, 245, 0.12);
+    border: 1px solid rgba(0, 216, 245, 0.35);
+    border-radius: 2px;
+    padding: 2px 6px;
+    margin-left: 8px;
+    white-space: nowrap;
+}
+.detail-provisional {
+    font-weight: 700;
+    color: rgba(0, 216, 245, 0.75);
+    letter-spacing: 0.6px;
+}
+
+/* ---- Недоступное быстрое действие (например, результаты до завершения события) ---- */
+.quick-action-btn.quick-action-disabled,
+.quick-action-btn:disabled {
+    color: rgba(255, 255, 255, 0.32) !important;
+    cursor: not-allowed;
+}
+.quick-action-btn.quick-action-disabled:hover { background: transparent; }
+.quick-action-btn.quick-action-disabled i { color: rgba(255, 255, 255, 0.28); }
 
 /* ============================================================
    LIVE STREAM — состояния UPCOMING / SCHEDULED

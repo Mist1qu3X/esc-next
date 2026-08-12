@@ -9,15 +9,16 @@ import PageLoader from '@/components/LoadingResults/PageLoader';
 import TargetLoader from '@/components/LoadingResults/TargetLoader';
 import './SelectedEventPage.css';
 
-// Расписание ALL EVENTS (пока нет отдельного поля/коллекции — демо-данные)
+// Расписание ALL EVENTS (пока нет отдельного поля/коллекции — демо-данные).
+// В демо намеренно пропущен день (06.11) — заполняется как «день отдыха» логикой ниже.
 const SCHEDULE = [
-  { mon: 'Nov', day: '04', items: [
+  { mon: 'Nov', day: '04', date: '2026-11-04', items: [
     { time: '12:30 - 13:30', event: 'Air Rifle 3P Men', stage: 'Qualification' },
     { time: '12:00 - 18:00', event: 'Unofficial Training 10m Events', stage: 'Qualification' },
     { time: '12:00 - 18:00', event: 'Equipment Control', stage: 'Qualification' },
     { time: '17:00', event: 'Technical Meeting', stage: 'Qualification' },
   ] },
-  { mon: 'Nov', day: '05', items: [
+  { mon: 'Nov', day: '05', date: '2026-11-05', items: [
     { time: '08:00 - 19:00', event: 'Equipment Control', stage: 'Qualification' },
     { time: '08:30 - 11:00', event: 'Pre-event Training 10m Moving Target Mixed Men', stage: 'Qualification' },
     { time: '08:30 - 11:00', event: 'Pre-event Training 10m Moving Target Mixed Women', stage: 'Qualification' },
@@ -26,19 +27,49 @@ const SCHEDULE = [
     { time: '11:00 - 19:00', event: '10m Moving Target Mixed Men', stage: 'Qualification' },
     { time: '11:00 - 19:00', event: '10m Moving Target Mixed Women', stage: 'Qualification' },
   ] },
-  { mon: 'Nov', day: '07', items: [
+  { mon: 'Nov', day: '07', date: '2026-11-07', items: [
     { time: '12:30 - 13:30', event: 'Air Rifle 3P Men', stage: 'Qualification' },
     { time: '12:00 - 18:00', event: 'Unofficial Training 10m Events', stage: 'Qualification' },
     { time: '12:00 - 18:00', event: 'Equipment Control', stage: 'Qualification' },
     { time: '17:00', event: 'Technical Meeting', stage: 'Qualification' },
   ] },
-  { mon: 'Nov', day: '08', items: [
+  { mon: 'Nov', day: '08', date: '2026-11-08', items: [
     { time: '12:30 - 13:30', event: 'Air Rifle 3P Men', stage: 'Qualification' },
     { time: '12:00 - 18:00', event: 'Unofficial Training 10m Events', stage: 'Qualification' },
     { time: '12:00 - 18:00', event: 'Equipment Control', stage: 'Qualification' },
     { time: '17:00', event: 'Technical Meeting', stage: 'Qualification' },
   ] },
 ];
+
+// Прибавить n дней к ISO-дате (yyyy-mm-dd); полдень исключает сдвиг из-за таймзоны
+const addDays = (iso, n) => {
+  const d = new Date(`${iso}T12:00:00`);
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+// Заполнить пропущенные между сессиями дни «днём отдыха», чтобы пропуск не выглядел дырой в данных
+const fillScheduleGaps = (groups) => {
+  const dated = groups.filter((g) => g.date);
+  if (dated.length < 2) return groups;
+  const sorted = [...groups].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  const out = [];
+  sorted.forEach((g, i) => {
+    out.push(g);
+    const next = sorted[i + 1];
+    if (g.date && next?.date) {
+      let cur = addDays(g.date, 1);
+      let guard = 0;
+      while (cur < next.date && guard < 40) {
+        const d = new Date(`${cur}T12:00:00`);
+        out.push({ mon: d.toLocaleDateString('en-US', { month: 'short' }), day: String(d.getDate()).padStart(2, '0'), date: cur, restDay: true, items: [] });
+        cur = addDays(cur, 1);
+        guard++;
+      }
+    }
+  });
+  return out;
+};
 
 const getImageUrl = (img) => {
   if (!img) return null;
@@ -116,6 +147,25 @@ const SelectedEventPage = ({ slug }) => {
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
 
+  // Эффективный статус по датам + ручному флагу — как на странице Events
+  const getEffectiveStatus = () => {
+    const manual = (event.status || '').toUpperCase();
+    if (manual === 'CANCELLED') return 'CANCELLED';
+    if (manual === 'POSTPONED') return 'POSTPONED';
+    const start = event.date ? new Date(`${event.date}T00:00:00`) : null;
+    if (!start || isNaN(start.getTime())) return (event.statusEvent || 'UPCOMING').toUpperCase() === 'FINISHED' ? 'FINISHED' : 'UPCOMING';
+    const end = event.endDate ? new Date(`${event.endDate}T23:59:59`) : new Date(`${event.date}T23:59:59`);
+    const now = new Date();
+    if (now < start) return 'UPCOMING';
+    if (now <= end) return 'ONGOING';
+    return 'FINISHED';
+  };
+  const effStatus = getEffectiveStatus();
+  // До завершения события числа участников/наций не финальные (регистрация ещё идёт)
+  const isProvisional = effStatus === 'UPCOMING' || effStatus === 'ONGOING';
+  const athletesText = (event.athletes && String(event.athletes).trim()) ? event.athletes : 'TBC';
+  const nationsText = (event.nations && String(event.nations).trim()) ? event.nations : 'TBC';
+
   const disciplines = event.disciplines?.split(',') || [
     '10M AIR RIFLE MEN', '10M AIR RIFLE WOMEN', '10M AIR RIFLE MIXED TEAM',
     '10M AIR PISTOL MEN', '10M AIR PISTOL WOMEN', '10M AIR PISTOL MIXED TEAM',
@@ -136,9 +186,10 @@ const SelectedEventPage = ({ slug }) => {
     });
     return Object.values(groups).sort((a, b) => a.date.localeCompare(b.date));
   };
-  // Приоритет — встроенный компонент event.schedule; фолбэк — старая коллекция; иначе демо-SCHEDULE
+  // Приоритет — встроенный компонент event.schedule; фолбэк — старая коллекция; иначе демо-SCHEDULE.
+  // Пропущенные дни заполняются «днём отдыха» — чтобы дыра в датах читалась как выходной, а не как потеря данных.
   const scheduleRows = event?.schedule?.length ? event.schedule : [];
-  const displaySchedule = scheduleRows.length > 0 ? groupSchedule(scheduleRows) : SCHEDULE;
+  const displaySchedule = fillScheduleGaps(scheduleRows.length > 0 ? groupSchedule(scheduleRows) : SCHEDULE);
 
   // RESULTS этого события. Приоритет — новые event-results (event relation + leaders[]),
   // сгруппированы по дисциплине+категории; если их ещё нет — старые result-details (fallback до миграции).
@@ -154,6 +205,11 @@ const SelectedEventPage = ({ slug }) => {
         (acc[key] = acc[key] || []).push(r);
         return acc;
       }, {});
+
+  // Результаты показываем только для стартовавших событий (идёт/завершено) и только при наличии данных.
+  // Для UPCOMING результатов быть не может, даже если в базе затесались строки.
+  const hasResults = Object.keys(resultGroups).length > 0;
+  const resultsAvailable = hasResults && (effStatus === 'FINISHED' || effStatus === 'ONGOING');
 
   const platformClass = (p) => ((p || '').toLowerCase() === 'facebook' ? 'facebook' : 'youtube');
 
@@ -216,7 +272,7 @@ const SelectedEventPage = ({ slug }) => {
               <span className="event-info-sep">·</span>
               <div className="event-info-item"><i className="fa-regular fa-calendar"></i><span>{formatDate(event.date)} - {formatDate(event.endDate)}</span></div>
               <span className="event-info-sep">·</span>
-              <div className="event-info-item"><i className="fa-solid fa-users"></i><span>{event.athletes || '480+'} athletes · {event.nations || '38'} nations</span></div>
+              <div className="event-info-item"><i className="fa-solid fa-users"></i><span>{athletesText} athletes · {nationsText} nations</span>{isProvisional && <span className="event-provisional" title="Numbers are provisional until registration closes">provisional</span>}</div>
             </div>
             <button className="event-entry-btn" onClick={() => window.open('https://esc-entry.eu', '_blank', 'noopener,noreferrer')}>
               <i className="fa-solid fa-arrow-up-right-from-square"></i>ENTRY SYSTEM
@@ -257,10 +313,14 @@ const SelectedEventPage = ({ slug }) => {
                     <span>DATES</span><span>TIME</span><span>EVENT</span><span>STAGES</span>
                   </div>
                   {displaySchedule.map((g, gi) => (
-                    <div className="ae-group" key={gi}>
+                    <div className={`ae-group ${g.restDay ? 'ae-rest' : ''}`} key={gi}>
                       <div className="ae-date"><span className="ae-date-mon">{g.mon}</span><span className="ae-date-day">{g.day}</span></div>
                       <div className="ae-items">
-                        {g.items.map((it, ii) => (
+                        {g.restDay ? (
+                          <div className="ae-row ae-rest-row">
+                            <span className="ae-rest-label"><i className="fa-regular fa-moon"></i> Rest day — no competition scheduled</span>
+                          </div>
+                        ) : g.items.map((it, ii) => (
                           <div className="ae-row" key={ii}>
                             <span className="ae-time">{it.time}</span>
                             <span className="ae-event">{it.event}</span>
@@ -281,11 +341,13 @@ const SelectedEventPage = ({ slug }) => {
             {activeTab === 'RESULTS' && (
               <>
                 <h2 className="event-section-title">RESULTS</h2>
-                {Object.keys(resultGroups).length === 0 ? (
+                {!resultsAvailable ? (
                   <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
                     <i className="fa-regular fa-clock stream-scheduled-icon"></i>
                     <span className="stream-scheduled-title">RESULTS PENDING</span>
-                    <span className="stream-scheduled-text">Official results will appear here once the competition is complete.</span>
+                    <span className="stream-scheduled-text">{effStatus === 'UPCOMING'
+                      ? 'Results will be published here once the competition begins.'
+                      : 'Official results will appear here once the competition is complete.'}</span>
                   </div>
                 ) : !resultDisc ? (
                   <>
@@ -402,9 +464,9 @@ const SelectedEventPage = ({ slug }) => {
                 <div className="sidebar-divider"></div>
                 <div className="detail-item"><i className="fa-solid fa-location-dot detail-icon"></i><div className="detail-content"><span className="detail-label">LOCATION</span><span className="detail-value">{event.location}</span></div></div>
                 <div className="sidebar-divider"></div>
-                <div className="detail-item"><i className="fa-solid fa-user-group detail-icon"></i><div className="detail-content"><span className="detail-label">NATIONS</span><span className="detail-value">{event.nations || '38'}</span></div></div>
+                <div className="detail-item"><i className="fa-solid fa-user-group detail-icon"></i><div className="detail-content"><span className="detail-label">NATIONS{isProvisional && <span className="detail-provisional"> · provisional</span>}</span><span className="detail-value">{nationsText}</span></div></div>
                 <div className="sidebar-divider"></div>
-                <div className="detail-item"><i className="fa-solid fa-user-group detail-icon"></i><div className="detail-content"><span className="detail-label">ATHLETES</span><span className="detail-value">{event.athletes || '480+'}</span></div></div>
+                <div className="detail-item"><i className="fa-solid fa-user-group detail-icon"></i><div className="detail-content"><span className="detail-label">ATHLETES{isProvisional && <span className="detail-provisional"> · provisional</span>}</span><span className="detail-value">{athletesText}</span></div></div>
               </div>
             </div>
 
@@ -416,7 +478,13 @@ const SelectedEventPage = ({ slug }) => {
                 <div className="sidebar-divider"></div>
                 <button className="quick-action-btn" onClick={() => setActiveTab('DOCUMENTS')}><i className="fa-solid fa-download"></i><span>TECHNICAL PACKAGE</span></button>
                 <div className="sidebar-divider"></div>
-                <button className="quick-action-btn" onClick={() => router.push('/results')}><i className="fa-solid fa-trophy"></i><span>VIEW RESULTS</span></button>
+                {resultsAvailable ? (
+                  <button className="quick-action-btn" onClick={() => setActiveTab('RESULTS')}><i className="fa-solid fa-trophy"></i><span>VIEW RESULTS</span></button>
+                ) : (
+                  <button className="quick-action-btn quick-action-disabled" disabled title={effStatus === 'FINISHED' ? 'Results are being processed' : 'Results become available after the event'}>
+                    <i className="fa-regular fa-clock"></i><span>{effStatus === 'FINISHED' ? 'RESULTS PENDING' : 'RESULTS AFTER EVENT'}</span>
+                  </button>
+                )}
               </div>
             </div>
 

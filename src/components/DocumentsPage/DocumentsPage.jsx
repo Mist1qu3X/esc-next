@@ -19,6 +19,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const [expandedId, setExpandedId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [downloadBumps, setDownloadBumps] = useState({}); // id -> оптимистичный прирост счётчика
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -138,6 +139,27 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const openFile = (file) => {
     const url = fileUrl(file);
     if (url) window.open(url, '_blank');
+  };
+
+  // Скачивание: открыть файл + увеличить счётчик (оптимистично в UI, затем на бэкенде)
+  const downloadFile = (doc, file) => {
+    if (!fileUrl(file)) return;
+    setDownloadBumps((prev) => ({ ...prev, [doc.id]: (prev[doc.id] || 0) + 1 }));
+    const id = doc.documentId || doc.id;
+    axios.put(`${config.API_URL}/api/docs/${id}/download`).catch(() => {}); // не мешаем скачиванию, если счётчик недоступен
+    openFile(file);
+  };
+
+  // Эффективное число скачиваний = сохранённое + оптимистичный прирост этой сессии
+  const shownDownloads = (doc, att) => (att.downloadCount || 0) + (downloadBumps[doc.id] || 0);
+
+  // Можно ли показать файл в браузере (иначе предпросмотр недоступен)
+  const canPreview = (file) => {
+    if (!file) return false;
+    const ext = (file.ext || '').toLowerCase().replace('.', '');
+    const mime = (file.mime || '').toLowerCase();
+    return ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'txt'].includes(ext) ||
+      mime.startsWith('image/') || mime === 'application/pdf' || mime === 'text/plain';
   };
 
   const formatMonthYear = (date) => {
@@ -321,9 +343,15 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                           </span>
                         )}
                       </span>
-                      <i
-                        className={`fa-solid ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'} docs-acc-chevron`}
-                      ></i>
+                      <span className="docs-acc-right">
+                        <span className="docs-acc-count" title={`${attachments.length} file${attachments.length === 1 ? '' : 's'} inside`}>
+                          <i className="fa-regular fa-copy"></i>
+                          {attachments.length} {attachments.length === 1 ? 'file' : 'files'}
+                        </span>
+                        <i
+                          className={`fa-solid ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'} docs-acc-chevron`}
+                        ></i>
+                      </span>
                     </button>
 
                     {isOpen && (
@@ -332,13 +360,18 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                           <p className="docs-acc-desc">{doc.description}</p>
                         )}
                         <div className="docs-acc-files">
-                          {attachments.map((att, i) => (
+                          {attachments.map((att, i) => {
+                            const dl = shownDownloads(doc, att);
+                            const preview = canPreview(att.file);
+                            return (
                             <div className="docs-file" key={i}>
                               <i className="fa-regular fa-file-lines docs-file-icon"></i>
                               <div className="docs-file-info">
                                 <span className="docs-file-name">{att.name}</span>
                                 <span className="docs-file-meta">
-                                  {att.fileSize || '—'} · {att.downloadCount || 0} downloads
+                                  {att.fileSize || '—'} · {dl === 0
+                                    ? <span className="docs-file-new">NEW</span>
+                                    : `${dl.toLocaleString('en-US')} download${dl === 1 ? '' : 's'}`}
                                 </span>
                                 <span className="docs-file-meta-mobile">
                                   {formatMonthYear(att.date)}{att.fileSize ? ` · ${att.fileSize}` : ''}
@@ -348,20 +381,34 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                               <span className="docs-file-date">{formatMonthYear(att.date)}</span>
                               <button
                                 className="docs-file-pdf"
-                                onClick={() => openFile(att.file)}
+                                onClick={() => downloadFile(doc, att.file)}
+                                title="Download file"
                               >
                                 <i className="fa-solid fa-download"></i>
                                 PDF
                               </button>
-                              <button
-                                className="docs-file-view"
-                                onClick={() => openFile(att.file)}
-                                aria-label="View"
-                              >
-                                <i className="fa-solid fa-eye"></i>
-                              </button>
+                              {preview ? (
+                                <button
+                                  className="docs-file-view"
+                                  onClick={() => openFile(att.file)}
+                                  aria-label="Preview file"
+                                  title="Preview in browser"
+                                >
+                                  <i className="fa-solid fa-eye"></i>
+                                </button>
+                              ) : (
+                                <button
+                                  className="docs-file-view docs-file-view-off"
+                                  disabled
+                                  aria-label="Preview unavailable"
+                                  title="No in-browser preview for this file type — use download"
+                                >
+                                  <i className="fa-solid fa-eye-slash"></i>
+                                </button>
+                              )}
                             </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     )}
@@ -369,7 +416,31 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                 );
               })
             ) : (
-              <p className="docs-empty">No documents found</p>
+              <div className="docs-empty-state">
+                <i className="fa-regular fa-folder-open docs-empty-icon"></i>
+                <p className="docs-empty-title">No documents found</p>
+                <p className="docs-empty-text">
+                  {(activeCategory !== 'All Documents' || activeYear !== 'all' || searchTerm) ? (
+                    <>
+                      Nothing matches{' '}
+                      {activeCategory !== 'All Documents' && <b>{activeCategory}</b>}
+                      {activeCategory !== 'All Documents' && activeYear !== 'all' && ' · '}
+                      {activeYear !== 'all' && <b>{activeYear}</b>}
+                      {searchTerm && <> · “<b>{searchTerm}</b>”</>}. Try widening the filters.
+                    </>
+                  ) : (
+                    'There are no documents in this library yet.'
+                  )}
+                </p>
+                {(activeCategory !== 'All Documents' || activeYear !== 'all' || searchTerm) && (
+                  <button
+                    className="docs-empty-btn"
+                    onClick={() => { setActiveCategory('All Documents'); setActiveYear('all'); setSearchTerm(''); }}
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
             )}
           </div>
 
