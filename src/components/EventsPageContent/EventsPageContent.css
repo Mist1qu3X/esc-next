@@ -903,29 +903,6 @@
     font-weight: 700;
 }
 
-/* Активная дисциплина = дисциплина события ON THE RANGE: точка над сегментом + подпись «· LIVE / · NEXT» */
-.epc-sp-line.epc-live {
-    position: relative;
-}
-.epc-sp-line.epc-live::after {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #06121f;
-}
-.epc-sp-live {
-    font-weight: 800;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    color: #06121f;
-    white-space: nowrap;
-}
-
 /* Segment checklist — shown at/below 960px */
 .epc-sp-list {
     list-style: none;
