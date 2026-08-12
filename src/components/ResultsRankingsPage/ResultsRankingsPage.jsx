@@ -5,6 +5,7 @@ import config from '@/lib/config';
 import LoadingResults from '@/components/LoadingResults/LoadingResults';
 import SkeletonEvents from '@/components/LoadingResults/SkeletonEvents';
 import Pagination from '@/components/Pagination/Pagination';
+import DateFilter from '@/components/DateFilter/DateFilter';
 import './ResultsRankingsPage.css';
 
 // Тестовые соревнования (fallback, если в Strapi пусто) — чтобы флоу Results работал целиком
@@ -64,7 +65,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [filterStatus, setFilterStatus] = useState('ALL STATUSES');
   const [sortDir, setSortDir] = useState('desc'); // desc = сначала новые
   const [rankingsSearchTerm, setRankingsSearchTerm] = useState('');
-  const [showDateFilter, setShowDateFilter] = useState(false);
   const [resultsPage, setResultsPage] = useState(1);
   const [rankingsPage, setRankingsPage] = useState(1);
   const [recordsPage, setRecordsPage] = useState(1);
@@ -233,11 +233,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     if (typeof window !== 'undefined') window.print();
   };
 
-  const currentMonthLabel = filterMonth === 'all' ? '' : months.find(m => m.value === filterMonth)?.label;
-  const currentYearLabel = filterYear === 'all' ? '' : filterYear;
-  const dateButtonLabel = filterMonth === 'all' && filterYear === 'all'
-    ? 'DATE ▼'
-    : `${currentMonthLabel} ${currentYearLabel} ▼`;
 
   // Общий фильтр-бар для RANKINGS (оба уровня)
   const rankingDisciplineOptions = [...new Set(RANKING_DISCIPLINES.map(d => `${d.main} ${d.sub}`.trim()))];
@@ -292,27 +287,14 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           {!loaded ? <SkeletonEvents /> : (<>
           <div className="events-filter-bar">
             <div className="events-filter-left">
-              <div className="epc-date-filter-wrapper">
-                <button className="epc-filter-btn epc-date-event" onClick={() => setShowDateFilter(!showDateFilter)}>{dateButtonLabel}</button>
-                {showDateFilter && (
-                  <div className="epc-date-dropdown">
-                    <div className="epc-date-dropdown-section">
-                      <span className="epc-date-dropdown-label">Month</span>
-                      <div className="epc-date-dropdown-grid">
-                        <button className={`epc-date-option ${filterMonth === 'all' ? 'epc-active' : ''}`} onClick={() => { setFilterMonth('all'); setShowDateFilter(false); }}>ALL</button>
-                        {months.map((m) => <button key={m.value} className={`epc-date-option ${filterMonth === m.value ? 'epc-active' : ''}`} onClick={() => { setFilterMonth(m.value); setShowDateFilter(false); }}>{m.label}</button>)}
-                      </div>
-                    </div>
-                    <div className="epc-date-dropdown-section">
-                      <span className="epc-date-dropdown-label">Year</span>
-                      <div className="epc-date-dropdown-grid">
-                        {years.map((y) => <button key={y} className={`epc-date-option ${filterYear === y ? 'epc-active' : ''}`} onClick={() => { setFilterYear(y); setShowDateFilter(false); }}>{y === 'all' ? 'ALL' : y}</button>)}
-                      </div>
-                    </div>
-                    <button className="epc-date-apply-btn" onClick={() => setShowDateFilter(false)}>APPLY</button>
-                  </div>
-                )}
-              </div>
+              <DateFilter
+                month={filterMonth}
+                year={filterYear}
+                onMonth={setFilterMonth}
+                onYear={setFilterYear}
+                months={months}
+                years={years.filter((y) => y !== 'all')}
+              />
               <select className="events-select events-select-md" value={filterType} onChange={(e) => setFilterType(e.target.value)}>{types.map((t) => <option key={t}>{t}</option>)}</select>
               <select className="events-select events-select-md" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>{statuses.map((s) => <option key={s}>{s}</option>)}</select>
               <button className="events-sort-btn" onClick={() => setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))} title="Change sort direction">

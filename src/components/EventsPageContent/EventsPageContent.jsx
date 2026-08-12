@@ -210,14 +210,29 @@ const EventsPageContent = () => {
     const totalSegments = nonEmptySegs.length || seasonSegments.length;
     // Кол-во «пройденных» сегментов = общий прогресс сезона, разложенный по дисциплинам (самые завершённые — первыми)
     const doneSegments = Math.min(totalSegments, Math.round((seasonProgress / 100) * totalSegments));
-    nonEmptySegs.forEach((s, i) => {
-        if (i < doneSegments) s.done = true;            // пройденные дисциплины (галочка)
-        else if (i === doneSegments) s.active = true;   // текущая фаза (граница)
-    });
+    nonEmptySegs.forEach((s, i) => { if (i < doneSegments) s.done = true; }); // пройденные дисциплины
 
     // ON THE RANGE — реальное идущее событие (иначе — ближайшее предстоящее)
     const liveEvent = events.filter((e) => getStatus(e) === 'ONGOING').sort(byDateAsc)[0] || null;
     const nextEvent = events.filter((e) => getStatus(e) === 'UPCOMING').sort(byDateAsc)[0] || null;
+
+    // Активная дисциплина = дисциплина события «ON THE RANGE» (а не абстрактная граница прогресса),
+    // чтобы подсвеченный сегмент совпадал с турниром внизу.
+    const focusEvent = liveEvent || nextEvent;
+    const focusIsLive = !!liveEvent;
+    if (focusEvent) {
+        const ft = segText(focusEvent);
+        // Порядок SEGMENT_DEFS: дисциплины идут раньше категорий/форматов (Youth, ESC Leagues),
+        // поэтому «300m … Cup» подсветит дисциплину 25m/50m/300m, а не ESC Leagues по слову «cup».
+        for (const def of SEGMENT_DEFS) {
+            if (def.match.some((m) => ft.includes(m))) {
+                const seg = nonEmptySegs.find((s) => s.label === def.label);
+                if (seg) { seg.active = true; break; }
+            }
+        }
+    }
+    // если событие не совпало ни с одной дисциплиной — подсветим границу прогресса
+    if (!nonEmptySegs.some((s) => s.active) && nonEmptySegs[doneSegments]) nonEmptySegs[doneSegments].active = true;
 
     return (
         <>
@@ -364,14 +379,16 @@ const EventsPageContent = () => {
                             {/* Трек: сегмент на группу дисциплин, заполняется слева направо */}
                             <div className="epc-sp-track">
                                 {seasonSegments.map((seg, i) => (
-                                    <span className={`epc-sp-line ${seg.done ? 'epc-done' : seg.active ? 'epc-active' : seg.empty ? 'epc-empty' : 'epc-pending'}`} key={i}></span>
+                                    <span className={`epc-sp-line ${seg.done ? 'epc-done' : seg.empty ? 'epc-empty' : 'epc-pending'} ${seg.active ? 'epc-live' : ''}`} key={i}></span>
                                 ))}
                             </div>
 
                             {/* Desktop: подписи дисциплин под треком */}
                             <div className="epc-sp-labels">
                                 {seasonSegments.map((seg, i) => (
-                                    <span className={`epc-sp-label ${seg.active ? 'epc-active' : ''} ${seg.empty ? 'epc-empty' : ''}`} key={i}>{seg.label}</span>
+                                    <span className={`epc-sp-label ${seg.active ? 'epc-active' : ''} ${seg.empty ? 'epc-empty' : ''}`} key={i}>
+                                        {seg.label}{seg.active && <span className="epc-sp-live">{focusIsLive ? ' · LIVE' : ' · NEXT'}</span>}
+                                    </span>
                                 ))}
                             </div>
 
@@ -383,7 +400,7 @@ const EventsPageContent = () => {
                                             <span className={`epc-sp-check ${seg.done ? 'epc-done' : ''}`}>
                                                 {seg.done && <i className="fa-solid fa-check"></i>}
                                             </span>
-                                            <span className="epc-sp-item-label">{seg.label}</span>
+                                            <span className="epc-sp-item-label">{seg.label}{seg.active && <span className="epc-sp-live">{focusIsLive ? ' · LIVE' : ' · NEXT'}</span>}</span>
                                             {!seg.empty && <span className="epc-sp-item-frac">{seg.finished}/{seg.total}</span>}
                                         </li>
                                     ))}
