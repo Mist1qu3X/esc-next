@@ -161,8 +161,9 @@ const SelectedEventPage = ({ slug }) => {
     return 'FINISHED';
   };
   const effStatus = getEffectiveStatus();
-  // До завершения события числа участников/наций не финальные (регистрация ещё идёт)
-  const isProvisional = effStatus === 'UPCOMING' || effStatus === 'ONGOING';
+  // Числа участников/наций предварительны только пока событие не началось
+  // (регистрация ещё идёт). Как только событие идёт — состав уже финальный.
+  const isProvisional = effStatus === 'UPCOMING';
   const athletesText = (event.athletes && String(event.athletes).trim()) ? event.athletes : 'TBC';
   const nationsText = (event.nations && String(event.nations).trim()) ? event.nations : 'TBC';
 
