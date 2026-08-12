@@ -419,6 +419,13 @@
     text-transform: uppercase;
     line-height: 1.2;
     margin: 0 0 4px 0;
+    /* Длинные названия не должны раздувать карточку — максимум 2 строки */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
 }
 
 .mp-federation-country {
@@ -427,8 +434,89 @@
     font-weight: 700;
     letter-spacing: 1.5px;
     color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+/* Регион на карточке — чтобы было понятно, почему федерация в этой выдаче */
+.mp-federation-region {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #00d8f5;
+    background: rgba(0, 216, 245, 0.1);
+    border: 1px solid rgba(0, 216, 245, 0.3);
+    border-radius: 20px;
+    padding: 3px 9px;
     margin-bottom: 16px;
 }
+.mp-federation-region i { font-size: 8px; }
+
+/* Регион в таблице (list view) */
+.mp-list-region {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+}
+
+/* Пустое состояние: под поиск/регион не попала ни одна федерация */
+.mp-federations-grid.mp-grid-empty { display: block; }
+.mp-empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 64px 24px;
+    gap: 10px;
+}
+.mp-empty-icon { font-size: 36px; color: rgba(0, 216, 245, 0.5); margin-bottom: 4px; }
+.mp-empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #ffffff;
+    margin: 0;
+}
+.mp-empty-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 420px;
+    margin: 0;
+    line-height: 1.5;
+}
+.mp-empty-text b { color: rgba(255, 255, 255, 0.8); font-weight: 700; }
+.mp-empty-btn {
+    margin-top: 8px;
+    height: 36px;
+    padding: 0 18px;
+    background: transparent;
+    border: 1px solid rgba(0, 216, 245, 0.4);
+    border-radius: 4px;
+    color: #00d8f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.mp-empty-btn:hover { background: rgba(0, 216, 245, 0.1); transform: translateY(-1px); }
 
 /* Разделительная линия */
 .mp-card-divider {

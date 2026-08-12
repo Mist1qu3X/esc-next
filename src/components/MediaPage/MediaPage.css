@@ -341,7 +341,30 @@
     height: 160px;
     background-size: cover;
     background-position: center;
+    position: relative;
 }
+
+/* Бейдж «Saved» — пометка сохранённой статьи (на карточке новости и в featured) */
+.mp-saved-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #06101C;
+    background: #00d8f5;
+    border-radius: 3px;
+    padding: 4px 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.mp-saved-badge i { font-size: 9px; }
 
 .mp-news-card-content {
     padding: 20px;
@@ -774,6 +797,46 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2px;
+}
+
+/* ---- Видео недоступно (удалено / нет источника) ---- */
+.mp-video-unavailable { opacity: 0.75; }
+.mp-video-unavailable .mp-video-thumbnail,
+.mp-video-unavailable .mp-vgal-cover { filter: grayscale(0.85); }
+.mp-video-unavail {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(6, 16, 28, 0.62);
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.mp-video-unavail i { font-size: 22px; color: rgba(255, 255, 255, 0.6); }
+
+/* ---- Пресс-релиз без прикреплённого файла ---- */
+.mp-press-nofile {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    padding: 8px 14px;
+    white-space: nowrap;
 }
 
 .mp-live-right-column {

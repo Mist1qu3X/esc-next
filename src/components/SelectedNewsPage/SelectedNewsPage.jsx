@@ -22,10 +22,20 @@ const extractData = (response) => {
 const SelectedNewsPage = ({ slug }) => {
   const [article, setArticle] = useState(null);
   const [relatedNews, setRelatedNews] = useState([]);
+  const [prevArticle, setPrevArticle] = useState(null); // старее (опубликовано раньше)
+  const [nextArticle, setNextArticle] = useState(null); // новее (опубликовано позже)
   const [loading, setLoading] = useState(true);
   const [animDone, setAnimDone] = useState(false); // мишень доиграла
   const [notFound, setNotFound] = useState(false);
+  const [copied, setCopied] = useState(false);       // подтверждение «ссылка скопирована»
+  const [saved, setSaved] = useState(false);         // статья сохранена (localStorage)
   const router = useRouter();
+
+  const SAVED_KEY = 'esc-saved-articles';
+  const readSaved = () => {
+    try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]').filter((a) => a && a.slug); }
+    catch { return []; }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,14 +60,19 @@ const SelectedNewsPage = ({ slug }) => {
         if (articles.length > 0) {
           const articleData = articles[0];
           setArticle(articleData);
-          
-          // Получаем похожие новости
-          const relatedRes = await axios.get(
-            `${config.API_URL}/api/news-items?populate=*&limit=4&sort=date:desc`
+          setSaved(readSaved().some((a) => a.slug === slug));
+
+          // Полный отсортированный список — для соседей (prev/next) и «похожих»
+          const listRes = await axios.get(
+            `${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`
           );
-          const related = extractData(relatedRes);
-          // Фильтруем текущую статью
-          setRelatedNews(related.filter(item => item.id !== articleData.id));
+          const list = extractData(listRes);
+          const idx = list.findIndex((n) => n.id === articleData.id || n.slug === articleData.slug);
+          if (idx !== -1) {
+            setNextArticle(idx > 0 ? list[idx - 1] : null);                 // выше в ленте = новее
+            setPrevArticle(idx < list.length - 1 ? list[idx + 1] : null);   // ниже в ленте = старее
+          }
+          setRelatedNews(list.filter((item) => item.id !== articleData.id));
         } else {
           setArticle(null);
           setNotFound(true);
@@ -93,9 +108,31 @@ const SelectedNewsPage = ({ slug }) => {
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
   };
 
+  // Копирование ссылки с подтверждением прямо в UI (без alert)
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl);
-    alert('Link copied to clipboard!');
+    try { navigator.clipboard?.writeText(shareUrl); } catch (e) {}
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Сохранение статьи без авторизации — localStorage, у каждого своё на устройстве
+  const toggleSave = () => {
+    const list = readSaved();
+    const exists = list.some((a) => a.slug === slug);
+    const next = exists
+      ? list.filter((a) => a.slug !== slug)
+      : [{ slug, title: article?.title, date: article?.date, theme: article?.theme, image: getImageUrl(article?.image) }, ...list];
+    try { localStorage.setItem(SAVED_KEY, JSON.stringify(next)); } catch (e) {}
+    setSaved(!exists);
+  };
+
+  // Нативный шэр (мобилки) с фолбэком на копирование + подтверждением
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({ title: article?.title || document.title, url: shareUrl }).catch(() => {});
+    } else {
+      handleCopyLink();
+    }
   };
 
   const handleAllMedia = () => {
@@ -104,6 +141,10 @@ const SelectedNewsPage = ({ slug }) => {
 
   const handleGoBack = () => {
     router.back();
+  };
+
+  const goToArticle = (a) => {
+    if (a?.slug) router.push(`/media/${a.slug}`);
   };
 
   const handleRelatedClick = (relatedSlug) => {
@@ -204,9 +245,9 @@ const SelectedNewsPage = ({ slug }) => {
                   <i className="fa-brands fa-linkedin-in"></i>
                   LINKEDIN
                 </button>
-                <button className="share-btn-item copy" onClick={handleCopyLink}>
-                  <i className="fa-regular fa-copy"></i>
-                  COPY LINK
+                <button className={`share-btn-item copy ${copied ? 'copied' : ''}`} onClick={handleCopyLink}>
+                  <i className={`fa-solid ${copied ? 'fa-check' : 'fa-copy'}`}></i>
+                  {copied ? 'COPIED!' : 'COPY LINK'}
                 </button>
               </div>
             </div>
@@ -216,9 +257,12 @@ const SelectedNewsPage = ({ slug }) => {
             <div className="sidebar-block">
               <h4 className="sidebar-block-title">ARTICLE ACTIONS</h4>
               <div className="sidebar-actions">
-                <button className="action-btn save-btn" onClick={() => { try { const k = 'esc-saved-articles'; const s = JSON.parse(localStorage.getItem(k) || '[]'); const p = window.location.pathname; if (!s.includes(p)) { s.push(p); localStorage.setItem(k, JSON.stringify(s)); } } catch (e) {} }}><i className="fa-regular fa-bookmark"></i>SAVE ARTICLE</button>
-                <button className="action-btn share-btn" onClick={() => { if (navigator.share) { navigator.share({ title: document.title, url: window.location.href }).catch(() => {}); } else if (navigator.clipboard) { navigator.clipboard.writeText(window.location.href); } }}><i className="fa-solid fa-share-nodes"></i>SHARE</button>
+                <button className={`action-btn save-btn ${saved ? 'saved' : ''}`} onClick={toggleSave} aria-pressed={saved}>
+                  <i className={`${saved ? 'fa-solid' : 'fa-regular'} fa-bookmark`}></i>{saved ? 'SAVED' : 'SAVE ARTICLE'}
+                </button>
+                <button className="action-btn share-btn" onClick={handleShare}><i className="fa-solid fa-share-nodes"></i>SHARE</button>
               </div>
+              {saved && <p className="save-hint">Saved on this device · click again to remove</p>}
             </div>
 
             <div className="sidebar-block">
@@ -259,6 +303,23 @@ const SelectedNewsPage = ({ slug }) => {
             <button className="back-to-media-btn" onClick={handleGoBack}>
               <i className="fa-solid fa-arrow-left"></i>BACK TO MEDIA
             </button>
+
+            {(prevArticle || nextArticle) && (
+              <nav className="sidebar-nav">
+                {prevArticle && (
+                  <button className="sidebar-nav-item" onClick={() => goToArticle(prevArticle)}>
+                    <span className="sidebar-nav-dir"><i className="fa-solid fa-arrow-left"></i> Previous article</span>
+                    <span className="sidebar-nav-title">{prevArticle.title}</span>
+                  </button>
+                )}
+                {nextArticle && (
+                  <button className="sidebar-nav-item" onClick={() => goToArticle(nextArticle)}>
+                    <span className="sidebar-nav-dir">Next article <i className="fa-solid fa-arrow-right"></i></span>
+                    <span className="sidebar-nav-title">{nextArticle.title}</span>
+                  </button>
+                )}
+              </nav>
+            )}
           </aside>
         </div>
       </section>

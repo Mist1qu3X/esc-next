@@ -14,6 +14,15 @@ const DEFAULT_STATS = [
   { number: '10000+', label: 'ATHLETES' },
 ];
 
+// Читаемая подпись региона для карточки (value поля region → label кнопки фильтра)
+const REGION_LABELS = REGIONS.reduce((acc, r) => { acc[r.value] = r.label; return acc; }, {});
+const regionLabel = (region) => {
+  if (!region) return null;
+  if (REGION_LABELS[region]) return REGION_LABELS[region];
+  // незнакомые значения (например, Кавказ) — аккуратно капитализируем
+  return region.replace(/[._]/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+};
+
 const MembersPage = () => {
   const [federations, setFederations] = useState([]);
   const [filteredFeds, setFilteredFeds] = useState([]);
@@ -63,6 +72,31 @@ const MembersPage = () => {
     
     setFilteredFeds(result);
   }, [searchTerm, activeRegion, federations]);
+
+  const hasFilters = activeRegion !== 'ALL' || !!searchTerm;
+  const emptyState = (
+    <div className="mp-empty-state">
+      <i className="fa-regular fa-compass mp-empty-icon"></i>
+      <p className="mp-empty-title">No federations found</p>
+      <p className="mp-empty-text">
+        {hasFilters ? (
+          <>
+            Nothing matches{' '}
+            {activeRegion !== 'ALL' && <b>{regionLabel(activeRegion)}</b>}
+            {activeRegion !== 'ALL' && searchTerm && ' · '}
+            {searchTerm && <>“<b>{searchTerm}</b>”</>}. Try a different region or search.
+          </>
+        ) : (
+          'No member federations to display yet.'
+        )}
+      </p>
+      {hasFilters && (
+        <button className="mp-empty-btn" onClick={() => { setActiveRegion('ALL'); setSearchTerm(''); }}>
+          Clear filters
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -153,12 +187,8 @@ const MembersPage = () => {
               <span className="mp-showing-number">{filteredFeds.length}</span>
               <span className="mp-showing-text">FEDERATIONS</span>
             </div>
-          <div className="mp-federations-grid">
-            {loading ? (
-              <p style={{ textAlign: 'center', padding: '60px', color: 'rgba(255,255,255,0.5)', gridColumn: '1 / -1' }}>
-                Loading federations...
-              </p>
-            ) : (
+          <div className={`mp-federations-grid ${filteredFeds.length === 0 ? 'mp-grid-empty' : ''}`}>
+            {filteredFeds.length > 0 ? (
               filteredFeds.map((fed) => (
                 <div className="mp-federation-card" key={fed.id}>
                   <div className="mp-card-top-row">
@@ -166,8 +196,11 @@ const MembersPage = () => {
                     <span className="mp-federation-code">{fed.countryCode || fed.code}</span>
                   </div>
                   <div className="mp-federation-info">
-                    <h3 className="mp-federation-name">{fed.country || fed.name}</h3>
-                    <p className="mp-federation-country">{fed.name}</p>
+                    <h3 className="mp-federation-name" title={fed.country || fed.name}>{fed.country || fed.name}</h3>
+                    <p className="mp-federation-country" title={fed.name}>{fed.name}</p>
+                    {regionLabel(fed.region) && (
+                      <span className="mp-federation-region"><i className="fa-solid fa-location-dot"></i>{regionLabel(fed.region)}</span>
+                    )}
                     <div className="mp-card-divider"></div>
                     <p className="mp-president-label">PRESIDENT</p>
                     <p className="mp-president-name">{fed.president || '—'}</p>
@@ -185,7 +218,7 @@ const MembersPage = () => {
                   </div>
                 </div>
               ))
-            )}
+            ) : emptyState}
           </div>
         </section>
       )}
@@ -199,17 +232,14 @@ const MembersPage = () => {
             <span className="mp-showing-text">FEDERATIONS</span>
           </div>
           <div className="mp-federations-list-wrapper">
-            {loading ? (
-              <p style={{ textAlign: 'center', padding: '60px', color: 'rgba(255,255,255,0.5)' }}>
-                Loading federations...
-              </p>
-            ) : (
+            {filteredFeds.length > 0 ? (
               <table className="mp-federations-table">
                 <thead>
                   <tr>
                     <th>Code</th>
                     <th>Federation</th>
                     <th>Country</th>
+                    <th>Region</th>
                     <th>President</th>
                     <th>Contact</th>
                     <th></th>
@@ -221,6 +251,7 @@ const MembersPage = () => {
                       <td className="mp-list-code">{fed.countryCode || fed.code}</td>
                       <td className="mp-list-name">{fed.name}</td>
                       <td className="mp-list-country">{fed.country || fed.name}</td>
+                      <td className="mp-list-region">{regionLabel(fed.region) || '—'}</td>
                       <td className="mp-list-president">{fed.president || '—'}</td>
                       <td className="mp-list-contact">
                         {fed.email && <div><i className="fa-regular fa-envelope"></i> {fed.email}</div>}
@@ -233,7 +264,7 @@ const MembersPage = () => {
                   ))}
                 </tbody>
               </table>
-            )}
+            ) : emptyState}
           </div>
         </section>
       )}
