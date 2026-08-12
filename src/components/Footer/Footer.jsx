@@ -45,10 +45,10 @@ const Footer = () => {
                     })}
                 </div>
                 <div className="reading-links">
-                    <a href="#">PRIVACY POLICY</a>
-                    <a href="#">TERMS OF USE</a>
-                    <a href="#">COOKIE SETTINGS</a>
-                    <a href="#">SITEMAP</a>
+                    <Link href="/privacy">PRIVACY POLICY</Link>
+                    <Link href="/terms">TERMS OF USE</Link>
+                    <a href="#" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event('open-cookie-settings')); }}>COOKIE SETTINGS</a>
+                    <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer">SITEMAP</a>
                 </div>
             </div>
 

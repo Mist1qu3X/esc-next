@@ -540,3 +540,24 @@
         font-size: 12px;
     }
 }   
+/* ===== Правки по ревью тестировщика ===== */
+/* Статусы главного события (WHAT'S ON): идёт / завершено / перенесено / отменено */
+.champ-status { display: flex; flex-direction: column; gap: 4px; margin: 6px 0; }
+.champ-status-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(22px, 3vw, 34px);
+    font-weight: 700; letter-spacing: 1px; line-height: 1;
+    color: #fff; text-transform: uppercase;
+}
+.champ-status-sub { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+.champ-status-dot { display: none; }
+.champ-status--ongoing .champ-status-text { color: #00d8f5; }
+.champ-status--finished .champ-status-text { color: rgba(255, 255, 255, 0.7); }
+.champ-status--postponed .champ-status-text { color: #ffb020; }
+.champ-status--cancelled .champ-status-text { color: #ff5c5c; }
+
+/* Год под днём/месяцем в UPCOMING EVENTS */
+.event-year { font-size: 11px; color: rgba(255, 255, 255, 0.5); font-weight: 600; }
+
+/* Пустые состояния блоков FullInfo */
+.fi-empty { padding: 22px 8px; color: rgba(255, 255, 255, 0.45); font-size: 13px; text-align: center; }

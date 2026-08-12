@@ -7,6 +7,7 @@ import config from '@/lib/config';
 
 const MustSeeAction = () => {
     const [videos, setVideos] = useState([]);
+    const [loaded, setLoaded] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -15,9 +16,11 @@ const MustSeeAction = () => {
                 const response = await axios.get(
                     `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
                 );
-                setVideos(response.data.data);
-            } catch (error) { 
-                console.error('Ошибка загрузки видео:', error); 
+                setVideos(response.data.data || []);
+            } catch (error) {
+                console.error('Ошибка загрузки видео:', error);
+            } finally {
+                setLoaded(true);
             }
         };
         fetchVideos();
@@ -44,6 +47,9 @@ const MustSeeAction = () => {
                 <button className="action-more-btn" onClick={handleMore}>MORE &gt;</button>
             </div>
             <div className="action-container">
+                {videos.length === 0 && (
+                    <div className="action-empty">{loaded ? 'No videos yet' : 'Loading…'}</div>
+                )}
                 {videos.map((video, index) => {
                     const { title, category, description, thumbnail, videoUrl } = video;
                     const thumbnailUrl = thumbnail?.url

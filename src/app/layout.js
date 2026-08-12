@@ -1,6 +1,7 @@
 import './globals.css';
 import '@/components/Header/Header.css';
 import '@/components/Footer/Footer.css';
+import CookieConsent from '@/components/CookieConsent/CookieConsent';
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://esc-shooting.org';
 
@@ -26,7 +27,10 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieConsent />
+      </body>
     </html>
   );
 }

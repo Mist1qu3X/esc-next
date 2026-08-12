@@ -11,7 +11,8 @@ const FullInfo = () => {
     const [championship, setChampionship] = useState(null);
     const [platform, setPlatform] = useState(null);
     const [activeCategory, setActiveCategory] = useState('MEN');
-    const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
+    const [now, setNow] = useState(() => Date.now());
+    const [eventsLoaded, setEventsLoaded] = useState(false);
     const router = useRouter();
 
     // Категории для ротации ESC RANKING (муж → жен → по кругу)
@@ -22,9 +23,7 @@ const FullInfo = () => {
         const fetchChampionship = async () => {
             try {
                 const res = await axios.get(`${config.API_URL}/api/championships?populate=*`);
-                if (res.data.data.length > 0) {
-                    setChampionship(res.data.data[0]);
-                }
+                if (res.data.data.length > 0) setChampionship(res.data.data[0]);
             } catch (e) { console.error(e); }
         };
         fetchChampionship();
@@ -35,41 +34,32 @@ const FullInfo = () => {
         const fetchPlatform = async () => {
             try {
                 const res = await axios.get(`${config.API_URL}/api/esc-platforms?populate=*`);
-                if (res.data.data.length > 0) {
-                    setPlatform(res.data.data[0]);
-                }
+                if (res.data.data.length > 0) setPlatform(res.data.data[0]);
             } catch (e) { console.error('Ошибка загрузки ESC PLATFORM:', e); }
         };
         fetchPlatform();
     }, []);
 
-    // Таймер
+    // Тикер «сейчас» — раз в секунду, для таймера и статуса главного события
     useEffect(() => {
-        if (!championship?.startDate) return;
-        const targetDate = new Date(championship.startDate);
-        const timer = setInterval(() => {
-            const now = new Date();
-            const difference = targetDate - now;
-            if (difference > 0) {
-                setTimeLeft({
-                    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-                    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                    minutes: Math.floor((difference / 1000 / 60) % 60)
-                });
-            }
-        }, 1000);
-        return () => clearInterval(timer);
-    }, [championship]);
+        const t = setInterval(() => setNow(Date.now()), 1000);
+        return () => clearInterval(t);
+    }, []);
 
-    // Загрузка событий
+    // Загрузка ближайших событий: только те, что ещё не прошли, по возрастанию даты
     useEffect(() => {
         const fetchEvents = async () => {
             try {
+                const today = new Date().toISOString().slice(0, 10);
                 const response = await axios.get(
-                    `${config.API_URL}/api/events?sort=date:asc&pagination[limit]=3`
+                    `${config.API_URL}/api/events?filters[date][$gte]=${today}&sort=date:asc&pagination[limit]=3`
                 );
-                setEvents(response.data.data);
-            } catch (error) { console.error('Ошибка загрузки событий:', error); }
+                setEvents(response.data.data || []);
+            } catch (error) {
+                console.error('Ошибка загрузки событий:', error);
+            } finally {
+                setEventsLoaded(true);
+            }
         };
         fetchEvents();
     }, []);
@@ -81,7 +71,7 @@ const FullInfo = () => {
                 const response = await axios.get(
                     `${config.API_URL}/api/ranking-details?filters[discipline][$eq]=10m Air Rifle&sort=position:asc&pagination[pageSize]=50`
                 );
-                setRankings(response.data.data);
+                setRankings(response.data.data || []);
             } catch (error) { console.error('Ошибка загрузки рейтинга:', error); }
         };
         fetchRankings();
@@ -89,17 +79,12 @@ const FullInfo = () => {
 
     // Ротация категорий рейтинга каждые 5 секунд (муж ↔ жен по кругу)
     useEffect(() => {
-        const present = RANKING_CATEGORIES.filter(
-            (cat) => rankings.some((r) => r.category === cat)
-        );
+        const present = RANKING_CATEGORIES.filter((cat) => rankings.some((r) => r.category === cat));
         if (present.length < 2) {
-            // Нечего чередовать — показываем то, что есть
             if (present.length === 1) setActiveCategory(present[0]);
             return;
         }
-        // Гарантируем, что активная категория валидна
         setActiveCategory((prev) => (present.includes(prev) ? prev : present[0]));
-
         const interval = setInterval(() => {
             setActiveCategory((prev) => {
                 const idx = present.indexOf(prev);
@@ -109,34 +94,48 @@ const FullInfo = () => {
         return () => clearInterval(interval);
     }, [rankings]);
 
-    const handleEventInfo = () => {
-        if (championship?.slug) {
-            router.push(`/events/${championship.slug}`);
-        }
-    };
-
+    const handleEventInfo = () => { if (championship?.slug) router.push(`/events/${championship.slug}`); };
     const handleEntrySystem = () => {
         const link = platform?.buttonLink || 'https://esc-entry.eu';
-        if (/^https?:\/\//.test(link)) {
-            window.open(link, '_blank', 'noopener,noreferrer');
-        } else {
-            router.push(link);
+        if (/^https?:\/\//.test(link)) window.open(link, '_blank', 'noopener,noreferrer');
+        else router.push(link);
+    };
+    const handleAllEvents = () => router.push('/events');
+    const handleFull = () => router.push('/results');
+    const handleEventClick = (eventSlug) => { if (eventSlug) router.push(`/events/${eventSlug}`); };
+
+    // Состояние главного события: countdown / ongoing / finished / postponed / cancelled
+    const champState = (() => {
+        if (!championship) return { kind: 'loading' };
+        const status = (championship.status || 'SCHEDULED').toUpperCase();
+        if (status === 'CANCELLED') return { kind: 'cancelled' };
+        if (status === 'POSTPONED') return { kind: 'postponed' };
+        const start = championship.startDate ? new Date(championship.startDate).getTime() : null;
+        const end = championship.endDate ? new Date(championship.endDate).getTime() : null;
+        if (start && now < start) {
+            const d = start - now;
+            return {
+                kind: 'countdown',
+                days: Math.floor(d / 86400000),
+                hours: Math.floor(d / 3600000) % 24,
+                minutes: Math.floor(d / 60000) % 60,
+            };
         }
+        if (end && now > end) return { kind: 'finished' };
+        if (start && now >= start) return { kind: 'ongoing' };
+        return { kind: 'countdown', days: 0, hours: 0, minutes: 0 };
+    })();
+    const STATUS_TEXT = {
+        ongoing: 'EVENT IN PROGRESS',
+        finished: 'EVENT FINISHED',
+        postponed: 'EVENT POSTPONED',
+        cancelled: 'EVENT CANCELLED',
     };
 
-    const handleAllEvents = () => {
-        router.push('/events');  // Просто переход на страницу событий, без hash
-    };
-
-    const handleFull = () => {
-        router.push('/results');
-    };
-
-    const handleEventClick = (eventSlug) => {
-        if (eventSlug) {
-            router.push(`/events/${eventSlug}`);
-        }
-    };
+    const visibleRankings = rankings
+        .filter((item) => item.discipline === '10m Air Rifle' && item.category === activeCategory)
+        .sort((a, b) => a.position - b.position)
+        .slice(0, 5);
 
     return (
         <section className="full-info">
@@ -158,21 +157,33 @@ const FullInfo = () => {
                             </div>
                         </div>
                         <div className="part-bottom">
-                            <p className="theme1">{championship?.countdownLabel}</p>
-                            <div className="countdown-timer">
-                                <div className="time-block">
-                                    <span className="time-number">{String(timeLeft.days).padStart(3, '0')}</span>
-                                    <span className="time-label">DAYS</span>
+                            {champState.kind === 'countdown' ? (
+                                <>
+                                    <p className="theme1">{championship?.countdownLabel}</p>
+                                    <div className="countdown-timer">
+                                        <div className="time-block">
+                                            <span className="time-number">{String(champState.days).padStart(3, '0')}</span>
+                                            <span className="time-label">DAYS</span>
+                                        </div>
+                                        <div className="time-block">
+                                            <span className="time-number">{String(champState.hours).padStart(2, '0')}</span>
+                                            <span className="time-label">HRS</span>
+                                        </div>
+                                        <div className="time-block">
+                                            <span className="time-number">{String(champState.minutes).padStart(2, '0')}</span>
+                                            <span className="time-label">MIN</span>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : champState.kind !== 'loading' ? (
+                                <div className={`champ-status champ-status--${champState.kind}`}>
+                                    <span className="champ-status-dot"></span>
+                                    <span className="champ-status-text">{STATUS_TEXT[champState.kind]}</span>
+                                    {champState.kind === 'postponed' && (
+                                        <span className="champ-status-sub">New date to be announced</span>
+                                    )}
                                 </div>
-                                <div className="time-block">
-                                    <span className="time-number">{String(timeLeft.hours).padStart(2, '0')}</span>
-                                    <span className="time-label">HRS</span>
-                                </div>
-                                <div className="time-block">
-                                    <span className="time-number">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                                    <span className="time-label">MIN</span>
-                                </div>
-                            </div>
+                            ) : null}
                             <button className="event-info-btn" onClick={handleEventInfo}>
                                 EVENT INFO &gt;
                             </button>
@@ -201,32 +212,33 @@ const FullInfo = () => {
                     <div className="part3">
                         <div className="all-event-item">
                             <h4>UPCOMING EVENTS</h4>
-                            {events.map((event) => {
-                                const { name, date, month, location, statusEvent, slug } = event;
-                                return (
-                                    <div 
-                                        className="event-item" 
-                                        key={event.id}
-                                        onClick={() => handleEventClick(slug)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <div className="event-left">
-                                            <div className="event-date-block">
-                                                <span className="event-date">{new Date(date).getDate()}</span>
-                                                <span className="event-month">{month}</span>
-                                            </div>
-                                            <div className="event-details">
-                                                <span className="event-name">{name}</span>
-                                                <div className="geolocation">
-                                                    <i className="fa-solid fa-location-dot"></i>
-                                                    <p>{location}</p>
+                            {events.length > 0 ? (
+                                events.map((event) => {
+                                    const { name, date, location, statusEvent, slug } = event;
+                                    const d = new Date(date);
+                                    return (
+                                        <div className="event-item" key={event.id} onClick={() => handleEventClick(slug)} style={{ cursor: 'pointer' }}>
+                                            <div className="event-left">
+                                                <div className="event-date-block">
+                                                    <span className="event-date">{d.getDate()}</span>
+                                                    <span className="event-month">{d.toLocaleDateString('en-US', { month: 'short' })}</span>
+                                                    <span className="event-year">{d.getFullYear()}</span>
+                                                </div>
+                                                <div className="event-details">
+                                                    <span className="event-name">{name}</span>
+                                                    <div className="geolocation">
+                                                        <i className="fa-solid fa-location-dot"></i>
+                                                        <p>{location}</p>
+                                                    </div>
                                                 </div>
                                             </div>
+                                            <span className="status">{statusEvent}</span>
                                         </div>
-                                        <span className="status">{statusEvent}</span>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })
+                            ) : (
+                                <div className="fi-empty">{eventsLoaded ? 'No upcoming events at the moment' : 'Loading…'}</div>
+                            )}
                         </div>
                         <button className="all-events-btn" onClick={handleAllEvents}>
                             ALL EVENTS &gt;
@@ -243,17 +255,11 @@ const FullInfo = () => {
                             10M AIR RIFLE {activeCategory === 'WOMEN' ? 'W' : activeCategory === 'MEN' ? 'M' : ''}
                         </p>
                         <div className="ranking-list" key={activeCategory}>
-                            {rankings
-                                .filter((item) => item.discipline === '10m Air Rifle' && item.category === activeCategory)
-                                .sort((a, b) => a.position - b.position)
-                                .slice(0, 5)
-                                .map((item, idx) => {
+                            {visibleRankings.length > 0 ? (
+                                visibleRankings.map((item, idx) => {
                                     const { athleteName, country, points } = item;
                                     return (
-                                        <div
-                                            className={`ranking-item ${idx === 0 ? 'first-place' : ''}`}
-                                            key={item.id}
-                                        >
+                                        <div className={`ranking-item ${idx === 0 ? 'first-place' : ''}`} key={item.id}>
                                             <div className="rank-info">
                                                 <span className="rank">{idx + 1}</span>
                                                 <div className="athlete-info">
@@ -264,7 +270,10 @@ const FullInfo = () => {
                                             <span className="points">{points}</span>
                                         </div>
                                     );
-                                })}
+                                })
+                            ) : (
+                                <div className="fi-empty">No ranking data yet</div>
+                            )}
                         </div>
                     </div>
                 </div>
