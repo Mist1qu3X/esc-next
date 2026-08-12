@@ -28,6 +28,7 @@ const MediaPage = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
+  const [savedSlugs, setSavedSlugs] = useState([]);       // сохранённые статьи (localStorage) — их наверх
 
   const router = useRouter();
   const latestNewsRef = useRef(null);
@@ -40,6 +41,11 @@ const MediaPage = () => {
     const f = new URLSearchParams(window.location.search).get('filter');
     if (f && filters.includes(f)) setActiveFilter(f);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Сохранённые статьи (localStorage) — чтобы поднимать их наверх списка
+  useEffect(() => {
+    try { setSavedSlugs((JSON.parse(localStorage.getItem('esc-saved-articles') || '[]') || []).map((a) => a?.slug).filter(Boolean)); } catch (e) {}
   }, []);
 
   const scrollToElement = (element) => {
@@ -156,6 +162,9 @@ const MediaPage = () => {
     if (slug) router.push(`/media/${slug}`);
   };
 
+  // Видео считается доступным, если есть источник (ссылка или загруженный файл)
+  const videoAvailable = (v) => !!(v?.videoUrl || v?.videoFile);
+
   // ФИЛЬТРАЦИЯ НОВОСТЕЙ по выбранной категории
   const getFilteredNews = () => {
     if (activeFilter === 'ALL') {
@@ -168,9 +177,17 @@ const MediaPage = () => {
     return news.filter(item => item.theme?.toUpperCase() === activeFilter);
   };
 
+  // Сохранённые статьи — вперёд (только в ALL NEWS). Стабильная сортировка сохраняет порядок по дате.
+  const savedFirst = (list) => {
+    if (!savedSlugs.length) return list;
+    const set = new Set(savedSlugs);
+    return [...list].sort((a, b) => (set.has(b.slug) ? 1 : 0) - (set.has(a.slug) ? 1 : 0));
+  };
+  const isSaved = (slug) => !!slug && savedSlugs.includes(slug);
+
   const filteredNews = getFilteredNews();
   const featuredNews = filteredNews.slice(0, 2);
-  const latestNews = filteredNews.slice(2, 6);
+  const latestNews = filteredNews.slice(2, 6); // LATEST NEWS — обычный порядок по дате (без saved-first)
   
   // Фильтр для VIDEOS
   const getFilteredVideos = () => {
@@ -220,7 +237,7 @@ const MediaPage = () => {
   const showPhotos = activeFilter === 'PHOTO';
 
   // Новостная сетка: на теме — «ALL N THEME» и ВСЕ новости темы; на ALL — «LATEST NEWS» (обрезка)
-  const newsGridItems = themeView ? filteredNews : latestNews;
+  const newsGridItems = themeView ? savedFirst(filteredNews) : latestNews;
   const newsGridHeading = themeView ? `ALL ${newsGridItems.length} ${activeFilter}` : 'LATEST NEWS';
 
   return (
@@ -271,9 +288,10 @@ const MediaPage = () => {
             <div className="mp-featured-container">
               {featuredNews.length > 0 ? (
                 featuredNews.map((item) => (
-                  <div key={item.id} className="mp-featured-card" 
+                  <div key={item.id} className="mp-featured-card"
                     style={{ backgroundImage: `url(${getImageUrl(item.image)})`, cursor: 'pointer' }}
                     onClick={() => goToNews(item.slug)}>
+                    {isSaved(item.slug) && <span className="mp-saved-badge"><i className="fa-solid fa-bookmark"></i>Saved</span>}
                     <div className="mp-featured-overlay">
                       <span className="mp-news-type">{item.theme || 'CHAMPIONSHIP'}</span>
                       <h2 className="mp-featured-title">{item.title}</h2>
@@ -337,16 +355,24 @@ const MediaPage = () => {
             <h2 className="mp-photo-heading">VIDEOS</h2>
             <div className="mp-photo-grid">
               {videos.length > 0 ? (
-                videos.map((v) => (
+                videos.map((v) => {
+                  const avail = videoAvailable(v);
+                  return (
                   <div
                     key={v.id}
-                    className="mp-photo-card"
-                    onClick={() => router.push(`/media/video/${v.documentId}`)}
-                    style={{ cursor: 'pointer' }}
+                    className={`mp-photo-card ${!avail ? 'mp-video-unavailable' : ''}`}
+                    onClick={() => avail && router.push(`/media/video/${v.documentId}`)}
+                    style={{ cursor: avail ? 'pointer' : 'default' }}
                   >
                     <div className="mp-vgal-cover" style={{ backgroundImage: `url(${getImageUrl(v.thumbnail)})` }}>
-                      <div className="mp-vgal-play"><i className="fa-solid fa-play"></i></div>
-                      {v.duration && <span className="mp-vgal-duration">{v.duration}</span>}
+                      {avail ? (
+                        <>
+                          <div className="mp-vgal-play"><i className="fa-solid fa-play"></i></div>
+                          {v.duration && <span className="mp-vgal-duration">{v.duration}</span>}
+                        </>
+                      ) : (
+                        <div className="mp-video-unavail"><i className="fa-solid fa-video-slash"></i><span>Unavailable</span></div>
+                      )}
                     </div>
                     <div className="mp-photo-panel">
                       <h3 className="mp-photo-title">{v.title}</h3>
@@ -355,7 +381,8 @@ const MediaPage = () => {
                       </div>
                     </div>
                   </div>
-                ))
+                  );
+                })
               ) : (
                 <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
                   No videos available
@@ -374,14 +401,16 @@ const MediaPage = () => {
                 <span className="mp-section-text mp-grey-text">{newsGridHeading}</span>
               </div>
               {!themeView && (
-                <button className="mp-all-articles-btn" onClick={() => router.push('/media')}>ALL ARTICLES ›</button>
+                <button className="mp-all-articles-btn" onClick={() => { setActiveFilter('NEWS'); setTimeout(() => document.getElementById('latest-news')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120); }}>ALL ARTICLES ›</button>
               )}
             </div>
             <div className="mp-latest-news-grid">
               {newsGridItems.length > 0 ? (
                 newsGridItems.map((item) => (
                   <div key={item.id} className="mp-news-card" onClick={() => goToNews(item.slug)} style={{ cursor: 'pointer' }}>
-                    <div className="mp-news-card-image" style={{ backgroundImage: `url(${getImageUrl(item.image)})` }}></div>
+                    <div className="mp-news-card-image" style={{ backgroundImage: `url(${getImageUrl(item.image)})` }}>
+                      {isSaved(item.slug) && <span className="mp-saved-badge"><i className="fa-solid fa-bookmark"></i>Saved</span>}
+                    </div>
                     <div className="mp-news-card-content">
                       <span className={`mp-news-type mp-type-${item.theme?.toLowerCase() || 'education'}`}>{item.theme || 'NEWS'}</span>
                       <h3 className="mp-news-card-title">{item.title}</h3>
@@ -411,18 +440,27 @@ const MediaPage = () => {
             </div>
             <div className="mp-videos-grid">
               {filteredVideos.length > 0 ? (
-                filteredVideos.slice(0, 4).map((v) => (
-                  <div key={v.id} className="mp-video-card" onClick={() => router.push(`/media/video/${v.documentId}`)} style={{ cursor: 'pointer' }}>
+                filteredVideos.slice(0, 4).map((v) => {
+                  const avail = videoAvailable(v);
+                  return (
+                  <div key={v.id} className={`mp-video-card ${!avail ? 'mp-video-unavailable' : ''}`} onClick={() => avail && router.push(`/media/video/${v.documentId}`)} style={{ cursor: avail ? 'pointer' : 'default' }}>
                     <div className="mp-video-thumbnail" style={{ backgroundImage: `url(${getImageUrl(v.thumbnail)})` }}>
-                      <div className="mp-video-play-btn"><i className="fa-solid fa-play"></i></div>
-                      <span className="mp-video-duration">{v.duration || '4:38'}</span>
+                      {avail ? (
+                        <>
+                          <div className="mp-video-play-btn"><i className="fa-solid fa-play"></i></div>
+                          <span className="mp-video-duration">{v.duration || '0:00'}</span>
+                        </>
+                      ) : (
+                        <div className="mp-video-unavail"><i className="fa-solid fa-video-slash"></i><span>Unavailable</span></div>
+                      )}
                     </div>
                     <div className="mp-video-info">
                       <span className="mp-video-label">VIDEO</span>
                       <h3 className="mp-video-title">{v.title}</h3>
                     </div>
                   </div>
-                ))
+                  );
+                })
               ) : (
                 <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
                   No videos available
@@ -491,15 +529,17 @@ const MediaPage = () => {
                   <div className="mp-press-info">
                     <h4 className="mp-press-title">{doc.title}</h4>
                     {doc.description && <p className="mp-press-desc">{doc.description}</p>}
-                    <span className="mp-press-meta">{formatDate(doc.date)}{doc.file ? ` · PDF ${doc.fileSize || '0.3 MB'}` : ''}</span>
+                    <span className="mp-press-meta">{formatDate(doc.date)}{doc.file ? ` · PDF ${doc.fileSize || '0.3 MB'}` : ' · No file attached'}</span>
                   </div>
-                  {doc.file && (
+                  {doc.file ? (
                     <button className="mp-download-btn-press" onClick={() => {
                       const url = doc.file?.url;
                       if (url) window.open(url.startsWith('http') ? url : `${config.API_URL}${url}`, '_blank');
                     }}>
                       <i className="fa-solid fa-download"></i>DOWNLOAD
                     </button>
+                  ) : (
+                    <span className="mp-press-nofile"><i className="fa-regular fa-file-circle-xmark"></i>No file</span>
                   )}
                 </div>
               )) : (
