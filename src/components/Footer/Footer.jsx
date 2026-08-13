@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import './Footer.css';
 
@@ -11,7 +11,7 @@ const Footer = () => {
     useEffect(() => {
         const fetchSocialLinks = async () => {
             try {
-                const res = await axios.get(
+                const res = await cachedGet(
                     `${config.API_URL}/api/social-links?populate=*&sort=order:asc`
                 );
                 setSocialLinks(res.data.data || []);
@@ -83,7 +83,7 @@ const Footer = () => {
                     <Link href="/results">Results & Rankings</Link>
                     <Link href="/documents">Documents Library</Link>
                     <Link href="/members">Member Federations</Link>
-                    <a href="https://esc-entry.eu" target="_blank" rel="noopener noreferrer">Entry System 🡥</a>
+                    <a href="https://esc-entry.eu" target="_blank" rel="noopener noreferrer" className="footer-entry-link">Entry System<img src="/img/ArrowUpRight.png" alt="" className="footer-entry-arrow" /></a>
                 </div>
             </div>
 
