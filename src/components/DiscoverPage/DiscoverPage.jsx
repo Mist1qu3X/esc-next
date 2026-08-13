@@ -4,6 +4,7 @@ import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import { REGIONS } from '@/lib/regions';
+import { dedupeFederations } from '@/lib/federations';
 import './DiscoverPage.css';
 
 const DiscoverPage = () => {
@@ -43,7 +44,7 @@ const DiscoverPage = () => {
         );
         setLeaders(leadersRes.data?.data || []);
         setPresidiumMembers(presidiumRes.data?.data || []);
-        setFederations(fedsRes.data?.data || []);
+        setFederations(dedupeFederations(fedsRes.data?.data || []));
         setMilestones(milestonesRes.data?.data || []);
         setGovernance(govRes.data?.data || []);
         setCommitteeMembers(membersRes.data?.data || []);
@@ -321,7 +322,7 @@ const DiscoverPage = () => {
               <div className="block-label">LEGISLATIVE</div>
               <div className="block-info">
                 <h3 className="block-name">{assembly.name}</h3>
-                <p className="block-desc">{assembly.members}</p>
+                <p className="block-desc">All {federations.length} Member Federations</p>
               </div>
               <button className="block-toggle" onClick={() => togglePanel('assembly')}>
                 {openPanels['assembly'] ? 'CLOSE' : 'VIEW'} <i className={`fa-solid fa-chevron-${openPanels['assembly'] ? 'up' : 'down'}`}></i>
@@ -336,7 +337,7 @@ const DiscoverPage = () => {
                   <button className="panel-close" onClick={() => togglePanel('assembly')}><i className="fa-solid fa-xmark"></i></button>
                 </div>
                 <div className="assembly-federations">
-                  {federations.slice(0, 46).map((fed) => (
+                  {federations.map((fed) => (
                     <div className="assembly-member" key={fed.id}>
                       <img
                         src={getFlagUrl(fed.assemblyFlag) || getFlagUrl(fed.flag || fed.countryCode)}
@@ -361,7 +362,7 @@ const DiscoverPage = () => {
               <div className="block-label">EXECUTIVE</div>
               <div className="block-info">
                 <h3 className="block-name">{executive.name}</h3>
-                <p className="block-desc">{executive.members}</p>
+                <p className="block-desc">{presidiumPeople.length} elected members</p>
               </div>
               <button className="block-toggle" onClick={() => togglePanel('executive')}>
                 {openPanels['executive'] ? 'CLOSE' : 'VIEW'} <i className={`fa-solid fa-chevron-${openPanels['executive'] ? 'up' : 'down'}`}></i>
