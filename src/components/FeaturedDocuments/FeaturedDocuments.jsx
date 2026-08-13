@@ -67,7 +67,14 @@ const FeaturedDocuments = () => {
                         // Недоступно, если файла нет ИЛИ серверная проверка вернула false (404/битая)
                         const available = !!url && availability[url] !== false;
                         return (
-                            <div className="featured-docs-card" key={doc.id}>
+                            <div
+                                className={`featured-docs-card ${available ? '' : 'is-unavailable'}`}
+                                key={doc.id}
+                                onClick={available ? () => handleDownload(doc) : undefined}
+                                role={available ? 'button' : undefined}
+                                tabIndex={available ? 0 : undefined}
+                                onKeyDown={available ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleDownload(doc); } } : undefined}
+                            >
                                 <div className="featured-docs-card-header">
                                     <i className="fa-regular fa-file-lines"></i>
                                     <p className="featured-docs-version">{version}</p>
@@ -75,7 +82,7 @@ const FeaturedDocuments = () => {
                                 <p className="featured-docs-theme">{theme}</p>
                                 <p className="featured-docs-card-title">{title}</p>
                                 {available ? (
-                                    <div className="featured-docs-download-area" onClick={() => handleDownload(doc)}>
+                                    <div className="featured-docs-download-area" onClick={(e) => { e.stopPropagation(); handleDownload(doc); }}>
                                         <i className="fa-solid fa-download"></i>
                                         <p className="featured-docs-download-text">
                                             download PDF{fileSize ? ` · ${fileSize}` : ''}

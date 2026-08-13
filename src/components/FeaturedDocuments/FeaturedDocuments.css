@@ -81,6 +81,16 @@
     background: rgba(10, 26, 44, 0.8);
 }
 
+/* Недоступный документ — карточка не кликабельна, обычный курсор */
+.featured-docs-card.is-unavailable {
+    cursor: default;
+}
+.featured-docs-card.is-unavailable:hover {
+    transform: none;
+    box-shadow: none;
+    background: #0C233D;
+}
+
 .featured-docs-card-header {
     display: flex;
     justify-content: space-between;
