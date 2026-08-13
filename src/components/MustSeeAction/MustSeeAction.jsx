@@ -13,10 +13,19 @@ const MustSeeAction = () => {
     useEffect(() => {
         const fetchVideos = async () => {
             try {
-                const response = await cachedGet(
-                    `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
-                );
-                setVideos(response.data.data || []);
+                // Сначала берём отмеченные галочкой featured (в порядке order).
+                const featuredRes = await cachedGet(
+                    `${config.API_URL}/api/videos?filters[featured][$eq]=true&populate=*&sort=order:asc&pagination[limit]=3`
+                ).catch(() => null);
+                let list = featuredRes?.data?.data || [];
+                // Пока таких нет (или поле ещё не добавлено) — показываем 3 свежих.
+                if (!list.length) {
+                    const latestRes = await cachedGet(
+                        `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
+                    );
+                    list = latestRes.data?.data || [];
+                }
+                setVideos(list);
             } catch (error) {
                 console.error('Ошибка загрузки видео:', error);
             } finally {
