@@ -18,12 +18,13 @@ const MustSeeAction = () => {
                     `${config.API_URL}/api/videos?filters[featured][$eq]=true&populate=*&sort=order:asc&pagination[limit]=3`
                 ).catch(() => null);
                 let list = featuredRes?.data?.data || [];
-                // Пока таких нет (или поле ещё не добавлено) — показываем 3 свежих.
+                // Пока ничего не отмечено (или поле featured ещё не задеплоено) —
+                // берём 3 видео с наименьшим order (их можно назначить в Strapi).
                 if (!list.length) {
-                    const latestRes = await cachedGet(
-                        `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
+                    const byOrderRes = await cachedGet(
+                        `${config.API_URL}/api/videos?populate=*&sort=order:asc&pagination[limit]=3`
                     );
-                    list = latestRes.data?.data || [];
+                    list = byOrderRes.data?.data || [];
                 }
                 setVideos(list);
             } catch (error) {
