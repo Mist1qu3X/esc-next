@@ -4,16 +4,18 @@ import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import { getFederationWebsite } from '@/lib/federationWebsites';
 import { REGIONS } from '@/lib/regions';
+import { dedupeFederations } from '@/lib/federations';
 import Pagination from '@/components/Pagination/Pagination';
 import './MembersPage.css';
 
 const PER_PAGE = 28; // 7 рядов × 4 карточки, как в макете
 
-// Дефолтные статы (fallback, пока коллекция member-stats пуста)
+// Fallback-значения, если member-stats недоступна (напр. нет Public-прав на чтение).
+// Реальные цифры берутся из коллекции member-stats в Strapi.
 const DEFAULT_STATS = [
   { number: '16+', label: 'ANNUAL EVENTS' },
   { number: '55+', label: 'YEARS' },
-  { number: '58', label: 'MEMBER' },
+  { number: '53', label: 'MEMBER' },
   { number: '10000+', label: 'ATHLETES' },
 ];
 
@@ -46,8 +48,9 @@ const MembersPage = () => {
           cachedGet(`${config.API_URL}/api/member-stats?sort=order:asc&pagination[limit]=20`).catch(() => ({ data: { data: [] } })),
         ]);
         if (res.data?.data) {
-          setFederations(res.data.data);
-          setFilteredFeds(res.data.data);
+          const feds = dedupeFederations(res.data.data);
+          setFederations(feds);
+          setFilteredFeds(feds);
         }
         setStats(statsRes.data?.data || []);
         setLoading(false);
@@ -78,12 +81,9 @@ const MembersPage = () => {
     setCurrentPage(1); // при смене фильтра — на первую страницу
   }, [searchTerm, activeRegion, federations]);
 
-  // Стат «MEMBER(S)» показываем по реальному числу федераций, а не по сохранённому
-  // в Strapi значению (оно устаревает — было 58 при фактических 60).
-  const baseStats = stats.length > 0 ? stats : DEFAULT_STATS;
-  const displayStats = baseStats.map((s) =>
-    /member/i.test(s.label || '') && federations.length > 0 ? { ...s, number: String(federations.length) } : s
-  );
+  // Стата целиком из Strapi (коллекция member-stats). Если недоступна/пуста —
+  // показываем заглушки DEFAULT_STATS. Значения меняются в админке Strapi.
+  const displayStats = stats.length > 0 ? stats : DEFAULT_STATS;
 
   const totalPages = Math.max(1, Math.ceil(filteredFeds.length / PER_PAGE));
   const pageFeds = filteredFeds.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
