@@ -26,6 +26,10 @@ const formatDate = (d) => {
   return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
 };
 
+// В Strapi у видео стоит заглушка "0:00" (ютуб-ссылки без Data API) — показываем
+// бейдж только если есть ненулевое время.
+const realDuration = (d) => (/[1-9]/.test(String(d || '')) ? d : null);
+
 const SelectedVideoPage = ({ id }) => {
   const [video, setVideo] = useState(null);
   const [more, setMore] = useState([]);
@@ -102,7 +106,7 @@ const SelectedVideoPage = ({ id }) => {
               >
                 <div className="sv-card-cover" style={{ backgroundImage: `url(${mediaUrl(v.thumbnail)})` }}>
                   <div className="sv-card-play"><i className="fa-solid fa-play"></i></div>
-                  {v.duration && <span className="sv-card-duration">{v.duration}</span>}
+                  {realDuration(v.duration) && <span className="sv-card-duration">{realDuration(v.duration)}</span>}
                 </div>
                 <div className="sv-card-panel">
                   <h3 className="sv-card-title">{v.title}</h3>
