@@ -143,7 +143,7 @@ const DiscoverPage = () => {
       committeeId: c.id,
       name: c.name,
       members: `${count} ${status}`,
-      description: c.description || `${c.name} oversees ESC activities.`,
+      description: c.description || '',
     };
   });
 
@@ -435,7 +435,7 @@ const DiscoverPage = () => {
               <div className="assembly-header">
                 <div className="assembly-label">COMMITTEE</div>
                 <h3 className="assembly-title">{c.name}</h3>
-                <p className="assembly-description">{c.description}</p>
+                {c.description && <p className="assembly-description">{c.description}</p>}
                 <button className="panel-close" onClick={() => togglePanel(c.id)}>
                   <i className="fa-solid fa-xmark"></i>
                 </button>
