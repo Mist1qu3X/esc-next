@@ -1296,20 +1296,7 @@
 
 /* --- Статусы: дополнительные цвета --- */
 .epc-status-tag.epc-ongoing { color: #04121f; background: #00d8f5; }
-.epc-status-tag.epc-postponed { color: #ffb020; background: rgba(255, 176, 32, 0.12); }
-.epc-status-tag.epc-cancelled { color: #ff5c5c; background: rgba(255, 92, 92, 0.12); }
 .epc-status.epc-ongoing { color: #04121f; background: #00d8f5; }
-.epc-status.epc-postponed { color: #ffb020; }
-.epc-status.epc-cancelled { color: #ff5c5c; }
-
-/* --- Бейдж регистрации (под статусом у предстоящих) --- */
-.epc-reg-tag {
-    display: inline-block; margin-top: 5px;
-    font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
-    text-transform: uppercase; padding: 2px 7px; border-radius: 3px;
-}
-.epc-reg-open { color: #38d39f; background: rgba(56, 211, 159, 0.12); }
-.epc-reg-closed { color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.07); }
 
 /* --- Действия: WATCH (идёт) / Results pending (нет протокола) --- */
 .epc-live-btn { color: #04121f !important; background: #00d8f5 !important; border-color: #00d8f5 !important; }

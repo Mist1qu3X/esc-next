@@ -147,11 +147,8 @@ const SelectedEventPage = ({ slug }) => {
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
 
-  // Эффективный статус по датам + ручному флагу — как на странице Events
+  // Эффективный статус по датам — как на странице Events
   const getEffectiveStatus = () => {
-    const manual = (event.status || '').toUpperCase();
-    if (manual === 'CANCELLED') return 'CANCELLED';
-    if (manual === 'POSTPONED') return 'POSTPONED';
     const start = event.date ? new Date(`${event.date}T00:00:00`) : null;
     if (!start || isNaN(start.getTime())) return (event.statusEvent || 'UPCOMING').toUpperCase() === 'FINISHED' ? 'FINISHED' : 'UPCOMING';
     const end = event.endDate ? new Date(`${event.endDate}T23:59:59`) : new Date(`${event.date}T23:59:59`);
