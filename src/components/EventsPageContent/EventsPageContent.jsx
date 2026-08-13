@@ -206,6 +206,10 @@ const EventsPageContent = () => {
     // Кол-во «пройденных» сегментов = общий прогресс сезона, разложенный по дисциплинам (самые завершённые — первыми)
     const doneSegments = Math.min(totalSegments, Math.round((seasonProgress / 100) * totalSegments));
     nonEmptySegs.forEach((s, i) => { if (i < doneSegments) s.done = true; }); // пройденные дисциплины по данным Strapi
+    // Текущий сегмент на ленте: где сейчас реально идут соревнования, иначе — первый незавершённый (что «на очереди»)
+    const ongoingSegs = nonEmptySegs.filter((s) => s.ongoing);
+    if (ongoingSegs.length) ongoingSegs.forEach((s) => { s.current = true; });
+    else if (doneSegments < nonEmptySegs.length) nonEmptySegs[doneSegments].current = true;
 
     // ON THE RANGE — реальное идущее событие (иначе — ближайшее предстоящее)
     const liveEvent = events.filter((e) => getStatus(e) === 'ONGOING').sort(byDateAsc)[0] || null;
@@ -354,14 +358,16 @@ const EventsPageContent = () => {
                             {/* Трек: сегмент на группу дисциплин, заполняется слева направо */}
                             <div className="epc-sp-track">
                                 {seasonSegments.map((seg, i) => (
-                                    <span className={`epc-sp-line ${seg.done ? 'epc-done' : seg.empty ? 'epc-empty' : 'epc-pending'}`} key={i}></span>
+                                    <span className={`epc-sp-line ${seg.current ? 'epc-current' : seg.done ? 'epc-done' : seg.empty ? 'epc-empty' : 'epc-pending'}`} key={i}>
+                                        {seg.current && <span className="epc-sp-now">{seg.ongoing ? 'LIVE NOW' : 'UP NEXT'}</span>}
+                                    </span>
                                 ))}
                             </div>
 
                             {/* Desktop: подписи дисциплин под треком */}
                             <div className="epc-sp-labels">
                                 {seasonSegments.map((seg, i) => (
-                                    <span className={`epc-sp-label ${seg.empty ? 'epc-empty' : ''}`} key={i}>{seg.label}</span>
+                                    <span className={`epc-sp-label ${seg.current ? 'epc-current' : ''} ${seg.empty ? 'epc-empty' : ''}`} key={i}>{seg.label}</span>
                                 ))}
                             </div>
 
@@ -369,11 +375,12 @@ const EventsPageContent = () => {
                             {showSegments && (
                                 <ul className="epc-sp-list">
                                     {seasonSegments.map((seg, i) => (
-                                        <li className={`epc-sp-item ${seg.empty ? 'epc-empty' : ''}`} key={i}>
+                                        <li className={`epc-sp-item ${seg.current ? 'epc-current' : ''} ${seg.empty ? 'epc-empty' : ''}`} key={i}>
                                             <span className={`epc-sp-check ${seg.done ? 'epc-done' : ''}`}>
                                                 {seg.done && <i className="fa-solid fa-check"></i>}
                                             </span>
                                             <span className="epc-sp-item-label">{seg.label}</span>
+                                            {seg.current && <span className="epc-sp-item-now">{seg.ongoing ? 'LIVE' : 'NEXT'}</span>}
                                             {!seg.empty && <span className="epc-sp-item-frac">{seg.finished}/{seg.total}</span>}
                                         </li>
                                     ))}
