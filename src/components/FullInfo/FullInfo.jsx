@@ -147,8 +147,11 @@ const FullInfo = () => {
                         <div className="part-top">
                             <p className="theme1">{championship?.theme}</p>
                             <p className="title1">
-                                {championship?.title?.split('\n').slice(0, 2).map((line, i) => (
-                                    <React.Fragment key={i}>{line}{i === 0 && <br />}</React.Fragment>
+                                {(championship?.headline
+                                    ? championship.headline.split('\n')
+                                    : (championship?.title || '').split('\n').slice(0, 2)
+                                ).map((line, i, arr) => (
+                                    <React.Fragment key={i}>{line}{i < arr.length - 1 && <br />}</React.Fragment>
                                 ))}
                             </p>
                             <div>
