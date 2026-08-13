@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cachedGet } from '@/lib/apiCache';
+import { isDeadVideo } from '@/lib/deadVideos';
 import config from '@/lib/config';
 
 const Header = () => {
@@ -56,7 +57,7 @@ const Header = () => {
                 arr(events).forEach((e) => e.slug && match(e.name) && out.push({ type: 'Event', label: e.name, path: `/events/${e.slug}` }));
                 arr(docs).forEach((d) => match(d.title) && out.push({ type: 'Document', label: d.title, path: `/documents` }));
                 arr(feds).forEach((f) => match(f.name || f.country) && out.push({ type: 'Federation', label: f.name || f.country, path: `/members` }));
-                arr(videos).forEach((v) => v.documentId && match(v.title) && out.push({ type: 'Video', label: v.title, path: `/media/video/${v.documentId}` }));
+                arr(videos).forEach((v) => v.documentId && !isDeadVideo(v) && match(v.title) && out.push({ type: 'Video', label: v.title, path: `/media/video/${v.documentId}` }));
                 setSuggestions(out.slice(0, 3));
             } catch (_) { /* отменённый/сетевой — игнор */ }
             finally { setIsSearching(false); }
