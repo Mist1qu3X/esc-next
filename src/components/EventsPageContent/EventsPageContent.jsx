@@ -15,11 +15,9 @@ const DEFAULT_CATEGORIES = [
 
 const STATUS_CLASS = {
     UPCOMING: 'epc-upcoming', ONGOING: 'epc-ongoing', FINISHED: 'epc-finished',
-    POSTPONED: 'epc-postponed', CANCELLED: 'epc-cancelled',
 };
 const STATUS_LABEL = {
     UPCOMING: 'UPCOMING', ONGOING: 'LIVE NOW', FINISHED: 'FINISHED',
-    POSTPONED: 'POSTPONED', CANCELLED: 'CANCELLED',
 };
 
 const EventsPageContent = () => {
@@ -49,11 +47,8 @@ const EventsPageContent = () => {
         return new Date(year, first - 1, second);
     };
 
-    // Эффективный статус: ручной (перенесено/отменено) → иначе по датам (предстоит/идёт/завершено)
+    // Статус по датам: предстоит / идёт / завершено
     const getStatus = (event) => {
-        const manual = (event.status || 'SCHEDULED').toUpperCase();
-        if (manual === 'CANCELLED') return 'CANCELLED';
-        if (manual === 'POSTPONED') return 'POSTPONED';
         const start = parseDate(event.date);
         if (isNaN(start.getTime())) return 'UPCOMING';
         const startDay = new Date(start); startDay.setHours(0, 0, 0, 0);
@@ -439,7 +434,6 @@ const EventsPageContent = () => {
                     {currentEvents.length > 0 ? currentEvents.map((event) => {
                         const { name, date, location, type } = event;
                         const st = getStatus(event);
-                        const reg = (event.registration || 'NONE').toUpperCase();
                         return (
                             <div className="epc-events-table-row" key={event.id}>
                                 <div className="epc-col epc-col-date">
@@ -461,11 +455,6 @@ const EventsPageContent = () => {
                                 </div>
                                 <div className="epc-col epc-col-status">
                                     <span className={`epc-status-tag ${STATUS_CLASS[st]}`}>{STATUS_LABEL[st]}</span>
-                                    {st === 'UPCOMING' && reg !== 'NONE' && (
-                                        <span className={`epc-reg-tag ${reg === 'OPEN' ? 'epc-reg-open' : 'epc-reg-closed'}`}>
-                                            REG {reg}
-                                        </span>
-                                    )}
                                 </div>
                                 <div className="epc-col epc-col-actions">
                                     <button className="epc-action-btn epc-details-btn" onClick={() => handleDetails(event)}>DETAILS</button>
