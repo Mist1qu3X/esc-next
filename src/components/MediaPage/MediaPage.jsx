@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import { downloadFile } from '@/lib/download';
-import { dropDeadVideos } from '@/lib/deadVideos';
 import { useRouter } from 'next/navigation';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import LoadingMedia from './LoadingMedia';
@@ -108,7 +107,7 @@ const MediaPage = () => {
         ]);
 
         setNews(extractData(newsRes));
-        setVideos(dropDeadVideos(extractData(videosRes)));
+        setVideos(extractData(videosRes));
         setDocs(extractData(docsRes));
         setStreams(extractData(streamsRes));
         setPhotos(extractData(photosRes));
@@ -131,7 +130,7 @@ const MediaPage = () => {
             const pageCount = videosRes.data?.meta?.pagination?.pageCount || 1;
             for (let page = 2; page <= pageCount; page++) {
               const r = await cachedGet(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=createdAt:desc&pagination[pageSize]=100&pagination[page]=${page}`);
-              const batch = dropDeadVideos(extractData(r));
+              const batch = extractData(r);
               if (batch.length) setVideos((prev) => [...prev, ...batch]);
             }
           } catch (_) {}

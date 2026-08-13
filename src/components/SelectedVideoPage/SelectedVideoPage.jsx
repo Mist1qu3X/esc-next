@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
-import { dropDeadVideos } from '@/lib/deadVideos';
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
 import VideoDetailSkeleton from './VideoDetailSkeleton';
 import './SelectedVideoPage.css';
@@ -46,7 +45,7 @@ const SelectedVideoPage = ({ id }) => {
           cachedGet(`${config.API_URL}/api/videos?populate=*&sort=createdAt:desc`),
         ]);
         const one = oneRes?.data?.data || null;
-        const all = dropDeadVideos(allRes?.data?.data || []);
+        const all = allRes?.data?.data || [];
         setVideo(one || all.find((v) => String(v.documentId) === String(id)) || null);
         setMore(all);
       } catch (e) {
