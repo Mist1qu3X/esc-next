@@ -1,11 +1,26 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
+import { downloadFile } from '@/lib/download';
 import { useRouter } from 'next/navigation';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import LoadingMedia from './LoadingMedia';
 import './MediaPage.css';
+
+// GET с повтором при временных сбоях (холодный старт Strapi / сеть).
+// Именно из-за них раздел иногда «мигал» пустым состоянием и лечился перезагрузкой.
+const getWithRetry = async (url, tries = 3) => {
+  for (let i = 0; i < tries; i++) {
+    try {
+      return await cachedGet(url);
+    } catch (e) {
+      if (i === tries - 1) throw e;
+      await new Promise((r) => setTimeout(r, 400 * (i + 1)));
+    }
+  }
+};
+const EMPTY_RES = { data: { data: [] } };
 
 // Универсальная функция для извлечения данных из любого ответа Strapi
 const extractData = (response) => {
@@ -79,14 +94,16 @@ const MediaPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Каждый запрос падает независимо: сбой одного (напр. live-streams) больше
+        // не обнуляет всю страницу — остальные секции отрисуются нормально.
         const [newsRes, videosRes, docsRes, streamsRes, photosRes] = await Promise.all([
-          axios.get(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`),
-          axios.get(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100`),
+          getWithRetry(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
+          getWithRetry(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
           // docs/streams: только общие (событийные живут на странице события).
-          axios.get(`${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`),
-          axios.get(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10&filters[eventSlug][$null]=true`),
+          getWithRetry(`${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
+          getWithRetry(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
           // photos: показываем ВСЕ альбомы (событийные тоже) — в сетке нужна только обложка + счётчик
-          axios.get(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100`).catch(() => ({ data: { data: [] } })),
+          getWithRetry(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
         ]);
 
         setNews(extractData(newsRes));
@@ -100,7 +117,7 @@ const MediaPage = () => {
           try {
             const pageCount = photosRes.data?.meta?.pagination?.pageCount || 1;
             for (let page = 2; page <= pageCount; page++) {
-              const r = await axios.get(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
+              const r = await cachedGet(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
               const batch = extractData(r);
               if (batch.length) setPhotos((prev) => [...prev, ...batch]);
             }
@@ -112,7 +129,7 @@ const MediaPage = () => {
           try {
             const pageCount = videosRes.data?.meta?.pagination?.pageCount || 1;
             for (let page = 2; page <= pageCount; page++) {
-              const r = await axios.get(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100&pagination[page]=${page}`);
+              const r = await cachedGet(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100&pagination[page]=${page}`);
               const batch = extractData(r);
               if (batch.length) setVideos((prev) => [...prev, ...batch]);
             }
@@ -123,7 +140,7 @@ const MediaPage = () => {
         (async () => {
           try {
             for (let page = 2; page <= 30; page++) {
-              const r = await axios.get(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
+              const r = await cachedGet(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
               const batch = extractData(r);
               if (!batch.length) break;
               setNews((prev) => [...prev, ...batch]);
@@ -169,6 +186,13 @@ const MediaPage = () => {
 
   // Видео считается доступным, если есть источник (ссылка или загруженный файл)
   const videoAvailable = (v) => !!(v?.videoUrl || v?.videoFile);
+
+  // Реальная длительность: в Strapi у всех видео стоит заглушка "0:00" (ютуб-ссылки
+  // без Data API). Показываем бейдж только если есть ненулевое время.
+  const realDuration = (v) => {
+    const d = (v?.duration ?? '').toString().trim();
+    return /[1-9]/.test(d) ? d : null;
+  };
 
   // ФИЛЬТРАЦИЯ НОВОСТЕЙ по выбранной категории
   const getFilteredNews = () => {
@@ -439,7 +463,7 @@ const MediaPage = () => {
                       {avail ? (
                         <>
                           <div className="mp-vgal-play"><i className="fa-solid fa-play"></i></div>
-                          {v.duration && <span className="mp-vgal-duration">{v.duration}</span>}
+                          {realDuration(v) && <span className="mp-vgal-duration">{realDuration(v)}</span>}
                         </>
                       ) : (
                         <div className="mp-video-unavail"><i className="fa-solid fa-video-slash"></i><span>Unavailable</span></div>
@@ -519,7 +543,7 @@ const MediaPage = () => {
                       {avail ? (
                         <>
                           <div className="mp-video-play-btn"><i className="fa-solid fa-play"></i></div>
-                          <span className="mp-video-duration">{v.duration || '0:00'}</span>
+                          {realDuration(v) && <span className="mp-video-duration">{realDuration(v)}</span>}
                         </>
                       ) : (
                         <div className="mp-video-unavail"><i className="fa-solid fa-video-slash"></i><span>Unavailable</span></div>
@@ -605,12 +629,12 @@ const MediaPage = () => {
                   {doc.file ? (
                     <button className="mp-download-btn-press" onClick={() => {
                       const url = doc.file?.url;
-                      if (url) window.open(url.startsWith('http') ? url : `${config.API_URL}${url}`, '_blank');
+                      if (url) downloadFile(url.startsWith('http') ? url : `${config.API_URL}${url}`, `${doc.title || 'document'}${doc.file?.ext || '.pdf'}`);
                     }}>
                       <i className="fa-solid fa-download"></i>DOWNLOAD
                     </button>
                   ) : (
-                    <span className="mp-press-nofile"><i className="fa-regular fa-file-circle-xmark"></i>No file</span>
+                    <span className="mp-press-nofile"><i className="fa-solid fa-file-circle-xmark"></i>No file</span>
                   )}
                 </div>
               )) : (

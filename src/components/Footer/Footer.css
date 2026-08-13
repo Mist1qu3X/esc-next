@@ -189,6 +189,21 @@
     transition: all 0.2s ease;
 }
 
+/* Внешняя ссылка Entry System — стрелка-картинка (как в хедере), а не юникод-символ,
+   который в футере рендерился пустым квадратом */
+.footer-entry-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.footer-entry-arrow {
+    width: 11px;
+    height: 11px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
 .the-esc a:hover,
 .media a:hover,
 .related-links a:hover {

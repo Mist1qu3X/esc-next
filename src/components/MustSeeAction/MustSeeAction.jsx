@@ -1,9 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import './MustSeeAction.css';
 import config from '@/lib/config';
+import { cachedGet } from '@/lib/apiCache';
 
 const MustSeeAction = () => {
     const [videos, setVideos] = useState([]);
@@ -13,7 +13,7 @@ const MustSeeAction = () => {
     useEffect(() => {
         const fetchVideos = async () => {
             try {
-                const response = await axios.get(
+                const response = await cachedGet(
                     `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
                 );
                 setVideos(response.data.data || []);

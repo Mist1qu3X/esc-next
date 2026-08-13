@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
@@ -37,8 +37,8 @@ const SelectedVideoPage = ({ id }) => {
     const fetchData = async () => {
       try {
         const [oneRes, allRes] = await Promise.all([
-          axios.get(`${config.API_URL}/api/videos/${id}?populate=*`).catch(() => null),
-          axios.get(`${config.API_URL}/api/videos?populate=*&sort=order:asc`),
+          cachedGet(`${config.API_URL}/api/videos/${id}?populate=*`).catch(() => null),
+          cachedGet(`${config.API_URL}/api/videos?populate=*&sort=order:asc`),
         ]);
         const one = oneRes?.data?.data || null;
         const all = allRes?.data?.data || [];

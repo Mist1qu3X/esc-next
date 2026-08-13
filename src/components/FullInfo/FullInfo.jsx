@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import './FullInfo.css';
 import config from '@/lib/config';
@@ -22,7 +22,7 @@ const FullInfo = () => {
     useEffect(() => {
         const fetchChampionship = async () => {
             try {
-                const res = await axios.get(`${config.API_URL}/api/championships?populate=*`);
+                const res = await cachedGet(`${config.API_URL}/api/championships?populate=*`);
                 if (res.data.data.length > 0) setChampionship(res.data.data[0]);
             } catch (e) { console.error(e); }
         };
@@ -33,7 +33,7 @@ const FullInfo = () => {
     useEffect(() => {
         const fetchPlatform = async () => {
             try {
-                const res = await axios.get(`${config.API_URL}/api/esc-platforms?populate=*`);
+                const res = await cachedGet(`${config.API_URL}/api/esc-platforms?populate=*`);
                 if (res.data.data.length > 0) setPlatform(res.data.data[0]);
             } catch (e) { console.error('Ошибка загрузки ESC PLATFORM:', e); }
         };
@@ -51,7 +51,7 @@ const FullInfo = () => {
         const fetchEvents = async () => {
             try {
                 const today = new Date().toISOString().slice(0, 10);
-                const response = await axios.get(
+                const response = await cachedGet(
                     `${config.API_URL}/api/events?filters[date][$gte]=${today}&sort=date:asc&pagination[limit]=3`
                 );
                 setEvents(response.data.data || []);
@@ -68,7 +68,7 @@ const FullInfo = () => {
     useEffect(() => {
         const fetchRankings = async () => {
             try {
-                const response = await axios.get(
+                const response = await cachedGet(
                     `${config.API_URL}/api/ranking-details?filters[discipline][$eq]=10m Air Rifle&sort=position:asc&pagination[pageSize]=50`
                 );
                 setRankings(response.data.data || []);
@@ -141,8 +141,9 @@ const FullInfo = () => {
         <section className="full-info">
             <div className="full-info-content">
                 <div className="wrapper">
-                    {/* PART 1 - WHAT'S ON */}
-                    <div className="part1">
+                    {/* PART 1 - WHAT'S ON — клик по всей карточке открывает событие */}
+                    <div className="part1" onClick={handleEventInfo} role="button" tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEventInfo(); } }}>
                         <div className="part-top">
                             <p className="theme1">{championship?.theme}</p>
                             <p className="title1">

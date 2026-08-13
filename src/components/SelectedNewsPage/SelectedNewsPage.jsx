@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
@@ -50,7 +50,7 @@ const SelectedNewsPage = ({ slug }) => {
       
       try {
         // Получаем статью по slug
-        const res = await axios.get(
+        const res = await cachedGet(
           `${config.API_URL}/api/news-items?filters[slug][$eq]=${slug}&populate=*`
         );
         
@@ -63,7 +63,7 @@ const SelectedNewsPage = ({ slug }) => {
           setSaved(readSaved().some((a) => a.slug === slug));
 
           // Полный отсортированный список — для соседей (prev/next) и «похожих»
-          const listRes = await axios.get(
+          const listRes = await cachedGet(
             `${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`
           );
           const list = extractData(listRes);

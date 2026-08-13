@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import './Info.css';
@@ -13,7 +13,7 @@ const Info = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const champResponse = await axios.get(
+                const champResponse = await cachedGet(
                     `${config.API_URL}/api/championships?populate=*`
                 );
                 if (champResponse.data.data.length > 0) {

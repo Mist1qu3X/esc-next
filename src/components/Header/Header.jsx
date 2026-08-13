@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 
 const Header = () => {
@@ -21,7 +21,7 @@ const Header = () => {
         { label: 'Home', href: '/' },
         { label: 'About Us', href: '/discover' },
         { label: 'Calendar', href: '/events' },
-        { label: 'Results & Ranking', href: '/results' },
+        { label: 'Results & Rankings', href: '/results' },
         { label: 'Documents', href: '/documents' },
         { label: 'Media', href: '/media' },
         { label: 'Member Federations', href: '/members' },
@@ -41,7 +41,7 @@ const Header = () => {
         const run = async () => {
             setIsSearching(true);
             const get = (url) =>
-                axios.get(`${config.API_URL}${url}`, { signal: controller.signal }).then((r) => r.data).catch(() => null);
+                cachedGet(`${config.API_URL}${url}`, { signal: controller.signal }).then((r) => r.data).catch(() => null);
             const arr = (d) => (d?.data ? d.data : (Array.isArray(d) ? d : []));
             try {
                 const [news, events, docs, feds, videos] = await Promise.all([

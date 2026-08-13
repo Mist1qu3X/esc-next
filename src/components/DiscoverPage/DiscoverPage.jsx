@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import { REGIONS } from '@/lib/regions';
@@ -24,16 +24,16 @@ const DiscoverPage = () => {
     const fetchData = async () => {
       try {
         const [aboutRes, leadersRes, fedsRes, milestonesRes, govRes, membersRes, committeesRes, coreRes, presidiumRes] = await Promise.all([
-          axios.get(`${config.API_URL}/api/about-pages?populate=*`),
-          axios.get(`${config.API_URL}/api/leaders?populate=*&sort=order:asc`),
-          axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
-          axios.get(`${config.API_URL}/api/heritage-milestones?sort=order:asc`),
-          axios.get(`${config.API_URL}/api/governances?sort=order:asc&pagination[limit]=20`),
-          axios.get(`${config.API_URL}/api/committee-members?populate=*&pagination[limit]=100`),
-          axios.get(`${config.API_URL}/api/committees?populate=*&sort=order:asc&pagination[limit]=100`),
-          axios.get(`${config.API_URL}/api/core-values?sort=order:asc`),
+          cachedGet(`${config.API_URL}/api/about-pages?populate=*`),
+          cachedGet(`${config.API_URL}/api/leaders?populate=*&sort=order:asc`),
+          cachedGet(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
+          cachedGet(`${config.API_URL}/api/heritage-milestones?sort=order:asc`),
+          cachedGet(`${config.API_URL}/api/governances?sort=order:asc&pagination[limit]=20`),
+          cachedGet(`${config.API_URL}/api/committee-members?populate=*&pagination[limit]=100`),
+          cachedGet(`${config.API_URL}/api/committees?populate=*&sort=order:asc&pagination[limit]=100`),
+          cachedGet(`${config.API_URL}/api/core-values?sort=order:asc`),
           // Отдельный .catch: коллекция может ещё не существовать / без Public-прав — тогда пустой массив, страница не падает
-          axios.get(`${config.API_URL}/api/presidium-members?populate=*&sort=order:asc`).catch(() => ({ data: { data: [] } })),
+          cachedGet(`${config.API_URL}/api/presidium-members?populate=*&sort=order:asc`).catch(() => ({ data: { data: [] } })),
         ]);
 
         setPageData(
@@ -149,6 +149,12 @@ const DiscoverPage = () => {
 
   const handleFullDirectory = () => {
     router.push('/members');
+  };
+
+  // «Руководство» — это структура GOVERNANCE ниже на этой же странице
+  // (ассамблея, исполком, президиум, комитеты), а не список федераций.
+  const handleLeadershipDirectory = () => {
+    document.getElementById('governance')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -279,7 +285,7 @@ const DiscoverPage = () => {
             <span className="leadership-line"></span>
             <span className="leadership-title">LEADERSHIP</span>
           </div>
-          <button className="leadership-directory" onClick={handleFullDirectory}>
+          <button className="leadership-directory" onClick={handleLeadershipDirectory}>
             FULL DIRECTORY <i className="fa-solid fa-arrow-right"></i>
           </button>
         </div>

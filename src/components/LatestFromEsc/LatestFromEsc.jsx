@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import './LatestFromEsc.css';
 import config from '@/lib/config';
@@ -14,7 +14,7 @@ const LatestFromEsc = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await axios.get(
+                const response = await cachedGet(
                     `${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[limit]=4`
                 );
 

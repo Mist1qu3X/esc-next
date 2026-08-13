@@ -23,17 +23,17 @@
 .part4 {
     padding: 28px 24px;
     transition: all 0.3s ease;
-    cursor: pointer;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     min-height: 370px;
 }
 
-/* PART 1 - WHAT'S ON */
+/* PART 1 - WHAT'S ON — вся карточка кликабельна (открывает событие) */
 .part1 {
     background: #00d8f5;
     color: #06121f;
+    cursor: pointer;
 }
 
 .part-top {

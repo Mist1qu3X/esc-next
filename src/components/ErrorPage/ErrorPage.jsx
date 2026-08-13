@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import './ErrorPage.css';
 
@@ -42,12 +42,13 @@ const ErrorPage = ({ variant = '404', reset }) => {
     const boxRef = useRef(null);
     const router = useRouter();
 
+    // Названия — как в главном меню (Header), чтобы не расходились с навигацией/футером
     const popularLinks = [
-        { label: 'Event Calendar', href: '/events' },
-        { label: 'Results & Ranking', href: '/results' },
+        { label: 'Calendar', href: '/events' },
+        { label: 'Results & Rankings', href: '/results' },
         { label: 'Documents', href: '/documents' },
         { label: 'Member Federations', href: '/members' },
-        { label: 'Media & News', href: '/media' },
+        { label: 'Media', href: '/media' },
     ];
 
     // Живой поиск по контенту (как в шапке) — первое, что нужно попавшему на 404
@@ -61,7 +62,7 @@ const ErrorPage = ({ variant = '404', reset }) => {
         const match = (s) => (s || '').toLowerCase().includes(ql);
         const run = async () => {
             setSearching(true);
-            const get = (url) => axios.get(`${config.API_URL}${url}`, { signal: controller.signal }).then((r) => r.data).catch(() => null);
+            const get = (url) => cachedGet(`${config.API_URL}${url}`, { signal: controller.signal }).then((r) => r.data).catch(() => null);
             const arr = (d) => (d?.data ? d.data : (Array.isArray(d) ? d : []));
             try {
                 const [news, events, docs, feds] = await Promise.all([
