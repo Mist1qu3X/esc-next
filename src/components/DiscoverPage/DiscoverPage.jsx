@@ -4,7 +4,6 @@ import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import { REGIONS } from '@/lib/regions';
-import { dedupeFederations } from '@/lib/federations';
 import './DiscoverPage.css';
 
 const DiscoverPage = () => {
@@ -44,7 +43,7 @@ const DiscoverPage = () => {
         );
         setLeaders(leadersRes.data?.data || []);
         setPresidiumMembers(presidiumRes.data?.data || []);
-        setFederations(dedupeFederations(fedsRes.data?.data || []));
+        setFederations(fedsRes.data?.data || []);
         setMilestones(milestonesRes.data?.data || []);
         setGovernance(govRes.data?.data || []);
         setCommitteeMembers(membersRes.data?.data || []);
