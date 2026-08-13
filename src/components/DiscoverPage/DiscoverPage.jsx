@@ -395,11 +395,11 @@ const DiscoverPage = () => {
                         <div className="executive-card-contact">
                           <div className="executive-contact-item">
                             <i className="fa-regular fa-envelope"></i>
-                            <span>{leader.email || 'info@esc-shooting.eu'}</span>
+                            <span>{leader.email || '—'}</span>
                           </div>
                           <div className="executive-contact-item">
                             <i className="fa-solid fa-phone"></i>
-                            <span>{leader.phone || '+49 30 1234 5678'}</span>
+                            <span>{leader.phone || '—'}</span>
                           </div>
                         </div>
                       </div>

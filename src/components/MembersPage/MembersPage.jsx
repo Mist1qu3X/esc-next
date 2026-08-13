@@ -203,7 +203,10 @@ const MembersPage = () => {
           <div className={`mp-federations-grid ${filteredFeds.length === 0 ? 'mp-grid-empty' : ''}`}>
             {filteredFeds.length > 0 ? (
               pageFeds.map((fed) => (
-                <div className="mp-federation-card" key={fed.id}>
+                <div className="mp-federation-card" key={fed.id}
+                  onClick={() => window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer')}
+                  role="button" tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer'); } }}>
                   <div className="mp-card-top-row">
                     <div className="mp-federation-initials">{fed.code || fed.countryCode || fed.name?.slice(0, 3).toUpperCase()}</div>
                     <span className="mp-federation-code">{fed.countryCode || fed.code}</span>
@@ -227,7 +230,7 @@ const MembersPage = () => {
                         <span>{fed.phone || '—'}</span>
                       </div>
                     </div>
-                    <button className="mp-view-federation-btn" onClick={() => window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer')}>VIEW FEDERATION ›</button>
+                    <button className="mp-view-federation-btn" onClick={(e) => { e.stopPropagation(); window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer'); }}>VIEW FEDERATION ›</button>
                   </div>
                 </div>
               ))
