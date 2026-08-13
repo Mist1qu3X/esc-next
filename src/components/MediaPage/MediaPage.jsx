@@ -77,7 +77,7 @@ const MediaPage = () => {
           getWithRetry(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=createdAt:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
           // docs/streams: только общие (событийные живут на странице события).
           getWithRetry(`${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
-          getWithRetry(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
+          getWithRetry(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => EMPTY_RES),
           // photos: показываем ВСЕ альбомы (событийные тоже) — в сетке нужна только обложка + счётчик
           getWithRetry(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
         ]);

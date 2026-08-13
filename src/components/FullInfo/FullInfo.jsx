@@ -104,12 +104,9 @@ const FullInfo = () => {
     const handleFull = () => router.push('/results');
     const handleEventClick = (eventSlug) => { if (eventSlug) router.push(`/events/${eventSlug}`); };
 
-    // Состояние главного события: countdown / ongoing / finished / postponed / cancelled
+    // Состояние главного события по датам: countdown / ongoing / finished
     const champState = (() => {
         if (!championship) return { kind: 'loading' };
-        const status = (championship.status || 'SCHEDULED').toUpperCase();
-        if (status === 'CANCELLED') return { kind: 'cancelled' };
-        if (status === 'POSTPONED') return { kind: 'postponed' };
         const start = championship.startDate ? new Date(championship.startDate).getTime() : null;
         const end = championship.endDate ? new Date(championship.endDate).getTime() : null;
         if (start && now < start) {
@@ -128,8 +125,6 @@ const FullInfo = () => {
     const STATUS_TEXT = {
         ongoing: 'EVENT IN PROGRESS',
         finished: 'EVENT FINISHED',
-        postponed: 'EVENT POSTPONED',
-        cancelled: 'EVENT CANCELLED',
     };
 
     const visibleRankings = rankings
@@ -183,9 +178,6 @@ const FullInfo = () => {
                                 <div className={`champ-status champ-status--${champState.kind}`}>
                                     <span className="champ-status-dot"></span>
                                     <span className="champ-status-text">{STATUS_TEXT[champState.kind]}</span>
-                                    {champState.kind === 'postponed' && (
-                                        <span className="champ-status-sub">New date to be announced</span>
-                                    )}
                                 </div>
                             ) : null}
                             <button className="event-info-btn" onClick={handleEventInfo}>
