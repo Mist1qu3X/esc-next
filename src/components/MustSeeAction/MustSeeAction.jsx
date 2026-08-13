@@ -36,7 +36,7 @@ const MustSeeAction = () => {
     }, []);
 
     const handleMore = () => {
-        router.push('/media#videos');
+        router.push('/media?filter=VIDEOS');
     };
 
     const handleWatch = (video) => {

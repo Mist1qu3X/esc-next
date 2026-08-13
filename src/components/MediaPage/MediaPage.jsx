@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import { downloadFile } from '@/lib/download';
@@ -51,8 +51,6 @@ const MediaPage = () => {
   const [photoSort, setPhotoSort] = useState('recent');
 
   const router = useRouter();
-  const latestNewsRef = useRef(null);
-  const videosRef = useRef(null);
 
   const filters = ['ALL', 'NEWS', 'FEATURES', 'INTERVIEWS', 'PHOTO', 'VIDEOS', 'PRESS RELEASES'];
 
@@ -68,28 +66,6 @@ const MediaPage = () => {
     try { setSavedSlugs((JSON.parse(localStorage.getItem('esc-saved-articles') || '[]') || []).map((a) => a?.slug).filter(Boolean)); } catch (e) {}
   }, []);
 
-  const scrollToElement = (element) => {
-    if (!element) return;
-    const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - 100;
-    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    const checkHashAndScroll = () => {
-      if (typeof window !== 'undefined') {
-        const hash = window.location.hash;
-        if (hash === '#latest-news' && latestNewsRef.current) {
-          setTimeout(() => scrollToElement(latestNewsRef.current), 300);
-        } else if (hash === '#videos' && videosRef.current) {
-          setTimeout(() => scrollToElement(videosRef.current), 300);
-        }
-      }
-    };
-    checkHashAndScroll();
-    window.addEventListener('hashchange', checkHashAndScroll);
-    return () => window.removeEventListener('hashchange', checkHashAndScroll);
-  }, [news, videos]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -489,7 +465,7 @@ const MediaPage = () => {
 
         {/* NEWS (на теме — все новости темы; на ALL — LATEST NEWS) */}
         {showLatestNews && (
-          <div ref={latestNewsRef}>
+          <div>
             <div className="mp-section-header" id="latest-news">
               <div className="mp-section-label">
                 <span className="mp-section-line mp-grey"></span>
@@ -525,7 +501,7 @@ const MediaPage = () => {
 
         {/* VIDEOS */}
         {showVideos && (
-          <div ref={videosRef}>
+          <div>
             <div className="mp-section-header" id="videos">
               <div className="mp-section-label">
                 <span className="mp-section-line mp-blue"></span>
