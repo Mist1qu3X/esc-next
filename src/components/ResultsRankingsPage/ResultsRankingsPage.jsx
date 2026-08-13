@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import LoadingResults from '@/components/LoadingResults/LoadingResults';
 import SkeletonEvents from '@/components/LoadingResults/SkeletonEvents';
@@ -78,7 +78,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       const fetchAll = async (path) => {
         let page = 1, all = [];
         while (page <= 15) {
-          const res = await axios.get(`${config.API_URL}${path}&pagination[pageSize]=100&pagination[page]=${page}`);
+          const res = await cachedGet(`${config.API_URL}${path}&pagination[pageSize]=100&pagination[page]=${page}`);
           all.push(...(res.data?.data || []));
           const pc = res.data?.meta?.pagination?.pageCount || 1;
           if (page >= pc) break;
@@ -89,7 +89,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       try {
         // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
         const [eventsRes, rankingsRes, resultsRes, recordsRes] = await Promise.allSettled([
-          axios.get(`${config.API_URL}/api/events?populate=*&sort=date:desc&pagination[limit]=100`),
+          cachedGet(`${config.API_URL}/api/events?populate=*&sort=date:desc&pagination[limit]=100`),
           fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
           fetchAll(`/api/result-details?populate=*&sort=position:asc`),
           fetchAll(`/api/records?populate=*&sort=date:desc`),

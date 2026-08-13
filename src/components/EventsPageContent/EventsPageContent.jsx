@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import Pagination from '@/components/Pagination/Pagination';
@@ -92,12 +92,12 @@ const EventsPageContent = () => {
         const fetchEvents = async () => {
             try {
                 const url = (page) => `${config.API_URL}/api/events?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`;
-                const first = await axios.get(url(1));
+                const first = await cachedGet(url(1));
                 setEvents(first.data?.data || []);
                 setLoading(false);
                 const pageCount = first.data?.meta?.pagination?.pageCount || 1;
                 for (let page = 2; page <= pageCount; page++) {
-                    const res = await axios.get(url(page));
+                    const res = await cachedGet(url(page));
                     const batch = res.data?.data || [];
                     if (batch.length) setEvents((prev) => [...prev, ...batch]);
                 }

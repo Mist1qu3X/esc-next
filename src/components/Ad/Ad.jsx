@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import './Ad.css';
 
@@ -15,7 +15,7 @@ const Ad = () => {
     useEffect(() => {
         const fetchPartners = async () => {
             try {
-                const res = await axios.get(
+                const res = await cachedGet(
                     `${config.API_URL}/api/partners?populate=*&sort=order:asc`
                 );
                 setLogos(res.data.data || []);

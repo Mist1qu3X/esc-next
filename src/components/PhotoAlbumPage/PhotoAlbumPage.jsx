@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import PhotoAlbumSkeleton from './PhotoAlbumSkeleton';
@@ -25,7 +25,7 @@ const PhotoAlbumPage = ({ slug }) => {
   useEffect(() => {
     const fetchAlbum = async () => {
       try {
-        const res = await axios.get(
+        const res = await cachedGet(
           `${config.API_URL}/api/photos?filters[slug][$eq]=${slug}&populate=*`
         );
         const data = res.data?.data || [];

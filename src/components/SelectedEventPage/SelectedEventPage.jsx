@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import DocumentsPage from '@/components/DocumentsPage/DocumentsPage';
@@ -112,7 +112,7 @@ const SelectedEventPage = ({ slug }) => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const evRes = await axios.get(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[schedule]=true`);
+        const evRes = await cachedGet(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[schedule]=true`);
         if (evRes.data?.data?.length > 0) setEvent(evRes.data.data[0]);
       } catch (e) { console.error(e); }
     };
@@ -123,10 +123,10 @@ const SelectedEventPage = ({ slug }) => {
     const fetchExtra = async () => {
       const [sRes, rRes, pRes, brRes] = await Promise.all([
         // LIVE & MEDIA — общий для всех событий (глобальные стримы/фото, как на Media)
-        axios.get(`${config.API_URL}/api/live-streams?filters[eventSlug][$null]=true&populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
-        axios.get(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${slug}&sort=position:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
-        axios.get(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
-        axios.get(`${config.API_URL}/api/event-results?filters[event][slug][$eq]=${slug}&populate[leaders]=true&sort=discipline:asc&pagination[pageSize]=100`).catch(() => ({ data: { data: [] } })),
+        cachedGet(`${config.API_URL}/api/live-streams?filters[eventSlug][$null]=true&populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
+        cachedGet(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${slug}&sort=position:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
+        cachedGet(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
+        cachedGet(`${config.API_URL}/api/event-results?filters[event][slug][$eq]=${slug}&populate[leaders]=true&sort=discipline:asc&pagination[pageSize]=100`).catch(() => ({ data: { data: [] } })),
       ]);
       setStreams(sRes.data?.data || []);
       setEventResults(rRes.data?.data || []);
