@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import './FeaturedDocuments.css';
 import config from '@/lib/config';
+import { downloadFile } from '@/lib/download';
+import { cachedGet } from '@/lib/apiCache';
 
 const absUrl = (file) =>
     file?.url ? (file.url.startsWith('http') ? file.url : `${config.API_URL}${file.url}`) : null;
@@ -17,7 +19,7 @@ const FeaturedDocuments = () => {
     useEffect(() => {
         const fetchDocuments = async () => {
             try {
-                const response = await axios.get(
+                const response = await cachedGet(
                     `${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[limit]=4`
                 );
                 const docs = response.data.data || [];
@@ -46,7 +48,7 @@ const FeaturedDocuments = () => {
 
     const handleDownload = (doc) => {
         const url = absUrl(doc.file);
-        if (url) window.open(url, '_blank');
+        if (url) downloadFile(url, `${doc.title || 'document'}${doc.file?.ext || '.pdf'}`);
     };
 
     return (

@@ -127,7 +127,7 @@
 .play-icon i {
     color: #06121f;
     font-size: 14px;
-    margin-left: 2px;
+    margin-left: 0.2em; /* оптический сдвиг треугольника к центру — как в VIDEOS */
 }
 
 .video-image-wrapper:hover .play-icon {

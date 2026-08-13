@@ -813,7 +813,7 @@
 .mp-video-play-btn i {
     font-size: 16px;
     color: #06101C;
-    margin-left: 2px;
+    margin-left: 0.2em;
 }
 
 .mp-video-duration {
@@ -1161,7 +1161,7 @@
 .mp-live-play-btn i {
     font-size: 20px;
     color: #ffffff;
-    margin-left: 3px;
+    margin-left: 0.2em;
 }
 
 .mp-live-play-btn:hover {
@@ -1349,7 +1349,7 @@
 .mp-live-play-btn-small i {
     font-size: 14px;
     color: #ffffff;
-    margin-left: 2px;
+    margin-left: 0.2em;
 }
 
 .mp-live-play-btn-small:hover {

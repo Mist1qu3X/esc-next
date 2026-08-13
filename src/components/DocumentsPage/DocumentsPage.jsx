@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '@/lib/config';
+import { cachedGet } from '@/lib/apiCache';
+import { downloadFile as forceDownload } from '@/lib/download';
 import Pagination from '@/components/Pagination/Pagination';
 import './DocumentsPage.css';
 
@@ -36,15 +38,15 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
         let populate = deepPopulate;
         let first;
         try {
-          first = await axios.get(pageUrl(deepPopulate, 1));
+          first = await cachedGet(pageUrl(deepPopulate, 1));
         } catch {
           populate = 'populate=*'; // фолбэк, если бэкенд ещё не знает про attachments
-          first = await axios.get(pageUrl('populate=*', 1));
+          first = await cachedGet(pageUrl('populate=*', 1));
         }
         let docs = extract(first);
         const pageCount = first.data?.meta?.pagination?.pageCount || 1;
         for (let page = 2; page <= pageCount; page++) {
-          const res = await axios.get(pageUrl(populate, page));
+          const res = await cachedGet(pageUrl(populate, page));
           docs = docs.concat(extract(res));
         }
 
@@ -141,13 +143,14 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
     if (url) window.open(url, '_blank');
   };
 
-  // Скачивание: открыть файл + увеличить счётчик (оптимистично в UI, затем на бэкенде)
+  // Скачивание: реально качаем файл (не предпросмотр) + увеличиваем счётчик
   const downloadFile = (doc, file) => {
-    if (!fileUrl(file)) return;
+    const url = fileUrl(file);
+    if (!url) return;
     setDownloadBumps((prev) => ({ ...prev, [doc.id]: (prev[doc.id] || 0) + 1 }));
     const id = doc.documentId || doc.id;
     axios.put(`${config.API_URL}/api/docs/${id}/download`).catch(() => {}); // не мешаем скачиванию, если счётчик недоступен
-    openFile(file);
+    forceDownload(url, `${doc.title || 'document'}${file?.ext || ''}`);
   };
 
   // Эффективное число скачиваний = сохранённое + оптимистичный прирост этой сессии
