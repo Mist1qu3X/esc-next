@@ -224,6 +224,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const getShotClass = (val) => {
     if (val === '-' || val === '•' || !val) return 'shot-miss';
     const num = parseFloat(val);
+    if (isNaN(num)) return 'shot-miss'; // «—», «–» и прочие маркеры-заглушки
     if (num >= 10.8) return 'shot-high';
     if (num >= 10.3) return 'shot-mid';
     return 'shot-low';
@@ -393,14 +394,16 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               const gi = (resultsPage - 1) * PER_PAGE + i;
               const medals = ['medal-gold', 'medal-silver', 'medal-bronze'];
               const medalClass = gi < 3 ? `medal-row ${medals[gi]}` : '';
-              const shots = Array.isArray(r.shots) ? r.shots : [];
+              const shotsRaw = Array.isArray(r.shots) ? r.shots : [];
+              // Максимум 24 выстрела — 12 в первой строке, 12 во второй (пустые = •)
+              const shots = Array.from({ length: 24 }, (_, k) => shotsRaw[k]);
               return (
                 <div key={r.id || r.athleteName} className={`results-table-row ${medalClass}`}>
                   <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
                   <div className="rt-col rt-spacer"></div>
                   <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
-                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shots.slice(0, 10).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div><div className="shots-row">{shots.slice(10, 20).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div></div></div>
+                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shots.slice(0, 12).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div><div className="shots-row">{shots.slice(12, 24).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div></div></div>
                   <div className="rt-col rt-total"><span className={`total-value ${gi === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
                   <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
                 </div>
