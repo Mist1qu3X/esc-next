@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
+import { dropDeadVideos } from '@/lib/deadVideos';
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
 import VideoDetailSkeleton from './VideoDetailSkeleton';
 import './SelectedVideoPage.css';
@@ -42,10 +43,10 @@ const SelectedVideoPage = ({ id }) => {
       try {
         const [oneRes, allRes] = await Promise.all([
           cachedGet(`${config.API_URL}/api/videos/${id}?populate=*`).catch(() => null),
-          cachedGet(`${config.API_URL}/api/videos?populate=*&sort=order:asc`),
+          cachedGet(`${config.API_URL}/api/videos?populate=*&sort=createdAt:desc`),
         ]);
         const one = oneRes?.data?.data || null;
-        const all = allRes?.data?.data || [];
+        const all = dropDeadVideos(allRes?.data?.data || []);
         setVideo(one || all.find((v) => String(v.documentId) === String(id)) || null);
         setMore(all);
       } catch (e) {

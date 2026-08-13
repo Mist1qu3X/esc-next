@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import './MustSeeAction.css';
 import config from '@/lib/config';
 import { cachedGet } from '@/lib/apiCache';
+import { dropDeadVideos } from '@/lib/deadVideos';
 
 const MustSeeAction = () => {
     const [videos, setVideos] = useState([]);
@@ -16,7 +17,7 @@ const MustSeeAction = () => {
                 const response = await cachedGet(
                     `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
                 );
-                setVideos(response.data.data || []);
+                setVideos(dropDeadVideos(response.data.data || []));
             } catch (error) {
                 console.error('Ошибка загрузки видео:', error);
             } finally {

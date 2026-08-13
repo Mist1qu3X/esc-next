@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import { downloadFile } from '@/lib/download';
+import { dropDeadVideos } from '@/lib/deadVideos';
 import { useRouter } from 'next/navigation';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import LoadingMedia from './LoadingMedia';
@@ -98,7 +99,7 @@ const MediaPage = () => {
         // не обнуляет всю страницу — остальные секции отрисуются нормально.
         const [newsRes, videosRes, docsRes, streamsRes, photosRes] = await Promise.all([
           getWithRetry(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
-          getWithRetry(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
+          getWithRetry(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=createdAt:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
           // docs/streams: только общие (событийные живут на странице события).
           getWithRetry(`${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
           getWithRetry(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
@@ -107,7 +108,7 @@ const MediaPage = () => {
         ]);
 
         setNews(extractData(newsRes));
-        setVideos(extractData(videosRes));
+        setVideos(dropDeadVideos(extractData(videosRes)));
         setDocs(extractData(docsRes));
         setStreams(extractData(streamsRes));
         setPhotos(extractData(photosRes));
@@ -129,8 +130,8 @@ const MediaPage = () => {
           try {
             const pageCount = videosRes.data?.meta?.pagination?.pageCount || 1;
             for (let page = 2; page <= pageCount; page++) {
-              const r = await cachedGet(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=order:asc&pagination[pageSize]=100&pagination[page]=${page}`);
-              const batch = extractData(r);
+              const r = await cachedGet(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=createdAt:desc&pagination[pageSize]=100&pagination[page]=${page}`);
+              const batch = dropDeadVideos(extractData(r));
               if (batch.length) setVideos((prev) => [...prev, ...batch]);
             }
           } catch (_) {}
