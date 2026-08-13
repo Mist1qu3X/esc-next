@@ -13,18 +13,17 @@ const MustSeeAction = () => {
     useEffect(() => {
         const fetchVideos = async () => {
             try {
-                // Сначала берём отмеченные галочкой featured (в порядке order).
-                const featuredRes = await cachedGet(
-                    `${config.API_URL}/api/videos?filters[featured][$eq]=true&populate=*&sort=order:asc&pagination[limit]=3`
+                // Источник — отдельная коллекция Must-See Action (связь на видео + order).
+                const msRes = await cachedGet(
+                    `${config.API_URL}/api/must-see-actions?populate[video][populate]=thumbnail&sort=order:asc&pagination[limit]=3`
                 ).catch(() => null);
-                let list = featuredRes?.data?.data || [];
-                // Пока ничего не отмечено (или поле featured ещё не задеплоено) —
-                // берём 3 видео с наименьшим order (их можно назначить в Strapi).
+                let list = (msRes?.data?.data || []).map((e) => e.video).filter(Boolean);
+                // Пока коллекция пуста / не задеплоена — показываем 3 свежих видео.
                 if (!list.length) {
-                    const byOrderRes = await cachedGet(
-                        `${config.API_URL}/api/videos?populate=*&sort=order:asc&pagination[limit]=3`
+                    const latestRes = await cachedGet(
+                        `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
                     );
-                    list = byOrderRes.data?.data || [];
+                    list = latestRes.data?.data || [];
                 }
                 setVideos(list);
             } catch (error) {
