@@ -64,12 +64,13 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
           Array.from(categoryMap.entries()).map(([name, count]) => ({ name, count }))
         );
 
-        // Подсчет годов из реальных данных
+        // Подсчет годов из реальных данных. У части документов дата не задана и
+        // превращается в epoch (1969-12-31 / 1970-01-01) — такие годы в фильтр не берём.
         const yearMap = new Map();
         docs.forEach((doc) => {
           if (doc.date) {
-            const year = new Date(doc.date).getFullYear().toString();
-            yearMap.set(year, (yearMap.get(year) || 0) + 1);
+            const year = new Date(doc.date).getFullYear();
+            if (year > 1971) yearMap.set(String(year), (yearMap.get(String(year)) || 0) + 1);
           }
         });
         setYears(Array.from(yearMap.keys()).sort((a, b) => b - a));

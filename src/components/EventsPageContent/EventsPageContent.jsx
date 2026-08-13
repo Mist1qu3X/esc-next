@@ -320,11 +320,9 @@ const EventsPageContent = () => {
                         {featuredEvents.map((event) => {
                             const rawImg = event.image?.url || event.image?.data?.attributes?.url;
                             const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : `${config.API_URL}${rawImg}`) : null;
-                            const st = getStatus(event);
                             return (
                                 <div className="epc-featured-card" key={event.id} onClick={() => handleDetails(event)}>
                                     {imgUrl && <img src={imgUrl} alt={event.name} />}
-                                    <span className={`epc-status ${STATUS_CLASS[st]}`}>{STATUS_LABEL[st]}</span>
                                     <div className="epc-featured-content">
                                         <div className="epc-featured-tags">
                                             <span className="epc-tag epc-tag-accent">{event.category || 'SENIOR'}</span>
