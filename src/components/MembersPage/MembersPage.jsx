@@ -1,10 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import { getFederationWebsite } from '@/lib/federationWebsites';
 import { REGIONS } from '@/lib/regions';
+import Pagination from '@/components/Pagination/Pagination';
 import './MembersPage.css';
+
+const PER_PAGE = 28; // 7 рядов × 4 карточки, как в макете
 
 // Дефолтные статы (fallback, пока коллекция member-stats пуста)
 const DEFAULT_STATS = [
@@ -31,6 +34,7 @@ const MembersPage = () => {
   const [activeRegion, setActiveRegion] = useState('ALL');
   const [viewMode, setViewMode] = useState('grid');
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Набор регионов — общий с DiscoverPage (src/lib/regions.js).
 
@@ -38,8 +42,8 @@ const MembersPage = () => {
     const fetchFederations = async () => {
       try {
         const [res, statsRes] = await Promise.all([
-          axios.get(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
-          axios.get(`${config.API_URL}/api/member-stats?sort=order:asc&pagination[limit]=20`).catch(() => ({ data: { data: [] } })),
+          cachedGet(`${config.API_URL}/api/federations?populate=*&pagination[limit]=100`),
+          cachedGet(`${config.API_URL}/api/member-stats?sort=order:asc&pagination[limit]=20`).catch(() => ({ data: { data: [] } })),
         ]);
         if (res.data?.data) {
           setFederations(res.data.data);
@@ -71,7 +75,18 @@ const MembersPage = () => {
     }
     
     setFilteredFeds(result);
+    setCurrentPage(1); // при смене фильтра — на первую страницу
   }, [searchTerm, activeRegion, federations]);
+
+  // Стат «MEMBER(S)» показываем по реальному числу федераций, а не по сохранённому
+  // в Strapi значению (оно устаревает — было 58 при фактических 60).
+  const baseStats = stats.length > 0 ? stats : DEFAULT_STATS;
+  const displayStats = baseStats.map((s) =>
+    /member/i.test(s.label || '') && federations.length > 0 ? { ...s, number: String(federations.length) } : s
+  );
+
+  const totalPages = Math.max(1, Math.ceil(filteredFeds.length / PER_PAGE));
+  const pageFeds = filteredFeds.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   const hasFilters = activeRegion !== 'ALL' || !!searchTerm;
   const emptyState = (
@@ -113,7 +128,7 @@ const MembersPage = () => {
         <div className="mp-header-row">
           <h1 className="mp-title">MEMBER FEDERATIONS</h1>
           <div className="mp-stats">
-            {(stats.length > 0 ? stats : DEFAULT_STATS).map((s, i) => (
+            {displayStats.map((s, i) => (
               <div className="mp-stat-item" key={s.id || i}>
                 <span className="mp-stat-number">{s.number}</span>
                 <span className="mp-stat-label">{s.label}</span>
@@ -189,7 +204,7 @@ const MembersPage = () => {
             </div>
           <div className={`mp-federations-grid ${filteredFeds.length === 0 ? 'mp-grid-empty' : ''}`}>
             {filteredFeds.length > 0 ? (
-              filteredFeds.map((fed) => (
+              pageFeds.map((fed) => (
                 <div className="mp-federation-card" key={fed.id}>
                   <div className="mp-card-top-row">
                     <div className="mp-federation-initials">{fed.code || fed.countryCode || fed.name?.slice(0, 3).toUpperCase()}</div>
@@ -220,6 +235,7 @@ const MembersPage = () => {
               ))
             ) : emptyState}
           </div>
+          <Pagination page={currentPage} pageCount={totalPages} onChange={setCurrentPage} />
         </section>
       )}
 
@@ -246,7 +262,7 @@ const MembersPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredFeds.map((fed) => (
+                  {pageFeds.map((fed) => (
                     <tr key={fed.id}>
                       <td className="mp-list-code">{fed.countryCode || fed.code}</td>
                       <td className="mp-list-name">{fed.name}</td>
@@ -266,6 +282,7 @@ const MembersPage = () => {
               </table>
             ) : emptyState}
           </div>
+          <Pagination page={currentPage} pageCount={totalPages} onChange={setCurrentPage} />
         </section>
       )}
       </>)}
