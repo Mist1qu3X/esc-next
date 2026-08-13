@@ -4,7 +4,6 @@ import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import { getFederationWebsite } from '@/lib/federationWebsites';
 import { REGIONS } from '@/lib/regions';
-import { dedupeFederations } from '@/lib/federations';
 import Pagination from '@/components/Pagination/Pagination';
 import './MembersPage.css';
 
@@ -15,7 +14,7 @@ const PER_PAGE = 28; // 7 рядов × 4 карточки, как в макет
 const DEFAULT_STATS = [
   { number: '16+', label: 'ANNUAL EVENTS' },
   { number: '55+', label: 'YEARS' },
-  { number: '53', label: 'MEMBER' },
+  { number: '60', label: 'MEMBER' },
   { number: '10000+', label: 'ATHLETES' },
 ];
 
@@ -48,9 +47,8 @@ const MembersPage = () => {
           cachedGet(`${config.API_URL}/api/member-stats?sort=order:asc&pagination[limit]=20`).catch(() => ({ data: { data: [] } })),
         ]);
         if (res.data?.data) {
-          const feds = dedupeFederations(res.data.data);
-          setFederations(feds);
-          setFilteredFeds(feds);
+          setFederations(res.data.data);
+          setFilteredFeds(res.data.data);
         }
         setStats(statsRes.data?.data || []);
         setLoading(false);
