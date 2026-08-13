@@ -83,7 +83,7 @@ const Footer = () => {
                     <Link href="/results">Results & Rankings</Link>
                     <Link href="/documents">Documents Library</Link>
                     <Link href="/members">Member Federations</Link>
-                    <a href="https://esc-entry.eu" target="_blank" rel="noopener noreferrer" className="footer-entry-link">Entry System<img src="/img/ArrowUpRight.png" alt="" className="footer-entry-arrow" /></a>
+                    <a href="https://esc-entry.eu" target="_blank" rel="noopener noreferrer" className="footer-entry-link">Entry System<i className="fa-solid fa-arrow-up-right-from-square footer-entry-arrow"></i></a>
                 </div>
             </div>
 

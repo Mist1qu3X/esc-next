@@ -189,8 +189,9 @@
     transition: all 0.2s ease;
 }
 
-/* Внешняя ссылка Entry System — стрелка-картинка (как в хедере), а не юникод-символ,
-   который в футере рендерился пустым квадратом */
+/* Внешняя ссылка Entry System — стрелка иконкой Font Awesome (наследует цвет
+   текста ссылки: серый, голубой на hover). PNG-стрелка из хедера тёмная и на
+   тёмном футере не видна, а юникод-символ рендерился пустым квадратом. */
 .footer-entry-link {
     display: inline-flex;
     align-items: center;
@@ -198,9 +199,7 @@
 }
 
 .footer-entry-arrow {
-    width: 11px;
-    height: 11px;
-    object-fit: contain;
+    font-size: 0.82em;
     flex-shrink: 0;
 }
 
