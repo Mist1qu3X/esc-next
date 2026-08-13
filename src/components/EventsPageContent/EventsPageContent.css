@@ -1298,8 +1298,7 @@
 .epc-status-tag.epc-ongoing { color: #04121f; background: #00d8f5; }
 .epc-status.epc-ongoing { color: #04121f; background: #00d8f5; }
 
-/* --- Действия: WATCH (идёт) / Results pending (нет протокола) --- */
-.epc-live-btn { color: #04121f !important; background: #00d8f5 !important; border-color: #00d8f5 !important; }
+/* --- Действия: Results pending (нет протокола) --- */
 .epc-results-pending {
     font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
     text-transform: uppercase; color: rgba(255, 176, 32, 0.9); font-style: italic; white-space: nowrap;

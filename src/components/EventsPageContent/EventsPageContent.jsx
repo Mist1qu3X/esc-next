@@ -17,7 +17,7 @@ const STATUS_CLASS = {
     UPCOMING: 'epc-upcoming', ONGOING: 'epc-ongoing', FINISHED: 'epc-finished',
 };
 const STATUS_LABEL = {
-    UPCOMING: 'UPCOMING', ONGOING: 'LIVE NOW', FINISHED: 'FINISHED',
+    UPCOMING: 'UPCOMING', ONGOING: 'IN PROGRESS', FINISHED: 'FINISHED',
 };
 
 const EventsPageContent = () => {
@@ -458,9 +458,6 @@ const EventsPageContent = () => {
                                 </div>
                                 <div className="epc-col epc-col-actions">
                                     <button className="epc-action-btn epc-details-btn" onClick={() => handleDetails(event)}>DETAILS</button>
-                                    {st === 'ONGOING' && (
-                                        <button className="epc-action-btn epc-live-btn" onClick={() => handleDetails(event)}>WATCH</button>
-                                    )}
                                     {st === 'FINISHED' && (
                                         event.resultsPending
                                             ? <span className="epc-results-pending" title="Официальные результаты ещё не опубликованы">Results pending</span>
