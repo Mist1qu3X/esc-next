@@ -46,7 +46,7 @@ const LatestFromEsc = () => {
     }, []);
 
     const handleMore = () => {
-        router.push('/media#latest-news');
+        router.push('/media');
     };
 
     if (loading) {
