@@ -9,13 +9,6 @@ const fmt = (s) => {
   return `${m}:${sec.toString().padStart(2, '0')}`;
 };
 
-// Достаём id ролика из embed-ссылки (…/embed/ID) или обычной ссылки — для ссылки на YouTube
-const extractYtId = (url) => {
-  if (!url) return null;
-  const m = url.match(/(?:embed\/|watch\?v=|youtu\.be\/)([\w-]{6,})/);
-  return m ? m[1] : null;
-};
-
 const VideoPlayer = ({ src, poster, youtubeEmbed }) => {
   const videoRef = useRef(null);
   const wrapRef = useRef(null);
@@ -59,32 +52,18 @@ const VideoPlayer = ({ src, poster, youtubeEmbed }) => {
     setStarted(false);
   };
 
-  // YouTube — обычный iframe (как было). Часть роликов закрыта владельцем от
-  // встраивания — под плеером даём ссылку «смотреть на YouTube» на такой случай.
+  // YouTube — обычный iframe
   if (youtubeEmbed) {
-    const vid = extractYtId(youtubeEmbed);
     return (
-      <>
-        <div className="vp-wrap">
-          <iframe
-            className="vp-iframe"
-            src={youtubeEmbed}
-            title="video"
-            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div>
-        {vid && (
-          <a
-            className="vp-yt-link"
-            href={`https://www.youtube.com/watch?v=${vid}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <i className="fa-brands fa-youtube"></i> Video won&apos;t play? Watch it on YouTube
-          </a>
-        )}
-      </>
+      <div className="vp-wrap">
+        <iframe
+          className="vp-iframe"
+          src={youtubeEmbed}
+          title="video"
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
     );
   }
 
