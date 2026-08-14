@@ -161,6 +161,25 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+    /* Показываем ~8 пунктов (ALL DOCUMENTS + 7 тем), дальше — аккуратный скролл */
+    max-height: 290px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 216, 245, 0.3) transparent;
+}
+
+.category-list::-webkit-scrollbar {
+    width: 6px;
+}
+.category-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.category-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 216, 245, 0.25);
+    border-radius: 3px;
+}
+.category-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 216, 245, 0.45);
 }
 
 .category-item {
