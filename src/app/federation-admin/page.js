@@ -3,8 +3,8 @@ import FederationAdmin from '@/components/FederationAdmin/FederationAdmin';
 import Footer from '@/components/Footer/Footer';
 
 export const metadata = {
-  title: 'Кабинет федерации | ESC Shooting',
-  description: 'Личный кабинет администратора национальной федерации ESC',
+  title: 'Federation Portal | ESC Shooting',
+  description: 'Self-service portal for ESC national federation administrators',
   robots: { index: false, follow: false },
 };
 

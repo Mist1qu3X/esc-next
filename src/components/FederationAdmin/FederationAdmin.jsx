@@ -9,7 +9,7 @@ const LS_USER = 'esc_fed_user';
 const absUrl = (u) => (u ? (u.startsWith('http') ? u : `${config.API_URL}${u}`) : null);
 
 export default function FederationAdmin() {
-  const [ready, setReady] = useState(false);       // восстановили ли сессию из localStorage
+  const [ready, setReady] = useState(false);       // restored session from localStorage?
   const [jwt, setJwt] = useState(null);
   const [user, setUser] = useState(null);
   const [fed, setFed] = useState(null);
@@ -17,16 +17,16 @@ export default function FederationAdmin() {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
-  // Форма входа
+  // Login form
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Форма редактирования
+  // Edit form
   const [form, setForm] = useState({ name: '', president: '', email: '', phone: '', website: '' });
   const [flagFile, setFlagFile] = useState(null);
   const [flagPreview, setFlagPreview] = useState(null);
 
-  // Восстановление сессии
+  // Restore session
   useEffect(() => {
     try {
       const j = localStorage.getItem(LS_JWT);
@@ -43,7 +43,7 @@ export default function FederationAdmin() {
     setFlagFile(null); setFlagPreview(null);
   }, []);
 
-  // Загрузка «своей» федерации
+  // Load own federation
   useEffect(() => {
     if (!jwt || !user) return;
     let cancelled = false;
@@ -59,7 +59,7 @@ export default function FederationAdmin() {
         const f = j.data;
         if (!f) {
           setFed(null);
-          setError('К вашей учётной записи не привязана федерация. Обратитесь к администратору ESC.');
+          setError('No federation is linked to your account. Please contact the ESC administrator.');
         } else {
           setFed(f);
           setForm({
@@ -69,7 +69,7 @@ export default function FederationAdmin() {
           setFlagPreview(absUrl(f.flag?.url));
         }
       } catch {
-        if (!cancelled) setError('Не удалось загрузить данные федерации.');
+        if (!cancelled) setError('Failed to load federation data.');
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -87,14 +87,14 @@ export default function FederationAdmin() {
         body: JSON.stringify({ identifier: email.trim(), password }),
       });
       const j = await res.json();
-      if (!res.ok) { setError(j?.error?.message || 'Неверный email или пароль.'); return; }
+      if (!res.ok) { setError(j?.error?.message || 'Invalid email or password.'); return; }
       try {
         localStorage.setItem(LS_JWT, j.jwt);
         localStorage.setItem(LS_USER, JSON.stringify(j.user));
       } catch {}
       setJwt(j.jwt); setUser(j.user); setPassword('');
     } catch {
-      setError('Ошибка входа. Попробуйте позже.');
+      setError('Login failed. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,7 @@ export default function FederationAdmin() {
   const onFlag = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) { setError('Флаг должен быть изображением.'); return; }
+    if (!file.type.startsWith('image/')) { setError('The flag must be an image file.'); return; }
     setError('');
     setFlagFile(file);
     setFlagPreview(URL.createObjectURL(file));
@@ -116,7 +116,7 @@ export default function FederationAdmin() {
     if (!fed) return;
     setError(''); setNotice(''); setLoading(true);
     try {
-      // 1. Текстовые поля
+      // 1. Text fields
       const res = await fetch(`${config.API_URL}/api/federations/${fed.documentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
@@ -124,9 +124,9 @@ export default function FederationAdmin() {
       });
       if (res.status === 401) { logout(); return; }
       const j = await res.json();
-      if (!res.ok) { setError(j?.error?.message || 'Не удалось сохранить изменения.'); return; }
+      if (!res.ok) { setError(j?.error?.message || 'Failed to save changes.'); return; }
 
-      // 2. Флаг (если заменяли) — серверная загрузка, право Upload у роли не требуется
+      // 2. Flag (if replaced) — uploaded server-side, no Upload permission needed
       if (flagFile) {
         const fd = new FormData();
         fd.append('flag', flagFile);
@@ -136,45 +136,45 @@ export default function FederationAdmin() {
           body: fd,
         });
         if (fr.status === 401) { logout(); return; }
-        if (!fr.ok) { setError('Текст сохранён, но флаг загрузить не удалось.'); return; }
+        if (!fr.ok) { setError('Details saved, but the flag could not be uploaded.'); return; }
       }
 
-      setNotice('Изменения сохранены ✓');
+      setNotice('Changes saved ✓');
       setFlagFile(null);
     } catch {
-      setError('Ошибка сохранения. Попробуйте позже.');
+      setError('Failed to save. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!ready) return <div className="fa-wrap"><div className="fa-card"><p className="fa-muted">Загрузка…</p></div></div>;
+  if (!ready) return <div className="fa-wrap"><div className="fa-card"><p className="fa-muted">Loading…</p></div></div>;
 
-  // Экран входа
+  // Login screen
   if (!jwt) {
     return (
       <div className="fa-wrap">
         <form className="fa-card" onSubmit={login}>
-          <h1 className="fa-title">Кабинет федерации</h1>
-          <p className="fa-muted">Войдите, чтобы обновить информацию своей федерации.</p>
+          <h1 className="fa-title">Federation Portal</h1>
+          <p className="fa-muted">Log in to update your federation's information.</p>
           <label className="fa-label">Email</label>
           <input className="fa-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
-          <label className="fa-label">Пароль</label>
+          <label className="fa-label">Password</label>
           <input className="fa-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
           {error && <p className="fa-error">{error}</p>}
-          <button className="fa-btn" type="submit" disabled={loading}>{loading ? 'Вход…' : 'Войти'}</button>
+          <button className="fa-btn" type="submit" disabled={loading}>{loading ? 'Signing in…' : 'Log in'}</button>
         </form>
       </div>
     );
   }
 
-  // Экран редактирования
+  // Edit screen
   return (
     <div className="fa-wrap">
       <div className="fa-card">
         <div className="fa-header">
-          <h1 className="fa-title">{fed?.name || 'Моя федерация'}</h1>
-          <button className="fa-logout" onClick={logout}>Выйти</button>
+          <h1 className="fa-title">{fed?.name || 'My Federation'}</h1>
+          <button className="fa-logout" onClick={logout}>Log out</button>
         </div>
 
         {error && <p className="fa-error">{error}</p>}
@@ -183,33 +183,33 @@ export default function FederationAdmin() {
           <form onSubmit={save}>
             <div className="fa-flag-row">
               <div className="fa-flag-preview">
-                {flagPreview ? <img src={flagPreview} alt="Флаг" /> : <span className="fa-muted">нет флага</span>}
+                {flagPreview ? <img src={flagPreview} alt="Flag" /> : <span className="fa-muted">no flag</span>}
               </div>
               <label className="fa-file-btn">
-                Заменить флаг
+                Replace flag
                 <input type="file" accept="image/*" onChange={onFlag} hidden />
               </label>
             </div>
 
-            <label className="fa-label">Название федерации</label>
+            <label className="fa-label">Federation name</label>
             <input className="fa-input" value={form.name} onChange={setField('name')} />
 
-            <label className="fa-label">Президент</label>
+            <label className="fa-label">President</label>
             <input className="fa-input" value={form.president} onChange={setField('president')} />
 
             <label className="fa-label">Email</label>
             <input className="fa-input" type="email" value={form.email} onChange={setField('email')} />
 
-            <label className="fa-label">Телефон</label>
+            <label className="fa-label">Phone</label>
             <input className="fa-input" value={form.phone} onChange={setField('phone')} />
 
-            <label className="fa-label">Сайт</label>
+            <label className="fa-label">Website</label>
             <input className="fa-input" value={form.website} onChange={setField('website')} placeholder="https://…" />
 
             {notice && <p className="fa-notice">{notice}</p>}
 
-            <button className="fa-btn" type="submit" disabled={loading}>{loading ? 'Сохранение…' : 'Сохранить'}</button>
-            <p className="fa-hint">Можно менять только флаг, название, президента и контакты. Код, регион и страна — за администратором ESC.</p>
+            <button className="fa-btn" type="submit" disabled={loading}>{loading ? 'Saving…' : 'Save'}</button>
+            <p className="fa-hint">You can edit only the flag, name, president and contact details. Code, region and country are managed by the ESC administrator.</p>
           </form>
         )}
       </div>
