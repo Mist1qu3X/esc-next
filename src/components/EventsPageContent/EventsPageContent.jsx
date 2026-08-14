@@ -201,6 +201,8 @@ const EventsPageContent = () => {
         const ongoing = matched.some((e) => getStatus(e) === 'ONGOING');
         return { label: seg.label, match: seg.match, empty: total === 0, total, finished, ratio: total ? finished / total : 0, done: total > 0 && finished === total, ongoing };
     });
+    // Неактивные дисциплины (без событий) — в конец; активные сохраняют исходный порядок (стабильная сортировка)
+    seasonSegments.sort((a, b) => (a.empty ? 1 : 0) - (b.empty ? 1 : 0));
     const nonEmptySegs = seasonSegments.filter((s) => !s.empty);
     const totalSegments = nonEmptySegs.length || seasonSegments.length;
     const doneSegments = nonEmptySegs.filter((s) => s.done).length; // полностью завершённые дисциплины
