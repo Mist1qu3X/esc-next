@@ -17,6 +17,18 @@ const FullInfo = () => {
 
     // Категории для ротации ESC RANKING (муж → жен → по кругу)
     const RANKING_CATEGORIES = ['MEN', 'WOMEN'];
+    // Дисциплина блока ESC RANKING настраивается в Strapi (ESC Platform → rankingDiscipline).
+    // Enum в Strapi не может начинаться с цифры, поэтому значения маппим на реальные строки дисциплин.
+    const RANKING_DISCIPLINE_MAP = {
+        'Air Rifle 10m': '10m Air Rifle',
+        'Air Pistol 10m': '10m Air Pistol',
+        'Pistol 25m': '25m Pistol',
+        'Rapid Fire Pistol 25m': '25m Rapid Fire Pistol',
+        'Rifle 3 Position 50m': '50m Rifle 3 Position',
+        'Skeet': 'Skeet',
+        'Trap': 'Trap',
+    };
+    const rankingDiscipline = RANKING_DISCIPLINE_MAP[platform?.rankingDiscipline] || '10m Air Rifle';
 
     // Загрузка чемпионата
     useEffect(() => {
@@ -69,13 +81,13 @@ const FullInfo = () => {
         const fetchRankings = async () => {
             try {
                 const response = await cachedGet(
-                    `${config.API_URL}/api/ranking-details?filters[discipline][$eq]=10m Air Rifle&sort=position:asc&pagination[pageSize]=50`
+                    `${config.API_URL}/api/ranking-details?filters[discipline][$eq]=${encodeURIComponent(rankingDiscipline)}&sort=position:asc&pagination[pageSize]=50`
                 );
                 setRankings(response.data.data || []);
             } catch (error) { console.error('Ошибка загрузки рейтинга:', error); }
         };
         fetchRankings();
-    }, []);
+    }, [rankingDiscipline]);
 
     // Ротация категорий рейтинга каждые 5 секунд (муж ↔ жен по кругу)
     useEffect(() => {
@@ -128,7 +140,7 @@ const FullInfo = () => {
     };
 
     const visibleRankings = rankings
-        .filter((item) => item.discipline === '10m Air Rifle' && item.category === activeCategory)
+        .filter((item) => item.discipline === rankingDiscipline && item.category === activeCategory)
         .sort((a, b) => a.position - b.position)
         .slice(0, 5);
 
@@ -248,7 +260,7 @@ const FullInfo = () => {
                             <button className="go-to-full" onClick={handleFull}>FULL &gt;</button>
                         </div>
                         <p className="description">
-                            10M AIR RIFLE {activeCategory === 'WOMEN' ? 'W' : activeCategory === 'MEN' ? 'M' : ''}
+                            {rankingDiscipline.toUpperCase()} {activeCategory === 'WOMEN' ? 'W' : activeCategory === 'MEN' ? 'M' : ''}
                         </p>
                         <div className="ranking-list" key={activeCategory}>
                             {visibleRankings.length > 0 ? (
