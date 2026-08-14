@@ -215,8 +215,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   useEffect(() => { setRankingsPage(1); }, [selectedDiscipline, rankingsGender, rankingsSearchTerm, rankings.length]);
   useEffect(() => { setRecordsPage(1); }, [selectedDiscipline, gender, records.length]);
 
-  // Пока идёт загрузка — не показываем тестовые (иначе мелькают 6 фейковых событий)
-  const eventsSource = events.length > 0 ? events : (loaded ? TEST_EVENTS : []);
+  // Показываем только события, у которых реально есть результаты (как на офиц. сайте),
+  // иначе среди 800+ событий календаря пользователь кликает пустые.
+  const slugsWithResults = new Set(resultDetails.map((r) => r.eventSlug).filter(Boolean));
+  const eventsWithResults = events.filter((e) => slugsWithResults.has(e.slug));
+  const eventsSource = events.length > 0 ? eventsWithResults : (loaded ? TEST_EVENTS : []);
   const filteredEvents = eventsSource.filter(ev => {
     const eventDate = new Date(ev.date);
     const matchType = filterType === 'ALL TYPES' || ev.type?.toUpperCase() === filterType;
