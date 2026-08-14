@@ -459,7 +459,7 @@ const EventsPageContent = () => {
                                     <span>{location}</span>
                                 </div>
                                 <div className="epc-col epc-col-type">
-                                    <span className="epc-type-tag">{type?.toUpperCase() || 'CHAMPIONSHIP'}</span>
+                                    <span className="epc-type-tag">{type?.toUpperCase() || 'COMPETITION'}</span>
                                 </div>
                                 <div className="epc-col epc-col-status">
                                     <span className={`epc-status-tag ${STATUS_CLASS[st]}`}>{STATUS_LABEL[st]}</span>
