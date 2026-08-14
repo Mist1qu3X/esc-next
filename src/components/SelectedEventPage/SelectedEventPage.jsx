@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
-import DocumentsPage from '@/components/DocumentsPage/DocumentsPage';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import PageLoader from '@/components/LoadingResults/PageLoader';
 import TargetLoader from '@/components/LoadingResults/TargetLoader';
@@ -111,7 +110,7 @@ const SelectedEventPage = ({ slug }) => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const evRes = await cachedGet(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[schedule]=true`);
+        const evRes = await cachedGet(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[schedule]=true&populate[documents][populate]=file`);
         if (evRes.data?.data?.length > 0) setEvent(evRes.data.data[0]);
       } catch (e) { console.error(e); }
     };
@@ -322,7 +321,30 @@ const SelectedEventPage = ({ slug }) => {
             )}
 
             {activeTab === 'DOCUMENTS' && (
-              <div className="event-embed"><DocumentsPage embedded eventSlug={slug} /></div>
+              (event.documents?.length > 0) ? (
+                <div className="event-docs-list">
+                  {event.documents.map((d, i) => {
+                    const url = d.file?.url ? (d.file.url.startsWith('http') ? d.file.url : `${config.API_URL}${d.file.url}`) : null;
+                    return (
+                      <div className="event-doc-item" key={i}>
+                        <i className="fa-regular fa-file-lines event-doc-icon"></i>
+                        <div className="event-doc-info">
+                          <span className="event-doc-name">{d.name}</span>
+                          <span className="event-doc-meta">{d.fileSize || ''}</span>
+                        </div>
+                        {url && <a className="event-doc-btn" href={url} target="_blank" rel="noopener noreferrer"><i className="fa-solid fa-eye"></i> Preview</a>}
+                        {url && <a className="event-doc-btn event-doc-btn-dl" href={url} download={d.name}><i className="fa-solid fa-download"></i> PDF</a>}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
+                  <i className="fa-regular fa-clock stream-scheduled-icon"></i>
+                  <span className="stream-scheduled-title">NO DOCUMENTS</span>
+                  <span className="stream-scheduled-text">No documents are available for this event.</span>
+                </div>
+              )
             )}
 
             {activeTab === 'RESULTS' && (

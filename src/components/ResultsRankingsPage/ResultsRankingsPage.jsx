@@ -43,34 +43,14 @@ const RANKING_DISCIPLINES = [
 // (документы уже зеркалированы в коллекцию docs). Матч по названию+году, дата документа = дата
 // публикации (не события), поэтому по дате не матчим.
 const RESULT_RE = /result|ranklist|results book/i;
-const RB_STOP = new Set(['the', 'and', 'for', 'of', 'final', 'round', 'stage', 'part', 'european', 'championship', 'championships', '2022', '2023', '2024', '2025', '2026', '2027']);
-const rbNorm = (s = '') => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-const rbYear = (s = '') => { const m = (s || '').match(/\b(20\d{2})\b/); return m ? +m[1] : null; };
 
-// eventSlug -> массив вложений-результатов [{name, file, fileSize}]
-function buildEventResultMap(events, docs) {
+// eventSlug -> массив result-book вложений [{name, file, fileSize}] из event.documents (без угадывания).
+function buildEventResultMap(events) {
   const map = {};
-  const rbDocs = docs.filter((d) =>
-    Array.isArray(d.attachments) &&
-    d.attachments.some((a) => RESULT_RE.test(a.name || '') && a.file) &&
-    !/historical/i.test(d.title || '') &&
-    !/athletes.?committee/i.test(d.title || ''));
-  for (const d of rbDocs) {
-    const y = rbYear(d.title);
-    const toks = rbNorm(d.title).split(' ').filter((w) => w.length > 2 && !RB_STOP.has(w));
-    let best = null, bs = 0;
-    for (const e of events) {
-      const ey = e.date ? new Date(e.date).getFullYear() : null;
-      if (y && ey && Math.abs(ey - y) > 1) continue;
-      const h = toks.filter((t) => rbNorm(e.name || '').includes(t)).length;
-      if (h < 3) continue;
-      const sc = h + (y && ey === y ? 1 : 0);
-      if (sc > bs) { bs = sc; best = e; }
-    }
-    if (best?.slug) {
-      const files = d.attachments.filter((a) => RESULT_RE.test(a.name || '') && a.file);
-      map[best.slug] = (map[best.slug] || []).concat(files.map((a) => ({ name: a.name, file: a.file, fileSize: a.fileSize })));
-    }
+  for (const e of events) {
+    if (!e.slug || !Array.isArray(e.documents)) continue;
+    const rb = e.documents.filter((d) => RESULT_RE.test(d.name || '') && d.file);
+    if (rb.length) map[e.slug] = rb.map((d) => ({ name: d.name, file: d.file, fileSize: d.fileSize }));
   }
   return map;
 }
@@ -130,11 +110,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       try {
         // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
         const [eventsRes, rankingsRes, resultsRes, recordsRes, docsRes] = await Promise.allSettled([
-          fetchAll(`/api/events?sort=date:desc`),
+          fetchAll(`/api/events?sort=date:desc&populate[documents][populate]=file`),
           fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
           fetchAll(`/api/result-details?populate=*&sort=position:asc`),
           fetchAll(`/api/records?populate=*&sort=date:desc`),
-          fetchAll(`/api/docs?populate[attachments][populate]=file&filters[eventSlug][$null]=true`),
+          fetchAll(`/api/docs?filters[title][$contains]=Historical&populate[attachments][populate]=file`),
         ]);
         if (eventsRes.status === 'fulfilled') setEvents(eventsRes.value);
         if (rankingsRes.status === 'fulfilled') setRankings(rankingsRes.value);
@@ -263,7 +243,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   // либо структурные (SIUS), либо official result-book PDF. Иначе среди 800+ событий
   // календаря пользователь кликает пустые.
   const structuredSlugs = useMemo(() => new Set(resultDetails.map((r) => r.eventSlug).filter(Boolean)), [resultDetails]);
-  const eventResultPdfs = useMemo(() => buildEventResultMap(events, docs), [events, docs]);
+  const eventResultPdfs = useMemo(() => buildEventResultMap(events), [events]);
   const historicalArchive = useMemo(() => {
     const d = docs.find((x) => /historical results|1955/i.test(x.title || ''));
     return d ? { title: d.title, files: (d.attachments || []).filter((a) => a.file) } : null;
