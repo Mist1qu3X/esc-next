@@ -117,32 +117,29 @@ export default function FederationAdmin() {
     if (!fed) return;
     setError(''); setNotice(''); setLoading(true);
     try {
-      let flagId;
-      if (flagFile) {
-        const fd = new FormData();
-        fd.append('files', flagFile);
-        const up = await fetch(`${config.API_URL}/api/upload`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${jwt}` },
-          body: fd,
-        });
-        if (up.status === 401) { logout(); return; }
-        const uj = await up.json();
-        if (!up.ok) { setError('Не удалось загрузить флаг. Обратитесь к администратору ESC.'); return; }
-        flagId = uj?.[0]?.id;
-      }
-
-      const data = { ...form };
-      if (flagId) data.flag = flagId;
-
+      // 1. Текстовые поля
       const res = await fetch(`${config.API_URL}/api/federations/${fed.documentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}` },
-        body: JSON.stringify({ data }),
+        body: JSON.stringify({ data: { ...form } }),
       });
       if (res.status === 401) { logout(); return; }
       const j = await res.json();
       if (!res.ok) { setError(j?.error?.message || 'Не удалось сохранить изменения.'); return; }
+
+      // 2. Флаг (если заменяли) — серверная загрузка, право Upload у роли не требуется
+      if (flagFile) {
+        const fd = new FormData();
+        fd.append('flag', flagFile);
+        const fr = await fetch(`${config.API_URL}/api/federations/${fed.documentId}/flag`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${jwt}` },
+          body: fd,
+        });
+        if (fr.status === 401) { logout(); return; }
+        if (!fr.ok) { setError('Текст сохранён, но флаг загрузить не удалось.'); return; }
+      }
+
       setNotice('Изменения сохранены ✓');
       setFlagFile(null);
     } catch {
