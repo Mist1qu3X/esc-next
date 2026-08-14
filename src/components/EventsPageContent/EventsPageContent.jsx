@@ -192,28 +192,28 @@ const EventsPageContent = () => {
     ];
     const segText = (e) => `${e.name || ''} ${e.type || ''} ${e.disciplines || ''}`.toLowerCase();
     // Для каждой дисциплины считаем реальную долю завершённых событий (finished / total)
+    // Каждая дисциплина — свой мини-прогресс-бар: заливка = доля завершённых событий (finished/total).
+    // Порядок фиксированный (как в SEGMENT_DEFS), без сортировки.
     const seasonSegments = SEGMENT_DEFS.map((seg) => {
         const matched = seasonEvents.filter((e) => seg.match.some((m) => segText(e).includes(m)));
-        if (!matched.length) return { label: seg.label, empty: true, total: 0, finished: 0, ratio: -1, done: false, active: false };
+        const total = matched.length;
         const finished = matched.filter((e) => getStatus(e) === 'FINISHED').length;
         const ongoing = matched.some((e) => getStatus(e) === 'ONGOING');
-        return { label: seg.label, empty: false, total: matched.length, finished, ratio: finished / matched.length, ongoing, done: false, active: false };
+        return { label: seg.label, match: seg.match, empty: total === 0, total, finished, ratio: total ? finished / total : 0, done: total > 0 && finished === total, ongoing };
     });
-    // Сортируем по завершённости (доля завершённых событий) — трек заполняется слева направо без пробелов; пустые — в конец
-    seasonSegments.sort((a, b) => b.ratio - a.ratio);
     const nonEmptySegs = seasonSegments.filter((s) => !s.empty);
     const totalSegments = nonEmptySegs.length || seasonSegments.length;
-    // Кол-во «пройденных» сегментов = общий прогресс сезона, разложенный по дисциплинам (самые завершённые — первыми)
-    const doneSegments = Math.min(totalSegments, Math.round((seasonProgress / 100) * totalSegments));
-    nonEmptySegs.forEach((s, i) => { if (i < doneSegments) s.done = true; }); // пройденные дисциплины по данным Strapi
-    // Текущий сегмент на ленте: где сейчас реально идут соревнования, иначе — первый незавершённый (что «на очереди»)
-    const ongoingSegs = nonEmptySegs.filter((s) => s.ongoing);
-    if (ongoingSegs.length) ongoingSegs.forEach((s) => { s.current = true; });
-    else if (doneSegments < nonEmptySegs.length) nonEmptySegs[doneSegments].current = true;
+    const doneSegments = nonEmptySegs.filter((s) => s.done).length; // полностью завершённые дисциплины
 
     // ON THE RANGE — реальное идущее событие (иначе — ближайшее предстоящее)
     const liveEvent = events.filter((e) => getStatus(e) === 'ONGOING').sort(byDateAsc)[0] || null;
     const nextEvent = events.filter((e) => getStatus(e) === 'UPCOMING').sort(byDateAsc)[0] || null;
+    // Активная дисциплина = та, к которой относится событие-в-фокусе (то же, что в блоке ниже) → её подпись жирная
+    const spotlight = liveEvent || nextEvent;
+    if (spotlight) {
+        const cur = seasonSegments.find((s) => !s.empty && s.match.some((m) => segText(spotlight).includes(m)));
+        if (cur) cur.current = true;
+    }
 
     return (
         <>
@@ -355,16 +355,16 @@ const EventsPageContent = () => {
                         <>
                             <span className="epc-sp-count">{doneSegments}/{totalSegments} SEGMENTS</span>
 
-                            {/* Трек: сегмент на группу дисциплин, заполняется слева направо */}
+                            {/* Трек: каждая дисциплина — свой мини-бар, залитый на долю завершённости */}
                             <div className="epc-sp-track">
                                 {seasonSegments.map((seg, i) => (
-                                    <span className={`epc-sp-line ${seg.current ? 'epc-current' : seg.done ? 'epc-done' : seg.empty ? 'epc-empty' : 'epc-pending'}`} key={i}>
-                                        {seg.current && <span className="epc-sp-now">{seg.ongoing ? 'LIVE NOW' : 'UP NEXT'}</span>}
+                                    <span className={`epc-sp-line ${seg.empty ? 'epc-empty' : ''}`} key={i}>
+                                        {!seg.empty && <span className="epc-sp-fill" style={{ width: `${Math.round(seg.ratio * 100)}%` }}></span>}
                                     </span>
                                 ))}
                             </div>
 
-                            {/* Desktop: подписи дисциплин под треком */}
+                            {/* Desktop: подписи дисциплин под треком (активная — жирная) */}
                             <div className="epc-sp-labels">
                                 {seasonSegments.map((seg, i) => (
                                     <span className={`epc-sp-label ${seg.current ? 'epc-current' : ''} ${seg.empty ? 'epc-empty' : ''}`} key={i}>{seg.label}</span>
@@ -380,7 +380,6 @@ const EventsPageContent = () => {
                                                 {seg.done && <i className="fa-solid fa-check"></i>}
                                             </span>
                                             <span className="epc-sp-item-label">{seg.label}</span>
-                                            {seg.current && <span className="epc-sp-item-now">{seg.ongoing ? 'LIVE' : 'NEXT'}</span>}
                                             {!seg.empty && <span className="epc-sp-item-frac">{seg.finished}/{seg.total}</span>}
                                         </li>
                                     ))}
