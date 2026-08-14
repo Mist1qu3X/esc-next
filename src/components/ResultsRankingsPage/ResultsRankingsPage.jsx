@@ -89,12 +89,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       try {
         // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
         const [eventsRes, rankingsRes, resultsRes, recordsRes] = await Promise.allSettled([
-          cachedGet(`${config.API_URL}/api/events?populate=*&sort=date:desc&pagination[limit]=100`),
+          fetchAll(`/api/events?sort=date:desc`),
           fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
           fetchAll(`/api/result-details?populate=*&sort=position:asc`),
           fetchAll(`/api/records?populate=*&sort=date:desc`),
         ]);
-        if (eventsRes.status === 'fulfilled' && eventsRes.value.data?.data) setEvents(eventsRes.value.data.data);
+        if (eventsRes.status === 'fulfilled') setEvents(eventsRes.value);
         if (rankingsRes.status === 'fulfilled') setRankings(rankingsRes.value);
         if (resultsRes.status === 'fulfilled') setResultDetails(resultsRes.value);
         if (recordsRes.status === 'fulfilled') setRecords(recordsRes.value);
@@ -123,9 +123,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     { value: '6', label: 'JUL' }, { value: '7', label: 'AUG' }, { value: '8', label: 'SEP' },
     { value: '9', label: 'OCT' }, { value: '10', label: 'NOV' }, { value: '11', label: 'DEC' },
   ];
-  const currentYear = new Date().getFullYear();
-  const years = ['all', currentYear - 1, currentYear, currentYear + 1, currentYear + 2].map(String);
-  const types = ['ALL TYPES', 'CHAMPIONSHIP', 'EDUCATION', 'WORKSHOP'];
+  const years = ['all', ...Array.from(new Set(
+    events.map((e) => { const d = new Date(e.date); return isNaN(d.getTime()) ? null : d.getFullYear(); }).filter((y) => y && y > 1971)
+  )).sort((a, b) => b - a)].map(String);
+  const types = ['ALL TYPES', 'COMPETITION', 'EDUCATION', 'MEETING'];
   const statuses = ['ALL STATUSES', 'UPCOMING', 'COMPLETED'];
 
   const disciplines = [
