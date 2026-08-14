@@ -97,7 +97,6 @@ const SelectedEventPage = ({ slug }) => {
   const [activeTab, setActiveTab] = useState('OVERVIEW');
   const [streams, setStreams] = useState([]);
   const [eventResults, setEventResults] = useState([]); // старые result-details (fallback)
-  const [resultBoards, setResultBoards] = useState([]); // новые event-results (event relation + leaders[])
   const [eventPhotos, setEventPhotos] = useState([]);
   const [resultDisc, setResultDisc] = useState(null);
   const [playing, setPlaying] = useState(null); // стрим во встроенном плеере
@@ -121,17 +120,15 @@ const SelectedEventPage = ({ slug }) => {
 
   useEffect(() => {
     const fetchExtra = async () => {
-      const [sRes, rRes, pRes, brRes] = await Promise.all([
+      const [sRes, rRes, pRes] = await Promise.all([
         // LIVE & MEDIA — общий для всех событий (глобальные стримы/фото, как на Media)
         cachedGet(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
         cachedGet(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${slug}&sort=position:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
         cachedGet(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
-        cachedGet(`${config.API_URL}/api/event-results?filters[event][slug][$eq]=${slug}&populate[leaders]=true&sort=discipline:asc&pagination[pageSize]=100`).catch(() => ({ data: { data: [] } })),
       ]);
       setStreams(sRes.data?.data || []);
       setEventResults(rRes.data?.data || []);
       setEventPhotos(pRes.data?.data || []);
-      setResultBoards(brRes.data?.data || []);
     };
     fetchExtra();
   }, [slug]);
@@ -189,20 +186,12 @@ const SelectedEventPage = ({ slug }) => {
   const scheduleRows = event?.schedule?.length ? event.schedule : [];
   const displaySchedule = fillScheduleGaps(scheduleRows.length > 0 ? groupSchedule(scheduleRows) : SCHEDULE);
 
-  // RESULTS этого события. Приоритет — новые event-results (event relation + leaders[]),
-  // сгруппированы по дисциплине+категории; если их ещё нет — старые result-details (fallback до миграции).
-  const resultGroups = resultBoards.length > 0
-    ? resultBoards.reduce((acc, b) => {
-        const key = `${b.discipline} — ${b.category}`;
-        const rows = [...(b.leaders || [])].sort((a, z) => (a.position || 0) - (z.position || 0));
-        acc[key] = (acc[key] || []).concat(rows);
-        return acc;
-      }, {})
-    : eventResults.reduce((acc, r) => {
-        const key = `${r.discipline} — ${r.category}`;
-        (acc[key] = acc[key] || []).push(r);
-        return acc;
-      }, {});
+  // RESULTS этого события — из result-details, сгруппированы по дисциплине+категории.
+  const resultGroups = eventResults.reduce((acc, r) => {
+    const key = `${r.discipline} — ${r.category}`;
+    (acc[key] = acc[key] || []).push(r);
+    return acc;
+  }, {});
 
   // Результаты показываем только для стартовавших событий (идёт/завершено) и только при наличии данных.
   // Для UPCOMING результатов быть не может, даже если в базе затесались строки.
