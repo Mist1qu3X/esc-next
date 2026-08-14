@@ -1,11 +1,12 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import LoadingResults from '@/components/LoadingResults/LoadingResults';
 import SkeletonEvents from '@/components/LoadingResults/SkeletonEvents';
 import Pagination from '@/components/Pagination/Pagination';
 import DateFilter from '@/components/DateFilter/DateFilter';
+import { downloadFile as forceDownload } from '@/lib/download';
 import './ResultsRankingsPage.css';
 
 // Тестовые соревнования (fallback, если в Strapi пусто) — чтобы флоу Results работал целиком
@@ -37,6 +38,43 @@ const RANKING_DISCIPLINES = [
   { main: 'SKEET WOMEN', sub: '', discipline: 'Skeet', gender: 'WOMEN', icon: IC_SHOTGUN },
 ];
 
+// --- Сопоставление событий с официальными result-book PDF ---
+// Для событий, которых нет в SIUS (структурно), показываем PDF-результаты с офиц. сайта
+// (документы уже зеркалированы в коллекцию docs). Матч по названию+году, дата документа = дата
+// публикации (не события), поэтому по дате не матчим.
+const RESULT_RE = /result|ranklist|results book/i;
+const RB_STOP = new Set(['the', 'and', 'for', 'of', 'final', 'round', 'stage', 'part', 'european', 'championship', 'championships', '2022', '2023', '2024', '2025', '2026', '2027']);
+const rbNorm = (s = '') => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const rbYear = (s = '') => { const m = (s || '').match(/\b(20\d{2})\b/); return m ? +m[1] : null; };
+
+// eventSlug -> массив вложений-результатов [{name, file, fileSize}]
+function buildEventResultMap(events, docs) {
+  const map = {};
+  const rbDocs = docs.filter((d) =>
+    Array.isArray(d.attachments) &&
+    d.attachments.some((a) => RESULT_RE.test(a.name || '') && a.file) &&
+    !/historical/i.test(d.title || '') &&
+    !/athletes.?committee/i.test(d.title || ''));
+  for (const d of rbDocs) {
+    const y = rbYear(d.title);
+    const toks = rbNorm(d.title).split(' ').filter((w) => w.length > 2 && !RB_STOP.has(w));
+    let best = null, bs = 0;
+    for (const e of events) {
+      const ey = e.date ? new Date(e.date).getFullYear() : null;
+      if (y && ey && Math.abs(ey - y) > 1) continue;
+      const h = toks.filter((t) => rbNorm(e.name || '').includes(t)).length;
+      if (h < 3) continue;
+      const sc = h + (y && ey === y ? 1 : 0);
+      if (sc > bs) { bs = sc; best = e; }
+    }
+    if (best?.slug) {
+      const files = d.attachments.filter((a) => RESULT_RE.test(a.name || '') && a.file);
+      map[best.slug] = (map[best.slug] || []).concat(files.map((a) => ({ name: a.name, file: a.file, fileSize: a.fileSize })));
+    }
+  }
+  return map;
+}
+
 const PER_PAGE = 10;
 
 // Обёртка над общей пагинацией (принимает total → считает pageCount)
@@ -47,8 +85,11 @@ const Pager = ({ page, setPage, total, perPage = PER_PAGE }) => (
 const ResultsRankingsPage = ({ embedded = false }) => {
   const [activeTab, setActiveTab] = useState('results');
   const [events, setEvents] = useState([]);
+  const [docs, setDocs] = useState([]); // документы (для result-book PDF по событиям без SIUS)
   const [disciplineLevel, setDisciplineLevel] = useState(false);
   const [resultsLevel, setResultsLevel] = useState(false);
+  const [pdfLevel, setPdfLevel] = useState(false); // просмотр PDF-результатов события без структурных данных
+  const [pdfFiles, setPdfFiles] = useState([]); // вложения-результаты для PDF-просмотра (событие или архив)
   const [rankingsDetailLevel, setRankingsDetailLevel] = useState(false);
   const [selectedDiscipline, setSelectedDiscipline] = useState('10m Air Pistol');
   const [selectedEvent, setSelectedEvent] = useState('');
@@ -88,17 +129,19 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       };
       try {
         // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
-        const [eventsRes, rankingsRes, resultsRes, recordsRes] = await Promise.allSettled([
+        const [eventsRes, rankingsRes, resultsRes, recordsRes, docsRes] = await Promise.allSettled([
           fetchAll(`/api/events?sort=date:desc`),
           fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
           fetchAll(`/api/result-details?populate=*&sort=position:asc`),
           fetchAll(`/api/records?populate=*&sort=date:desc`),
+          fetchAll(`/api/docs?populate[attachments][populate]=file&filters[eventSlug][$null]=true`),
         ]);
         if (eventsRes.status === 'fulfilled') setEvents(eventsRes.value);
         if (rankingsRes.status === 'fulfilled') setRankings(rankingsRes.value);
         if (resultsRes.status === 'fulfilled') setResultDetails(resultsRes.value);
         if (recordsRes.status === 'fulfilled') setRecords(recordsRes.value);
-        [eventsRes, rankingsRes, resultsRes, recordsRes]
+        if (docsRes.status === 'fulfilled') setDocs(docsRes.value);
+        [eventsRes, rankingsRes, resultsRes, recordsRes, docsRes]
           .filter((r) => r.status === 'rejected')
           .forEach((r) => console.error('Ошибка загрузки раздела:', r.reason?.message || r.reason));
       } catch (e) { console.error('Ошибка загрузки:', e); }
@@ -154,6 +197,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     setDisciplineLevel(false);
     setResultsLevel(false);
     setRankingsDetailLevel(false);
+    setPdfLevel(false);
     setSelectedEventSlug('');
   };
 
@@ -215,11 +259,24 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   useEffect(() => { setRankingsPage(1); }, [selectedDiscipline, rankingsGender, rankingsSearchTerm, rankings.length]);
   useEffect(() => { setRecordsPage(1); }, [selectedDiscipline, gender, records.length]);
 
-  // Показываем только события, у которых реально есть результаты (как на офиц. сайте),
-  // иначе среди 800+ событий календаря пользователь кликает пустые.
-  const slugsWithResults = new Set(resultDetails.map((r) => r.eventSlug).filter(Boolean));
-  const eventsWithResults = events.filter((e) => slugsWithResults.has(e.slug));
+  // Показываем только события, у которых реально есть результаты (как на офиц. сайте):
+  // либо структурные (SIUS), либо official result-book PDF. Иначе среди 800+ событий
+  // календаря пользователь кликает пустые.
+  const structuredSlugs = useMemo(() => new Set(resultDetails.map((r) => r.eventSlug).filter(Boolean)), [resultDetails]);
+  const eventResultPdfs = useMemo(() => buildEventResultMap(events, docs), [events, docs]);
+  const historicalArchive = useMemo(() => {
+    const d = docs.find((x) => /historical results|1955/i.test(x.title || ''));
+    return d ? { title: d.title, files: (d.attachments || []).filter((a) => a.file) } : null;
+  }, [docs]);
+  const hasStructured = (slug) => structuredSlugs.has(slug);
+  const eventsWithResults = events.filter((e) => structuredSlugs.has(e.slug) || eventResultPdfs[e.slug]);
   const eventsSource = events.length > 0 ? eventsWithResults : (loaded ? TEST_EVENTS : []);
+
+  // Открыть PDF-просмотр (событие без структуры или исторический архив)
+  const openPdfView = (title, files) => { setSelectedEvent(title); setPdfFiles(files || []); setPdfLevel(true); };
+  const fileUrl = (file) => (file?.url ? (file.url.startsWith('http') ? file.url : `${config.API_URL}${file.url}`) : null);
+  const previewFile = (file) => { const u = fileUrl(file); if (u) window.open(u, '_blank'); };
+  const downloadResultFile = (name, file) => { const u = fileUrl(file); if (u) forceDownload(u, `${name || 'result'}${file?.ext || ''}`); };
   const filteredEvents = eventsSource.filter(ev => {
     const eventDate = new Date(ev.date);
     const matchType = filterType === 'ALL TYPES' || ev.type?.toUpperCase() === filterType;
@@ -300,7 +357,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       )}
 
       {/* RESULTS TAB - Level 1 */}
-      {activeTab === 'results' && !disciplineLevel && !resultsLevel && (
+      {activeTab === 'results' && !disciplineLevel && !resultsLevel && !pdfLevel && (
         <section className="results-events">
           {!loaded ? <SkeletonEvents /> : (<>
           <div className="events-filter-bar">
@@ -323,12 +380,36 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             <div className="events-filter-right"><span className="events-count-num">{sortedEvents.length}</span><span className="events-count-label">competitions</span></div>
           </div>
           <div className="events-list">
+            {/* Сводный исторический архив результатов (PDF, как на офиц. сайте) */}
+            {historicalArchive && !eventFiltersActive && (
+              <div className="event-card event-completed" onClick={() => openPdfView(historicalArchive.title, historicalArchive.files)} style={{ cursor: 'pointer' }}>
+                <div className="event-card-left">
+                  <div className="event-tags">
+                    <span className="event-status status-completed">ARCHIVE</span>
+                    <span className="event-category">1955–2023</span>
+                  </div>
+                  <h3 className="event-card-title">{historicalArchive.title}</h3>
+                  <div className="event-card-meta">
+                    <span className="event-meta-item"><i className="fa-regular fa-folder-open"></i>{historicalArchive.files.length} result books (PDF)</span>
+                  </div>
+                </div>
+                <div className="event-card-right">
+                  <button className="event-view-btn"><i className="fa-regular fa-file-pdf" style={{ marginRight: 6 }}></i>OPEN</button>
+                </div>
+              </div>
+            )}
             {sortedEvents.length > 0 ? sortedEvents.map((ev) => {
               const evSt = evStatus(ev);
               const isUpcoming = evSt !== 'FINISHED';
               return (
               <div key={ev.id} className={`event-card ${isUpcoming ? 'event-upcoming' : 'event-completed'}`}
-                onClick={isUpcoming ? undefined : () => { setDisciplineLevel(true); setSelectedEvent(ev.name); setSelectedEventSlug(ev.slug || `__ev-${ev.id}__`); }}
+                onClick={isUpcoming ? undefined : () => {
+                  setSelectedEvent(ev.name);
+                  setSelectedEventSlug(ev.slug || `__ev-${ev.id}__`);
+                  // Есть структура (SIUS) → выбор дисциплины и таблицы; иначе → PDF-результаты
+                  if (hasStructured(ev.slug)) setDisciplineLevel(true);
+                  else openPdfView(ev.name, eventResultPdfs[ev.slug] || []);
+                }}
                 style={{ cursor: isUpcoming ? 'default' : 'pointer' }}>
                 <div className="event-card-left">
                   <div className="event-tags">
@@ -345,7 +426,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 <div className="event-card-right">
                   {isUpcoming
                     ? <span className="event-view-btn event-view-pending"><i className="fa-regular fa-clock"></i>RESULTS PENDING</span>
-                    : <button className="event-view-btn">VIEW &gt;</button>}
+                    : <button className="event-view-btn">{hasStructured(ev.slug) ? 'VIEW >' : <><i className="fa-regular fa-file-pdf" style={{ marginRight: 6 }}></i>VIEW PDF</>}</button>}
                 </div>
               </div>
               );
@@ -359,6 +440,48 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             )}
           </div>
           </>)}
+        </section>
+      )}
+
+      {/* RESULTS - PDF archive view (события без структурных данных / исторический архив) */}
+      {activeTab === 'results' && pdfLevel && (
+        <section className="results-detail">
+          <div className="results-detail-header"><span className="results-detail-line"></span><span className="results-detail-subtitle">ESC RESULTS</span></div>
+          <h2 className="results-detail-title">{selectedEvent}</h2>
+          <div className="results-detail-topbar">
+            <div className="results-detail-breadcrumbs">
+              <span className="rd-breadcrumb" onClick={() => { setPdfLevel(false); setPdfFiles([]); }}>Results</span>
+              <span className="rd-breadcrumb-sep">›</span>
+              <span className="rd-breadcrumb-active">{selectedEvent}</span>
+            </div>
+          </div>
+          {pdfFiles.length > 0 ? (
+            <div className="results-archive-list">
+              {pdfFiles.map((f, i) => (
+                <div className="results-archive-item" key={i}>
+                  <i className="fa-regular fa-file-pdf results-archive-icon"></i>
+                  <div className="results-archive-info">
+                    <span className="results-archive-name">{f.name}</span>
+                    <span className="results-archive-meta">{f.fileSize || 'PDF'}</span>
+                  </div>
+                  <button className="results-archive-btn" onClick={() => previewFile(f.file)} title="Open in browser"><i className="fa-solid fa-eye"></i> Preview</button>
+                  <button className="results-archive-btn results-archive-btn-dl" onClick={() => downloadResultFile(f.name, f.file)} title="Download"><i className="fa-solid fa-download"></i> PDF</button>
+                </div>
+              ))}
+              <div className="data-source-bar" style={{ marginTop: 20 }}>
+                <div className="data-source-left">
+                  <span className="source-label">Data source:</span>
+                  <span className="source-text">Official ESC PDF archive</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="results-empty">
+              <i className="fa-regular fa-clock results-empty-icon"></i>
+              <p className="results-empty-title">Results pending</p>
+              <p className="results-empty-text">Official result documents for this competition will appear here once available.</p>
+            </div>
+          )}
         </section>
       )}
 
