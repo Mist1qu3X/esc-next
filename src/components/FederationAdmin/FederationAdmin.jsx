@@ -50,14 +50,13 @@ export default function FederationAdmin() {
     (async () => {
       setLoading(true); setError('');
       try {
-        const res = await fetch(
-          `${config.API_URL}/api/federations?filters[manager][id][$eq]=${user.id}&populate[flag]=true`,
-          { headers: { Authorization: `Bearer ${jwt}` } },
-        );
+        const res = await fetch(`${config.API_URL}/api/federations/mine`, {
+          headers: { Authorization: `Bearer ${jwt}` },
+        });
         if (res.status === 401) { logout(); return; }
         const j = await res.json();
         if (cancelled) return;
-        const f = j.data?.[0];
+        const f = j.data;
         if (!f) {
           setFed(null);
           setError('К вашей учётной записи не привязана федерация. Обратитесь к администратору ESC.');
