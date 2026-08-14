@@ -87,6 +87,11 @@
     border-radius: 2px;
 }
 
+/* Статус вычисляется по датам (getEffectiveStatus): idём/завершено получают свой стиль,
+   чтобы бейдж не противоречил остальной странице */
+.event-status-upcoming.event-status-ongoing { color: #04121f; background: #00d8f5; }
+.event-status-upcoming.event-status-finished { color: rgba(255, 255, 255, 0.6); background: rgba(255, 255, 255, 0.08); }
+
 .event-status-type {
     font-family: 'Inter', sans-serif;
     font-weight: 700;

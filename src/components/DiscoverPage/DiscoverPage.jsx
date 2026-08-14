@@ -123,9 +123,9 @@ const DiscoverPage = () => {
   const assembly = governance.find(g => g.type === 'legislative');
   const executive = governance.find(g => g.type === 'executive');
 
-  // PRESIDIUM: отдельная коллекция presidium-members. Пока она не заполнена
-  // (до миграции/редеплоя) — фолбэк на всех leaders, кроме первых 3 (те — в LEADERSHIP).
-  const presidiumPeople = presidiumMembers.length ? presidiumMembers : leaders.slice(3);
+  // PRESIDIUM: отдельная коллекция presidium-members (у leaders больше нет контактов/страны,
+  // поэтому фолбэк на них не имеет смысла — показываем как есть).
+  const presidiumPeople = presidiumMembers;
   
   // Участники комитета по связи (relation). У участника committee — объект { id, name, ... } или null
   const getCommitteeMembers = (committeeId) => {

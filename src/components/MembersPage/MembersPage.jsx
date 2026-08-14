@@ -206,7 +206,7 @@ const MembersPage = () => {
                 <div className="mp-federation-card" key={fed.id}
                   onClick={() => window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer')}
                   role="button" tabIndex={0}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer'); } }}>
+                  onKeyDown={(e) => { if (e.target !== e.currentTarget) return; if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(getFederationWebsite(fed), '_blank', 'noopener,noreferrer'); } }}>
                   <div className="mp-card-top-row">
                     <div className="mp-federation-initials">{fed.code || fed.countryCode || fed.name?.slice(0, 3).toUpperCase()}</div>
                     <span className="mp-federation-code">{fed.countryCode || fed.code}</span>

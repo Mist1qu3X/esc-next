@@ -182,7 +182,7 @@ const SelectedEventPage = ({ slug }) => {
       };
       groups[r.date].items.push({ time: r.time, event: r.title, stage: r.stage });
     });
-    return Object.values(groups).sort((a, b) => a.date.localeCompare(b.date));
+    return Object.values(groups).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
   };
   // Приоритет — встроенный компонент event.schedule; фолбэк — старая коллекция; иначе демо-SCHEDULE.
   // Пропущенные дни заполняются «днём отдыха» — чтобы дыра в датах читалась как выходной, а не как потеря данных.
@@ -259,7 +259,7 @@ const SelectedEventPage = ({ slug }) => {
           <span className="event-breadcrumb-active">DETAIL</span>
         </div>
         <div className="event-status-row">
-          <span className="event-status-upcoming">{event.statusEvent || 'UPCOMING'}</span>
+          <span className={`event-status-upcoming event-status-${effStatus.toLowerCase()}`}>{effStatus === 'ONGOING' ? 'IN PROGRESS' : effStatus}</span>
           <span className="event-status-type">{event.type || 'SENIOR CHAMPIONSHIP'}</span>
         </div>
         <div className="event-header-content">
