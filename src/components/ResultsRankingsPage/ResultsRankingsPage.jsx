@@ -156,6 +156,18 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     setSelectedEventSlug('');
   };
 
+  // Статус события по датам (как на странице Events): UPCOMING / ONGOING / FINISHED.
+  // Не полагаемся на ручное поле statusEvent, чтобы статус не устаревал.
+  const evStatus = (ev) => {
+    const start = ev?.date ? new Date(`${ev.date}T00:00:00`) : null;
+    if (!start || isNaN(start.getTime())) return (ev?.statusEvent || 'UPCOMING').toUpperCase() === 'FINISHED' ? 'FINISHED' : 'UPCOMING';
+    const end = ev?.endDate ? new Date(`${ev.endDate}T23:59:59`) : new Date(`${ev.date}T23:59:59`);
+    const now = new Date();
+    if (now < start) return 'UPCOMING';
+    if (now <= end) return 'ONGOING';
+    return 'FINISHED';
+  };
+
   // Результаты привязаны к выбранному событию (eventSlug), затем по дисциплине/полу
   const filteredResults = resultDetails.filter(r => {
     const matchEvent = !selectedEventSlug || r.eventSlug === selectedEventSlug;
@@ -172,7 +184,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const leaderShots = Array.isArray(displayResults[0]?.shots)
     ? displayResults[0].shots.filter((s) => s && s !== '•' && s !== '-').length
     : 0;
-  const currentShot = leaderShots || totalShots;
+  const currentShot = leaderShots;
   const shotSeries = ['S1', 'S2', 'S3', 'S4'];
 
   const filteredRankings = rankings.filter(r => {
@@ -207,9 +219,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const filteredEvents = eventsSource.filter(ev => {
     const eventDate = new Date(ev.date);
     const matchType = filterType === 'ALL TYPES' || ev.type?.toUpperCase() === filterType;
-    const matchStatus = filterStatus === 'ALL STATUSES' || 
-      (filterStatus === 'UPCOMING' && ev.statusEvent?.toUpperCase() === 'UPCOMING') ||
-      (filterStatus === 'COMPLETED' && ev.statusEvent?.toUpperCase() === 'FINISHED');
+    const evSt = evStatus(ev);
+    const matchStatus = filterStatus === 'ALL STATUSES' ||
+      (filterStatus === 'UPCOMING' && evSt !== 'FINISHED') ||
+      (filterStatus === 'COMPLETED' && evSt === 'FINISHED');
     const matchMonth = filterMonth === 'all' || eventDate.getMonth() === parseInt(filterMonth);
     const matchYear = filterYear === 'all' || eventDate.getFullYear() === parseInt(filterYear);
     return matchType && matchStatus && matchMonth && matchYear;
@@ -307,14 +320,15 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           </div>
           <div className="events-list">
             {sortedEvents.length > 0 ? sortedEvents.map((ev) => {
-              const isUpcoming = ev.statusEvent?.toUpperCase() === 'UPCOMING';
+              const evSt = evStatus(ev);
+              const isUpcoming = evSt !== 'FINISHED';
               return (
               <div key={ev.id} className={`event-card ${isUpcoming ? 'event-upcoming' : 'event-completed'}`}
-                onClick={isUpcoming ? undefined : () => { setDisciplineLevel(true); setSelectedEvent(ev.name); setSelectedEventSlug(ev.slug || ''); }}
+                onClick={isUpcoming ? undefined : () => { setDisciplineLevel(true); setSelectedEvent(ev.name); setSelectedEventSlug(ev.slug || `__ev-${ev.id}__`); }}
                 style={{ cursor: isUpcoming ? 'default' : 'pointer' }}>
                 <div className="event-card-left">
                   <div className="event-tags">
-                    <span className={`event-status ${isUpcoming ? 'status-upcoming' : 'status-completed'}`}>{ev.statusEvent}</span>
+                    <span className={`event-status ${isUpcoming ? 'status-upcoming' : 'status-completed'}`}>{evSt}</span>
                     <span className="event-category">{ev.category || 'SENIOR'}</span>
                     <span className="event-year">{new Date(ev.date).getFullYear()}</span>
                   </div>

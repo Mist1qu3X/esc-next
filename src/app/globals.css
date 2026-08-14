@@ -6,6 +6,12 @@
   box-sizing: border-box; 
 }
 
+/* Страховка от случайного горизонтального скролла всей страницы (длинная строка/URL).
+   clip (а не hidden) — не создаёт скролл-контейнер и не ломает position: sticky шапки. */
+html {
+  overflow-x: clip;
+}
+
 body {
   background-color: #06121f;
   font-family: 'Inter', sans-serif;

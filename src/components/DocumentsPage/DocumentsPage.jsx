@@ -148,14 +148,15 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const downloadFile = (doc, file) => {
     const url = fileUrl(file);
     if (!url) return;
-    setDownloadBumps((prev) => ({ ...prev, [doc.id]: (prev[doc.id] || 0) + 1 }));
+    const key = file?.id ?? doc.id; // бампим счётчик именно этого файла, а не всех файлов документа
+    setDownloadBumps((prev) => ({ ...prev, [key]: (prev[key] || 0) + 1 }));
     const id = doc.documentId || doc.id;
     axios.put(`${config.API_URL}/api/docs/${id}/download`).catch(() => {}); // не мешаем скачиванию, если счётчик недоступен
     forceDownload(url, `${doc.title || 'document'}${file?.ext || ''}`);
   };
 
   // Эффективное число скачиваний = сохранённое + оптимистичный прирост этой сессии
-  const shownDownloads = (doc, att) => (att.downloadCount || 0) + (downloadBumps[doc.id] || 0);
+  const shownDownloads = (doc, att) => (att.downloadCount || 0) + (downloadBumps[att.file?.id ?? doc.id] || 0);
 
   // Можно ли показать файл в браузере (иначе предпросмотр недоступен)
   const canPreview = (file) => {
