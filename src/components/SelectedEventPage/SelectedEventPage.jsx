@@ -6,7 +6,7 @@ import config from '@/lib/config';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import PageLoader from '@/components/LoadingResults/PageLoader';
 import TargetLoader from '@/components/LoadingResults/TargetLoader';
-import { fileTypeMeta } from '@/lib/fileType';
+import { fileTypeMeta, previewUrlFor } from '@/lib/fileType';
 import { downloadFile as forceDownload } from '@/lib/download';
 import './SelectedEventPage.css';
 import '@/components/DocumentsPage/DocumentsPage.css';
@@ -329,15 +329,13 @@ const SelectedEventPage = ({ slug }) => {
                   {event.documents.map((d, i) => {
                     const url = d.file?.url ? (d.file.url.startsWith('http') ? d.file.url : `${config.API_URL}${d.file.url}`) : null;
                     const ft = fileTypeMeta(d.file, d.name);
-                    const ext = (d.file?.ext || '').toLowerCase().replace('.', '');
-                    const mime = (d.file?.mime || '').toLowerCase();
-                    const canPrev = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'txt'].includes(ext) || mime.startsWith('image/') || mime === 'application/pdf' || mime === 'text/plain';
+                    const prevUrl = previewUrlFor(url, d.file, d.name);
                     return (
                       <div className="docs-file" key={i}>
                         <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
                         <div className="docs-file-info">
-                          {url
-                            ? <a className="docs-file-name docs-file-name-link" href={url} target="_blank" rel="noopener noreferrer">{d.name}</a>
+                          {(prevUrl || url)
+                            ? <a className="docs-file-name docs-file-name-link" href={prevUrl || url} target="_blank" rel="noopener noreferrer">{d.name}</a>
                             : <span className="docs-file-name">{d.name}</span>}
                           <span className="docs-file-meta">{d.fileSize || '—'}</span>
                           <span className="docs-file-meta-mobile">{d.fileSize || ''}</span>
@@ -345,8 +343,8 @@ const SelectedEventPage = ({ slug }) => {
                         <button className="docs-file-pdf" onClick={() => url && forceDownload(url, `${d.name || 'document'}${d.file?.ext || ''}`)} title="Download file">
                           <i className="fa-solid fa-download"></i>{ft.label}
                         </button>
-                        {canPrev ? (
-                          <button className="docs-file-view" onClick={() => url && window.open(url, '_blank')} title="Preview in browser"><i className="fa-solid fa-eye"></i></button>
+                        {prevUrl ? (
+                          <button className="docs-file-view" onClick={() => window.open(prevUrl, '_blank')} title="Preview in browser"><i className="fa-solid fa-eye"></i></button>
                         ) : (
                           <button className="docs-file-view docs-file-view-off" disabled title="No in-browser preview — use download"><i className="fa-solid fa-eye-slash"></i></button>
                         )}

@@ -4,7 +4,7 @@ import axios from 'axios';
 import config from '@/lib/config';
 import { cachedGet } from '@/lib/apiCache';
 import { downloadFile as forceDownload } from '@/lib/download';
-import { fileTypeMeta } from '@/lib/fileType';
+import { fileTypeMeta, previewUrlFor } from '@/lib/fileType';
 import Pagination from '@/components/Pagination/Pagination';
 import './DocumentsPage.css';
 
@@ -368,14 +368,14 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                         <div className="docs-acc-files">
                           {attachments.map((att, i) => {
                             const dl = shownDownloads(doc, att);
-                            const preview = canPreview(att.file);
                             const ft = fileTypeMeta(att.file, att.name);
+                            const prevUrl = previewUrlFor(fileUrl(att.file), att.file, att.name);
                             return (
                             <div className="docs-file" key={i}>
                               <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
                               <div className="docs-file-info">
-                                {fileUrl(att.file)
-                                  ? <a className="docs-file-name docs-file-name-link" href={fileUrl(att.file)} target="_blank" rel="noopener noreferrer">{att.name}</a>
+                                {(prevUrl || fileUrl(att.file))
+                                  ? <a className="docs-file-name docs-file-name-link" href={prevUrl || fileUrl(att.file)} target="_blank" rel="noopener noreferrer">{att.name}</a>
                                   : <span className="docs-file-name">{att.name}</span>}
                                 <span className="docs-file-meta">
                                   {att.fileSize || '—'} · {dl === 0
@@ -396,10 +396,10 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                                 <i className="fa-solid fa-download"></i>
                                 {ft.label}
                               </button>
-                              {preview ? (
+                              {prevUrl ? (
                                 <button
                                   className="docs-file-view"
-                                  onClick={() => openFile(att.file)}
+                                  onClick={() => window.open(prevUrl, '_blank')}
                                   aria-label="Preview file"
                                   title="Preview in browser"
                                 >
