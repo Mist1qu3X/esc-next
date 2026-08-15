@@ -212,9 +212,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   // Порядок: по месту (position), unranked (0) — в конец, при равенстве — по тоталу убыв.
   const posKey = (r) => (r.position && r.position > 0 ? r.position : 9999);
   const totKey = (r) => parseFloat((String(r.total).match(/[\d.]+/) || [0])[0]) || 0;
+  const _seenAthlete = new Set();
   const filteredResults = eventDisciplineResults
     .filter((r) => !activeSub || (r.subDiscipline || '') === activeSub)
-    .sort((a, b) => (posKey(a) - posKey(b)) || (totKey(b) - totKey(a)));
+    .sort((a, b) => (posKey(a) - posKey(b)) || (totKey(b) - totKey(a)))
+    // Дедуп по атлету (SIUS может вернуть его в нескольких squad-группах) — оставляем лучший (первый после сортировки)
+    .filter((r) => { const k = (r.athleteName || '').trim().toLowerCase(); if (!k) return true; if (_seenAthlete.has(k)) return false; _seenAthlete.add(k); return true; });
 
   // Только реальные данные: если для дисциплины/пола результатов нет — покажем пустое состояние
   const displayResults = filteredResults;
