@@ -207,9 +207,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const activeSub = selectedSubDiscipline && subDisciplines.includes(selectedSubDiscipline)
     ? selectedSubDiscipline
     : (subDisciplines[0] || '');
+  // Порядок: по месту (position), unranked (0) — в конец, при равенстве — по тоталу убыв.
+  const posKey = (r) => (r.position && r.position > 0 ? r.position : 9999);
+  const totKey = (r) => parseFloat((String(r.total).match(/[\d.]+/) || [0])[0]) || 0;
   const filteredResults = eventDisciplineResults
     .filter((r) => !activeSub || (r.subDiscipline || '') === activeSub)
-    .sort((a, b) => (a.position || 0) - (b.position || 0));
+    .sort((a, b) => (posKey(a) - posKey(b)) || (totKey(b) - totKey(a)));
 
   // Только реальные данные: если для дисциплины/пола результатов нет — покажем пустое состояние
   const displayResults = filteredResults;
