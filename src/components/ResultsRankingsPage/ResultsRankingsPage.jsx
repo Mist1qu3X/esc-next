@@ -615,7 +615,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                           {Array.from({ length: Math.ceil(detail.length / 10) }, (_, si) => (
                             <div className="sd-series" key={si}>
                               <span className="sd-label">S{si + 1}</span>
-                              {detail.slice(si * 10, si * 10 + 10).map((s, k) => <span key={k} className={`shot ${getSingleShotClass(s)}`}>{s}</span>)}
+                              {detail.slice(si * 10, si * 10 + 10).map((s, k) => <span key={k} className={`shot ${getSingleShotClass(s)}`}>{String(s).trim()}</span>)}
                             </div>
                           ))}
                         </div>
