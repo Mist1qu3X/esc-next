@@ -374,7 +374,9 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                             <div className="docs-file" key={i}>
                               <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
                               <div className="docs-file-info">
-                                <span className="docs-file-name">{att.name}</span>
+                                {fileUrl(att.file)
+                                  ? <a className="docs-file-name docs-file-name-link" href={fileUrl(att.file)} target="_blank" rel="noopener noreferrer">{att.name}</a>
+                                  : <span className="docs-file-name">{att.name}</span>}
                                 <span className="docs-file-meta">
                                   {att.fileSize || '—'} · {dl === 0
                                     ? <span className="docs-file-new">NEW</span>
