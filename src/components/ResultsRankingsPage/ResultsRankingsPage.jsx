@@ -228,13 +228,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     resultDetails.filter((r) => r.eventSlug === selectedEventSlug).map((r) => (r.discipline || '').toUpperCase())
   ), [resultDetails, selectedEventSlug]);
 
-  // Прогресс выстрелов — по числу сделанных выстрелов у лидера
-  const totalShots = 24;
-  const leaderShots = Array.isArray(displayResults[0]?.shots)
-    ? displayResults[0].shots.filter((s) => s && s !== '•' && s !== '-').length
-    : 0;
-  const currentShot = leaderShots;
-  const shotSeries = ['S1', 'S2', 'S3', 'S4'];
+  // SIUS отдаёт результат посерийно (суммы серий), а не по одному выстрелу — это
+  // официальный формат ISSF. Прогресс считаем по числу СЕРИЙ у лидера / максимуму в таблице.
+  const seriesLen = (r) => (Array.isArray(r?.shots) ? r.shots.filter((s) => s && s !== '•' && s !== '-').length : 0);
+  const currentSeries = seriesLen(displayResults[0]);
+  const totalSeries = displayResults.reduce((m, r) => Math.max(m, seriesLen(r)), 0) || currentSeries || 1;
+  const seriesMarkers = Array.from({ length: totalSeries }, (_, i) => `S${i + 1}`);
 
   const filteredRankings = rankings.filter(r => {
     const matchDiscipline = r.discipline && r.discipline.toLowerCase() === selectedDiscipline.toLowerCase();
@@ -303,12 +302,21 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const eventFiltersActive = filterMonth !== 'all' || filterYear !== 'all' || filterType !== 'ALL TYPES' || filterStatus !== 'ALL STATUSES';
   const resetEventFilters = () => { setFilterMonth('all'); setFilterYear('all'); setFilterType('ALL TYPES'); setFilterStatus('ALL STATUSES'); };
 
-  const getShotClass = (val) => {
+  // Значения — СУММЫ серий (10 выстрелов), а не одиночные выстрелы, поэтому красим
+  // относительно максимума серии в дисциплине: AR ~109 (10.9×10), шотган 25 мишеней, остальные 100.
+  const seriesMax = (disc) => {
+    const d = (disc || '').toUpperCase();
+    if (d.includes('AIR RIFLE')) return 109;
+    if (d.includes('SKEET') || d.includes('TRAP') || d.includes('SHOTGUN')) return 25;
+    return 100; // AP, 25m, 50m, 300m, moving target — целочисленные серии, макс 100
+  };
+  const getShotClass = (val, disc) => {
     if (val === '-' || val === '•' || !val) return 'shot-miss';
     const num = parseFloat(val);
     if (isNaN(num)) return 'shot-miss'; // «—», «–» и прочие маркеры-заглушки
-    if (num >= 10.8) return 'shot-high';
-    if (num >= 10.3) return 'shot-mid';
+    const ratio = num / seriesMax(disc);
+    if (ratio >= 0.985) return 'shot-high';
+    if (ratio >= 0.95) return 'shot-mid';
     return 'shot-low';
   };
 
@@ -548,22 +556,21 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           <div className="results-table-container">
             <div className="results-table-header">
               <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">ATHLETE</div><div className="rt-col rt-spacer"></div>
-              <div className="rt-col rt-fed">FED</div><div className="rt-col rt-series">SERIES (SHOT BY SHOT)</div><div className="rt-col rt-total">TOTAL</div><div className="rt-col rt-inner">INNER<br />10S</div>
+              <div className="rt-col rt-fed">FED</div><div className="rt-col rt-series">SERIES</div><div className="rt-col rt-total">TOTAL</div><div className="rt-col rt-inner">INNER<br />10S</div>
             </div>
             {pagedResults.map((r, i) => {
               const gi = (resultsPage - 1) * PER_PAGE + i;
               const medals = ['medal-gold', 'medal-silver', 'medal-bronze'];
               const medalClass = gi < 3 ? `medal-row ${medals[gi]}` : '';
-              const shotsRaw = Array.isArray(r.shots) ? r.shots : [];
-              // Максимум 24 выстрела — 12 в первой строке, 12 во второй (пустые = •)
-              const shots = Array.from({ length: 24 }, (_, k) => shotsRaw[k]);
+              // Реальное число серий (6 для 60 выстрелов, 5 для скита-125 и т.д.), без обрезки
+              const shotsRaw = (Array.isArray(r.shots) ? r.shots : []).filter((s) => s != null && s !== '');
               return (
                 <div key={r.id || r.athleteName} className={`results-table-row ${medalClass}`}>
                   <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
                   <div className="rt-col rt-spacer"></div>
                   <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
-                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shots.slice(0, 12).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div><div className="shots-row">{shots.slice(12, 24).map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s || '•'}</span>)}</div></div></div>
+                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shotsRaw.length ? shotsRaw.map((s, si) => <span key={si} className={`shot ${getShotClass(s, r.discipline)}`}>{s}</span>) : <span className="shot shot-miss">•</span>}</div></div></div>
                   <div className="rt-col rt-total"><span className={`total-value ${gi === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
                   <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
                 </div>
@@ -571,18 +578,18 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             })}
           </div>
 
-          {/* SHOT PROGRESS */}
+          {/* SERIES PROGRESS */}
           <div className="shot-progress">
             <div className="shot-progress-header">
-              <span className="shot-progress-title">SHOT PROGRESS</span>
-              <span className="shot-progress-count">Shot <b>{currentShot}</b> of {totalShots}</span>
+              <span className="shot-progress-title">SERIES PROGRESS</span>
+              <span className="shot-progress-count">Series <b>{currentSeries}</b> of {totalSeries}</span>
             </div>
             <div className="progress-bar-wrapper">
               <div className="progress-bar-track">
-                <div className="progress-bar-fill" style={{ width: `${(currentShot / totalShots) * 100}%` }}></div>
+                <div className="progress-bar-fill" style={{ width: `${(currentSeries / totalSeries) * 100}%` }}></div>
               </div>
               <div className="progress-markers">
-                {shotSeries.map((s) => <span key={s} className="marker">{s}</span>)}
+                {seriesMarkers.map((s) => <span key={s} className="marker">{s}</span>)}
               </div>
             </div>
           </div>
