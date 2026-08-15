@@ -6,7 +6,10 @@ import config from '@/lib/config';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import PageLoader from '@/components/LoadingResults/PageLoader';
 import TargetLoader from '@/components/LoadingResults/TargetLoader';
+import { fileTypeMeta } from '@/lib/fileType';
+import { downloadFile as forceDownload } from '@/lib/download';
 import './SelectedEventPage.css';
+import '@/components/DocumentsPage/DocumentsPage.css';
 
 // Расписание ALL EVENTS (пока нет отдельного поля/коллекции — демо-данные).
 // В демо намеренно пропущен день (06.11) — заполняется как «день отдыха» логикой ниже.
@@ -322,18 +325,29 @@ const SelectedEventPage = ({ slug }) => {
 
             {activeTab === 'DOCUMENTS' && (
               (event.documents?.length > 0) ? (
-                <div className="event-docs-list">
+                <div className="docs-acc-files" style={{ marginTop: 4 }}>
                   {event.documents.map((d, i) => {
                     const url = d.file?.url ? (d.file.url.startsWith('http') ? d.file.url : `${config.API_URL}${d.file.url}`) : null;
+                    const ft = fileTypeMeta(d.file, d.name);
+                    const ext = (d.file?.ext || '').toLowerCase().replace('.', '');
+                    const mime = (d.file?.mime || '').toLowerCase();
+                    const canPrev = ['pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'txt'].includes(ext) || mime.startsWith('image/') || mime === 'application/pdf' || mime === 'text/plain';
                     return (
-                      <div className="event-doc-item" key={i}>
-                        <i className="fa-regular fa-file-lines event-doc-icon"></i>
-                        <div className="event-doc-info">
-                          <span className="event-doc-name">{d.name}</span>
-                          <span className="event-doc-meta">{d.fileSize || ''}</span>
+                      <div className="docs-file" key={i}>
+                        <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
+                        <div className="docs-file-info">
+                          <span className="docs-file-name">{d.name}</span>
+                          <span className="docs-file-meta">{d.fileSize || '—'}</span>
+                          <span className="docs-file-meta-mobile">{d.fileSize || ''}</span>
                         </div>
-                        {url && <a className="event-doc-btn" href={url} target="_blank" rel="noopener noreferrer"><i className="fa-solid fa-eye"></i> Preview</a>}
-                        {url && <a className="event-doc-btn event-doc-btn-dl" href={url} download={d.name}><i className="fa-solid fa-download"></i> PDF</a>}
+                        <button className="docs-file-pdf" onClick={() => url && forceDownload(url, `${d.name || 'document'}${d.file?.ext || ''}`)} title="Download file">
+                          <i className="fa-solid fa-download"></i>{ft.label}
+                        </button>
+                        {canPrev ? (
+                          <button className="docs-file-view" onClick={() => url && window.open(url, '_blank')} title="Preview in browser"><i className="fa-solid fa-eye"></i></button>
+                        ) : (
+                          <button className="docs-file-view docs-file-view-off" disabled title="No in-browser preview — use download"><i className="fa-solid fa-eye-slash"></i></button>
+                        )}
                       </div>
                     );
                   })}
