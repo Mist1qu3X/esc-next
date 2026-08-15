@@ -217,6 +217,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   // Только реальные данные: если для дисциплины/пола результатов нет — покажем пустое состояние
   const displayResults = filteredResults;
 
+  // Грубые дисциплины, реально присутствующие у выбранного события (для уровня 2 — без пустых плашек).
+  const eventDisciplines = useMemo(() => new Set(
+    resultDetails.filter((r) => r.eventSlug === selectedEventSlug).map((r) => (r.discipline || '').toUpperCase())
+  ), [resultDetails, selectedEventSlug]);
+
   // Прогресс выстрелов — по числу сделанных выстрелов у лидера
   const totalShots = 24;
   const leaderShots = Array.isArray(displayResults[0]?.shots)
@@ -262,7 +267,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     return d ? { title: d.title, files: (d.attachments || []).filter((a) => a.file) } : null;
   }, [docs]);
   const hasStructured = (slug) => structuredSlugs.has(slug);
-  const eventsWithResults = events.filter((e) => structuredSlugs.has(e.slug) || eventResultPdfs[e.slug]);
+  // Показываем: завершённые с результатами (структура/PDF) + все предстоящие/идущие соревнования
+  // (как «RESULTS PENDING»). Скрываем только прошедшие без результатов.
+  const isCompetition = (e) => (e.type || 'competition').toLowerCase() === 'competition';
+  const eventsWithResults = events.filter((e) =>
+    structuredSlugs.has(e.slug) || eventResultPdfs[e.slug] || (evStatus(e) !== 'FINISHED' && isCompetition(e)));
   const eventsSource = events.length > 0 ? eventsWithResults : (loaded ? TEST_EVENTS : []);
 
   // Открыть PDF-просмотр (событие без структуры или исторический архив)
@@ -486,11 +495,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             <div className="discipline-filter-left"></div>
             <div className="discipline-filter-right"><button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button></div>
           </div>
-          <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RANKING</span></div>
+          <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC RESULTS</span></div>
           <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
-          <p className="discipline-desc">Choose a discipline to view season rankings</p>
+          <p className="discipline-desc">Choose a discipline to view results</p>
           <div className="discipline-grid">
-            {disciplines.map((d) => (
+            {disciplines.filter((d) => eventDisciplines.has(`${d.main} ${d.sub}`.trim().toUpperCase())).map((d) => (
               <div key={d.id} className="discipline-card" onClick={() => { setResultsLevel(true); setSelectedDiscipline(`${d.main} ${d.sub}`.trim()); }}>
                 <h3 className="disc-card-title"><span className="disc-main">{d.main}</span><span className="disc-sub">{d.sub}</span></h3>
                 <div className="disc-card-icon"><img src={d.icon} alt="" /><span className="disc-card-arrow">›</span></div>
