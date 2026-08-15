@@ -594,6 +594,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               const shotsRaw = (Array.isArray(r.shots) ? r.shots : []).filter((s) => s != null && s !== '');
               const expanded = expandedId === r.id;
               const detail = shotCache[r.id];
+              // Размер серии для разворота берём из числа серий результата: 125 выстрелов / 5 серий = 25
+              // (шотган, раунды по 25), 60 / 6 = 10 (винтовка). Тогда S-метки совпадают с рядом серий.
+              const grpSize = detail && detail.length ? Math.max(1, Math.round(detail.length / (shotsRaw.length || 1))) : 10;
               return (
                 <Fragment key={r.id || r.athleteName}>
                 <div className={`results-table-row ${medalClass} ${!r.isTeam ? 'row-clickable' : ''} ${expanded ? 'row-expanded' : ''}`} onClick={() => toggleShots(r)}>
@@ -612,10 +615,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                     {detail === undefined ? <span className="shots-detail-msg">Loading shot-by-shot…</span>
                       : detail.length ? (
                         <div className="shots-detail">
-                          {Array.from({ length: Math.ceil(detail.length / 10) }, (_, si) => (
+                          {Array.from({ length: Math.ceil(detail.length / grpSize) }, (_, si) => (
                             <div className="sd-series" key={si}>
                               <span className="sd-label">S{si + 1}</span>
-                              {detail.slice(si * 10, si * 10 + 10).map((s, k) => <span key={k} className={`shot ${getSingleShotClass(s)}`}>{String(s).trim()}</span>)}
+                              {detail.slice(si * grpSize, si * grpSize + grpSize).map((s, k) => <span key={k} className={`shot ${getSingleShotClass(s)}`}>{String(s).trim()}</span>)}
                             </div>
                           ))}
                         </div>
