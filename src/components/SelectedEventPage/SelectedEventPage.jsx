@@ -336,7 +336,9 @@ const SelectedEventPage = ({ slug }) => {
                       <div className="docs-file" key={i}>
                         <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
                         <div className="docs-file-info">
-                          <span className="docs-file-name">{d.name}</span>
+                          {url
+                            ? <a className="docs-file-name docs-file-name-link" href={url} target="_blank" rel="noopener noreferrer">{d.name}</a>
+                            : <span className="docs-file-name">{d.name}</span>}
                           <span className="docs-file-meta">{d.fileSize || '—'}</span>
                           <span className="docs-file-meta-mobile">{d.fileSize || ''}</span>
                         </div>

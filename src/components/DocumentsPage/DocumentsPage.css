@@ -823,3 +823,13 @@
         font-size: 13px;
     }
 }
+
+/* Кликабельное имя файла = превью в новой вкладке (как на офиц. сайте) */
+a.docs-file-name-link {
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+a.docs-file-name-link:hover {
+    color: #00d8f5;
+}
