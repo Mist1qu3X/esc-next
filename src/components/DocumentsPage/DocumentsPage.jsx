@@ -4,6 +4,7 @@ import axios from 'axios';
 import config from '@/lib/config';
 import { cachedGet } from '@/lib/apiCache';
 import { downloadFile as forceDownload } from '@/lib/download';
+import { fileTypeMeta } from '@/lib/fileType';
 import Pagination from '@/components/Pagination/Pagination';
 import './DocumentsPage.css';
 
@@ -368,9 +369,10 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                           {attachments.map((att, i) => {
                             const dl = shownDownloads(doc, att);
                             const preview = canPreview(att.file);
+                            const ft = fileTypeMeta(att.file, att.name);
                             return (
                             <div className="docs-file" key={i}>
-                              <i className="fa-regular fa-file-lines docs-file-icon"></i>
+                              <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
                               <div className="docs-file-info">
                                 <span className="docs-file-name">{att.name}</span>
                                 <span className="docs-file-meta">
@@ -390,7 +392,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                                 title="Download file"
                               >
                                 <i className="fa-solid fa-download"></i>
-                                PDF
+                                {ft.label}
                               </button>
                               {preview ? (
                                 <button

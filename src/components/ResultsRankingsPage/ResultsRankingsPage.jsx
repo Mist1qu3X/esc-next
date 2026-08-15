@@ -7,6 +7,7 @@ import SkeletonEvents from '@/components/LoadingResults/SkeletonEvents';
 import Pagination from '@/components/Pagination/Pagination';
 import DateFilter from '@/components/DateFilter/DateFilter';
 import { downloadFile as forceDownload } from '@/lib/download';
+import { fileTypeMeta } from '@/lib/fileType';
 import './ResultsRankingsPage.css';
 
 // Тестовые соревнования (fallback, если в Strapi пусто) — чтобы флоу Results работал целиком
@@ -464,17 +465,20 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           </div>
           {pdfFiles.length > 0 ? (
             <div className="results-archive-list">
-              {pdfFiles.map((f, i) => (
+              {pdfFiles.map((f, i) => {
+                const ft = fileTypeMeta(f.file, f.name);
+                return (
                 <div className="results-archive-item" key={i}>
-                  <i className="fa-regular fa-file-pdf results-archive-icon"></i>
+                  <i className={`fa-solid ${ft.icon} results-archive-icon`} style={{ color: ft.color }}></i>
                   <div className="results-archive-info">
                     <span className="results-archive-name">{f.name}</span>
-                    <span className="results-archive-meta">{f.fileSize || 'PDF'}</span>
+                    <span className="results-archive-meta">{f.fileSize || ft.label}</span>
                   </div>
                   <button className="results-archive-btn" onClick={() => previewFile(f.file)} title="Open in browser"><i className="fa-solid fa-eye"></i> Preview</button>
-                  <button className="results-archive-btn results-archive-btn-dl" onClick={() => downloadResultFile(f.name, f.file)} title="Download"><i className="fa-solid fa-download"></i> PDF</button>
+                  <button className="results-archive-btn results-archive-btn-dl" onClick={() => downloadResultFile(f.name, f.file)} title="Download"><i className="fa-solid fa-download"></i> {ft.label}</button>
                 </div>
-              ))}
+                );
+              })}
               <div className="data-source-bar" style={{ marginTop: 20 }}>
                 <div className="data-source-left">
                   <span className="source-label">Data source:</span>
