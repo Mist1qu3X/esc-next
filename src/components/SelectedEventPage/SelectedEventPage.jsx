@@ -125,14 +125,27 @@ const SelectedEventPage = ({ slug }) => {
 
   useEffect(() => {
     const fetchExtra = async () => {
-      const [sRes, rRes, pRes] = await Promise.all([
+      // Результаты события грузим постранично — у крупных чемпионатов их > 1000 (все стадии/дисциплины).
+      const fetchResults = async () => {
+        let page = 1, all = [];
+        while (page <= 10) {
+          const res = await cachedGet(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${slug}&sort=position:asc&pagination[pageSize]=1000&pagination[page]=${page}`).catch(() => null);
+          const rows = res?.data?.data || [];
+          all.push(...rows);
+          const pc = res?.data?.meta?.pagination?.pageCount || 1;
+          if (page >= pc) break;
+          page++;
+        }
+        return all;
+      };
+      const [sRes, rAll, pRes] = await Promise.all([
         // LIVE & MEDIA — общий для всех событий (глобальные стримы/фото, как на Media)
         cachedGet(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
-        cachedGet(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${slug}&sort=position:asc&pagination[pageSize]=200`).catch(() => ({ data: { data: [] } })),
+        fetchResults(),
         cachedGet(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
       ]);
       setStreams(sRes.data?.data || []);
-      setEventResults(rRes.data?.data || []);
+      setEventResults(rAll || []);
       setEventPhotos(pRes.data?.data || []);
     };
     fetchExtra();
@@ -191,12 +204,24 @@ const SelectedEventPage = ({ slug }) => {
   const scheduleRows = event?.schedule?.length ? event.schedule : [];
   const displaySchedule = scheduleRows.length > 0 ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
 
-  // RESULTS этого события — из result-details, сгруппированы по дисциплине+категории.
-  const resultGroups = eventResults.reduce((acc, r) => {
-    const key = `${r.discipline} — ${r.category}`;
-    (acc[key] = acc[key] || []).push(r);
-    return acc;
-  }, {});
+  // RESULTS этого события — группируем по КОНКРЕТНОЙ под-дисциплине (subDiscipline: стадия/событие),
+  // иначе Qualification/Final/Standard/Junior сольются в одну таблицу. Внутри — сорт по месту + дедуп.
+  const rPosKey = (r) => (r.position && r.position > 0 ? r.position : 9999);
+  const rTotKey = (r) => parseFloat((String(r.total).match(/[\d.]+/) || [0])[0]) || 0;
+  const resultGroups = (() => {
+    const g = {};
+    eventResults.forEach((r) => {
+      const key = r.subDiscipline || `${r.discipline} — ${r.category}`;
+      (g[key] = g[key] || []).push(r);
+    });
+    for (const k of Object.keys(g)) {
+      const seen = new Set();
+      g[k] = g[k]
+        .sort((a, b) => (rPosKey(a) - rPosKey(b)) || (rTotKey(b) - rTotKey(a)))
+        .filter((r) => { const n = (r.athleteName || '').trim().toLowerCase(); if (!n) return true; if (seen.has(n)) return false; seen.add(n); return true; });
+    }
+    return g;
+  })();
 
   // Результаты показываем только для стартовавших событий (идёт/завершено) и только при наличии данных.
   // Для UPCOMING результатов быть не может, даже если в базе затесались строки.
@@ -379,16 +404,13 @@ const SelectedEventPage = ({ slug }) => {
                   <>
                     <p className="event-description">Select a discipline to view official results for {event.name}.</p>
                     <div className="se-disc-grid">
-                      {Object.entries(resultGroups).map(([disc, rows]) => {
-                        const [main, sub] = disc.split(' — ');
-                        return (
+                      {Object.entries(resultGroups).map(([disc, rows]) => (
                           <div className="se-disc-card" key={disc} onClick={() => setResultDisc(disc)}>
-                            <h3 className="se-disc-title"><span className="se-disc-main">{main}</span><span className="se-disc-sub">{sub} · {rows.length} athletes</span></h3>
-                            <div className="se-disc-icon"><img src={discIcon(main)} alt="" /></div>
+                            <h3 className="se-disc-title"><span className="se-disc-main">{disc}</span><span className="se-disc-sub">{rows.length} athletes</span></h3>
+                            <div className="se-disc-icon"><img src={discIcon(disc)} alt="" /></div>
                             <span className="se-disc-arrow">›</span>
                           </div>
-                        );
-                      })}
+                        ))}
                     </div>
                   </>
                 ) : (
@@ -403,7 +425,7 @@ const SelectedEventPage = ({ slug }) => {
                         <div className="er-head"><span>RANK</span><span>ATHLETE</span><span>FED</span><span>TOTAL</span><span>INNER 10s</span></div>
                         {resultGroups[resultDisc].map((r, i) => (
                           <div className={`er-row ${i < 3 ? 'er-medal er-medal-' + (i + 1) : ''}`} key={r.id || i}>
-                            <span className="er-rank">{r.position}</span>
+                            <span className="er-rank">{i + 1}</span>
                             <span className="er-name">{r.athleteName}</span>
                             <span className="er-fed">{r.federationCode}</span>
                             <span className="er-total">{r.total}</span>
