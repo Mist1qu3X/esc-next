@@ -281,7 +281,7 @@ const SelectedEventPage = ({ slug }) => {
 
       {/* CONTENT */}
       <section className="event-content">
-        <div className={`event-content-wrapper ${activeTab === 'DOCUMENTS' ? 'event-content-full' : ''}`}>
+        <div className="event-content-wrapper">
           <div className="event-main-body">
             {activeTab === 'OVERVIEW' && (
               <>
