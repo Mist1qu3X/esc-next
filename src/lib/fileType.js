@@ -19,3 +19,17 @@ export function fileTypeMeta(file, fallbackName = '') {
   };
   return map[ext] || { icon: 'fa-file', color: '#9aa7b4', label: (ext || 'FILE').toUpperCase().slice(0, 4) };
 }
+
+// URL для просмотра в браузере: PDF/картинки — напрямую, Office (Word/Excel/PPT) — через
+// онлайн-просмотрщик Microsoft, архивы — превью нет (null).
+export function previewUrlFor(url, file, fallbackName = '') {
+  if (!url) return null;
+  const ext =
+    ((file?.ext || '').replace('.', '').toLowerCase()) ||
+    ((file?.name || fallbackName || '').split('.').pop() || '').toLowerCase();
+  if (['pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'txt'].includes(ext)) return url;
+  if (['doc', 'docx', 'xls', 'xlsx', 'csv', 'ppt', 'pptx'].includes(ext)) {
+    return `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`;
+  }
+  return null;
+}
