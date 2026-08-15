@@ -157,6 +157,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     { main: '10M', sub: 'AIR PISTOL', id: '10m-air-pistol', icon: '/img/Icon1.png' },
     { main: '10M', sub: 'AIR RIFLE', id: '10m-air-rifle', icon: '/img/Icon2.png' },
     { main: '25M', sub: 'PISTOL', id: '25m-pistol', icon: '/img/Icon1.png' },
+    { main: '50M', sub: 'PISTOL', id: '50m-pistol', icon: '/img/Icon1.png' },
     { main: '50M', sub: 'RIFLE', id: '50m-rifle', icon: '/img/Icon2.png' },
     { main: '300M', sub: 'RIFLE', id: '300m-rifle', icon: '/img/Icon2.png' },
     { main: 'MOVING', sub: 'TARGET', id: 'moving-target', icon: '/img/Icon3.png' },
