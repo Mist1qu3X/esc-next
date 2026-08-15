@@ -404,13 +404,18 @@ const SelectedEventPage = ({ slug }) => {
                   <>
                     <p className="event-description">Select a discipline to view official results for {event.name}.</p>
                     <div className="se-disc-grid">
-                      {Object.entries(resultGroups).map(([disc, rows]) => (
+                      {Object.entries(resultGroups).map(([disc, rows]) => {
+                        const parts = disc.split(' — ');
+                        const mainDisc = parts[0];
+                        const stage = parts.slice(1).join(' — ');
+                        return (
                           <div className="se-disc-card" key={disc} onClick={() => setResultDisc(disc)}>
-                            <h3 className="se-disc-title"><span className="se-disc-main">{disc}</span><span className="se-disc-sub">{rows.length} athletes</span></h3>
-                            <div className="se-disc-icon"><img src={discIcon(disc)} alt="" /></div>
+                            <h3 className="se-disc-title"><span className="se-disc-main">{mainDisc}</span><span className="se-disc-sub">{stage ? `${stage} · ` : ''}{rows.length} athletes</span></h3>
+                            <div className="se-disc-icon"><img src={discIcon(mainDisc)} alt="" /></div>
                             <span className="se-disc-arrow">›</span>
                           </div>
-                        ))}
+                        );
+                      })}
                     </div>
                   </>
                 ) : (

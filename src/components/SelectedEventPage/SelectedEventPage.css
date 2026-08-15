@@ -1654,11 +1654,11 @@
 }
 .se-disc-card {
     position: relative;
-    height: 120px;
+    min-height: 120px;
     background: #0B1E33;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 6px;
-    padding: 22px;
+    padding: 18px 22px;
     display: flex;
     align-items: flex-end;
     cursor: pointer;
@@ -1678,11 +1678,13 @@
 }
 .se-disc-main {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 30px;
+    font-size: 21px;
     font-weight: 900;
-    line-height: 1;
+    line-height: 1.05;
     text-transform: uppercase;
     color: #fff;
+    word-break: break-word;
+    padding-right: 34px; /* не заезжать под иконку/стрелку */
 }
 .se-disc-sub {
     font-family: 'Inter', sans-serif;
@@ -1739,7 +1741,7 @@
 
 @media (max-width: 768px) {
     .se-disc-grid { grid-template-columns: 1fr 1fr; }
-    .se-disc-main { font-size: 24px; }
+    .se-disc-main { font-size: 19px; }
 }
 @media (max-width: 480px) {
     .se-disc-grid { grid-template-columns: 1fr; }
