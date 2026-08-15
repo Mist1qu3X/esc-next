@@ -72,6 +72,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [pdfFiles, setPdfFiles] = useState([]); // вложения-результаты для PDF-просмотра (событие или архив)
   const [rankingsDetailLevel, setRankingsDetailLevel] = useState(false);
   const [selectedDiscipline, setSelectedDiscipline] = useState('10m Air Pistol');
+  const [selectedSubDiscipline, setSelectedSubDiscipline] = useState(''); // конкретная под-дисциплина (напр. "50m Rifle 3 Positions")
   const [selectedEvent, setSelectedEvent] = useState('');
   const [selectedEventSlug, setSelectedEventSlug] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('World Records');
@@ -194,12 +195,21 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   };
 
   // Результаты привязаны к выбранному событию (eventSlug), затем по дисциплине/полу
-  const filteredResults = resultDetails.filter(r => {
+  const eventDisciplineResults = resultDetails.filter(r => {
     const matchEvent = !selectedEventSlug || r.eventSlug === selectedEventSlug;
     const matchDiscipline = r.discipline?.toLowerCase() === selectedDiscipline.toLowerCase();
     const matchGender = gender === 'ALL' || r.category?.toUpperCase() === gender;
     return matchEvent && matchDiscipline && matchGender;
   });
+  // Под-дисциплины внутри выбранной грубой дисциплины (напр. 3 Positions / Prone / 300m).
+  // Разные соревнования нельзя мешать в одну таблицу — показываем селектором.
+  const subDisciplines = Array.from(new Set(eventDisciplineResults.map((r) => r.subDiscipline).filter(Boolean)));
+  const activeSub = selectedSubDiscipline && subDisciplines.includes(selectedSubDiscipline)
+    ? selectedSubDiscipline
+    : (subDisciplines[0] || '');
+  const filteredResults = eventDisciplineResults
+    .filter((r) => !activeSub || (r.subDiscipline || '') === activeSub)
+    .sort((a, b) => (a.position || 0) - (b.position || 0));
 
   // Только реальные данные: если для дисциплины/пола результатов нет — покажем пустое состояние
   const displayResults = filteredResults;
@@ -235,7 +245,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const pagedRecords = displayRecords.slice((recordsPage - 1) * PER_PAGE, recordsPage * PER_PAGE);
 
   // Сброс на первую страницу при смене фильтров
-  useEffect(() => { setResultsPage(1); }, [selectedDiscipline, gender, selectedEvent, resultDetails.length]);
+  useEffect(() => { setResultsPage(1); }, [selectedDiscipline, selectedSubDiscipline, gender, selectedEvent, resultDetails.length]);
   useEffect(() => { setRankingsPage(1); }, [selectedDiscipline, rankingsGender, rankingsSearchTerm, rankings.length]);
   useEffect(() => { setRecordsPage(1); }, [selectedDiscipline, gender, records.length]);
 
@@ -505,6 +515,14 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               {['ALL', 'MEN', 'WOMEN'].map((g) => <button key={g} className={`gender-btn ${gender === g ? 'active' : ''}`} onClick={() => setGender(g)}>{g}</button>)}
             </div>
           </div>
+          {/* Селектор под-дисциплины — когда в грубой дисциплине несколько соревнований (3P/Prone/300m, Trap/Skeet) */}
+          {subDisciplines.length > 1 && (
+            <div className="subdisc-bar">
+              {subDisciplines.map((sd) => (
+                <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{sd}</button>
+              ))}
+            </div>
+          )}
           {displayResults.length > 0 ? (<>
           <div className="results-table-container">
             <div className="results-table-header">

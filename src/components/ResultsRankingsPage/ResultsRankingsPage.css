@@ -2023,3 +2023,30 @@
         justify-content: center;
     }
 }
+
+/* ===== Sub-discipline selector (уровень 3, когда несколько под-дисциплин) ===== */
+.subdisc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 18px;
+}
+.subdisc-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+.subdisc-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.subdisc-btn.active {
+    background: rgba(0, 216, 245, 0.12);
+    border-color: #00d8f5;
+    color: #00d8f5;
+}
