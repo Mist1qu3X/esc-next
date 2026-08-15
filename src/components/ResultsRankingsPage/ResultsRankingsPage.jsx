@@ -97,10 +97,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     const fetchData = async () => {
       // Strapi ограничивает pageSize (макс 100). Records/rankings/results > 100 строк,
       // поэтому листаем страницы, иначе часть дисциплин выпадает и показываются TEST-данные.
-      const fetchAll = async (path) => {
+      const fetchAll = async (path, pageSize = 1000) => {
         let page = 1, all = [];
-        while (page <= 15) {
-          const res = await cachedGet(`${config.API_URL}${path}&pagination[pageSize]=100&pagination[page]=${page}`);
+        while (page <= 150) {
+          const res = await cachedGet(`${config.API_URL}${path}&pagination[pageSize]=${pageSize}&pagination[page]=${page}`);
           all.push(...(res.data?.data || []));
           const pc = res.data?.meta?.pagination?.pageCount || 1;
           if (page >= pc) break;
@@ -113,7 +113,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
         const [eventsRes, rankingsRes, resultsRes, recordsRes, docsRes] = await Promise.allSettled([
           fetchAll(`/api/events?sort=date:desc&populate[documents][populate]=file`),
           fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
-          fetchAll(`/api/result-details?populate=*&sort=position:asc`),
+          fetchAll(`/api/result-details?sort=position:asc`),
           fetchAll(`/api/records?populate=*&sort=date:desc`),
           fetchAll(`/api/docs?filters[title][$contains]=Historical&populate[attachments][populate]=file`),
         ]);
