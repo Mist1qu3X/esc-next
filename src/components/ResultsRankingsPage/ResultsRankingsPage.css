@@ -826,6 +826,11 @@
     padding: clamp(12px, 1.4vw, 14px) clamp(10px, 1.6vw, 20px);
     align-items: center;
 }
+/* Без колонки INNER 10s (шотган / дуэли Champions League) — 6 колонок вместо 7 */
+.results-table-header.no-inner,
+.results-table-row.no-inner {
+    grid-template-columns: clamp(34px, 4vw, 50px) minmax(0, 1.6fr) minmax(0, 0.5fr) minmax(0, 0.8fr) minmax(0, 2.6fr) minmax(0, 0.9fr);
+}
 
 .results-table-header {
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);

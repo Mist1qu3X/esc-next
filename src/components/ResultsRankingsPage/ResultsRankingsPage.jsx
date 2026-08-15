@@ -230,12 +230,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     resultDetails.filter((r) => r.eventSlug === selectedEventSlug).map((r) => (r.discipline || '').toUpperCase())
   ), [resultDetails, selectedEventSlug]);
 
-  // SIUS отдаёт результат посерийно (суммы серий), а не по одному выстрелу — это
-  // официальный формат ISSF. Прогресс считаем по числу СЕРИЙ у лидера / максимуму в таблице.
-  const seriesLen = (r) => (Array.isArray(r?.shots) ? r.shots.filter((s) => s && s !== '•' && s !== '-').length : 0);
-  const currentSeries = seriesLen(displayResults[0]);
-  const totalSeries = displayResults.reduce((m, r) => Math.max(m, seriesLen(r)), 0) || currentSeries || 1;
-  const seriesMarkers = Array.from({ length: totalSeries }, (_, i) => `S${i + 1}`);
 
   const filteredRankings = rankings.filter(r => {
     const matchDiscipline = r.discipline && r.discipline.toLowerCase() === selectedDiscipline.toLowerCase();
@@ -257,6 +251,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   // Командный вид (строки-команды) и официальный PDF-ранклист текущей выборки
   const teamView = displayResults[0]?.isTeam || false;
   const viewPdfUrl = displayResults.find((r) => r.pdfUrl)?.pdfUrl || '';
+  // Колонку INNER 10s показываем только если она реально заполнена (у шотгана/дуэлей CL её нет).
+  const hasInner = displayResults.some((r) => r.inner10s && String(r.inner10s).trim());
   // Пагинация по 10 на страницу
   const pagedResults = displayResults.slice((resultsPage - 1) * PER_PAGE, resultsPage * PER_PAGE);
   const pagedRankings = displayRankings.slice((rankingsPage - 1) * PER_PAGE, rankingsPage * PER_PAGE);
@@ -582,9 +578,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           )}
           {displayResults.length > 0 ? (<>
           <div className="results-table-container">
-            <div className="results-table-header">
+            <div className={`results-table-header ${hasInner ? '' : 'no-inner'}`}>
               <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">{teamView ? 'TEAM' : 'ATHLETE'}</div><div className="rt-col rt-spacer"></div>
-              <div className="rt-col rt-fed">FED</div><div className="rt-col rt-series">{teamView ? 'MEMBERS' : 'SERIES'}</div><div className="rt-col rt-total">TOTAL</div><div className="rt-col rt-inner">INNER<br />10S</div>
+              <div className="rt-col rt-fed">FED</div><div className="rt-col rt-series">{teamView ? 'MEMBERS' : 'SERIES'}</div><div className="rt-col rt-total">TOTAL</div>{hasInner && <div className="rt-col rt-inner">INNER<br />10S</div>}
             </div>
             {pagedResults.map((r, i) => {
               const gi = (resultsPage - 1) * PER_PAGE + i;
@@ -599,7 +595,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               const grpSize = detail && detail.length ? Math.max(1, Math.round(detail.length / (shotsRaw.length || 1))) : 10;
               return (
                 <Fragment key={r.id || r.athleteName}>
-                <div className={`results-table-row ${medalClass} ${!r.isTeam ? 'row-clickable' : ''} ${expanded ? 'row-expanded' : ''}`} onClick={() => toggleShots(r)}>
+                <div className={`results-table-row ${medalClass} ${hasInner ? '' : 'no-inner'} ${!r.isTeam ? 'row-clickable' : ''} ${expanded ? 'row-expanded' : ''}`} onClick={() => toggleShots(r)}>
                   <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span>{!r.isTeam && <span className="expand-caret">{expanded ? '▾' : '▸'}</span>}</div>
                   <div className="rt-col rt-spacer"></div>
@@ -608,7 +604,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                     ? <div className="team-members">{shotsRaw.join(' · ')}</div>
                     : <div className="shots-container"><div className="shots-row">{shotsRaw.length ? shotsRaw.map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>) : <span className="shot shot-miss">•</span>}</div></div>}</div>
                   <div className="rt-col rt-total"><span className={`total-value ${gi === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
-                  <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
+                  {hasInner && <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>}
                 </div>
                 {expanded && !r.isTeam && (
                   <div className="shots-detail-row">
@@ -628,22 +624,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 </Fragment>
               );
             })}
-          </div>
-
-          {/* SERIES PROGRESS */}
-          <div className="shot-progress">
-            <div className="shot-progress-header">
-              <span className="shot-progress-title">SERIES PROGRESS</span>
-              <span className="shot-progress-count">Series <b>{currentSeries}</b> of {totalSeries}</span>
-            </div>
-            <div className="progress-bar-wrapper">
-              <div className="progress-bar-track">
-                <div className="progress-bar-fill" style={{ width: `${(currentSeries / totalSeries) * 100}%` }}></div>
-              </div>
-              <div className="progress-markers">
-                {seriesMarkers.map((s) => <span key={s} className="marker">{s}</span>)}
-              </div>
-            </div>
           </div>
 
           {/* Data source / Download — как было до правок */}
