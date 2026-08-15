@@ -59,10 +59,13 @@ const fillScheduleGaps = (groups) => {
   sorted.forEach((g, i) => {
     out.push(g);
     const next = sorted[i + 1];
-    if (g.date && next?.date) {
+    // Заполняем «дни отдыха» только для разумных промежутков (<=10 дней). Большой разрыв —
+    // признак битой/чужой даты, не рисуем недели пустых дней.
+    const gapDays = g.date && next?.date ? Math.round((new Date(next.date) - new Date(g.date)) / 86400000) : 0;
+    if (g.date && next?.date && gapDays > 1 && gapDays <= 10) {
       let cur = addDays(g.date, 1);
       let guard = 0;
-      while (cur < next.date && guard < 40) {
+      while (cur < next.date && guard < 10) {
         const d = new Date(`${cur}T12:00:00`);
         out.push({ mon: d.toLocaleDateString('en-US', { month: 'short' }), day: String(d.getDate()).padStart(2, '0'), date: cur, restDay: true, items: [] });
         cur = addDays(cur, 1);
