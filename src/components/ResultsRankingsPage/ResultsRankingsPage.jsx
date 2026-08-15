@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import LoadingResults from '@/components/LoadingResults/LoadingResults';
@@ -79,6 +79,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [selectedCategory, setSelectedCategory] = useState('World Records');
   const [rankings, setRankings] = useState([]);
   const [resultDetails, setResultDetails] = useState([]);
+  const [expandedId, setExpandedId] = useState(null);   // развёрнутая строка (по-выстрельно)
+  const [shotCache, setShotCache] = useState({});        // id -> shotDetail[] (тянем по клику)
   const [records, setRecords] = useState([]);
   const [gender, setGender] = useState('ALL');
   const [rankingsGender, setRankingsGender] = useState('ALL');
@@ -114,7 +116,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
         const [eventsRes, rankingsRes, resultsRes, recordsRes, docsRes] = await Promise.allSettled([
           fetchAll(`/api/events?sort=date:desc&populate[documents][populate]=file`),
           fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
-          fetchAll(`/api/result-details?sort=position:asc`),
+          fetchAll(`/api/result-details?sort=position:asc&fields[0]=position&fields[1]=athleteName&fields[2]=federationCode&fields[3]=total&fields[4]=inner10s&fields[5]=discipline&fields[6]=subDiscipline&fields[7]=category&fields[8]=shots&fields[9]=isTeam&fields[10]=pdfUrl&fields[11]=eventSlug`),
           fetchAll(`/api/records?populate=*&sort=date:desc`),
           fetchAll(`/api/docs?filters[title][$contains]=Historical&populate[attachments][populate]=file`),
         ]);
@@ -252,6 +254,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   });
   const displayRecords = filteredRecords;
 
+  // Командный вид (строки-команды) и официальный PDF-ранклист текущей выборки
+  const teamView = displayResults[0]?.isTeam || false;
+  const viewPdfUrl = displayResults.find((r) => r.pdfUrl)?.pdfUrl || '';
   // Пагинация по 10 на страницу
   const pagedResults = displayResults.slice((resultsPage - 1) * PER_PAGE, resultsPage * PER_PAGE);
   const pagedRankings = displayRankings.slice((rankingsPage - 1) * PER_PAGE, rankingsPage * PER_PAGE);
@@ -317,6 +322,30 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     if (ratio >= 0.97) return 'shot-high';
     if (ratio >= 0.85) return 'shot-mid';
     return 'shot-low';
+  };
+  // Покраска ОДИНОЧНОГО выстрела (10.8, 10.3… у винтовки/пистолета; 1/0 hit-miss у шотгана).
+  const getSingleShotClass = (val) => {
+    const num = parseFloat(val);
+    if (isNaN(num)) return 'shot-miss';
+    if (num >= 10.5) return 'shot-high';  // внутренняя десятка / X
+    if (num >= 10.0) return 'shot-mid';   // десятка
+    if (num >= 9.0) return 'shot-low';    // девятка
+    if (num >= 1) return 'shot-mid';      // попадание шотгана / низкое кольцо
+    return 'shot-miss';                   // 0 = промах
+  };
+  // По клику на строку атлета тянем по-выстрельно (по одному запросу, кэшируем).
+  const toggleShots = async (r) => {
+    if (r.isTeam || !r.id) return;
+    if (expandedId === r.id) { setExpandedId(null); return; }
+    setExpandedId(r.id);
+    if (shotCache[r.id] === undefined) {
+      try {
+        const res = await cachedGet(`${config.API_URL}/api/result-details?filters[id][$eq]=${r.id}&fields[0]=shotDetail&pagination[pageSize]=1`);
+        const row = res.data?.data?.[0];
+        const sd = row?.shotDetail ?? row?.attributes?.shotDetail ?? [];
+        setShotCache((c) => ({ ...c, [r.id]: Array.isArray(sd) ? sd : [] }));
+      } catch { setShotCache((c) => ({ ...c, [r.id]: [] })); }
+    }
   };
 
   const handleExportPDF = () => {
@@ -554,8 +583,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           {displayResults.length > 0 ? (<>
           <div className="results-table-container">
             <div className="results-table-header">
-              <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">ATHLETE</div><div className="rt-col rt-spacer"></div>
-              <div className="rt-col rt-fed">FED</div><div className="rt-col rt-series">SERIES</div><div className="rt-col rt-total">TOTAL</div><div className="rt-col rt-inner">INNER<br />10S</div>
+              <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">{teamView ? 'TEAM' : 'ATHLETE'}</div><div className="rt-col rt-spacer"></div>
+              <div className="rt-col rt-fed">FED</div><div className="rt-col rt-series">{teamView ? 'MEMBERS' : 'SERIES'}</div><div className="rt-col rt-total">TOTAL</div><div className="rt-col rt-inner">INNER<br />10S</div>
             </div>
             {pagedResults.map((r, i) => {
               const gi = (resultsPage - 1) * PER_PAGE + i;
@@ -563,16 +592,37 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               const medalClass = gi < 3 ? `medal-row ${medals[gi]}` : '';
               // Реальное число серий (6 для 60 выстрелов, 5 для скита-125 и т.д.), без обрезки
               const shotsRaw = (Array.isArray(r.shots) ? r.shots : []).filter((s) => s != null && s !== '');
+              const expanded = expandedId === r.id;
+              const detail = shotCache[r.id];
               return (
-                <div key={r.id || r.athleteName} className={`results-table-row ${medalClass}`}>
+                <Fragment key={r.id || r.athleteName}>
+                <div className={`results-table-row ${medalClass} ${!r.isTeam ? 'row-clickable' : ''} ${expanded ? 'row-expanded' : ''}`} onClick={() => toggleShots(r)}>
                   <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
-                  <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
+                  <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span>{!r.isTeam && <span className="expand-caret">{expanded ? '▾' : '▸'}</span>}</div>
                   <div className="rt-col rt-spacer"></div>
                   <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
-                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shotsRaw.length ? shotsRaw.map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>) : <span className="shot shot-miss">•</span>}</div></div></div>
+                  <div className="rt-col rt-series">{r.isTeam
+                    ? <div className="team-members">{shotsRaw.join(' · ')}</div>
+                    : <div className="shots-container"><div className="shots-row">{shotsRaw.length ? shotsRaw.map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>) : <span className="shot shot-miss">•</span>}</div></div>}</div>
                   <div className="rt-col rt-total"><span className={`total-value ${gi === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
                   <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
                 </div>
+                {expanded && !r.isTeam && (
+                  <div className="shots-detail-row">
+                    {detail === undefined ? <span className="shots-detail-msg">Loading shot-by-shot…</span>
+                      : detail.length ? (
+                        <div className="shots-detail">
+                          {Array.from({ length: Math.ceil(detail.length / 10) }, (_, si) => (
+                            <div className="sd-series" key={si}>
+                              <span className="sd-label">S{si + 1}</span>
+                              {detail.slice(si * 10, si * 10 + 10).map((s, k) => <span key={k} className={`shot ${getSingleShotClass(s)}`}>{s}</span>)}
+                            </div>
+                          ))}
+                        </div>
+                      ) : <span className="shots-detail-msg">No shot-by-shot data for this result.</span>}
+                  </div>
+                )}
+                </Fragment>
               );
             })}
           </div>
@@ -602,8 +652,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <span className="source-dot">·</span>
               <span className="source-refresh">Refreshing automatically</span>
             </div>
-            <button className="download-pdf-btn" onClick={handleExportPDF}>
-              <i className="fa-solid fa-download"></i> DOWNLOAD PDF
+            <button className="download-pdf-btn" onClick={() => (viewPdfUrl ? window.open(viewPdfUrl, '_blank', 'noopener') : handleExportPDF())}>
+              <i className="fa-solid fa-download"></i> {viewPdfUrl ? 'OFFICIAL PDF' : 'DOWNLOAD PDF'}
             </button>
           </div>
 
