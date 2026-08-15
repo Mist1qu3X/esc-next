@@ -183,10 +183,10 @@ const SelectedEventPage = ({ slug }) => {
     });
     return Object.values(groups).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
   };
-  // Приоритет — встроенный компонент event.schedule; фолбэк — старая коллекция; иначе демо-SCHEDULE.
-  // Пропущенные дни заполняются «днём отдыха» — чтобы дыра в датах читалась как выходной, а не как потеря данных.
+  // Расписание из встроенного компонента event.schedule (реальные строки из PDF либо
+  // по-дневная заглушка). Пропущенные дни заполняются «днём отдыха». Демо больше не используем.
   const scheduleRows = event?.schedule?.length ? event.schedule : [];
-  const displaySchedule = fillScheduleGaps(scheduleRows.length > 0 ? groupSchedule(scheduleRows) : SCHEDULE);
+  const displaySchedule = scheduleRows.length > 0 ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
 
   // RESULTS этого события — из result-details, сгруппированы по дисциплине+категории.
   const resultGroups = eventResults.reduce((acc, r) => {
