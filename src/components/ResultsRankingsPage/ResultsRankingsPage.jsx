@@ -45,17 +45,6 @@ const RANKING_DISCIPLINES = [
 // публикации (не события), поэтому по дате не матчим.
 const RESULT_RE = /result|ranklist|results book/i;
 
-// eventSlug -> массив result-book вложений [{name, file, fileSize}] из event.documents (без угадывания).
-function buildEventResultMap(events) {
-  const map = {};
-  for (const e of events) {
-    if (!e.slug || !Array.isArray(e.documents)) continue;
-    const rb = e.documents.filter((d) => RESULT_RE.test(d.name || '') && d.file);
-    if (rb.length) map[e.slug] = rb.map((d) => ({ name: d.name, file: d.file, fileSize: d.fileSize }));
-  }
-  return map;
-}
-
 const PER_PAGE = 10;
 
 // Обёртка над общей пагинацией (принимает total → считает pageCount)
@@ -81,6 +70,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [resultDetails, setResultDetails] = useState([]);
   const [expandedId, setExpandedId] = useState(null);   // развёрнутая строка (по-выстрельно)
   const [shotCache, setShotCache] = useState({});        // id -> shotDetail[] (тянем по клику)
+  const [loadedSlugs, setLoadedSlugs] = useState(new Set()); // события, чьи строки уже подгружены
   const [records, setRecords] = useState([]);
   const [gender, setGender] = useState('ALL');
   const [rankingsGender, setRankingsGender] = useState('ALL');
@@ -113,19 +103,20 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       };
       try {
         // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
-        const [eventsRes, rankingsRes, resultsRes, recordsRes, docsRes] = await Promise.allSettled([
-          fetchAll(`/api/events?sort=date:desc&populate[documents][populate]=file`),
+        // Событий грузим ЛЁГКИЙ список (без populate документов — это раздувало ответ ×12).
+        // Строки атлетов (result-details) и документы события тянем ПО КЛИКУ (ленивая загрузка):
+        // стартовая загрузка страницы падает с ~10 МБ до ~250 КБ.
+        const [eventsRes, rankingsRes, recordsRes, docsRes] = await Promise.allSettled([
+          fetchAll(`/api/events?sort=date:desc&fields[0]=slug&fields[1]=name&fields[2]=date&fields[3]=endDate&fields[4]=type&fields[5]=disciplines&fields[6]=statusEvent&fields[7]=hasResults&fields[8]=hasResultBook&fields[9]=category&fields[10]=location`),
           fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
-          fetchAll(`/api/result-details?sort=position:asc&fields[0]=position&fields[1]=athleteName&fields[2]=federationCode&fields[3]=total&fields[4]=inner10s&fields[5]=discipline&fields[6]=subDiscipline&fields[7]=category&fields[8]=shots&fields[9]=isTeam&fields[10]=pdfUrl&fields[11]=eventSlug`),
           fetchAll(`/api/records?populate=*&sort=date:desc`),
           fetchAll(`/api/docs?filters[title][$contains]=Historical&populate[attachments][populate]=file`),
         ]);
         if (eventsRes.status === 'fulfilled') setEvents(eventsRes.value);
         if (rankingsRes.status === 'fulfilled') setRankings(rankingsRes.value);
-        if (resultsRes.status === 'fulfilled') setResultDetails(resultsRes.value);
         if (recordsRes.status === 'fulfilled') setRecords(recordsRes.value);
         if (docsRes.status === 'fulfilled') setDocs(docsRes.value);
-        [eventsRes, rankingsRes, resultsRes, recordsRes, docsRes]
+        [eventsRes, rankingsRes, recordsRes, docsRes]
           .filter((r) => r.status === 'rejected')
           .forEach((r) => console.error('Ошибка загрузки раздела:', r.reason?.message || r.reason));
       } catch (e) { console.error('Ошибка загрузки:', e); }
@@ -266,19 +257,41 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   // Показываем только события, у которых реально есть результаты (как на офиц. сайте):
   // либо структурные (SIUS), либо official result-book PDF. Иначе среди 800+ событий
   // календаря пользователь кликает пустые.
-  const structuredSlugs = useMemo(() => new Set(resultDetails.map((r) => r.eventSlug).filter(Boolean)), [resultDetails]);
-  const eventResultPdfs = useMemo(() => buildEventResultMap(events), [events]);
   const historicalArchive = useMemo(() => {
     const d = docs.find((x) => /historical results|1955/i.test(x.title || ''));
     return d ? { title: d.title, files: (d.attachments || []).filter((a) => a.file) } : null;
   }, [docs]);
-  const hasStructured = (slug) => structuredSlugs.has(slug);
-  // Показываем: завершённые с результатами (структура/PDF) + все предстоящие/идущие соревнования
-  // (как «RESULTS PENDING»). Скрываем только прошедшие без результатов.
+  // Показываем: завершённые с результатами (флаги hasResults/hasResultBook) + предстоящие/идущие
+  // соревнования (как «RESULTS PENDING»). Скрываем только прошедшие без результатов.
   const isCompetition = (e) => (e.type || 'competition').toLowerCase() === 'competition';
   const eventsWithResults = events.filter((e) =>
-    structuredSlugs.has(e.slug) || eventResultPdfs[e.slug] || (evStatus(e) !== 'FINISHED' && isCompetition(e)));
+    e.hasResults || e.hasResultBook || (evStatus(e) !== 'FINISHED' && isCompetition(e)));
   const eventsSource = events.length > 0 ? eventsWithResults : (loaded ? TEST_EVENTS : []);
+
+  // Ленивая загрузка строк атлетов события (по клику) — аккумулируем в resultDetails, кэш 3 мин.
+  const loadEventResults = async (slug) => {
+    if (!slug || loadedSlugs.has(slug)) return;
+    const F = '&fields[0]=position&fields[1]=athleteName&fields[2]=federationCode&fields[3]=total&fields[4]=inner10s&fields[5]=discipline&fields[6]=subDiscipline&fields[7]=category&fields[8]=shots&fields[9]=isTeam&fields[10]=pdfUrl&fields[11]=eventSlug';
+    let page = 1; const all = [];
+    while (page <= 10) {
+      const res = await cachedGet(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${encodeURIComponent(slug)}&sort=position:asc${F}&pagination[pageSize]=1000&pagination[page]=${page}`);
+      all.push(...(res.data?.data || []));
+      const pc = res.data?.meta?.pagination?.pageCount || 1;
+      if (page >= pc) break;
+      page++;
+    }
+    setResultDetails((prev) => [...prev.filter((r) => r.eventSlug !== slug), ...all]);
+    setLoadedSlugs((s) => new Set(s).add(slug));
+  };
+  // Ленивая загрузка result-book PDF события (по клику) — тянем документы только этого события.
+  const loadEventResultBook = async (slug) => {
+    try {
+      const res = await cachedGet(`${config.API_URL}/api/events?filters[slug][$eq]=${encodeURIComponent(slug)}&populate[documents][populate]=file&pagination[pageSize]=1`);
+      const ev = res.data?.data?.[0];
+      const list = ev?.documents || ev?.attributes?.documents || [];
+      return list.filter((d) => RESULT_RE.test(d.name || '') && d.file).map((d) => ({ name: d.name, file: d.file, fileSize: d.fileSize }));
+    } catch { return []; }
+  };
 
   // Открыть PDF-просмотр (событие без структуры или исторический архив)
   const openPdfView = (title, files) => { setSelectedEvent(title); setPdfFiles(files || []); setPdfLevel(true); };
@@ -443,12 +456,20 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               const isUpcoming = evSt !== 'FINISHED';
               return (
               <div key={ev.id} className={`event-card ${isUpcoming ? 'event-upcoming' : 'event-completed'}`}
-                onClick={isUpcoming ? undefined : () => {
+                onClick={isUpcoming ? undefined : async () => {
                   setSelectedEvent(ev.name);
                   setSelectedEventSlug(ev.slug || `__ev-${ev.id}__`);
-                  // Есть структура (SIUS) → выбор дисциплины и таблицы; иначе → PDF-результаты
-                  if (hasStructured(ev.slug)) setDisciplineLevel(true);
-                  else openPdfView(ev.name, eventResultPdfs[ev.slug] || []);
+                  // Есть структура (SIUS) → грузим строки события и открываем выбор дисциплины;
+                  // иначе → грузим result-book PDF события и открываем PDF-просмотр. Обе — по клику.
+                  if (ev.hasResults) {
+                    setDetailLoading(true);
+                    await loadEventResults(ev.slug);
+                    setDetailLoading(false);
+                    setDisciplineLevel(true);
+                  } else {
+                    const files = await loadEventResultBook(ev.slug);
+                    openPdfView(ev.name, files);
+                  }
                 }}
                 style={{ cursor: isUpcoming ? 'default' : 'pointer' }}>
                 <div className="event-card-left">
@@ -466,7 +487,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 <div className="event-card-right">
                   {isUpcoming
                     ? <span className="event-view-btn event-view-pending"><i className="fa-regular fa-clock"></i>RESULTS PENDING</span>
-                    : <button className="event-view-btn">{hasStructured(ev.slug) ? 'VIEW >' : <><i className="fa-regular fa-file-pdf" style={{ marginRight: 6 }}></i>VIEW PDF</>}</button>}
+                    : <button className="event-view-btn">{ev.hasResults ? 'VIEW >' : <><i className="fa-regular fa-file-pdf" style={{ marginRight: 6 }}></i>VIEW PDF</>}</button>}
                 </div>
               </div>
               );
