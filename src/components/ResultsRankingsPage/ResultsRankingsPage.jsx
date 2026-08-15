@@ -302,21 +302,20 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const eventFiltersActive = filterMonth !== 'all' || filterYear !== 'all' || filterType !== 'ALL TYPES' || filterStatus !== 'ALL STATUSES';
   const resetEventFilters = () => { setFilterMonth('all'); setFilterYear('all'); setFilterType('ALL TYPES'); setFilterStatus('ALL STATUSES'); };
 
-  // Значения — СУММЫ серий (10 выстрелов), а не одиночные выстрелы, поэтому красим
-  // относительно максимума серии в дисциплине: AR ~109 (10.9×10), шотган 25 мишеней, остальные 100.
-  const seriesMax = (disc) => {
-    const d = (disc || '').toUpperCase();
-    if (d.includes('AIR RIFLE')) return 109;
-    if (d.includes('SKEET') || d.includes('TRAP') || d.includes('SHOTGUN')) return 25;
-    return 100; // AP, 25m, 50m, 300m, moving target — целочисленные серии, макс 100
-  };
-  const getShotClass = (val, disc) => {
+  // Значения — суммы серий / попадания по станциям, а не одиночные выстрелы, и их шкала
+  // разная (AR ~105, шотган-квал 25, дуэли Champions League 1–5). Красим ОТНОСИТЕЛЬНО пика
+  // в текущей выборке — так работает для любого формата без жёстких порогов.
+  const seriesPeak = useMemo(() => {
+    const vals = displayResults.flatMap((r) => (Array.isArray(r.shots) ? r.shots : []).map((s) => parseFloat(s)).filter((n) => !isNaN(n)));
+    return vals.length ? Math.max(...vals) : 1;
+  }, [displayResults]);
+  const getShotClass = (val) => {
     if (val === '-' || val === '•' || !val) return 'shot-miss';
     const num = parseFloat(val);
     if (isNaN(num)) return 'shot-miss'; // «—», «–» и прочие маркеры-заглушки
-    const ratio = num / seriesMax(disc);
-    if (ratio >= 0.985) return 'shot-high';
-    if (ratio >= 0.95) return 'shot-mid';
+    const ratio = num / seriesPeak;
+    if (ratio >= 0.97) return 'shot-high';
+    if (ratio >= 0.85) return 'shot-mid';
     return 'shot-low';
   };
 
@@ -570,7 +569,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
                   <div className="rt-col rt-spacer"></div>
                   <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
-                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shotsRaw.length ? shotsRaw.map((s, si) => <span key={si} className={`shot ${getShotClass(s, r.discipline)}`}>{s}</span>) : <span className="shot shot-miss">•</span>}</div></div></div>
+                  <div className="rt-col rt-series"><div className="shots-container"><div className="shots-row">{shotsRaw.length ? shotsRaw.map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>) : <span className="shot shot-miss">•</span>}</div></div></div>
                   <div className="rt-col rt-total"><span className={`total-value ${gi === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
                   <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>
                 </div>
