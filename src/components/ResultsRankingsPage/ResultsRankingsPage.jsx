@@ -644,6 +644,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 {orderedGroups.map((grp) => {
                   const items = subGroups[grp];
                   const isOpen = shownGroup === grp;
+                  // Если в группе несколько вкладок с одинаковым названием (напр. Phase 1/2/3
+                  // элиминационного нокаута) — дописываем стадию, чтобы они различались.
+                  const variantCount = {};
+                  items.forEach((sd) => { const v = sd.split(' — ')[0]; variantCount[v] = (variantCount[v] || 0) + 1; });
                   return (
                     <div className={`subdisc-group ${isOpen ? 'open' : ''}`} key={grp}>
                       <button className="subdisc-group-head" onClick={() => setOpenGroup(isOpen ? '__none__' : grp)}>
@@ -653,9 +657,13 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                       </button>
                       {isOpen && (
                         <div className="subdisc-bar">
-                          {items.map((sd) => (
-                            <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{sd.split(' — ')[0]}</button>
-                          ))}
+                          {items.map((sd) => {
+                            const parts = sd.split(' — ');
+                            const variant = parts[0];
+                            const stage = parts.slice(1).join(' — ');
+                            const label = variantCount[variant] > 1 && stage ? `${variant} · ${stage}` : variant;
+                            return <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{label}</button>;
+                          })}
                         </div>
                       )}
                     </div>
