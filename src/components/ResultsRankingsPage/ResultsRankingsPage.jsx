@@ -72,7 +72,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [expandedId, setExpandedId] = useState(null);   // развёрнутая строка (по-выстрельно)
   const [shotCache, setShotCache] = useState({});        // id -> shotDetail[] (тянем по клику)
   const [loadedSlugs, setLoadedSlugs] = useState(new Set()); // события, чьи строки уже подгружены
-  const [flagByCode, setFlagByCode] = useState({}); // код федерации -> URL флага (из коллекции Federation)
   const [records, setRecords] = useState([]);
   const [gender, setGender] = useState('ALL');
   const [rankingsGender, setRankingsGender] = useState('ALL');
@@ -108,27 +107,17 @@ const ResultsRankingsPage = ({ embedded = false }) => {
         // Событий грузим ЛЁГКИЙ список (без populate документов — это раздувало ответ ×12).
         // Строки атлетов (result-details) и документы события тянем ПО КЛИКУ (ленивая загрузка):
         // стартовая загрузка страницы падает с ~10 МБ до ~250 КБ.
-        const [eventsRes, rankingsRes, recordsRes, docsRes, fedsRes] = await Promise.allSettled([
+        const [eventsRes, rankingsRes, recordsRes, docsRes] = await Promise.allSettled([
           fetchAll(`/api/events?sort=date:desc&fields[0]=slug&fields[1]=name&fields[2]=date&fields[3]=endDate&fields[4]=type&fields[5]=disciplines&fields[6]=statusEvent&fields[7]=hasResults&fields[8]=hasResultBook&fields[9]=category&fields[10]=location`),
           fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
           fetchAll(`/api/records?populate=*&sort=date:desc`),
           fetchAll(`/api/docs?filters[title][$contains]=Historical&populate[attachments][populate]=file`),
-          fetchAll(`/api/federations?populate[flag][fields][0]=url&fields[0]=code`),
         ]);
         if (eventsRes.status === 'fulfilled') setEvents(eventsRes.value);
         if (rankingsRes.status === 'fulfilled') setRankings(rankingsRes.value);
         if (recordsRes.status === 'fulfilled') setRecords(recordsRes.value);
         if (docsRes.status === 'fulfilled') setDocs(docsRes.value);
-        if (fedsRes.status === 'fulfilled') {
-          const map = {};
-          fedsRes.value.forEach((f) => {
-            const a = f.attributes || f;
-            const url = a.flag?.url || a.flag?.data?.attributes?.url;
-            if (a.code && url) map[String(a.code).toUpperCase()] = url;
-          });
-          setFlagByCode(map);
-        }
-        [eventsRes, rankingsRes, recordsRes, docsRes, fedsRes]
+        [eventsRes, rankingsRes, recordsRes, docsRes]
           .filter((r) => r.status === 'rejected')
           .forEach((r) => console.error('Ошибка загрузки раздела:', r.reason?.message || r.reason));
       } catch (e) { console.error('Ошибка загрузки:', e); }
@@ -390,12 +379,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     return ss > 0 && t > 0 && ss > t * 1.8;
   };
   const canExpand = (r) => !r.isTeam && !isPointsRow(r);
-  // Флаг атлета/команды по коду федерации. Нейтральным атлетам (AIN) и России (RUS) флаг НЕ ставим.
-  // "SUI1"/"SUI2" (командные суффиксы) и "AIN A/B" нормализуем к базовому коду.
+  // НАЦИОНАЛЬНЫЙ флаг страны по IOC-коду (не эмблема федерации) — ресурс флагов SIUS.
+  // Нейтральным атлетам (AIN) и России (RUS) флаг НЕ ставим. "SUI1"/"AIN A" → базовый код.
   const flagFor = (code) => {
     const c = String(code || '').trim().toUpperCase().replace(/\s.*$/, '').replace(/\d+$/, '');
     if (!c || c === 'RUS' || c === 'AIN') return null;
-    return flagByCode[c] || null;
+    return `https://shootingsportscloud.com:8594/api/v1/Resource/flag/${c}`;
   };
   // По клику на строку атлета тянем по-выстрельно (по одному запросу, кэшируем).
   const toggleShots = async (r) => {
@@ -701,7 +690,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span>{canExpand(r) && <span className="expand-caret">{expanded ? '▾' : '▸'}</span>}</div>
                   <div className="rt-col rt-spacer"></div>
-                  <div className="rt-col rt-fed">{flagFor(r.federationCode) && <img src={flagFor(r.federationCode)} className="fed-flag-img" alt="" loading="lazy" />}<span>{r.federationCode}</span></div>
+                  <div className="rt-col rt-fed">{flagFor(r.federationCode) && <img src={flagFor(r.federationCode)} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.federationCode}</span></div>
                   <div className="rt-col rt-series">{r.isTeam
                     ? <div className="team-members">{shotsRaw.join(' · ')}</div>
                     : <div className="shots-container"><div className="shots-row">{shotsRaw.length ? shotsRaw.map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>) : <span className="shot shot-miss">•</span>}</div></div>}</div>
