@@ -898,9 +898,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             </section>
           )}
 
-          {/* RECORDS — LEVEL 2: таблица рекордов выбранной дисциплины (все варианты + фильтр категории) */}
+          {/* RECORDS — LEVEL 2: таблица рекордов выбранной дисциплины (все варианты + фильтр категории).
+              Гейт только на detailLoading: до сюда нельзя дойти без загруженных records (карточки Level 1
+              строятся из них), поэтому глобальный !loaded (ждёт огромный fetch событий) здесь не нужен. */}
           {resultsLevel && (
-            (detailLoading || !loaded) ? <LoadingResults key={`rec-${selectedDiscipline}`} variant="records" onDone={() => setDetailLoading(false)} /> : (
+            detailLoading ? <LoadingResults key={`rec-${selectedDiscipline}`} variant="records" onDone={() => setDetailLoading(false)} /> : (
             <section className="results-detail">
               {rankingsFilterBar}
               <div className="results-detail-header"><span className="results-detail-line"></span><span className="results-detail-subtitle">ESC EUROPEAN RECORDS</span></div>
