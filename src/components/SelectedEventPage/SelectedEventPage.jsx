@@ -208,7 +208,11 @@ const SelectedEventPage = ({ slug }) => {
   const isFallbackSchedule = scheduleRows.some((r) => /^\s*(arrival & official training|detailed programme available)/i.test(r.title || ''));
   // Часть заглушек = «программа есть в PDF, но не распарсена» — для них укажем на таб Documents.
   const hasProgrammePdf = scheduleRows.some((r) => /detailed programme available/i.test(r.title || ''));
-  const displaySchedule = scheduleRows.length > 0 && !isFallbackSchedule ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
+  // Парсинг программ из PDF давал слишком много ошибок в таблице — по решению пользователя таблицу
+  // ОТКЛЮЧАЕМ и везде показываем оригинальный PDF-документ (ветка scheduleDocs ниже), иначе — уведомление.
+  // Флаг оставлен, чтобы при желании быстро вернуть табличный вид.
+  const SHOW_PARSED_SCHEDULE = false;
+  const displaySchedule = SHOW_PARSED_SCHEDULE && scheduleRows.length > 0 && !isFallbackSchedule ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
 
   // Официальные документы события. В табе DOCUMENTS показываем ВСЕ оригиналы целиком, НИЧЕГО не
   // убирая и не переделывая (result-book, программа, инфо — как на официальном сайте).
@@ -557,8 +561,7 @@ const SelectedEventPage = ({ slug }) => {
             )}
           </div>
 
-          {/* SIDEBAR (скрыт на DOCUMENTS/RESULTS — там встроенные страницы во всю ширину) */}
-          {activeTab !== 'DOCUMENTS' && (
+          {/* SIDEBAR — на всех вкладках, включая DOCUMENTS (панель EVENT DETAILS не должна пропадать). */}
           <aside className="event-sidebar">
             <div className="sidebar-block">
               <h4 className="sidebar-block-title">EVENT DETAILS</h4>
@@ -600,7 +603,6 @@ const SelectedEventPage = ({ slug }) => {
 
             {liveStreamBlock}
           </aside>
-          )}
         </div>
       </section>
 
