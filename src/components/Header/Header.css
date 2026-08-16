@@ -605,18 +605,17 @@
         .search-input-button .arrow {
             display: none;
         }
-        
-        /* Скрываем навигацию, показываем бургер */
-        .navigation {
-            display: none;
+
+        /* Навигация ОСТАЁТСЯ видимой до 960px: длинные пункты ("Results & Rankings",
+           "Member Federations") переносятся по словам в 2 строки, отступы уже. */
+        .navigation ul { gap: 16px; }
+        .navigation a {
+            white-space: normal;
+            text-align: center;
+            line-height: 1.12;
+            padding: 4px 0;
         }
-        
-        .burger-menu {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
+
         /* Уменьшаем кнопку поиска */
         .search-wrapper.active .search-input {
             width: 140px;
@@ -626,6 +625,18 @@
             width: 36px;
             height: 36px;
             font-size: 16px;
+        }
+    }
+
+    /* ========== Бургер включается ниже 960px (до этого навигация переносится по словам) ========== */
+    @media (max-width: 960px) {
+        .navigation {
+            display: none;
+        }
+        .burger-menu {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
 
