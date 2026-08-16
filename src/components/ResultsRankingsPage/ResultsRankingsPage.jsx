@@ -57,6 +57,31 @@ const RECORD_TYPE_LEGEND = [
 ];
 const RECORD_TYPE_ORDER = RECORD_TYPE_LEGEND.map((x) => x[0]);
 const typeRank = (t) => { const i = RECORD_TYPE_ORDER.indexOf(String(t || '').toUpperCase()); return i < 0 ? 99 : i; };
+
+// Разворот по-выстрельно: группируем выстрелы по ФАКТИЧЕСКИМ сериям — набираем выстрелы, пока их сумма
+// не сравняется с сабтоталом серии (shotsRaw). Нужно для нерегулярных финалов (10m Air Rifle: 5+5+2·7=24,
+// где единый размер серии неверен). Если суммы не сходятся (дуэли/шотган/битые данные) — фолбэк равномерно.
+const groupShots = (detail, subtotals, grpSize) => {
+  const subs = (subtotals || []).map((s) => parseFloat(String(s).replace(',', '.'))).filter((n) => !isNaN(n));
+  const nums = detail.map((s) => parseFloat(String(s).replace(',', '.')));
+  const uniformCount = Math.ceil(detail.length / grpSize);
+  const irregular = subs.length >= 2 && uniformCount !== subs.length; // равномерная разбивка ≠ числу серий → финал
+  const decimal = detail.some((s) => String(s).includes('.'));         // винтовка/пистолет (НЕ hit/miss шотгана)
+  if (irregular && decimal && nums.every((n) => !isNaN(n))) {
+    const groups = []; let i = 0; let ok = true;
+    for (let gi = 0; gi < subs.length && i < detail.length; gi++) {
+      let sum = 0; const grp = [];
+      while (i < detail.length && sum + nums[i] <= subs[gi] + 0.05) {
+        sum += nums[i]; grp.push(detail[i]); i++;
+        if (Math.abs(sum - subs[gi]) < 0.05) break;
+      }
+      if (!grp.length || Math.abs(sum - subs[gi]) > 0.06) { ok = false; break; }
+      groups.push(grp);
+    }
+    if (ok && i >= detail.length && groups.length === subs.length) return groups;
+  }
+  return Array.from({ length: uniformCount }, (_, si) => detail.slice(si * grpSize, si * grpSize + grpSize));
+};
 const RANKING_DISCIPLINES = [
   { main: '10M PISTOL', sub: 'MEN', discipline: '10m Air Pistol', gender: 'MEN', icon: IC_PISTOL },
   { main: '25M RAPID FIRE', sub: 'PISTOL', discipline: '25m Rapid Fire Pistol', gender: 'MEN', icon: IC_PISTOL },
@@ -787,10 +812,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                     {detail === undefined ? <span className="shots-detail-msg">Loading shot-by-shot…</span>
                       : detail.length ? (
                         <div className="shots-detail">
-                          {Array.from({ length: Math.ceil(detail.length / grpSize) }, (_, si) => (
+                          {groupShots(detail, shotsRaw, grpSize).map((grp, si) => (
                             <div className="sd-series" key={si}>
                               <span className="sd-label">S{si + 1}</span>
-                              {detail.slice(si * grpSize, si * grpSize + grpSize).map((s, k) => <span key={k} className={`shot ${getSingleShotClass(s)}`}>{String(s).trim()}</span>)}
+                              {grp.map((s, k) => <span key={k} className={`shot ${getSingleShotClass(s)}`}>{String(s).trim()}</span>)}
                             </div>
                           ))}
                         </div>
