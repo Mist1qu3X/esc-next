@@ -310,7 +310,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       page++;
     }
     setResultDetails((prev) => [...prev.filter((r) => r.eventSlug !== slug), ...all]);
-    setLoadedSlugs((s) => new Set(s).add(slug));
+    // Помечаем загруженным ТОЛЬКО если реально что-то пришло. Иначе (пустой ответ во время
+    // ночного переимпорта, когда данные пересоздаются) — повторим при следующем открытии,
+    // а не покажем навсегда пустой список дисциплин.
+    if (all.length) setLoadedSlugs((s) => new Set(s).add(slug));
   };
   // Ленивая загрузка result-book PDF события (по клику) — тянем документы только этого события.
   const loadEventResultBook = async (slug) => {
