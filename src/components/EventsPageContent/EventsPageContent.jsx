@@ -138,7 +138,7 @@ const EventsPageContent = () => {
 
     // Type / Status — кнопки-группы (как в макете); Month / Year — дропдауны
     const types = ['all', ...categories.map((c) => c.label)];
-    const statuses = ['all', 'upcoming', 'finished', 'ongoing'];
+    const statuses = ['all', 'upcoming', 'finished'];
     const monthOptions = [{ value: 'all', label: 'ALL MONTHS' }, ...months];
     const yearOptions = [{ value: 'all', label: 'ALL YEARS' }, ...yearValues.map((y) => ({ value: String(y), label: String(y) }))];
 
@@ -254,7 +254,7 @@ const EventsPageContent = () => {
                         {statuses.map((s) => (
                             <button key={s} className={`epc-filter-btn ${filterStatus === s ? 'epc-selected-filter' : 'epc-unselected-filter'}`}
                                 onClick={() => { setFilterStatus(s); setCurrentPage(1); }}>
-                                {s === 'all' ? 'ALL STATUSES' : s === 'ongoing' ? 'IN PROGRESS' : s.toUpperCase()}
+                                {s === 'all' ? 'ALL STATUSES' : s.toUpperCase()}
                             </button>
                         ))}
                     </div>
