@@ -86,6 +86,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [recordsPage, setRecordsPage] = useState(1);
   const [loaded, setLoaded] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false); // короткая загрузка при входе на таблицу (3 уровень)
+  const [selectedEventBooks, setSelectedEventBooks] = useState([]); // ЦЕЛЫЕ официальные result-book выбранного события (не порезанный по-событийный SIUS-файл)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -269,6 +270,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   // Командный вид (строки-команды) и официальный PDF-ранклист текущей выборки
   const teamView = displayResults[0]?.isTeam || false;
   const viewPdfUrl = displayResults.find((r) => r.pdfUrl)?.pdfUrl || '';
+  // Целый официальный result-book события приоритетнее по-событийного SIUS-ранклиста (тот — порезанный).
+  const officialBookFile = selectedEventBooks[0]?.file || null;
+  const officialBookUrl = officialBookFile ? (String(officialBookFile.url).startsWith('http') ? officialBookFile.url : `${config.API_URL}${officialBookFile.url}`) : '';
+  const officialPdfUrl = officialBookUrl || viewPdfUrl;
   // Колонку INNER 10s показываем только если она реально заполнена (у шотгана/дуэлей CL её нет).
   const hasInner = displayResults.some((r) => r.inner10s && String(r.inner10s).trim());
   // Пагинация по 10 на страницу
@@ -510,7 +515,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   // иначе → грузим result-book PDF события и открываем PDF-просмотр. Обе — по клику.
                   if (ev.hasResults) {
                     setDetailLoading(true);
-                    await loadEventResults(ev.slug);
+                    // Параллельно тянем строки SIUS И целый официальный result-book события —
+                    // чтобы кнопка «OFFICIAL PDF» вела на цельный файл, а не на порезанный SIUS-ранклист.
+                    const [, books] = await Promise.all([loadEventResults(ev.slug), loadEventResultBook(ev.slug)]);
+                    setSelectedEventBooks(books || []);
                     setDetailLoading(false);
                     setDisciplineLevel(true);
                   } else {
@@ -737,10 +745,30 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <span className="source-dot">·</span>
               <span className="source-refresh">Refreshing automatically</span>
             </div>
-            <button className="download-pdf-btn" onClick={() => (viewPdfUrl ? window.open(viewPdfUrl, '_blank', 'noopener') : handleExportPDF())}>
-              <i className="fa-solid fa-download"></i> {viewPdfUrl ? 'OFFICIAL PDF' : 'DOWNLOAD PDF'}
+            <button className="download-pdf-btn" onClick={() => (officialPdfUrl ? window.open(officialPdfUrl, '_blank', 'noopener') : handleExportPDF())}>
+              <i className="fa-solid fa-download"></i> {officialPdfUrl ? 'OFFICIAL PDF' : 'DOWNLOAD PDF'}
             </button>
           </div>
+
+          {/* Целые официальные result-book события целиком (несколько частей — все отдельными файлами). */}
+          {selectedEventBooks.length > 1 && (
+            <div className="results-archive-list" style={{ marginTop: 12 }}>
+              {selectedEventBooks.map((f, i) => {
+                const ft = fileTypeMeta(f.file, f.name);
+                return (
+                  <div className="results-archive-item" key={i}>
+                    <i className={`fa-solid ${ft.icon} results-archive-icon`} style={{ color: ft.color }}></i>
+                    <div className="results-archive-info">
+                      <span className="results-archive-name">{f.name}</span>
+                      <span className="results-archive-meta">{f.fileSize || ft.label}</span>
+                    </div>
+                    <button className="results-archive-btn" onClick={() => previewFile(f.file)} title="Open in browser"><i className="fa-solid fa-eye"></i> Preview</button>
+                    <button className="results-archive-btn results-archive-btn-dl" onClick={() => downloadResultFile(f.name, f.file)} title="Download"><i className="fa-solid fa-download"></i> {ft.label}</button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           <Pager page={resultsPage} setPage={setResultsPage} total={displayResults.length} />
           </>) : (

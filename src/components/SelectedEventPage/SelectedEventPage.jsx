@@ -210,12 +210,14 @@ const SelectedEventPage = ({ slug }) => {
   const hasProgrammePdf = scheduleRows.some((r) => /detailed programme available/i.test(r.title || ''));
   const displaySchedule = scheduleRows.length > 0 && !isFallbackSchedule ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
 
-  // Официальный Result-book PDF события: показываем в табе RESULTS (если нет структурных данных)
-  // и УБИРАЕМ из списка DOCUMENTS, чтобы не дублировался.
+  // Официальные документы события. В табе DOCUMENTS показываем ВСЕ оригиналы целиком, НИЧЕГО не
+  // убирая и не переделывая (result-book, программа, инфо — как на официальном сайте).
+  // resultBookDocs / scheduleDocs — это лишь ДОПОЛНИТЕЛЬНЫЕ ссылки на те же самые оригиналы в
+  // табах RESULTS / расписании; сами документы из Documents НЕ исчезают.
   const RESULT_RE = /result|ranklist|results book/i;
-  const resultBookDocs = (event?.documents || []).filter((d) => RESULT_RE.test(d.name || '') && d.file);
-  const otherDocs = (event?.documents || []).filter((d) => !RESULT_RE.test(d.name || ''));
-  const scheduleDocs = (event?.documents || []).filter((d) => /schedule|programme|program\b/i.test(d.name || '') && d.file);
+  const allDocs = (event?.documents || []).filter((d) => d.file);
+  const resultBookDocs = allDocs.filter((d) => RESULT_RE.test(d.name || ''));
+  const scheduleDocs = allDocs.filter((d) => /schedule|programme|program\b/i.test(d.name || ''));
 
   // Единый рендер строки файла (иконка типа, имя-ссылка, скачать, превью) — для DOCUMENTS,
   // Result-book в RESULTS и schedule-PDF в расписании.
@@ -409,9 +411,9 @@ const SelectedEventPage = ({ slug }) => {
             )}
 
             {activeTab === 'DOCUMENTS' && (
-              (otherDocs.length > 0) ? (
+              (allDocs.length > 0) ? (
                 <div className="docs-acc-files" style={{ marginTop: 4 }}>
-                  {otherDocs.map(docFileRow)}
+                  {allDocs.map(docFileRow)}
                 </div>
               ) : (
                 <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
