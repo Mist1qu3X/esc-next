@@ -821,7 +821,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               частей, все отдельными файлами). Когда они есть, отдельная кнопка «OFFICIAL PDF» убрана. */}
           {selectedEventBooks.length > 0 && (
             <div className="results-archive-list" style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', opacity: 0.6, margin: '2px 2px 8px' }}>
+              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', color: 'rgba(255, 255, 255, 0.6)', margin: '2px 2px 8px' }}>
                 Official result book{selectedEventBooks.length > 1 ? 's' : ''} · PDF
               </div>
               {selectedEventBooks.map((f, i) => {
