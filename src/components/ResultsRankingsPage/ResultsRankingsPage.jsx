@@ -225,13 +225,18 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     return 'FINISHED';
   };
 
-  // Результаты привязаны к выбранному событию (eventSlug), затем по дисциплине/полу
-  const eventDisciplineResults = resultDetails.filter(r => {
-    const matchEvent = !selectedEventSlug || r.eventSlug === selectedEventSlug;
-    const matchDiscipline = r.discipline?.toLowerCase() === selectedDiscipline.toLowerCase();
-    const matchGender = gender === 'ALL' || r.category?.toUpperCase() === gender;
-    return matchEvent && matchDiscipline && matchGender;
-  });
+  // Результаты выбранного события+дисциплины (БЕЗ фильтра пола) — источник для доступных полов.
+  const eventDisciplineAll = resultDetails.filter((r) =>
+    (!selectedEventSlug || r.eventSlug === selectedEventSlug) &&
+    r.discipline?.toLowerCase() === selectedDiscipline.toLowerCase());
+  // Полы, реально присутствующие → динамические кнопки ALL/MEN/WOMEN. У CL-Shotgun (SKEET/TRAP SOLO)
+  // всё в категории ALL, поэтому MEN/WOMEN не показываем — иначе фильтр обнулял бы таблицу и вкладки.
+  // Если выбранный пол недоступен у события (пришли с MEN) — эффективно показываем всё.
+  const availGenders = new Set(eventDisciplineAll.map((r) => (r.category || '').toUpperCase()));
+  const genderBtns = ['ALL', ...['MEN', 'WOMEN'].filter((g) => availGenders.has(g))];
+  const effGender = (gender !== 'ALL' && !availGenders.has(gender)) ? 'ALL' : gender;
+  const eventDisciplineResults = eventDisciplineAll.filter((r) =>
+    effGender === 'ALL' || (r.category || '').toUpperCase() === effGender);
   // Под-дисциплины внутри выбранной грубой дисциплины (напр. 3 Positions / Prone / 300m).
   // Разные соревнования нельзя мешать в одну таблицу — показываем селектором.
   const subDisciplines = Array.from(new Set(eventDisciplineResults.map((r) => r.subDiscipline).filter(Boolean)));
@@ -702,7 +707,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <span className="rd-breadcrumb-active">{selectedDiscipline}</span>
             </div>
             <div className="results-detail-gender">
-              {['ALL', 'MEN', 'WOMEN'].map((g) => <button key={g} className={`gender-btn ${gender === g ? 'active' : ''}`} onClick={() => setGender(g)}>{g}</button>)}
+              {genderBtns.map((g) => <button key={g} className={`gender-btn ${effGender === g ? 'active' : ''}`} onClick={() => setGender(g)}>{g}</button>)}
             </div>
           </div>
           {/* Селектор под-дисциплины. Много вкладок → группируем по стадиям в аккордеон (раскрывается
