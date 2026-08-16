@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 60" preserveAspectRatio="xMidYMid slice">
+  <rect width="90" height="60" fill="#CE1126"/>
+  <g fill="#F8D615">
+    <!-- five-pointed star -->
+    <path d="M27 5 l2.35 7.24 7.6 0 -6.15 4.47 2.35 7.24 -6.15-4.47 -6.15 4.47 2.35-7.24 -6.15-4.47 7.6 0 z"/>
+    <!-- sickle -->
+    <path d="M14 24 C14 36 23 43 33 42 C25 40 20 33 21 27 C22 23 26 21 30 23 C25 18.5 16 18.5 14 24 Z"/>
+    <!-- hammer handle -->
+    <path d="M17.5 43.5 L34 27 l4.2 4.2 L21.7 47.7 Z"/>
+    <!-- hammer head -->
+    <path d="M32 22.8 l7.5 7.5 -4 4 -7.5 -7.5 Z"/>
+  </g>
+</svg>

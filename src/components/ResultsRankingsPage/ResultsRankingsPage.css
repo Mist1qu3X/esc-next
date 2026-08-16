@@ -1368,16 +1368,43 @@
     color: #ffffff;
 }
 
-/* Вариант рекорда (Solo / Trio / Duet / Mixed Team / U16 / U18) — под именем атлета. */
-.record-variant {
-    display: block;
+/* Подзаголовок дисциплины в таблице рекордов (как в официальном PDF, вместо подписи у имени). */
+.records-subhead {
     font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 600;
-    font-size: clamp(11px, 1.2vw, 13px);
-    letter-spacing: 0.4px;
-    color: rgba(93, 224, 230, 0.75);
+    font-weight: 800;
+    font-size: clamp(13px, 1.5vw, 16px);
+    letter-spacing: 0.6px;
     text-transform: uppercase;
-    margin-top: 2px;
+    color: #5de0e6;
+    padding: 14px 14px 6px;
+    border-bottom: 1px solid rgba(93, 224, 230, 0.18);
+    margin-top: 6px;
+}
+.records-subhead:first-of-type { margin-top: 0; }
+
+/* Легенда типов рекордов (как в официальном PDF) — внизу таблицы. */
+.records-legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 24px;
+    margin: 20px 2px 8px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.records-legend-item {
+    font-size: clamp(11px, 1.2vw, 13px);
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.5;
+}
+.records-legend-item b {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
+    margin-right: 6px;
+    display: inline-block;
+    min-width: 44px;
+}
+@media (max-width: 640px) {
+    .records-legend { grid-template-columns: 1fr; }
 }
 
 .record-location {
