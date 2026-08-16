@@ -121,7 +121,9 @@ const EventsPageContent = () => {
         const matchYear = filterYear === 'all' || eventDate.getFullYear() === parseInt(filterYear);
         const matchSearch = !searchTerm || event.name?.toLowerCase().includes(searchTerm.toLowerCase());
         return matchType && matchStatus && matchMonth && matchYear && matchSearch;
-    });
+    // Сортируем по дате ОКОНЧАНИЯ (desc): при одинаковом старте идущее событие оказывается выше
+    // только что завершившегося (напр. 13-16 IN PROGRESS выше 13-15 FINISHED), т.е. статус учитывается.
+    }).sort((a, b) => parseDate(b.endDate || b.date) - parseDate(a.endDate || a.date));
 
     const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
     const currentEvents = filteredEvents.slice((currentPage - 1) * eventsPerPage, currentPage * eventsPerPage);
@@ -136,7 +138,7 @@ const EventsPageContent = () => {
 
     // Type / Status — кнопки-группы (как в макете); Month / Year — дропдауны
     const types = ['all', ...categories.map((c) => c.label)];
-    const statuses = ['all', 'upcoming', 'finished'];
+    const statuses = ['all', 'upcoming', 'finished', 'ongoing'];
     const monthOptions = [{ value: 'all', label: 'ALL MONTHS' }, ...months];
     const yearOptions = [{ value: 'all', label: 'ALL YEARS' }, ...yearValues.map((y) => ({ value: String(y), label: String(y) }))];
 
@@ -252,7 +254,7 @@ const EventsPageContent = () => {
                         {statuses.map((s) => (
                             <button key={s} className={`epc-filter-btn ${filterStatus === s ? 'epc-selected-filter' : 'epc-unselected-filter'}`}
                                 onClick={() => { setFilterStatus(s); setCurrentPage(1); }}>
-                                {s === 'all' ? 'ALL STATUSES' : s.toUpperCase()}
+                                {s === 'all' ? 'ALL STATUSES' : s === 'ongoing' ? 'IN PROGRESS' : s.toUpperCase()}
                             </button>
                         ))}
                     </div>
