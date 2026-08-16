@@ -202,7 +202,13 @@ const SelectedEventPage = ({ slug }) => {
   // Расписание из встроенного компонента event.schedule (реальные строки из PDF либо
   // по-дневная заглушка). Пропущенные дни заполняются «днём отдыха». Демо больше не используем.
   const scheduleRows = event?.schedule?.length ? event.schedule : [];
-  const displaySchedule = scheduleRows.length > 0 ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
+  // Отличаем РЕАЛЬНОЕ расписание (распарсено из PDF) от сгенерированной заглушки: у заглушки
+  // первая строка — «Arrival & official training» / «Detailed programme available…» (эти строки
+  // ставил только генератор). Такую не показываем — вместо неё «SCHEDULE NOT AVAILABLE».
+  const isFallbackSchedule = scheduleRows.some((r) => /^\s*(arrival & official training|detailed programme available)/i.test(r.title || ''));
+  // Часть заглушек = «программа есть в PDF, но не распарсена» — для них укажем на таб Documents.
+  const hasProgrammePdf = scheduleRows.some((r) => /detailed programme available/i.test(r.title || ''));
+  const displaySchedule = scheduleRows.length > 0 && !isFallbackSchedule ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
 
   // Официальный Result-book PDF события: показываем в табе RESULTS (если нет структурных данных)
   // и УБИРАЕМ из списка DOCUMENTS, чтобы не дублировался.
@@ -357,9 +363,11 @@ const SelectedEventPage = ({ slug }) => {
                 </div>
                 ) : (
                   <div className="stream-scheduled" style={{ maxWidth: 480, margin: '24px auto 8px' }}>
-                    <i className="fa-regular fa-calendar-xmark stream-scheduled-icon"></i>
-                    <span className="stream-scheduled-title">SCHEDULE NOT AVAILABLE</span>
-                    <span className="stream-scheduled-text">No schedule has been published for this event yet.</span>
+                    <i className={`fa-regular ${hasProgrammePdf ? 'fa-file-pdf' : 'fa-calendar-xmark'} stream-scheduled-icon`}></i>
+                    <span className="stream-scheduled-title">{hasProgrammePdf ? 'PROGRAMME IN DOCUMENTS' : 'SCHEDULE NOT AVAILABLE'}</span>
+                    <span className="stream-scheduled-text">{hasProgrammePdf
+                      ? 'The detailed programme for this event is available in the Documents tab.'
+                      : 'No schedule has been published for this event yet.'}</span>
                   </div>
                 )}
               </>
