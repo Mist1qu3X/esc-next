@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo, Fragment } from 'react';
+import { useState, useEffect, useMemo, useCallback, Fragment } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import LoadingResults from '@/components/LoadingResults/LoadingResults';
@@ -144,7 +144,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [resultDetails, setResultDetails] = useState([]);
   const [expandedId, setExpandedId] = useState(null);   // развёрнутая строка (по-выстрельно)
   const [shotCache, setShotCache] = useState({});        // id -> shotDetail[] (тянем по клику)
-  const [loadedSlugs, setLoadedSlugs] = useState(new Set()); // события, чьи строки уже подгружены
+  const [loadedSlugs, setLoadedSlugs] = useState(new Set()); // ключи slug|DISCIPLINE, чьи строки уже подгружены
+  const [rankingsLoaded, setRankingsLoaded] = useState(false); // ленивая загрузка вкладки Ranking
+  const [recordsLoaded, setRecordsLoaded] = useState(false);   // ленивая загрузка вкладки Records
+  const [eventDisciplineList, setEventDisciplineList] = useState([]); // крупные дисциплины текущего события (лёгкая загрузка)
   const [records, setRecords] = useState([]);
   const [expandedRec, setExpandedRec] = useState(null); // раскрытый командный рекорд (показ всех участников)
   const [gender, setGender] = useState('ALL');
@@ -161,44 +164,54 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [detailLoading, setDetailLoading] = useState(false); // короткая загрузка при входе на таблицу (3 уровень)
   const [selectedEventBooks, setSelectedEventBooks] = useState([]); // ЦЕЛЫЕ официальные result-book выбранного события (не порезанный по-событийный SIUS-файл)
 
+  // Пагинированный fetch (Strapi макс 100/стр). Вынесен, чтобы переиспользовать в ленивых загрузках.
+  const fetchAll = useCallback(async (path, pageSize = 1000) => {
+    let page = 1, all = [];
+    while (page <= 150) {
+      const res = await cachedGet(`${config.API_URL}${path}&pagination[pageSize]=${pageSize}&pagination[page]=${page}`);
+      all.push(...(res.data?.data || []));
+      const pc = res.data?.meta?.pagination?.pageCount || 1;
+      if (page >= pc) break;
+      page++;
+    }
+    return all;
+  }, []);
+
+  // Стартовая загрузка — ТОЛЬКО лёгкий список событий (+ архивный historical-doc). Rankings/records
+  // грузятся лениво при открытии своих вкладок; строки атлетов — при выборе дисциплины. Первый рендер
+  // почти мгновенный (раньше на маунте зря тянулись rankings 787 + records 356 + их populate).
   useEffect(() => {
-    const fetchData = async () => {
-      // Strapi ограничивает pageSize (макс 100). Records/rankings/results > 100 строк,
-      // поэтому листаем страницы, иначе часть дисциплин выпадает и показываются TEST-данные.
-      const fetchAll = async (path, pageSize = 1000) => {
-        let page = 1, all = [];
-        while (page <= 150) {
-          const res = await cachedGet(`${config.API_URL}${path}&pagination[pageSize]=${pageSize}&pagination[page]=${page}`);
-          all.push(...(res.data?.data || []));
-          const pc = res.data?.meta?.pagination?.pageCount || 1;
-          if (page >= pc) break;
-          page++;
-        }
-        return all;
-      };
+    (async () => {
       try {
-        // allSettled: падение одного запроса (напр. 403) не должно обнулять остальные секции
-        // Событий грузим ЛЁГКИЙ список (без populate документов — это раздувало ответ ×12).
-        // Строки атлетов (result-details) и документы события тянем ПО КЛИКУ (ленивая загрузка):
-        // стартовая загрузка страницы падает с ~10 МБ до ~250 КБ.
-        const [eventsRes, rankingsRes, recordsRes, docsRes] = await Promise.allSettled([
+        const [eventsRes, docsRes] = await Promise.allSettled([
           fetchAll(`/api/events?sort=date:desc&fields[0]=slug&fields[1]=name&fields[2]=date&fields[3]=endDate&fields[4]=type&fields[5]=disciplines&fields[6]=statusEvent&fields[7]=hasResults&fields[8]=hasResultBook&fields[9]=category&fields[10]=location`),
-          fetchAll(`/api/ranking-details?populate=*&sort=position:asc`),
-          fetchAll(`/api/records?populate=*&sort=date:desc`),
           fetchAll(`/api/docs?filters[title][$contains]=Historical&populate[attachments][populate]=file`),
         ]);
         if (eventsRes.status === 'fulfilled') setEvents(eventsRes.value);
-        if (rankingsRes.status === 'fulfilled') setRankings(rankingsRes.value);
-        if (recordsRes.status === 'fulfilled') setRecords(recordsRes.value);
         if (docsRes.status === 'fulfilled') setDocs(docsRes.value);
-        [eventsRes, rankingsRes, recordsRes, docsRes]
-          .filter((r) => r.status === 'rejected')
+        [eventsRes, docsRes].filter((r) => r.status === 'rejected')
           .forEach((r) => console.error('Ошибка загрузки раздела:', r.reason?.message || r.reason));
       } catch (e) { console.error('Ошибка загрузки:', e); }
       finally { setLoaded(true); }
-    };
-    fetchData();
-  }, []);
+    })();
+  }, [fetchAll]);
+
+  // Ленивая загрузка данных вкладок: rankings — при первом открытии Ranking, records — Records.
+  // Оба без populate (медиа не используются) — только нужные поля, ответ компактный.
+  useEffect(() => {
+    if (activeTab === 'ranking' && !rankingsLoaded) {
+      (async () => {
+        const r = await fetchAll(`/api/ranking-details?fields[0]=position&fields[1]=athleteName&fields[2]=country&fields[3]=yearOfBirth&fields[4]=discipline&fields[5]=category&sort=position:asc`);
+        setRankings(r); setRankingsLoaded(true);
+      })();
+    }
+    if (activeTab === 'records' && !recordsLoaded) {
+      (async () => {
+        const r = await fetchAll(`/api/records?fields[0]=type&fields[1]=athleteName&fields[2]=federationCode&fields[3]=record&fields[4]=location&fields[5]=date&fields[6]=discipline&fields[7]=category&sort=date:desc`);
+        setRecords(r); setRecordsLoaded(true);
+      })();
+    }
+  }, [activeTab, rankingsLoaded, recordsLoaded, fetchAll]);
 
   // Загрузка при входе на 3 уровень (таблица): показываем анимацию-мишень.
   // Скрываем по onEnded видео (доигрывает до конца); таймаут — только страховка, если видео не догрузилось.
@@ -370,9 +383,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const displayResults = filteredResults;
 
   // Грубые дисциплины, реально присутствующие у выбранного события (для уровня 2 — без пустых плашек).
-  const eventDisciplines = useMemo(() => new Set(
-    resultDetails.filter((r) => r.eventSlug === selectedEventSlug).map((r) => (r.discipline || '').toUpperCase())
-  ), [resultDetails, selectedEventSlug]);
+  // Карточки дисциплин Level 2 строятся из лёгкого списка (загружен при клике на событие),
+  // а не из строк атлетов — строки грузятся уже при выборе конкретной дисциплины.
+  const eventDisciplines = useMemo(
+    () => new Set(eventDisciplineList.map((d) => (d || '').toUpperCase())),
+    [eventDisciplineList]
+  );
 
 
   const filteredRankings = rankings.filter(r => {
@@ -418,13 +434,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       .sort((a, b) => ((REC_CAT_RANK[a[1][0].category] ?? 9) - (REC_CAT_RANK[b[1][0].category] ?? 9)) || a[0].localeCompare(b[0]));
   })();
 
-  // Командный вид (строки-команды) и официальный PDF-ранклист текущей выборки
+  // Командный вид (строки-команды). Официальный PDF показываем ТОЛЬКО цельным result-book события
+  // (список ниже). По-событийный SIUS-ранклист (pdfUrl) как фолбэк больше не используем.
   const teamView = displayResults[0]?.isTeam || false;
-  const viewPdfUrl = displayResults.find((r) => r.pdfUrl)?.pdfUrl || '';
-  // Целый официальный result-book события приоритетнее по-событийного SIUS-ранклиста (тот — порезанный).
-  const officialBookFile = selectedEventBooks[0]?.file || null;
-  const officialBookUrl = officialBookFile ? (String(officialBookFile.url).startsWith('http') ? officialBookFile.url : `${config.API_URL}${officialBookFile.url}`) : '';
-  const officialPdfUrl = officialBookUrl || viewPdfUrl;
   // Колонку INNER 10s показываем только если она реально заполнена (у шотгана/дуэлей CL её нет).
   const hasInner = displayResults.some((r) => r.inner10s && String(r.inner10s).trim());
   // Пагинация по 10 на страницу
@@ -451,23 +463,34 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     e.hasResults || e.hasResultBook || (evStatus(e) !== 'FINISHED' && isCompetition(e)));
   const eventsSource = events.length > 0 ? eventsWithResults : (loaded ? TEST_EVENTS : []);
 
-  // Ленивая загрузка строк атлетов события (по клику) — аккумулируем в resultDetails, кэш 3 мин.
-  const loadEventResults = async (slug) => {
-    if (!slug || loadedSlugs.has(slug)) return;
-    const F = '&fields[0]=position&fields[1]=athleteName&fields[2]=federationCode&fields[3]=total&fields[4]=inner10s&fields[5]=discipline&fields[6]=subDiscipline&fields[7]=category&fields[8]=shots&fields[9]=isTeam&fields[10]=pdfUrl&fields[11]=eventSlug';
+  // Лёгкая загрузка по клику на событие: только НАБОР крупных дисциплин (для карточек Level 2).
+  // Строки атлетов НЕ тянем — одно поле на строку, ответ крошечный даже для больших событий.
+  const loadEventDisciplines = async (slug) => {
+    if (!slug) return;
+    const res = await cachedGet(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${encodeURIComponent(slug)}&fields[0]=discipline&pagination[pageSize]=3000`);
+    const set = new Set((res.data?.data || []).map((r) => (r.discipline || '').toUpperCase()).filter(Boolean));
+    setEventDisciplineList([...set]);
+  };
+
+  // Ленивая загрузка строк атлетов КОНКРЕТНОЙ дисциплины события (по клику на карточку дисциплины).
+  // Ключ кэша slug|DISCIPLINE — переключение дисциплин не перезагружает уже открытые. Кэш 3 мин.
+  const loadEventResults = async (slug, discipline) => {
+    const disc = (discipline || '').toUpperCase();
+    const key = `${slug}|${disc}`;
+    if (!slug || !discipline || loadedSlugs.has(key)) return;
+    const F = '&fields[0]=position&fields[1]=athleteName&fields[2]=federationCode&fields[3]=total&fields[4]=inner10s&fields[5]=discipline&fields[6]=subDiscipline&fields[7]=category&fields[8]=shots&fields[9]=isTeam&fields[10]=eventSlug';
     let page = 1; const all = [];
     while (page <= 10) {
-      const res = await cachedGet(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${encodeURIComponent(slug)}&sort=position:asc${F}&pagination[pageSize]=1000&pagination[page]=${page}`);
+      const res = await cachedGet(`${config.API_URL}/api/result-details?filters[eventSlug][$eq]=${encodeURIComponent(slug)}&filters[discipline][$eqi]=${encodeURIComponent(discipline)}&sort=position:asc${F}&pagination[pageSize]=1000&pagination[page]=${page}`);
       all.push(...(res.data?.data || []));
       const pc = res.data?.meta?.pagination?.pageCount || 1;
       if (page >= pc) break;
       page++;
     }
-    setResultDetails((prev) => [...prev.filter((r) => r.eventSlug !== slug), ...all]);
-    // Помечаем загруженным ТОЛЬКО если реально что-то пришло. Иначе (пустой ответ во время
-    // ночного переимпорта, когда данные пересоздаются) — повторим при следующем открытии,
-    // а не покажем навсегда пустой список дисциплин.
-    if (all.length) setLoadedSlugs((s) => new Set(s).add(slug));
+    setResultDetails((prev) => [...prev.filter((r) => !(r.eventSlug === slug && (r.discipline || '').toUpperCase() === disc)), ...all]);
+    // Помечаем загруженным ТОЛЬКО если реально что-то пришло (пустой ответ во время ночного
+    // переимпорта — повторим при следующем открытии, а не залипнем на пустой таблице).
+    if (all.length) setLoadedSlugs((s) => new Set(s).add(key));
   };
   // Ленивая загрузка result-book PDF события (по клику) — тянем документы только этого события.
   const loadEventResultBook = async (slug) => {
@@ -694,7 +717,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                     setDetailLoading(true);
                     // Параллельно тянем строки SIUS И целый официальный result-book события —
                     // чтобы кнопка «OFFICIAL PDF» вела на цельный файл, а не на порезанный SIUS-ранклист.
-                    const [, books] = await Promise.all([loadEventResults(ev.slug), loadEventResultBook(ev.slug)]);
+                    const [, books] = await Promise.all([loadEventDisciplines(ev.slug), loadEventResultBook(ev.slug)]);
                     setSelectedEventBooks(books || []);
                     setDetailLoading(false);
                     setDisciplineLevel(true);
@@ -790,7 +813,13 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           <p className="discipline-desc">Choose a discipline to view results</p>
           <div className="discipline-grid">
             {disciplines.filter((d) => eventDisciplines.has(`${d.main} ${d.sub}`.trim().toUpperCase())).map((d) => (
-              <div key={d.id} className="discipline-card" onClick={() => { setResultsLevel(true); setSelectedDiscipline(`${d.main} ${d.sub}`.trim()); }}>
+              <div key={d.id} className="discipline-card" onClick={() => {
+                const disc = `${d.main} ${d.sub}`.trim();
+                setSelectedDiscipline(disc);
+                setResultsLevel(true);
+                setDetailLoading(true);
+                loadEventResults(selectedEventSlug, disc).finally(() => setDetailLoading(false));
+              }}>
                 <h3 className="disc-card-title"><span className="disc-main">{d.main}</span><span className="disc-sub">{d.sub}</span></h3>
                 <div className="disc-card-icon"><img src={d.icon} alt="" /><span className="disc-card-arrow">›</span></div>
               </div>
@@ -900,14 +929,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <span className="source-dot">·</span>
               <span className="source-refresh">Refreshing automatically</span>
             </div>
-            {/* Только официальный источник: per-view SIUS-ранклист (OFFICIAL PDF), когда у события нет
-                приложенного result-book. Если книги есть — они списком ниже. Экспорт нашей таблицы убран
-                (ссылаемся только на официальные документы). */}
-            {selectedEventBooks.length === 0 && officialPdfUrl && (
-              <button className="download-pdf-btn" onClick={() => window.open(officialPdfUrl, '_blank', 'noopener')}>
-                <i className="fa-solid fa-download"></i> OFFICIAL PDF
-              </button>
-            )}
+            {/* Официальный PDF — только цельные result-book события (список ниже). Если книги нет,
+                кнопки нет: по-событийный SIUS-ранклист как «официальный» больше не показываем. */}
           </div>
 
           {/* Целые официальные result-book события — единый источник официального PDF (1 или несколько
@@ -966,7 +989,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
       {/* RANKINGS DETAIL - Level 2 */}
       {activeTab === 'ranking' && rankingsDetailLevel && (
-        (detailLoading || !loaded) ? <LoadingResults key={`rank-${selectedDiscipline}`} variant="ranking" onDone={() => setDetailLoading(false)} /> : (
+        (detailLoading || !rankingsLoaded) ? <LoadingResults key={`rank-${selectedDiscipline}`} variant="ranking" onDone={() => setDetailLoading(false)} /> : (
         <section className="rankings-detail">
           {rankingsFilterBar}
           <div className="rankings-detail-breadcrumbs"><span className="rd-breadcrumb" onClick={() => setRankingsDetailLevel(false)}>Rankings</span><span className="rd-breadcrumb-sep">›</span><span className="rd-breadcrumb-active">{selectedDiscipline}</span></div>
@@ -1028,6 +1051,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC EUROPEAN RECORDS</span></div>
               <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
               <p className="discipline-desc">Choose a discipline to view European records</p>
+              {!recordsLoaded ? (
+                <LoadingResults variant="records" onDone={() => {}} />
+              ) : (
               <div className="discipline-grid">
                 {recordBases.map((b) => {
                   const [mainTok, ...subToks] = b.name.split(' ');
@@ -1039,6 +1065,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   );
                 })}
               </div>
+              )}
             </section>
           )}
 
