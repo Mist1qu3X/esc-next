@@ -854,7 +854,9 @@
 .rt-athlete { justify-content: flex-start; }
 .rt-spacer { justify-content: center; }
 .rt-fed { justify-content: center; gap: 6px; }
-.rt-series { justify-content: center; overflow: hidden; }
+/* Слева, чтобы серии/станции стояли по столбцам (round 1 под round 1) — важно для форматов
+   на выбывание, где у атлетов разное число станций (Champions League shotgun и т.п.). */
+.rt-series { justify-content: flex-start; overflow: hidden; }
 .rt-total { justify-content: center; }
 .rt-inner { justify-content: center; }
 
