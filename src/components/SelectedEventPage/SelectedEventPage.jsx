@@ -221,7 +221,10 @@ const SelectedEventPage = ({ slug }) => {
   const RESULT_RE = /result|ranklist|results book/i;
   const allDocs = (event?.documents || []).filter((d) => d.file);
   const resultBookDocs = allDocs.filter((d) => RESULT_RE.test(d.name || ''));
-  const scheduleDocs = allDocs.filter((d) => /schedule|programme|program\b/i.test(d.name || ''));
+  // Программа/расписание в документах. «program» без \b ловит programme/programm/programa/program_
+  // (нем. «PROGRAMM», ит. «program_italian» и т.п.), плюс schedule и time(-)table — иначе событие с
+  // приложенной программой ошибочно показывало «SCHEDULE NOT AVAILABLE».
+  const scheduleDocs = allDocs.filter((d) => /schedule|program|time.?table/i.test(d.name || ''));
 
   // Единый рендер строки файла (иконка типа, имя-ссылка, скачать, превью) — для DOCUMENTS,
   // Result-book в RESULTS и schedule-PDF в расписании.
