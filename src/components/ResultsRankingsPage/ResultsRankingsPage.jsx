@@ -559,10 +559,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     }
   };
 
-  const handleExportPDF = () => {
-    if (typeof window !== 'undefined') window.print();
-  };
-
 
   // Общий фильтр-бар для RANKINGS (оба уровня)
   const rankingDisciplineOptions = [...new Set(RANKING_DISCIPLINES.map(d => `${d.main} ${d.sub}`.trim()))];
@@ -592,13 +588,14 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           <option value="WOMEN">Women</option>
         </select>
       </div>
-      {activeTab === 'records' ? (
+      {/* Ссылаемся только на официальные документы: у Records — офиц. PDF рекордов; у Results/Ranking
+          официальные PDF показаны в самой детали (result-book / per-discipline ranking). Общего
+          «экспорта нашей таблицы» тут нет. */}
+      {activeTab === 'records' && (
         <div className="records-pdf-btns">
           <button className="export-btn" onClick={() => window.open(OFFICIAL_RECORDS_PDF, '_blank', 'noopener')} title="Senior & Junior European records — official PDF"><i className="fa-solid fa-download"></i>OFFICIAL PDF</button>
           <button className="export-btn export-btn-sec" onClick={() => window.open(OFFICIAL_RECORDS_PDF_U16, '_blank', 'noopener')} title="U16 / U18 European records — official PDF"><i className="fa-solid fa-download"></i>U16/U18 PDF</button>
         </div>
-      ) : (
-        <button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button>
       )}
     </div>
   );
@@ -765,10 +762,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       {activeTab === 'results' && disciplineLevel && !resultsLevel && (
         <section className="discipline-level">
           <div className="discipline-breadcrumbs"><span className="disc-breadcrumb-parent" onClick={() => setDisciplineLevel(false)}>Results</span><span className="disc-breadcrumb-separator">›</span><span className="disc-breadcrumb-active">{selectedEvent || 'Competitions'}</span></div>
-          <div className="discipline-filter-bar">
-            <div className="discipline-filter-left"></div>
-            <div className="discipline-filter-right"><button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button></div>
-          </div>
           <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC RESULTS</span></div>
           <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
           <p className="discipline-desc">Choose a discipline to view results</p>
@@ -884,13 +877,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <span className="source-dot">·</span>
               <span className="source-refresh">Refreshing automatically</span>
             </div>
-            {/* Кнопка нужна ТОЛЬКО когда у события нет приложенного result-book: тогда это либо
-                per-view SIUS-ранклист (OFFICIAL PDF), либо экспорт нашей таблицы (DOWNLOAD PDF).
-                Если книги есть — они показаны списком ниже, и отдельная кнопка была бы дублем
-                (к тому же открывала лишь первую книгу). */}
-            {selectedEventBooks.length === 0 && (
-              <button className="download-pdf-btn" onClick={() => (officialPdfUrl ? window.open(officialPdfUrl, '_blank', 'noopener') : handleExportPDF())}>
-                <i className="fa-solid fa-download"></i> {officialPdfUrl ? 'OFFICIAL PDF' : 'DOWNLOAD PDF'}
+            {/* Только официальный источник: per-view SIUS-ранклист (OFFICIAL PDF), когда у события нет
+                приложенного result-book. Если книги есть — они списком ниже. Экспорт нашей таблицы убран
+                (ссылаемся только на официальные документы). */}
+            {selectedEventBooks.length === 0 && officialPdfUrl && (
+              <button className="download-pdf-btn" onClick={() => window.open(officialPdfUrl, '_blank', 'noopener')}>
+                <i className="fa-solid fa-download"></i> OFFICIAL PDF
               </button>
             )}
           </div>
