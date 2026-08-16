@@ -41,8 +41,9 @@ const recordFlagFor = (code) => {
   if (c === 'URS') return USSR_FLAG;
   return `https://shootingsportscloud.com:8594/api/v1/Resource/flag/${c}`;
 };
-// Официальный документ рекордов (цель кнопки EXPORT PDF в разделе Records).
+// Официальные документы рекордов (esc-shooting.org): Senior+Junior и отдельно U16/U18. Обе — цели кнопок в Records.
 const OFFICIAL_RECORDS_PDF = 'https://esc-shooting.org/storage/2026/07/31/57b358c07315ac4a00714ba62aa252bb24170e56.pdf';
+const OFFICIAL_RECORDS_PDF_U16 = 'https://esc-shooting.org/storage/2026/05/29/a5f662fce904d17132fbb4f00ba9c9d72df5e431.pdf';
 // Легенда типов рекордов — как в официальном PDF.
 const RECORD_TYPE_LEGEND = [
   ['ER', 'European Record'], ['EER', 'Equalled European Record'],
@@ -104,6 +105,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [shotCache, setShotCache] = useState({});        // id -> shotDetail[] (тянем по клику)
   const [loadedSlugs, setLoadedSlugs] = useState(new Set()); // события, чьи строки уже подгружены
   const [records, setRecords] = useState([]);
+  const [expandedRec, setExpandedRec] = useState(null); // раскрытый командный рекорд (показ всех участников)
   const [gender, setGender] = useState('ALL');
   const [rankingsGender, setRankingsGender] = useState('ALL');
   const [filterMonth, setFilterMonth] = useState('all');
@@ -494,7 +496,14 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           <option value="WOMEN">Women</option>
         </select>
       </div>
-      <button className="export-btn" onClick={() => (activeTab === 'records' ? window.open(OFFICIAL_RECORDS_PDF, '_blank', 'noopener') : handleExportPDF())}><i className="fa-solid fa-download"></i>{activeTab === 'records' ? 'OFFICIAL PDF' : 'EXPORT PDF'}</button>
+      {activeTab === 'records' ? (
+        <div className="records-pdf-btns">
+          <button className="export-btn" onClick={() => window.open(OFFICIAL_RECORDS_PDF, '_blank', 'noopener')} title="Senior & Junior European records — official PDF"><i className="fa-solid fa-download"></i>OFFICIAL PDF</button>
+          <button className="export-btn export-btn-sec" onClick={() => window.open(OFFICIAL_RECORDS_PDF_U16, '_blank', 'noopener')} title="U16 / U18 European records — official PDF"><i className="fa-solid fa-download"></i>U16/U18 PDF</button>
+        </div>
+      ) : (
+        <button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button>
+      )}
     </div>
   );
 
@@ -961,15 +970,26 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                         <div className="records-subhead">{disc}</div>
                         {list.map((r, i) => {
                           const flag = recordFlagFor(r.federationCode);
+                          const members = String(r.athleteName || '').split(' / ');
+                          const isTeam = members.length > 1;               // командный рекорд — состав через " / "
+                          const rkey = r.id || `${disc}-${i}`;
+                          const expanded = expandedRec === rkey;
                           return (
-                          <div key={r.id || i} className="rankings-table-row records-grid">
-                            <div className="rt-col"><span className="record-type">{r.type}</span></div>
-                            <div className="rt-col"><span className="athlete-name">{r.athleteName}</span></div>
-                            <div className="rt-col rt-fed rt-hide-sm">{flag && <img src={flag} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.federationCode}</span></div>
-                            <div className="rt-col"><span className="record-value">{r.record}</span></div>
-                            <div className="rt-col rt-hide-sm"><span className="record-location">{r.location}</span></div>
-                            <div className="rt-col rt-hide-sm"><span className="record-date">{formatDate(r.date)}</span></div>
-                          </div>
+                          <Fragment key={rkey}>
+                            <div className={`rankings-table-row records-grid ${isTeam ? 'row-clickable' : ''} ${expanded ? 'row-expanded' : ''}`} onClick={isTeam ? () => setExpandedRec(expanded ? null : rkey) : undefined}>
+                              <div className="rt-col"><span className="record-type">{r.type}</span></div>
+                              <div className="rt-col"><span className="athlete-name">{r.athleteName}</span>{isTeam && <span className="expand-caret">{expanded ? '▾' : '▸'}</span>}</div>
+                              <div className="rt-col rt-fed rt-hide-sm">{flag && <img src={flag} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.federationCode}</span></div>
+                              <div className="rt-col"><span className="record-value">{r.record}</span></div>
+                              <div className="rt-col rt-hide-sm"><span className="record-location">{r.location}</span></div>
+                              <div className="rt-col rt-hide-sm"><span className="record-date">{formatDate(r.date)}</span></div>
+                            </div>
+                            {isTeam && expanded && (
+                              <div className="rec-members-row">
+                                {members.map((m, k) => <span key={k} className="rec-member"><i className="fa-solid fa-user rec-member-icon"></i>{m}</span>)}
+                              </div>
+                            )}
+                          </Fragment>
                           );
                         })}
                       </Fragment>
