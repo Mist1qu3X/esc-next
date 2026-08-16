@@ -575,18 +575,41 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             onChange={(e) => setRankingsSearchTerm(e.target.value)}
           />
         </div>
-        <select className="events-select" value="" onChange={(e) => {
-          const d = RANKING_DISCIPLINES.find((x) => `${x.main} ${x.sub}`.trim() === e.target.value);
-          if (d) { setSelectedDiscipline(d.discipline); setRankingsGender(d.gender); setGender(d.gender); setRankingsDetailLevel(true); }
-        }}>
-          <option value="">Discipline</option>
-          {rankingDisciplineOptions.map((o) => <option key={o}>{o}</option>)}
-        </select>
-        <select className="events-select" value={rankingsGender} onChange={(e) => setRankingsGender(e.target.value)}>
-          <option value="ALL">Gender</option>
-          <option value="MEN">Men</option>
-          <option value="WOMEN">Women</option>
-        </select>
+        {/* Дисциплина: у Records список строится ДИНАМИЧЕСКИ из самих рекордов (recordBases) и ведёт
+            в records-деталь; у Ranking — фиксированные 12 дисциплин рейтинга. */}
+        {activeTab === 'records' ? (
+          <select className="events-select" value="" onChange={(e) => {
+            const b = recordBases.find((x) => x.name === e.target.value);
+            if (b) { setSelectedDiscipline(b.name); setGender('ALL'); setResultsLevel(true); }
+          }}>
+            <option value="">Discipline</option>
+            {recordBases.map((b) => <option key={b.name} value={b.name}>{b.name}</option>)}
+          </select>
+        ) : (
+          <select className="events-select" value="" onChange={(e) => {
+            const d = RANKING_DISCIPLINES.find((x) => `${x.main} ${x.sub}`.trim() === e.target.value);
+            if (d) { setSelectedDiscipline(d.discipline); setRankingsGender(d.gender); setGender(d.gender); setRankingsDetailLevel(true); }
+          }}>
+            <option value="">Discipline</option>
+            {rankingDisciplineOptions.map((o) => <option key={o}>{o}</option>)}
+          </select>
+        )}
+        {/* Пол: Records фильтруются по общему `gender` (тем же, что использует records-деталь),
+            Ranking — по `rankingsGender`. Раньше на Records этот дропдаун писал не в то состояние. */}
+        {activeTab === 'records' ? (
+          <select className="events-select" value={gender} onChange={(e) => setGender(e.target.value)}>
+            <option value="ALL">Gender</option>
+            <option value="MEN">Men</option>
+            <option value="WOMEN">Women</option>
+            <option value="MIXED">Mixed</option>
+          </select>
+        ) : (
+          <select className="events-select" value={rankingsGender} onChange={(e) => setRankingsGender(e.target.value)}>
+            <option value="ALL">Gender</option>
+            <option value="MEN">Men</option>
+            <option value="WOMEN">Women</option>
+          </select>
+        )}
       </div>
       {/* Ссылаемся только на официальные документы: у Records — офиц. PDF рекордов; у Results/Ranking
           официальные PDF показаны в самой детали (result-book / per-discipline ranking). Общего
