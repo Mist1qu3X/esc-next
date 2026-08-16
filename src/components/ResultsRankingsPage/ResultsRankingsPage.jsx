@@ -206,7 +206,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     : (subDisciplines[0] || '');
   // Группируем под-дисциплины по СТАДИИ (часть после « — »): Qualification, Semifinals, Medal Match…
   // Табов бывает много (у Moving Target ~19: пол × юниоры × команда × стадии) — показываем аккордеоном.
+  const teamSubs = new Set(eventDisciplineResults.filter((r) => r.isTeam).map((r) => r.subDiscipline));
   const stageGroup = (sd) => {
+    if (teamSubs.has(sd)) return 'Teams';               // командные зачёты — в отдельную группу, не в «Individual»
     const s = (String(sd).split(' — ')[1] || '').trim().toLowerCase();
     if (!s) return 'Results';
     if (/qualif|phase|part|\bstage\b/.test(s)) return 'Qualification';
@@ -219,7 +221,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     if (/final/.test(s)) return 'Final';
     return (String(sd).split(' — ')[1] || '').trim();
   };
-  const GROUP_ORDER = ['Qualification', 'Quarter Finals', 'Semifinals', 'Final', 'Bronze Medal Match', 'Gold Medal Match', 'Medal Matches', 'Ranking Match', 'Results'];
+  const GROUP_ORDER = ['Qualification', 'Quarter Finals', 'Semifinals', 'Final', 'Bronze Medal Match', 'Gold Medal Match', 'Medal Matches', 'Ranking Match', 'Results', 'Teams'];
   const subGroups = {};
   subDisciplines.forEach((sd) => { const g = stageGroup(sd); (subGroups[g] = subGroups[g] || []).push(sd); });
   const orderedGroups = Object.keys(subGroups).sort((a, b) => {
@@ -369,9 +371,17 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     if (num >= 1) return 'shot-mid';      // попадание шотгана / низкое кольцо
     return 'shot-miss';                   // 0 = промах
   };
+  // Дуэль/очковый формат: сумма серий сильно больше тотала (тотал = очки матча, а не сумма выстрелов).
+  // В таких строках разворот по-выстрельно вводит в заблуждение — не раскрываем.
+  const isPointsRow = (r) => {
+    const ss = (Array.isArray(r.shots) ? r.shots : []).reduce((a, s) => a + (parseFloat(s) || 0), 0);
+    const t = parseFloat(r.total) || 0;
+    return ss > 0 && t > 0 && ss > t * 1.8;
+  };
+  const canExpand = (r) => !r.isTeam && !isPointsRow(r);
   // По клику на строку атлета тянем по-выстрельно (по одному запросу, кэшируем).
   const toggleShots = async (r) => {
-    if (r.isTeam || !r.id) return;
+    if (!canExpand(r) || !r.id) return;
     if (expandedId === r.id) { setExpandedId(null); return; }
     setExpandedId(r.id);
     if (shotCache[r.id] === undefined) {
@@ -669,9 +679,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               const grpSize = detail && detail.length ? Math.max(1, Math.round(detail.length / (shotsRaw.length || 1))) : 10;
               return (
                 <Fragment key={r.id || r.athleteName}>
-                <div className={`results-table-row ${medalClass} ${hasInner ? '' : 'no-inner'} ${!r.isTeam ? 'row-clickable' : ''} ${expanded ? 'row-expanded' : ''}`} onClick={() => toggleShots(r)}>
+                <div className={`results-table-row ${medalClass} ${hasInner ? '' : 'no-inner'} ${canExpand(r) ? 'row-clickable' : ''} ${expanded ? 'row-expanded' : ''}`} onClick={() => toggleShots(r)}>
                   <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
-                  <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span>{!r.isTeam && <span className="expand-caret">{expanded ? '▾' : '▸'}</span>}</div>
+                  <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span>{canExpand(r) && <span className="expand-caret">{expanded ? '▾' : '▸'}</span>}</div>
                   <div className="rt-col rt-spacer"></div>
                   <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.federationCode}</span></div>
                   <div className="rt-col rt-series">{r.isTeam
@@ -680,7 +690,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   <div className="rt-col rt-total"><span className={`total-value ${gi === 0 ? 'gold-value' : ''}`}>{r.total}</span></div>
                   {hasInner && <div className="rt-col rt-inner"><span className={`inner-value ${gi === 0 ? 'gold-value' : ''}`}>{r.inner10s}</span></div>}
                 </div>
-                {expanded && !r.isTeam && (
+                {expanded && canExpand(r) && (
                   <div className="shots-detail-row">
                     {detail === undefined ? <span className="shots-detail-msg">Loading shot-by-shot…</span>
                       : detail.length ? (
