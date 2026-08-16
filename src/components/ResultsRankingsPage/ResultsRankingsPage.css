@@ -1430,9 +1430,11 @@
 }
 .rec-member-icon { font-size: 11px; color: #5de0e6; opacity: 0.7; }
 
-/* Две кнопки официального PDF (Senior+Junior / U16-U18) в разделе Records. */
+/* Две кнопки официального PDF (Senior+Junior / U16-U18) в разделе Records.
+   Вторая — контурная: прозрачный фон, поэтому текст/иконку красим в голубой (базовый цвет тёмный). */
 .records-pdf-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-.export-btn.export-btn-sec { background: transparent; border: 1px solid rgba(93, 224, 230, 0.4); }
+.export-btn.export-btn-sec { background: transparent; border: 1px solid rgba(0, 216, 245, 0.5); color: #00d8f5; }
+.export-btn.export-btn-sec:hover { background: rgba(0, 216, 245, 0.12); color: #00d8f5; box-shadow: none; }
 
 .record-location {
     font-family: 'Inter', sans-serif;
