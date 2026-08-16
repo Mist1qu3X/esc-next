@@ -1352,6 +1352,23 @@
     grid-template-columns: clamp(44px, 5vw, 70px) minmax(0, 1.5fr) minmax(0, 0.9fr) minmax(0, 0.7fr) minmax(0, 1.8fr) minmax(0, 0.9fr);
 }
 
+/* Rankings — официальный формат esc-shooting.org: Rank / Name / Nation / Year of birth. */
+.rankings-table-header.rankings-grid,
+.rankings-table-row.rankings-grid {
+    grid-template-columns: clamp(44px, 5vw, 70px) minmax(0, 2.4fr) minmax(0, 1fr) minmax(0, 1.1fr);
+}
+
+.rt-yob { justify-content: center; }
+
+.rank-yob {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.5px;
+    font-variant-numeric: tabular-nums;
+}
+
 .record-type {
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 900;
@@ -2193,3 +2210,30 @@
 .sg-caret { margin-left: auto; font-size: 11px; transition: transform 0.18s ease; color: rgba(255, 255, 255, 0.4); }
 .subdisc-group.open .sg-caret { transform: rotate(180deg); color: #00d8f5; }
 .subdisc-group .subdisc-bar { margin: 0; padding: 4px 14px 14px; }
+
+/* Второй уровень под-дисциплин (особенно TEAMS): событие → чипы его стадий. */
+.subdisc-nested {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-start;
+    margin: 0 0 18px;
+}
+.subdisc-group .subdisc-nested { margin: 0; padding: 8px 14px 14px; width: 100%; }
+.subdisc-subgroup {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    align-items: flex-start;
+    width: 100%;
+}
+.subdisc-subgroup-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+}
+.subdisc-substages { display: flex; flex-wrap: wrap; gap: 8px; }
+.subdisc-btn-sm { padding: 5px 11px; font-size: 11px; }

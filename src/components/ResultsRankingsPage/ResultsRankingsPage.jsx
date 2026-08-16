@@ -44,6 +44,22 @@ const recordFlagFor = (code) => {
 // Официальные документы рекордов (esc-shooting.org): Senior+Junior и отдельно U16/U18. Обе — цели кнопок в Records.
 const OFFICIAL_RECORDS_PDF = 'https://esc-shooting.org/storage/2026/07/31/57b358c07315ac4a00714ba62aa252bb24170e56.pdf';
 const OFFICIAL_RECORDS_PDF_U16 = 'https://esc-shooting.org/storage/2026/05/29/a5f662fce904d17132fbb4f00ba9c9d72df5e431.pdf';
+// Официальные PDF рейтинга (esc-shooting.org/documents/ranking, дек. 2025) — источник таблиц
+// Rank/Name/Nation/Year of birth, по одному на дисциплину+пол. Ключ: `${discipline}|${GENDER}`.
+const OFFICIAL_RANKING_PDF = {
+  '10m Air Pistol|MEN': 'https://esc-shooting.org/storage/2025/12/01/49fa32ef4e0d11bb746a4da95b5751dd25172787.pdf',
+  '10m Air Rifle|MEN': 'https://esc-shooting.org/storage/2025/12/01/9e3dd623e56383738ecdf1cc73fc0021ea6a5a75.pdf',
+  '25m Rapid Fire Pistol|MEN': 'https://esc-shooting.org/storage/2025/12/01/4ca6d4afc9703df3810b08ba804b0efe92c7f7e0.pdf',
+  '50m Rifle 3 Position|MEN': 'https://esc-shooting.org/storage/2025/12/01/413a5eb181e1e4d00ede51e0941c59724bfbf0eb.pdf',
+  'Skeet|MEN': 'https://esc-shooting.org/storage/2025/12/01/ff0bdab06f46fcdb0a58f06e962cb9d7ce88f81c.pdf',
+  'Trap|MEN': 'https://esc-shooting.org/storage/2025/12/01/6696c29f23b9b723c9127e6df6df3ae9d9b77255.pdf',
+  '10m Air Pistol|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/506c83ff806ed005f226770f0d4ab5ec4a2979c4.pdf',
+  '10m Air Rifle|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/a771c81bc92512d1535c1d9f05fe6e0bcbc320a7.pdf',
+  '25m Pistol|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/a51d6378c4f046a02b8ff96541e2f145791810cf.pdf',
+  '50m Rifle 3 Position|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/9762a74245d0ac30b6c49062fc2dc47e520e9a68.pdf',
+  'Skeet|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/6a7755e66aa54a542347dfb8aed7ef75a68abe70.pdf',
+  'Trap|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/7184f96a772fc426086996e3e524238bb62f1bcd.pdf',
+};
 // Легенда типов рекордов — как в официальном PDF.
 const RECORD_TYPE_LEGEND = [
   ['ER', 'European Record'], ['EER', 'Equalled European Record'],
@@ -222,12 +238,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const getImageUrl = (img) => {
-    if (!img) return null;
-    if (typeof img === 'string') return img.startsWith('http') ? img : `${config.API_URL}${img}`;
-    return img.url?.startsWith('http') ? img.url : `${config.API_URL}${img.url}`;
-  };
-
   const switchTab = (tab) => {
     setActiveTab(tab);
     setDisciplineLevel(false);
@@ -294,6 +304,58 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   });
   const activeGroup = stageGroup(activeSub);          // группа, содержащая текущую вкладку
   const shownGroup = openGroup || activeGroup;         // какая группа раскрыта
+  // Порядок стадий внутри одного события: Qualification → Semifinal → Bronze → Gold → …
+  const stageRank = (sd) => {
+    const s = (String(sd).split(' — ')[1] || '').toLowerCase();
+    if (/qualif|phase|part|\bstage\b/.test(s)) return 0;
+    if (/quarter/.test(s)) return 1;
+    if (/semi.?final/.test(s)) return 2;
+    if (/bronze/.test(s)) return 3;
+    if (/gold/.test(s)) return 4;
+    if (/medal/.test(s)) return 5;
+    if (/final/.test(s)) return 6;
+    if (/ranking/.test(s)) return 7;
+    return 9;
+  };
+  // Второй уровень фильтра внутри группы (важно для TEAMS — там десятки зачётов): группируем
+  // вкладки по «событию» (часть до « — »). Одностадийные → одиночный чип с названием события;
+  // многостадийные → подпись события + компактные чипы стадий. 18 плоских кнопок → ~8 строк.
+  const renderSubItems = (items) => {
+    const byVariant = {};
+    items.forEach((sd) => { const v = sd.split(' — ')[0]; (byVariant[v] = byVariant[v] || []).push(sd); });
+    const variants = Object.keys(byVariant).sort((a, b) => a.localeCompare(b));
+    const nested = variants.some((v) => byVariant[v].length > 1);
+    if (!nested) {
+      return (
+        <div className="subdisc-bar">
+          {variants.map((v) => { const sd = byVariant[v][0]; return (
+            <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{v}</button>
+          ); })}
+        </div>
+      );
+    }
+    return (
+      <div className="subdisc-nested">
+        {variants.map((v) => {
+          const stages = byVariant[v].slice().sort((a, b) => stageRank(a) - stageRank(b) || a.localeCompare(b));
+          if (stages.length === 1) {
+            const sd = stages[0];
+            return <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{v}</button>;
+          }
+          return (
+            <div className="subdisc-subgroup" key={v}>
+              <span className="subdisc-subgroup-label">{v}</span>
+              <div className="subdisc-substages">
+                {stages.map((sd) => { const stage = sd.split(' — ').slice(1).join(' — ') || 'Result'; return (
+                  <button key={sd} className={`subdisc-btn subdisc-btn-sm ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{stage}</button>
+                ); })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
   // Порядок: по месту (position), unranked (0) — в конец, при равенстве — по тоталу убыв.
   const posKey = (r) => (r.position && r.position > 0 ? r.position : 9999);
   const totKey = (r) => parseFloat((String(r.total).match(/[\d.]+/) || [0])[0]) || 0;
@@ -320,7 +382,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     return matchDiscipline && matchGender && matchSearch;
   });
 
-  const displayRankings = filteredRankings;
+  // Для gender-специфичного вида — чистый порядок по официальному месту; для ALL — сначала
+  // все MEN (1..N), затем все WOMEN (1..N), чтобы не мешались два первых места вперемешку.
+  const displayRankings = [...filteredRankings].sort((a, b) =>
+    a.category === b.category ? ((a.position || 0) - (b.position || 0)) : (a.category === 'MEN' ? -1 : 1)
+  );
 
   // Базовые дисциплины рекордов — динамически из данных (для сетки выбора Level 1).
   const recordBases = useMemo(() => {
@@ -743,10 +809,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 {orderedGroups.map((grp) => {
                   const items = subGroups[grp];
                   const isOpen = shownGroup === grp;
-                  // Если в группе несколько вкладок с одинаковым названием (напр. Phase 1/2/3
-                  // элиминационного нокаута) — дописываем стадию, чтобы они различались.
-                  const variantCount = {};
-                  items.forEach((sd) => { const v = sd.split(' — ')[0]; variantCount[v] = (variantCount[v] || 0) + 1; });
                   return (
                     <div className={`subdisc-group ${isOpen ? 'open' : ''}`} key={grp}>
                       <button className="subdisc-group-head" onClick={() => setOpenGroup(isOpen ? '__none__' : grp)}>
@@ -754,27 +816,13 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                         <span className="sg-count">{items.length}</span>
                         <i className="fa-solid fa-chevron-down sg-caret"></i>
                       </button>
-                      {isOpen && (
-                        <div className="subdisc-bar">
-                          {items.map((sd) => {
-                            const parts = sd.split(' — ');
-                            const variant = parts[0];
-                            const stage = parts.slice(1).join(' — ');
-                            const label = variantCount[variant] > 1 && stage ? `${variant} · ${stage}` : variant;
-                            return <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{label}</button>;
-                          })}
-                        </div>
-                      )}
+                      {isOpen && renderSubItems(items)}
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div className="subdisc-bar">
-                {subDisciplines.map((sd) => (
-                  <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{sd}</button>
-                ))}
-              </div>
+              renderSubItems(subDisciplines)
             )
           )}
           {displayResults.length > 0 ? (<>
@@ -887,9 +935,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       {activeTab === 'ranking' && !rankingsDetailLevel && (
         <section className="rankings-level">
           {rankingsFilterBar}
-          <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RANKINGS</span></div>
+          <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC EUROPEAN RANKING</span></div>
           <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
-          <p className="discipline-desc">Choose a discipline to view season rankings</p>
+          <p className="discipline-desc">Choose a discipline to view the European ranking</p>
           <div className="discipline-grid ranking-grid">
             {RANKING_DISCIPLINES.map((d, i) => (
               <div key={i} className="discipline-card" onClick={() => { setRankingsDetailLevel(true); setSelectedDiscipline(d.discipline); setRankingsGender(d.gender); }}>
@@ -907,28 +955,39 @@ const ResultsRankingsPage = ({ embedded = false }) => {
         <section className="rankings-detail">
           {rankingsFilterBar}
           <div className="rankings-detail-breadcrumbs"><span className="rd-breadcrumb" onClick={() => setRankingsDetailLevel(false)}>Rankings</span><span className="rd-breadcrumb-sep">›</span><span className="rd-breadcrumb-active">{selectedDiscipline}</span></div>
-          <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC SEASON RANKINGS</span></div>
-          <div className="rankings-detail-topbar"><h2 className="rankings-detail-title">{selectedDiscipline.toUpperCase()}{rankingsGender !== 'ALL' ? ` — ${rankingsGender}` : ''}</h2></div>
+          <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC EUROPEAN RANKING</span></div>
+          <div className="rankings-detail-topbar">
+            <h2 className="rankings-detail-title">{selectedDiscipline.toUpperCase()}{rankingsGender !== 'ALL' ? ` — ${rankingsGender}` : ''}</h2>
+            <div className="records-pdf-btns">
+              {(rankingsGender === 'ALL' ? ['MEN', 'WOMEN'] : [rankingsGender]).map((g) => {
+                const pdf = OFFICIAL_RANKING_PDF[`${selectedDiscipline}|${g}`];
+                return pdf ? (
+                  <a key={g} className="export-btn export-btn-sec" href={pdf} target="_blank" rel="noopener noreferrer">
+                    <i className="fa-solid fa-file-pdf"></i> OFFICIAL PDF{rankingsGender === 'ALL' ? ` · ${g}` : ''}
+                  </a>
+                ) : null;
+              })}
+            </div>
+          </div>
           <div className="rankings-table-container">
-            <div className="rankings-table-header">
-              <div className="rt-col rt-rank">RANK</div><div className="rt-col rt-athlete">ATHLETE</div><div className="rt-col rt-spacer-wide"></div>
-              <div className="rt-col rt-fed">FEDERATION</div><div className="rt-col rt-points">POINTS</div><div className="rt-col rt-events">EVENTS</div><div className="rt-col rt-best">BEST</div>
+            <div className="rankings-table-header rankings-grid">
+              <div className="rt-col rt-rank">RANK</div>
+              <div className="rt-col rt-athlete">NAME</div>
+              <div className="rt-col rt-fed">NATION</div>
+              <div className="rt-col rt-yob">YEAR OF BIRTH</div>
             </div>
             {displayRankings.length > 0 ? pagedRankings.map((r, i) => {
               const gi = (rankingsPage - 1) * PER_PAGE + i;
+              const pos = r.position || (gi + 1);
               const medals = ['medal-row medal-gold', 'medal-row medal-silver', 'medal-row medal-bronze'];
-              const medalClass = gi < 3 ? medals[gi] : '';
-              const maxPoints = parseFloat(String(displayRankings[0]?.points).replace(',', '')) || 1;
-              const barWidth = (parseFloat(String(r.points).replace(',', '')) / maxPoints) * 100;
+              const medalClass = pos <= 3 ? medals[pos - 1] : '';
+              const flag = recordFlagFor(r.country);
               return (
-                <div key={r.id || r.athleteName} className={`rankings-table-row ${medalClass}`}>
-                  <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
+                <div key={r.id || `${r.athleteName}-${gi}`} className={`rankings-table-row rankings-grid ${medalClass}`}>
+                  <div className="rt-col rt-rank">{pos <= 3 ? <img src={`/img/${['First', 'Second', 'Third'][pos - 1]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{pos}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span></div>
-                  <div className="rt-col rt-spacer-wide"></div>
-                  <div className="rt-col rt-fed">{r.flagEmoji ? <span className="fed-flag-emoji">{r.flagEmoji}</span> : (r.flag && <img src={getImageUrl(r.flag)} className="fed-flag-img" alt="" />)}<span>{r.country}</span></div>
-                  <div className="rt-col rt-points"><div className="points-block"><span className={`points-value ${gi === 0 ? 'gold-value' : ''}`}>{r.points}</span><div className="points-bar"><div className="points-bar-fill" style={{ width: `${barWidth}%` }}></div></div></div></div>
-                  <div className="rt-col rt-events"><span className="events-value">{r.events}</span></div>
-                  <div className="rt-col rt-best"><span className={`best-value ${gi === 0 ? 'gold-value' : ''}`}>{r.best}</span></div>
+                  <div className="rt-col rt-fed">{flag && <img src={flag} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.country}</span></div>
+                  <div className="rt-col rt-yob"><span className="rank-yob">{r.yearOfBirth || '—'}</span></div>
                 </div>
               );
             }) : (
