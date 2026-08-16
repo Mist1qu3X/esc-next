@@ -215,6 +215,32 @@ const SelectedEventPage = ({ slug }) => {
   const RESULT_RE = /result|ranklist|results book/i;
   const resultBookDocs = (event?.documents || []).filter((d) => RESULT_RE.test(d.name || '') && d.file);
   const otherDocs = (event?.documents || []).filter((d) => !RESULT_RE.test(d.name || ''));
+  const scheduleDocs = (event?.documents || []).filter((d) => /schedule|programme|program\b/i.test(d.name || '') && d.file);
+
+  // Единый рендер строки файла (иконка типа, имя-ссылка, скачать, превью) — для DOCUMENTS,
+  // Result-book в RESULTS и schedule-PDF в расписании.
+  const docFileRow = (d, i) => {
+    const url = d.file?.url ? (d.file.url.startsWith('http') ? d.file.url : `${config.API_URL}${d.file.url}`) : null;
+    const ft = fileTypeMeta(d.file, d.name);
+    const prevUrl = previewUrlFor(url, d.file, d.name);
+    return (
+      <div className="docs-file" key={i}>
+        <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
+        <div className="docs-file-info">
+          {(prevUrl || url)
+            ? <a className="docs-file-name docs-file-name-link" href={prevUrl || url} target="_blank" rel="noopener noreferrer">{d.name}</a>
+            : <span className="docs-file-name">{d.name}</span>}
+          <span className="docs-file-meta">{d.fileSize || '—'}</span>
+        </div>
+        <button className="docs-file-pdf" onClick={() => url && forceDownload(url, `${d.name || 'document'}${d.file?.ext || ''}`)} title="Download file">
+          <i className="fa-solid fa-download"></i>{ft.label}
+        </button>
+        {prevUrl
+          ? <button className="docs-file-view" onClick={() => window.open(prevUrl, '_blank')} title="Preview in browser"><i className="fa-solid fa-eye"></i></button>
+          : <button className="docs-file-view docs-file-view-off" disabled title="No in-browser preview — use download"><i className="fa-solid fa-eye-slash"></i></button>}
+      </div>
+    );
+  };
 
   // RESULTS этого события — группируем по КОНКРЕТНОЙ под-дисциплине (subDiscipline: стадия/событие),
   // иначе Qualification/Final/Standard/Junior сольются в одну таблицу. Внутри — сорт по месту + дедуп.
@@ -361,13 +387,22 @@ const SelectedEventPage = ({ slug }) => {
                     </div>
                   ))}
                 </div>
+                ) : scheduleDocs.length > 0 ? (
+                  <div>
+                    <p className="event-description">The detailed programme for this event is available as a PDF:</p>
+                    <div className="docs-acc-files" style={{ marginTop: 4 }}>{scheduleDocs.map(docFileRow)}</div>
+                  </div>
+                ) : hasProgrammePdf ? (
+                  <div className="stream-scheduled" style={{ maxWidth: 480, margin: '24px auto 8px' }}>
+                    <i className="fa-regular fa-file-pdf stream-scheduled-icon"></i>
+                    <span className="stream-scheduled-title">PROGRAMME IN DOCUMENTS</span>
+                    <span className="stream-scheduled-text">The detailed programme for this event is available in the Documents tab.</span>
+                  </div>
                 ) : (
                   <div className="stream-scheduled" style={{ maxWidth: 480, margin: '24px auto 8px' }}>
-                    <i className={`fa-regular ${hasProgrammePdf ? 'fa-file-pdf' : 'fa-calendar-xmark'} stream-scheduled-icon`}></i>
-                    <span className="stream-scheduled-title">{hasProgrammePdf ? 'PROGRAMME IN DOCUMENTS' : 'SCHEDULE NOT AVAILABLE'}</span>
-                    <span className="stream-scheduled-text">{hasProgrammePdf
-                      ? 'The detailed programme for this event is available in the Documents tab.'
-                      : 'No schedule has been published for this event yet.'}</span>
+                    <i className="fa-regular fa-calendar-xmark stream-scheduled-icon"></i>
+                    <span className="stream-scheduled-title">SCHEDULE NOT AVAILABLE</span>
+                    <span className="stream-scheduled-text">No schedule has been published for this event yet.</span>
                   </div>
                 )}
               </>
@@ -376,31 +411,7 @@ const SelectedEventPage = ({ slug }) => {
             {activeTab === 'DOCUMENTS' && (
               (otherDocs.length > 0) ? (
                 <div className="docs-acc-files" style={{ marginTop: 4 }}>
-                  {otherDocs.map((d, i) => {
-                    const url = d.file?.url ? (d.file.url.startsWith('http') ? d.file.url : `${config.API_URL}${d.file.url}`) : null;
-                    const ft = fileTypeMeta(d.file, d.name);
-                    const prevUrl = previewUrlFor(url, d.file, d.name);
-                    return (
-                      <div className="docs-file" key={i}>
-                        <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
-                        <div className="docs-file-info">
-                          {(prevUrl || url)
-                            ? <a className="docs-file-name docs-file-name-link" href={prevUrl || url} target="_blank" rel="noopener noreferrer">{d.name}</a>
-                            : <span className="docs-file-name">{d.name}</span>}
-                          <span className="docs-file-meta">{d.fileSize || '—'}</span>
-                          <span className="docs-file-meta-mobile">{d.fileSize || ''}</span>
-                        </div>
-                        <button className="docs-file-pdf" onClick={() => url && forceDownload(url, `${d.name || 'document'}${d.file?.ext || ''}`)} title="Download file">
-                          <i className="fa-solid fa-download"></i>{ft.label}
-                        </button>
-                        {prevUrl ? (
-                          <button className="docs-file-view" onClick={() => window.open(prevUrl, '_blank')} title="Preview in browser"><i className="fa-solid fa-eye"></i></button>
-                        ) : (
-                          <button className="docs-file-view docs-file-view-off" disabled title="No in-browser preview — use download"><i className="fa-solid fa-eye-slash"></i></button>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {otherDocs.map(docFileRow)}
                 </div>
               ) : (
                 <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
@@ -414,82 +425,70 @@ const SelectedEventPage = ({ slug }) => {
             {activeTab === 'RESULTS' && (
               <>
                 <h2 className="event-section-title">RESULTS</h2>
-                {!resultsAvailable ? (
-                  resultBookDocs.length > 0 ? (
-                    <>
-                      <p className="event-description">Official result book{resultBookDocs.length > 1 ? 's' : ''} for {event.name}.</p>
-                      <div className="docs-acc-files" style={{ marginTop: 4 }}>
-                        {resultBookDocs.map((d, i) => {
-                          const url = d.file?.url ? (d.file.url.startsWith('http') ? d.file.url : `${config.API_URL}${d.file.url}`) : null;
-                          const ft = fileTypeMeta(d.file, d.name);
-                          const prevUrl = previewUrlFor(url, d.file, d.name);
-                          return (
-                            <div className="docs-file" key={i}>
-                              <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
-                              <div className="docs-file-info">
-                                {(prevUrl || url)
-                                  ? <a className="docs-file-name docs-file-name-link" href={prevUrl || url} target="_blank" rel="noopener noreferrer">{d.name}</a>
-                                  : <span className="docs-file-name">{d.name}</span>}
-                                <span className="docs-file-meta">{d.fileSize || '—'}</span>
-                              </div>
-                              <button className="docs-file-pdf" onClick={() => url && forceDownload(url, `${d.name || 'document'}${d.file?.ext || ''}`)} title="Download file">
-                                <i className="fa-solid fa-download"></i>{ft.label}
-                              </button>
-                              {prevUrl && <button className="docs-file-view" onClick={() => window.open(prevUrl, '_blank')} title="Preview in browser"><i className="fa-solid fa-eye"></i></button>}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  ) : (
-                    <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
-                      <i className="fa-regular fa-clock stream-scheduled-icon"></i>
-                      <span className="stream-scheduled-title">RESULTS PENDING</span>
-                      <span className="stream-scheduled-text">{effStatus === 'UPCOMING'
-                        ? 'Results will be published here once the competition begins.'
-                        : 'Official results will appear here once the competition is complete.'}</span>
-                    </div>
-                  )
-                ) : !resultDisc ? (
+                {resultsAvailable ? (
                   <>
-                    <p className="event-description">Select a discipline to view official results for {event.name}.</p>
-                    <div className="se-disc-grid">
-                      {Object.entries(resultGroups).map(([disc, rows]) => {
-                        const parts = disc.split(' — ');
-                        const mainDisc = parts[0];
-                        const stage = parts.slice(1).join(' — ');
-                        return (
-                          <div className="se-disc-card" key={disc} onClick={() => setResultDisc(disc)}>
-                            <h3 className="se-disc-title"><span className="se-disc-main">{mainDisc}</span><span className="se-disc-sub">{stage ? `${stage} · ` : ''}{rows.length} athletes</span></h3>
-                            <div className="se-disc-icon"><img src={discIcon(mainDisc)} alt="" /></div>
-                            <span className="se-disc-arrow">›</span>
+                    {!resultDisc ? (
+                      <>
+                        <p className="event-description">Select a discipline to view official results for {event.name}.</p>
+                        <div className="se-disc-grid">
+                          {Object.entries(resultGroups).map(([disc, rows]) => {
+                            const parts = disc.split(' — ');
+                            const mainDisc = parts[0];
+                            const stage = parts.slice(1).join(' — ');
+                            return (
+                              <div className="se-disc-card" key={disc} onClick={() => setResultDisc(disc)}>
+                                <h3 className="se-disc-title"><span className="se-disc-main">{mainDisc}</span><span className="se-disc-sub">{stage ? `${stage} · ` : ''}{rows.length} athletes</span></h3>
+                                <div className="se-disc-icon"><img src={discIcon(mainDisc)} alt="" /></div>
+                                <span className="se-disc-arrow">›</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="se-results-breadcrumb">
+                          <span className="se-bc-link" onClick={() => setResultDisc(null)}>Results</span>
+                          <span className="se-bc-sep">›</span>
+                          <span className="se-bc-active">{resultDisc}</span>
+                        </div>
+                        <div className="event-result-block">
+                          <div className="event-result-table">
+                            <div className="er-head"><span>RANK</span><span>ATHLETE</span><span>FED</span><span>TOTAL</span><span>INNER 10s</span></div>
+                            {resultGroups[resultDisc].map((r, i) => (
+                              <div className={`er-row ${i < 3 ? 'er-medal er-medal-' + (i + 1) : ''}`} key={r.id || i}>
+                                <span className="er-rank">{i + 1}</span>
+                                <span className="er-name">{r.athleteName}</span>
+                                <span className="er-fed">{r.federationCode}</span>
+                                <span className="er-total">{r.total}</span>
+                                <span className="er-inner">{r.inner10s}</span>
+                              </div>
+                            ))}
                           </div>
-                        );
-                      })}
-                    </div>
+                        </div>
+                      </>
+                    )}
+                    {/* Официальный result-book PDF — под нашей таблицей, если он есть. */}
+                    {resultBookDocs.length > 0 && (
+                      <div style={{ marginTop: 26 }}>
+                        <h3 className="event-subtitle">Official result book (PDF)</h3>
+                        <div className="docs-acc-files" style={{ marginTop: 4 }}>{resultBookDocs.map(docFileRow)}</div>
+                      </div>
+                    )}
+                  </>
+                ) : resultBookDocs.length > 0 ? (
+                  <>
+                    <p className="event-description">Official result book{resultBookDocs.length > 1 ? 's' : ''} for {event.name}.</p>
+                    <div className="docs-acc-files" style={{ marginTop: 4 }}>{resultBookDocs.map(docFileRow)}</div>
                   </>
                 ) : (
-                  <>
-                    <div className="se-results-breadcrumb">
-                      <span className="se-bc-link" onClick={() => setResultDisc(null)}>Results</span>
-                      <span className="se-bc-sep">›</span>
-                      <span className="se-bc-active">{resultDisc}</span>
-                    </div>
-                    <div className="event-result-block">
-                      <div className="event-result-table">
-                        <div className="er-head"><span>RANK</span><span>ATHLETE</span><span>FED</span><span>TOTAL</span><span>INNER 10s</span></div>
-                        {resultGroups[resultDisc].map((r, i) => (
-                          <div className={`er-row ${i < 3 ? 'er-medal er-medal-' + (i + 1) : ''}`} key={r.id || i}>
-                            <span className="er-rank">{i + 1}</span>
-                            <span className="er-name">{r.athleteName}</span>
-                            <span className="er-fed">{r.federationCode}</span>
-                            <span className="er-total">{r.total}</span>
-                            <span className="er-inner">{r.inner10s}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </>
+                  <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
+                    <i className="fa-regular fa-clock stream-scheduled-icon"></i>
+                    <span className="stream-scheduled-title">RESULTS PENDING</span>
+                    <span className="stream-scheduled-text">{effStatus === 'UPCOMING'
+                      ? 'Results will be published here once the competition begins.'
+                      : 'Official results will appear here once the competition is complete.'}</span>
+                  </div>
                 )}
                 <button className="event-tab-cta" onClick={() => router.push('/results')}>FULL RESULTS &amp; RANKINGS ›</button>
               </>
