@@ -204,6 +204,12 @@ const SelectedEventPage = ({ slug }) => {
   const scheduleRows = event?.schedule?.length ? event.schedule : [];
   const displaySchedule = scheduleRows.length > 0 ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
 
+  // Официальный Result-book PDF события: показываем в табе RESULTS (если нет структурных данных)
+  // и УБИРАЕМ из списка DOCUMENTS, чтобы не дублировался.
+  const RESULT_RE = /result|ranklist|results book/i;
+  const resultBookDocs = (event?.documents || []).filter((d) => RESULT_RE.test(d.name || '') && d.file);
+  const otherDocs = (event?.documents || []).filter((d) => !RESULT_RE.test(d.name || ''));
+
   // RESULTS этого события — группируем по КОНКРЕТНОЙ под-дисциплине (subDiscipline: стадия/событие),
   // иначе Qualification/Final/Standard/Junior сольются в одну таблицу. Внутри — сорт по месту + дедуп.
   const rPosKey = (r) => (r.position && r.position > 0 ? r.position : 9999);
@@ -325,6 +331,7 @@ const SelectedEventPage = ({ slug }) => {
 
                 {/* ALL EVENTS (вместо VENUE) */}
                 <h3 className="event-subtitle ae-title">ALL EVENTS</h3>
+                {displaySchedule.length > 0 ? (
                 <div className="all-events-table">
                   <div className="ae-header">
                     <span>DATES</span><span>TIME</span><span>EVENT</span><span>STAGES</span>
@@ -348,13 +355,20 @@ const SelectedEventPage = ({ slug }) => {
                     </div>
                   ))}
                 </div>
+                ) : (
+                  <div className="stream-scheduled" style={{ maxWidth: 480, margin: '24px auto 8px' }}>
+                    <i className="fa-regular fa-calendar-xmark stream-scheduled-icon"></i>
+                    <span className="stream-scheduled-title">SCHEDULE NOT AVAILABLE</span>
+                    <span className="stream-scheduled-text">No schedule has been published for this event yet.</span>
+                  </div>
+                )}
               </>
             )}
 
             {activeTab === 'DOCUMENTS' && (
-              (event.documents?.length > 0) ? (
+              (otherDocs.length > 0) ? (
                 <div className="docs-acc-files" style={{ marginTop: 4 }}>
-                  {event.documents.map((d, i) => {
+                  {otherDocs.map((d, i) => {
                     const url = d.file?.url ? (d.file.url.startsWith('http') ? d.file.url : `${config.API_URL}${d.file.url}`) : null;
                     const ft = fileTypeMeta(d.file, d.name);
                     const prevUrl = previewUrlFor(url, d.file, d.name);
@@ -393,13 +407,41 @@ const SelectedEventPage = ({ slug }) => {
               <>
                 <h2 className="event-section-title">RESULTS</h2>
                 {!resultsAvailable ? (
-                  <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
-                    <i className="fa-regular fa-clock stream-scheduled-icon"></i>
-                    <span className="stream-scheduled-title">RESULTS PENDING</span>
-                    <span className="stream-scheduled-text">{effStatus === 'UPCOMING'
-                      ? 'Results will be published here once the competition begins.'
-                      : 'Official results will appear here once the competition is complete.'}</span>
-                  </div>
+                  resultBookDocs.length > 0 ? (
+                    <>
+                      <p className="event-description">Official result book{resultBookDocs.length > 1 ? 's' : ''} for {event.name}.</p>
+                      <div className="docs-acc-files" style={{ marginTop: 4 }}>
+                        {resultBookDocs.map((d, i) => {
+                          const url = d.file?.url ? (d.file.url.startsWith('http') ? d.file.url : `${config.API_URL}${d.file.url}`) : null;
+                          const ft = fileTypeMeta(d.file, d.name);
+                          const prevUrl = previewUrlFor(url, d.file, d.name);
+                          return (
+                            <div className="docs-file" key={i}>
+                              <i className={`fa-solid ${ft.icon} docs-file-icon`} style={{ color: ft.color }}></i>
+                              <div className="docs-file-info">
+                                {(prevUrl || url)
+                                  ? <a className="docs-file-name docs-file-name-link" href={prevUrl || url} target="_blank" rel="noopener noreferrer">{d.name}</a>
+                                  : <span className="docs-file-name">{d.name}</span>}
+                                <span className="docs-file-meta">{d.fileSize || '—'}</span>
+                              </div>
+                              <button className="docs-file-pdf" onClick={() => url && forceDownload(url, `${d.name || 'document'}${d.file?.ext || ''}`)} title="Download file">
+                                <i className="fa-solid fa-download"></i>{ft.label}
+                              </button>
+                              {prevUrl && <button className="docs-file-view" onClick={() => window.open(prevUrl, '_blank')} title="Preview in browser"><i className="fa-solid fa-eye"></i></button>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
+                      <i className="fa-regular fa-clock stream-scheduled-icon"></i>
+                      <span className="stream-scheduled-title">RESULTS PENDING</span>
+                      <span className="stream-scheduled-text">{effStatus === 'UPCOMING'
+                        ? 'Results will be published here once the competition begins.'
+                        : 'Official results will appear here once the competition is complete.'}</span>
+                    </div>
+                  )
                 ) : !resultDisc ? (
                   <>
                     <p className="event-description">Select a discipline to view official results for {event.name}.</p>
