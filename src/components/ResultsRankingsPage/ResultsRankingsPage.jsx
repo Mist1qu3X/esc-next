@@ -29,8 +29,33 @@ const IC_SHOTGUN = '/img/Icon4.png';
 // Open/Junior/Men/Women/U16/U18); вариант = остаток. Позволяет строить сетку/фильтры динамически.
 const REC_VARIANT_TOK = /^(solo|trio|duet|mixed|team|open|junior|men|women|u16|u18)$/i;
 const recordBase = (d) => { const t = String(d || '').trim().split(/\s+/); while (t.length && REC_VARIANT_TOK.test(t[t.length - 1])) t.pop(); return t.join(' '); };
-const recordVariant = (d) => { const b = recordBase(d); return String(d || '').slice(b.length).trim(); };
-const recIcon = (base) => (/pistol/i.test(base) ? IC_PISTOL : /rifle/i.test(base) ? IC_RIFLE : IC_PISTOL);
+const recIcon = (base) => (/trap|skeet/i.test(base) ? IC_SHOTGUN : /pistol/i.test(base) ? IC_PISTOL : IC_RIFLE);
+
+// Флаг для РЕКОРДОВ (исторический): показываем все, включая RUS (флаг России) и URS (флаг СССР — SIUS
+// его не отдаёт, берём локальный). AIN → эмблема нейтрального атлета. Отличается от flagFor (в Results
+// у RUS флага нет). "AIN2"/"SUI1" → базовый код.
+const USSR_FLAG = '/img/flag-urs.svg';
+const recordFlagFor = (code) => {
+  const c = String(code || '').trim().toUpperCase().replace(/\s.*$/, '').replace(/\d+$/, '');
+  if (!c) return null;
+  if (c === 'URS') return USSR_FLAG;
+  return `https://shootingsportscloud.com:8594/api/v1/Resource/flag/${c}`;
+};
+// Официальный документ рекордов (цель кнопки EXPORT PDF в разделе Records).
+const OFFICIAL_RECORDS_PDF = 'https://esc-shooting.org/storage/2026/07/31/57b358c07315ac4a00714ba62aa252bb24170e56.pdf';
+// Легенда типов рекордов — как в официальном PDF.
+const RECORD_TYPE_LEGEND = [
+  ['ER', 'European Record'], ['EER', 'Equalled European Record'],
+  ['QER', 'Qualification European Record'], ['EQER', 'Equalled Qualification European Record'],
+  ['ERT', 'European Record Team'], ['EERT', 'Equalled European Record Team'],
+  ['QERT', 'Qualification European Record Team'],
+  ['ERJ', 'European Record Junior'], ['EERJ', 'Equalled European Record Junior'],
+  ['QERJ', 'Qualification European Record Junior'], ['EQERJ', 'Equalled Qualification European Record Junior'],
+  ['ERJT', 'European Record Junior Team'], ['EERJT', 'Equalled European Record Junior Team'],
+  ['QERJT', 'Qualification European Record Junior Team'],
+];
+const RECORD_TYPE_ORDER = RECORD_TYPE_LEGEND.map((x) => x[0]);
+const typeRank = (t) => { const i = RECORD_TYPE_ORDER.indexOf(String(t || '').toUpperCase()); return i < 0 ? 99 : i; };
 const RANKING_DISCIPLINES = [
   { main: '10M PISTOL', sub: 'MEN', discipline: '10m Air Pistol', gender: 'MEN', icon: IC_PISTOL },
   { main: '25M RAPID FIRE', sub: 'PISTOL', discipline: '25m Rapid Fire Pistol', gender: 'MEN', icon: IC_PISTOL },
@@ -89,7 +114,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [rankingsSearchTerm, setRankingsSearchTerm] = useState('');
   const [resultsPage, setResultsPage] = useState(1);
   const [rankingsPage, setRankingsPage] = useState(1);
-  const [recordsPage, setRecordsPage] = useState(1);
   const [loaded, setLoaded] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false); // короткая загрузка при входе на таблицу (3 уровень)
   const [selectedEventBooks, setSelectedEventBooks] = useState([]); // ЦЕЛЫЕ официальные result-book выбранного события (не порезанный по-событийный SIUS-файл)
@@ -278,14 +302,23 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     const present = new Set(records.filter((r) => recordBase(r.discipline) === selectedDiscipline).map((r) => (r.category || '').toUpperCase()));
     return ['ALL', ...['MEN', 'WOMEN', 'MIXED'].filter((c) => present.has(c))];
   }, [records, selectedDiscipline]);
-  // Рекорды выбранной базовой дисциплины: фильтр по категории + поиску, сортировка по варианту/типу.
+  // Рекорды выбранной базовой дисциплины: фильтр по категории + поиску.
   const filteredRecords = records.filter((r) => {
     const baseMatch = recordBase(r.discipline) === selectedDiscipline;
     const catMatch = gender === 'ALL' || (r.category || '').toUpperCase() === gender;
     const searchMatch = !rankingsSearchTerm || (r.athleteName || '').toLowerCase().includes(rankingsSearchTerm.toLowerCase());
     return baseMatch && catMatch && searchMatch;
-  }).sort((a, b) => recordVariant(a.discipline).localeCompare(recordVariant(b.discipline)) || (a.type || '').localeCompare(b.type || ''));
+  });
   const displayRecords = filteredRecords;
+  // Группировка по полной дисциплине — подзаголовки как в официальном PDF (Men → Women → Mixed; тип по порядку).
+  const REC_CAT_RANK = { MEN: 0, WOMEN: 1, MIXED: 2, ALL: 3 };
+  const recordGroups = (() => {
+    const g = {};
+    displayRecords.forEach((r) => { (g[r.discipline] = g[r.discipline] || []).push(r); });
+    return Object.entries(g)
+      .map(([disc, list]) => [disc, list.slice().sort((a, b) => typeRank(a.type) - typeRank(b.type))])
+      .sort((a, b) => ((REC_CAT_RANK[a[1][0].category] ?? 9) - (REC_CAT_RANK[b[1][0].category] ?? 9)) || a[0].localeCompare(b[0]));
+  })();
 
   // Командный вид (строки-команды) и официальный PDF-ранклист текущей выборки
   const teamView = displayResults[0]?.isTeam || false;
@@ -299,14 +332,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   // Пагинация по 10 на страницу
   const pagedResults = displayResults.slice((resultsPage - 1) * PER_PAGE, resultsPage * PER_PAGE);
   const pagedRankings = displayRankings.slice((rankingsPage - 1) * PER_PAGE, rankingsPage * PER_PAGE);
-  const pagedRecords = displayRecords.slice((recordsPage - 1) * PER_PAGE, recordsPage * PER_PAGE);
 
   // Сброс на первую страницу при смене фильтров
   useEffect(() => { setResultsPage(1); }, [selectedDiscipline, selectedSubDiscipline, gender, selectedEvent, resultDetails.length]);
   // При смене дисциплины/события/пола сбрасываем раскрытую группу (откроется группа активной вкладки).
   useEffect(() => { setOpenGroup(''); }, [selectedDiscipline, selectedEvent, gender]);
   useEffect(() => { setRankingsPage(1); }, [selectedDiscipline, rankingsGender, rankingsSearchTerm, rankings.length]);
-  useEffect(() => { setRecordsPage(1); }, [selectedDiscipline, gender, records.length]);
 
   // Показываем только события, у которых реально есть результаты (как на офиц. сайте):
   // либо структурные (SIUS), либо official result-book PDF. Иначе среди 800+ событий
@@ -463,7 +494,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           <option value="WOMEN">Women</option>
         </select>
       </div>
-      <button className="export-btn" onClick={handleExportPDF}><i className="fa-solid fa-download"></i>EXPORT PDF</button>
+      <button className="export-btn" onClick={() => (activeTab === 'records' ? window.open(OFFICIAL_RECORDS_PDF, '_blank', 'noopener') : handleExportPDF())}><i className="fa-solid fa-download"></i>{activeTab === 'records' ? 'OFFICIAL PDF' : 'EXPORT PDF'}</button>
     </div>
   );
 
@@ -888,7 +919,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 {recordBases.map((b) => {
                   const [mainTok, ...subToks] = b.name.split(' ');
                   return (
-                    <div key={b.name} className="discipline-card" onClick={() => { setSelectedDiscipline(b.name); setGender('ALL'); setRecordsPage(1); setResultsLevel(true); }}>
+                    <div key={b.name} className="discipline-card" onClick={() => { setSelectedDiscipline(b.name); setGender('ALL'); setResultsLevel(true); }}>
                       <h3 className="disc-card-title"><span className="disc-main">{mainTok}</span><span className="disc-sub">{subToks.join(' ')} · {b.count} record{b.count !== 1 ? 's' : ''}</span></h3>
                       <div className="disc-card-icon"><img src={recIcon(b.name)} alt="" /><span className="disc-card-arrow">›</span></div>
                     </div>
@@ -913,29 +944,38 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               </div>
               <div className="rankings-detail-topbar">
                 <h2 className="rankings-detail-title">{selectedDiscipline.toUpperCase()}{gender !== 'ALL' ? ` — ${gender}` : ''}</h2>
-                <select className="records-category-select" value={gender} onChange={(e) => { setGender(e.target.value); setRecordsPage(1); }}>
+                <select className="records-category-select" value={gender} onChange={(e) => { setGender(e.target.value); }}>
                   {recordCatOptions.map((c) => <option key={c} value={c}>{c === 'ALL' ? 'CATEGORY: ALL' : `CATEGORY: ${c}`}</option>)}
                 </select>
               </div>
               <div className="rankings-table-container">
-                <div className="rankings-table-header records-grid">
-                  <div className="rt-col">TYPE</div><div className="rt-col">ATHLETE</div>
-                  <div className="rt-col rt-fed rt-hide-sm">FEDERATION</div><div className="rt-col">RECORD</div><div className="rt-col rt-hide-sm">LOCATION</div><div className="rt-col rt-hide-sm">DATE</div>
-                </div>
-                {displayRecords.length > 0 ? pagedRecords.map((r, i) => {
-                  const variant = recordVariant(r.discipline);
-                  const flag = flagFor(r.federationCode);
-                  return (
-                  <div key={r.id || i} className="rankings-table-row records-grid">
-                    <div className="rt-col"><span className="record-type">{r.type}</span></div>
-                    <div className="rt-col"><span className="athlete-name">{r.athleteName}</span>{variant && <span className="record-variant">{variant}</span>}</div>
-                    <div className="rt-col rt-fed rt-hide-sm">{flag && <img src={flag} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.federationCode}</span></div>
-                    <div className="rt-col"><span className="record-value">{r.record}</span></div>
-                    <div className="rt-col rt-hide-sm"><span className="record-location">{r.location}</span></div>
-                    <div className="rt-col rt-hide-sm"><span className="record-date">{formatDate(r.date)}</span></div>
-                  </div>
-                  );
-                }) : (
+                {recordGroups.length > 0 ? (
+                  <>
+                    <div className="rankings-table-header records-grid">
+                      <div className="rt-col">TYPE</div><div className="rt-col">ATHLETE</div>
+                      <div className="rt-col rt-fed rt-hide-sm">FEDERATION</div><div className="rt-col">RECORD</div><div className="rt-col rt-hide-sm">LOCATION</div><div className="rt-col rt-hide-sm">DATE</div>
+                    </div>
+                    {recordGroups.map(([disc, list]) => (
+                      <Fragment key={disc}>
+                        {/* Подзаголовок полной дисциплины — как в официальном PDF (вместо подписи у имени). */}
+                        <div className="records-subhead">{disc}</div>
+                        {list.map((r, i) => {
+                          const flag = recordFlagFor(r.federationCode);
+                          return (
+                          <div key={r.id || i} className="rankings-table-row records-grid">
+                            <div className="rt-col"><span className="record-type">{r.type}</span></div>
+                            <div className="rt-col"><span className="athlete-name">{r.athleteName}</span></div>
+                            <div className="rt-col rt-fed rt-hide-sm">{flag && <img src={flag} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.federationCode}</span></div>
+                            <div className="rt-col"><span className="record-value">{r.record}</span></div>
+                            <div className="rt-col rt-hide-sm"><span className="record-location">{r.location}</span></div>
+                            <div className="rt-col rt-hide-sm"><span className="record-date">{formatDate(r.date)}</span></div>
+                          </div>
+                          );
+                        })}
+                      </Fragment>
+                    ))}
+                  </>
+                ) : (
                   <div className="rt-empty">
                     <i className="fa-solid fa-trophy rt-empty-icon"></i>
                     <p className="rt-empty-title">No records set yet</p>
@@ -943,7 +983,14 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   </div>
                 )}
               </div>
-              <Pager page={recordsPage} setPage={setRecordsPage} total={displayRecords.length} />
+              {/* Легенда типов рекордов — как в официальном PDF. */}
+              {recordGroups.length > 0 && (
+                <div className="records-legend">
+                  {RECORD_TYPE_LEGEND.map(([code, name]) => (
+                    <span key={code} className="records-legend-item"><b>{code}</b> {name}</span>
+                  ))}
+                </div>
+              )}
             </section>
             )
           )}
