@@ -745,14 +745,24 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               <span className="source-dot">·</span>
               <span className="source-refresh">Refreshing automatically</span>
             </div>
-            <button className="download-pdf-btn" onClick={() => (officialPdfUrl ? window.open(officialPdfUrl, '_blank', 'noopener') : handleExportPDF())}>
-              <i className="fa-solid fa-download"></i> {officialPdfUrl ? 'OFFICIAL PDF' : 'DOWNLOAD PDF'}
-            </button>
+            {/* Кнопка нужна ТОЛЬКО когда у события нет приложенного result-book: тогда это либо
+                per-view SIUS-ранклист (OFFICIAL PDF), либо экспорт нашей таблицы (DOWNLOAD PDF).
+                Если книги есть — они показаны списком ниже, и отдельная кнопка была бы дублем
+                (к тому же открывала лишь первую книгу). */}
+            {selectedEventBooks.length === 0 && (
+              <button className="download-pdf-btn" onClick={() => (officialPdfUrl ? window.open(officialPdfUrl, '_blank', 'noopener') : handleExportPDF())}>
+                <i className="fa-solid fa-download"></i> {officialPdfUrl ? 'OFFICIAL PDF' : 'DOWNLOAD PDF'}
+              </button>
+            )}
           </div>
 
-          {/* Целые официальные result-book события целиком (несколько частей — все отдельными файлами). */}
-          {selectedEventBooks.length > 1 && (
+          {/* Целые официальные result-book события — единый источник официального PDF (1 или несколько
+              частей, все отдельными файлами). Когда они есть, отдельная кнопка «OFFICIAL PDF» убрана. */}
+          {selectedEventBooks.length > 0 && (
             <div className="results-archive-list" style={{ marginTop: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', opacity: 0.6, margin: '2px 2px 8px' }}>
+                Official result book{selectedEventBooks.length > 1 ? 's' : ''} · PDF
+              </div>
               {selectedEventBooks.map((f, i) => {
                 const ft = fileTypeMeta(f.file, f.name);
                 return (
