@@ -63,6 +63,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [rankingsDetailLevel, setRankingsDetailLevel] = useState(false);
   const [selectedDiscipline, setSelectedDiscipline] = useState('10m Air Pistol');
   const [selectedSubDiscipline, setSelectedSubDiscipline] = useState(''); // конкретная под-дисциплина (напр. "50m Rifle 3 Positions")
+  const [openGroup, setOpenGroup] = useState(''); // раскрытая группа стадий в селекторе под-дисциплин
   const [selectedEvent, setSelectedEvent] = useState('');
   const [selectedEventSlug, setSelectedEventSlug] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('World Records');
@@ -203,6 +204,30 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const activeSub = selectedSubDiscipline && subDisciplines.includes(selectedSubDiscipline)
     ? selectedSubDiscipline
     : (subDisciplines[0] || '');
+  // Группируем под-дисциплины по СТАДИИ (часть после « — »): Qualification, Semifinals, Medal Match…
+  // Табов бывает много (у Moving Target ~19: пол × юниоры × команда × стадии) — показываем аккордеоном.
+  const stageGroup = (sd) => {
+    const s = (String(sd).split(' — ')[1] || '').trim().toLowerCase();
+    if (!s) return 'Results';
+    if (/qualif|phase|part|\bstage\b/.test(s)) return 'Qualification';
+    if (/quarter/.test(s)) return 'Quarter Finals';
+    if (/semi.?final/.test(s)) return 'Semifinals';
+    if (/gold\s*medal/.test(s)) return 'Gold Medal Match';
+    if (/bronze\s*medal/.test(s)) return 'Bronze Medal Match';
+    if (/medal/.test(s)) return 'Medal Matches';
+    if (/ranking/.test(s)) return 'Ranking Match';
+    if (/final/.test(s)) return 'Final';
+    return (String(sd).split(' — ')[1] || '').trim();
+  };
+  const GROUP_ORDER = ['Qualification', 'Quarter Finals', 'Semifinals', 'Final', 'Bronze Medal Match', 'Gold Medal Match', 'Medal Matches', 'Ranking Match', 'Results'];
+  const subGroups = {};
+  subDisciplines.forEach((sd) => { const g = stageGroup(sd); (subGroups[g] = subGroups[g] || []).push(sd); });
+  const orderedGroups = Object.keys(subGroups).sort((a, b) => {
+    const ia = GROUP_ORDER.indexOf(a), ib = GROUP_ORDER.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+  });
+  const activeGroup = stageGroup(activeSub);          // группа, содержащая текущую вкладку
+  const shownGroup = openGroup || activeGroup;         // какая группа раскрыта
   // Порядок: по месту (position), unranked (0) — в конец, при равенстве — по тоталу убыв.
   const posKey = (r) => (r.position && r.position > 0 ? r.position : 9999);
   const totKey = (r) => parseFloat((String(r.total).match(/[\d.]+/) || [0])[0]) || 0;
@@ -251,6 +276,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
   // Сброс на первую страницу при смене фильтров
   useEffect(() => { setResultsPage(1); }, [selectedDiscipline, selectedSubDiscipline, gender, selectedEvent, resultDetails.length]);
+  // При смене дисциплины/события/пола сбрасываем раскрытую группу (откроется группа активной вкладки).
+  useEffect(() => { setOpenGroup(''); }, [selectedDiscipline, selectedEvent, gender]);
   useEffect(() => { setRankingsPage(1); }, [selectedDiscipline, rankingsGender, rankingsSearchTerm, rankings.length]);
   useEffect(() => { setRecordsPage(1); }, [selectedDiscipline, gender, records.length]);
 
@@ -589,13 +616,39 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               {['ALL', 'MEN', 'WOMEN'].map((g) => <button key={g} className={`gender-btn ${gender === g ? 'active' : ''}`} onClick={() => setGender(g)}>{g}</button>)}
             </div>
           </div>
-          {/* Селектор под-дисциплины — когда в грубой дисциплине несколько соревнований (3P/Prone/300m, Trap/Skeet) */}
+          {/* Селектор под-дисциплины. Много вкладок → группируем по стадиям в аккордеон (раскрывается
+              по одной группе), мало и все без стадий → плоская полоса как раньше. */}
           {subDisciplines.length > 1 && (
-            <div className="subdisc-bar">
-              {subDisciplines.map((sd) => (
-                <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{sd}</button>
-              ))}
-            </div>
+            orderedGroups.length > 1 ? (
+              <div className="subdisc-accordion">
+                {orderedGroups.map((grp) => {
+                  const items = subGroups[grp];
+                  const isOpen = shownGroup === grp;
+                  return (
+                    <div className={`subdisc-group ${isOpen ? 'open' : ''}`} key={grp}>
+                      <button className="subdisc-group-head" onClick={() => setOpenGroup(isOpen ? '__none__' : grp)}>
+                        <span className="sg-name">{grp}</span>
+                        <span className="sg-count">{items.length}</span>
+                        <i className="fa-solid fa-chevron-down sg-caret"></i>
+                      </button>
+                      {isOpen && (
+                        <div className="subdisc-bar">
+                          {items.map((sd) => (
+                            <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{sd.split(' — ')[0]}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="subdisc-bar">
+                {subDisciplines.map((sd) => (
+                  <button key={sd} className={`subdisc-btn ${activeSub === sd ? 'active' : ''}`} onClick={() => setSelectedSubDiscipline(sd)}>{sd}</button>
+                ))}
+              </div>
+            )
           )}
           {displayResults.length > 0 ? (<>
           <div className="results-table-container">
