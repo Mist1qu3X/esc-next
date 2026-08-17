@@ -15,13 +15,13 @@ const MustSeeAction = () => {
             try {
                 // Источник — отдельная коллекция Must-See Action (связь на видео + order).
                 const msRes = await cachedGet(
-                    `${config.API_URL}/api/must-see-actions?populate[video][populate]=thumbnail&sort=order:asc&pagination[limit]=2`
+                    `${config.API_URL}/api/must-see-actions?populate[video][populate]=thumbnail&sort=order:asc&pagination[limit]=3`
                 ).catch(() => null);
                 let list = (msRes?.data?.data || []).map((e) => e.video).filter(Boolean);
                 // Пока коллекция пуста / не задеплоена — показываем 3 свежих видео.
                 if (!list.length) {
                     const latestRes = await cachedGet(
-                        `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=2`
+                        `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
                     );
                     list = latestRes.data?.data || [];
                 }
