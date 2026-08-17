@@ -18,8 +18,10 @@ body {
     max-width: 1440px;
     min-height: 620px;
     margin: 0 auto;
-    padding: 0 32px;
+    /* нижний паддинг резервирует зону под зафиксированный нижний блок (location+кнопки) */
+    padding: 0 32px 160px;
     overflow: hidden;
+    position: relative;
     
     background: linear-gradient(
         rgba(6, 18, 31, 0.85),
@@ -52,12 +54,28 @@ body {
     text-transform: uppercase;
 }
 
+/* Пустое состояние hero (нет championship) */
+.info-section-empty-kicker {
+    color: #00d8f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.info-section-empty-sub {
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    max-width: 520px;
+}
+
 /* Блок с location и date — ВСЕГДА ГОРИЗОНТАЛЬНО */
 .info-section-event-details {
     display: flex;
     align-items: center;
     gap: clamp(6px, 1.5vw, 20px);
-    margin-top: 8px;
     flex-direction: row !important;
     flex-wrap: wrap;
 }
@@ -89,12 +107,22 @@ body {
     white-space: nowrap;
 }
 
-/* Блок с кнопками */
+/* Нижний блок (location/date + кнопки) зафиксирован снизу-слева hero (32px слева, 65px снизу),
+   не зависит от высоты названия. */
+.info-section-bottom {
+    position: absolute;
+    left: 32px;
+    bottom: 65px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+/* Блок с кнопками — в потоке внутри нижнего блока */
 .info-section-buttons-wrapper {
     display: flex;
     gap: clamp(8px, 1.5vw, 20px);
-    margin-top: 16px;
-    justify-content: flex-start;
     align-items: flex-start;
     width: fit-content;
 }
@@ -149,7 +177,7 @@ body {
 @media (max-width: 1024px) {
     .info-section {
         min-height: 500px;
-        padding: 0 24px;
+        padding: 0 24px 150px; /* резерв под зафиксированный нижний блок */
     }
 }
 
@@ -167,8 +195,11 @@ body {
     .info-section {
         padding: 40px 16px;
         min-height: auto;
+        /* на мобилке — столбиком: название сверху, location+кнопки снизу (в потоке) */
+        flex-direction: column;
+        align-items: flex-start;
     }
-    
+
     .info-section-content {
         width: 100%;
     }
@@ -181,6 +212,14 @@ body {
     .info-section-event-details {
         flex-wrap: wrap;
         gap: 6px;
+    }
+
+    .info-section-bottom {
+        position: static;
+        left: auto;
+        bottom: auto;
+        margin-top: 24px;
+        gap: 12px;
     }
 
     .info-section-buttons-wrapper {

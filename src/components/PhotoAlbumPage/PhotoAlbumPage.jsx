@@ -4,6 +4,7 @@ import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import PhotoAlbumSkeleton from './PhotoAlbumSkeleton';
+import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import './PhotoAlbumPage.css';
 
 const getImageUrl = (img) => {
@@ -39,11 +40,18 @@ const PhotoAlbumPage = ({ slug }) => {
     fetchAlbum();
   }, [slug]);
 
-  // Список фотографий: альбом (images) либо одиночная обложка
+  // Реальное число фото: фактические images, иначе поле photoCount
+  const realCount =
+    album && Array.isArray(album.images) && album.images.length > 0
+      ? album.images.length
+      : (album?.photoCount || 0);
+
+  // Список фотографий: альбом (images) либо одиночная обложка.
+  // У пустого альбома (счётчик 0) обложку как «фото» НЕ показываем — выводим пустое состояние.
   const photos =
     album && Array.isArray(album.images) && album.images.length > 0
       ? album.images
-      : album?.image
+      : realCount > 0 && album?.image
       ? [album.image]
       : [];
 
@@ -72,16 +80,7 @@ const PhotoAlbumPage = ({ slug }) => {
   }
 
   if (!album) {
-    return (
-      <section className="pa-header">
-        <div className="pa-breadcrumbs">
-          <span className="pa-crumb" onClick={() => router.push('/')}>Home</span>
-          <span className="pa-crumb-sep">›</span>
-          <span className="pa-crumb" onClick={() => router.push('/media')}>Media</span>
-        </div>
-        <h1 className="pa-title">Album not found</h1>
-      </section>
-    );
+    return <ErrorPage />;
   }
 
   return (
@@ -116,6 +115,7 @@ const PhotoAlbumPage = ({ slug }) => {
                   </div>
                 ))}
               </div>
+              {/* Одиночное изображение открывается как одно фото: без стрелок, счётчика и полосы миниатюр */}
               {total > 1 && (
                 <>
                   <button className="pa-arrow pa-arrow-prev" onClick={goPrev} disabled={selected === 0} aria-label="Previous">
@@ -124,23 +124,27 @@ const PhotoAlbumPage = ({ slug }) => {
                   <button className="pa-arrow pa-arrow-next" onClick={goNext} disabled={selected >= total - 1} aria-label="Next">
                     <i className="fa-solid fa-chevron-right"></i>
                   </button>
+                  <span className="pa-counter">{selected + 1} / {total}</span>
                 </>
               )}
-              <span className="pa-counter">{selected + 1} / {total}</span>
             </div>
 
-            {/* Все фото альбома */}
-            <div className="pa-all-label">ALL PHOTO · {total} {total === 1 ? 'PHOTO' : 'PHOTOS'}</div>
-            <div className="pa-grid">
-              {photos.map((ph, i) => (
-                <div
-                  key={ph.id || i}
-                  className={`pa-thumb ${i === selected ? 'pa-active' : ''}`}
-                  style={{ backgroundImage: `url(${getImageUrl(ph)})` }}
-                  onClick={() => scrollToIndex(i)}
-                ></div>
-              ))}
-            </div>
+            {/* Все фото альбома — только для настоящего альбома (>1 фото) */}
+            {total > 1 && (
+              <>
+                <div className="pa-all-label">ALL PHOTO · {total} PHOTOS</div>
+                <div className="pa-grid">
+                  {photos.map((ph, i) => (
+                    <div
+                      key={ph.id || i}
+                      className={`pa-thumb ${i === selected ? 'pa-active' : ''}`}
+                      style={{ backgroundImage: `url(${getImageUrl(ph)})` }}
+                      onClick={() => scrollToIndex(i)}
+                    ></div>
+                  ))}
+                </div>
+              </>
+            )}
           </>
         )}
       </section>

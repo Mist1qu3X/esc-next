@@ -58,13 +58,14 @@ const FullInfo = () => {
         return () => clearInterval(t);
     }, []);
 
-    // Загрузка ближайших событий: только те, что ещё не прошли, по возрастанию даты
+    // Загрузка событий вокруг «сейчас»: недавно начавшиеся/завершившиеся + ближайшие, по дате.
+    // Окно от (сегодня − 14 дней), чтобы показать и идущие (ONGOING), и недавно завершённые (FINISHED).
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const today = new Date().toISOString().slice(0, 10);
+                const windowStart = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
                 const response = await cachedGet(
-                    `${config.API_URL}/api/events?filters[date][$gte]=${today}&sort=date:asc&pagination[limit]=3`
+                    `${config.API_URL}/api/events?filters[date][$gte]=${windowStart}&sort=date:asc&pagination[limit]=3`
                 );
                 setEvents(response.data.data || []);
             } catch (error) {
@@ -139,6 +140,15 @@ const FullInfo = () => {
         finished: 'EVENT FINISHED',
     };
 
+    // Статус события в списке UPCOMING — считаем по датам (enum statusEvent не содержит ONGOING).
+    const evStatus = (ev) => {
+        const s = ev.date ? new Date(`${ev.date}T00:00:00`).getTime() : null;
+        const e = ev.endDate ? new Date(`${ev.endDate}T23:59:59`).getTime() : s;
+        if (e != null && now > e) return 'FINISHED';
+        if (s != null && now >= s) return 'ONGOING';
+        return 'UPCOMING';
+    };
+
     const visibleRankings = rankings
         .filter((item) => item.discipline === rankingDiscipline && item.category === activeCategory)
         .sort((a, b) => a.position - b.position)
@@ -151,6 +161,7 @@ const FullInfo = () => {
                     {/* PART 1 - WHAT'S ON — клик по всей карточке открывает событие */}
                     <div className="part1" onClick={handleEventInfo} role="button" tabIndex={0}
                         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleEventInfo(); } }}>
+                        {championship ? (<>
                         <div className="part-top">
                             <p className="theme1">{championship?.theme}</p>
                             <p className="title1">
@@ -196,10 +207,18 @@ const FullInfo = () => {
                                 EVENT INFO &gt;
                             </button>
                         </div>
+                        </>) : (
+                            <div className="fi-block-empty">
+                                <i className="fa-regular fa-calendar-xmark fi-block-empty-icon"></i>
+                                <p className="fi-block-empty-title">No featured event</p>
+                                <p className="fi-block-empty-text">The next championship will appear here.</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* PART 2 - ESC PLATFORM */}
                     <div className="part2">
+                        {platform ? (<>
                         <div className="part-top">
                             <p className="theme2">{platform?.theme}</p>
                             <p className="title2">
@@ -214,6 +233,13 @@ const FullInfo = () => {
                                 {platform?.buttonLabel || 'ENTRY SYSTEM'} &gt;
                             </button>
                         </div>
+                        </>) : (
+                            <div className="fi-block-empty">
+                                <i className="fa-solid fa-display fi-block-empty-icon"></i>
+                                <p className="fi-block-empty-title">ESC Platform</p>
+                                <p className="fi-block-empty-text">Entry system details coming soon.</p>
+                            </div>
+                        )}
                     </div>
 
                     {/* PART 3 - UPCOMING EVENTS */}
@@ -222,8 +248,9 @@ const FullInfo = () => {
                             <h4>UPCOMING EVENTS</h4>
                             {events.length > 0 ? (
                                 events.map((event) => {
-                                    const { name, date, location, statusEvent, slug } = event;
+                                    const { name, date, location, slug } = event;
                                     const d = new Date(date);
+                                    const st = evStatus(event);
                                     return (
                                         <div className="event-item" key={event.id} onClick={() => handleEventClick(slug)} style={{ cursor: 'pointer' }}>
                                             <div className="event-left">
@@ -240,7 +267,7 @@ const FullInfo = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <span className="status">{statusEvent}</span>
+                                            <span className={`status status--${st.toLowerCase()}`}>{st === 'ONGOING' ? 'IN PROGRESS' : st}</span>
                                         </div>
                                     );
                                 })

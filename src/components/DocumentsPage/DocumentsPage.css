@@ -580,6 +580,101 @@
     background: transparent;
 }
 
+/* ===== История версий документа ===== */
+.docs-prev {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.docs-prev-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+.docs-prev-toggle:hover {
+    color: #00d8f5;
+}
+.docs-prev-caret {
+    font-size: 10px;
+    width: 10px;
+}
+.docs-prev-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 18px;
+    border-left: 1px solid rgba(0, 216, 245, 0.18);
+}
+.docs-prev-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 0;
+}
+.docs-prev-ver {
+    flex-shrink: 0;
+    min-width: 42px;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+}
+.docs-prev-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.docs-prev-date {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+}
+.docs-prev-dl {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px;
+    background: rgba(0, 216, 245, 0.12);
+    border: 1px solid rgba(0, 216, 245, 0.35);
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #00d8f5;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+.docs-prev-dl:hover {
+    background: rgba(0, 216, 245, 0.22);
+}
+.docs-prev-dl.docs-prev-dl-off {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
+}
+@media (max-width: 640px) {
+    .docs-prev-date { display: none; }
+    .docs-prev-name { font-size: 11px; }
+}
+
 /* Пустое состояние: под фильтр не попал ни один документ */
 .docs-empty-state {
     display: flex;

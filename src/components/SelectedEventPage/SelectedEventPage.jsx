@@ -6,6 +6,7 @@ import config from '@/lib/config';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import PageLoader from '@/components/LoadingResults/PageLoader';
 import TargetLoader from '@/components/LoadingResults/TargetLoader';
+import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import { fileTypeMeta, previewUrlFor } from '@/lib/fileType';
 import { downloadFile as forceDownload } from '@/lib/download';
 import './SelectedEventPage.css';
@@ -74,6 +75,7 @@ const SelectedEventPage = ({ slug }) => {
   const [resultDisc, setResultDisc] = useState(null);
   const [playing, setPlaying] = useState(null); // стрим во встроенном плеере
   const [animDone, setAnimDone] = useState(false); // мишень доиграла
+  const [notFound, setNotFound] = useState(false); // событие с таким slug не найдено → 404
   const router = useRouter();
 
   // При смене вкладки/события сбрасываем выбранную дисциплину в RESULTS
@@ -86,7 +88,8 @@ const SelectedEventPage = ({ slug }) => {
       try {
         const evRes = await cachedGet(`${config.API_URL}/api/events?filters[slug][$eq]=${slug}&populate[image]=true&populate[schedule]=true&populate[documents][populate]=file`);
         if (evRes.data?.data?.length > 0) setEvent(evRes.data.data[0]);
-      } catch (e) { console.error(e); }
+        else setNotFound(true); // события с таким slug нет → 404
+      } catch (e) { console.error(e); setNotFound(true); }
     };
     fetchEvent();
   }, [slug]);
@@ -118,6 +121,10 @@ const SelectedEventPage = ({ slug }) => {
     };
     fetchExtra();
   }, [slug]);
+
+  if (notFound) {
+    return <ErrorPage />;
+  }
 
   if (!event || !animDone) {
     return (

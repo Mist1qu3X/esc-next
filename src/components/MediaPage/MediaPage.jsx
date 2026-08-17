@@ -79,7 +79,7 @@ const MediaPage = () => {
           getWithRetry(`${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
           getWithRetry(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => EMPTY_RES),
           // photos: показываем ВСЕ альбомы (событийные тоже) — в сетке нужна только обложка + счётчик
-          getWithRetry(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
+          getWithRetry(`${config.API_URL}/api/photos?populate[image]=true&populate[images][fields][0]=id&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
         ]);
 
         setNews(extractData(newsRes));
@@ -93,7 +93,7 @@ const MediaPage = () => {
           try {
             const pageCount = photosRes.data?.meta?.pagination?.pageCount || 1;
             for (let page = 2; page <= pageCount; page++) {
-              const r = await cachedGet(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
+              const r = await cachedGet(`${config.API_URL}/api/photos?populate[image]=true&populate[images][fields][0]=id&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
               const batch = extractData(r);
               if (batch.length) setPhotos((prev) => [...prev, ...batch]);
             }
@@ -191,8 +191,8 @@ const MediaPage = () => {
   const isSaved = (slug) => !!slug && savedSlugs.includes(slug);
 
   const filteredNews = getFilteredNews();
-  const featuredNews = filteredNews.slice(0, 2);
-  const latestNews = filteredNews.slice(2, 6); // LATEST NEWS — обычный порядок по дате (без saved-first)
+  const featuredNews = filteredNews.slice(0, 1);
+  const latestNews = filteredNews.slice(1, 4); // LATEST NEWS — обычный порядок по дате (без saved-first)
   
   // Фильтр для VIDEOS
   const getFilteredVideos = () => {
@@ -340,9 +340,10 @@ const MediaPage = () => {
                   </div>
                 ))
               ) : (
-                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
-                  No featured {activeFilter !== 'ALL' ? activeFilter.toLowerCase() : ''} news available
-                </p>
+                <div className="mp-empty-block">
+                  <i className="fa-regular fa-newspaper mp-empty-block-icon"></i>
+                  <p className="mp-empty-block-title">No featured {activeFilter !== 'ALL' ? activeFilter.toLowerCase() : ''} news yet</p>
+                </div>
               )}
             </div>
           </>
@@ -401,9 +402,12 @@ const MediaPage = () => {
                         <h3 className="mp-photo-title">{p.title}</h3>
                         <div className="mp-photo-footer">
                           <span className="mp-photo-date">{formatDatePhoto(p.date)}</span>
-                          <span className={`mp-photo-count ${count === 0 ? 'mp-photo-count-empty' : ''}`}>
-                            <i className="fa-regular fa-images"></i>{photoCountLabel(count)}
-                          </span>
+                          {/* Одиночное изображение — это не «альбом»: подпись с количеством скрываем */}
+                          {count !== 1 && (
+                            <span className={`mp-photo-count ${count === 0 ? 'mp-photo-count-empty' : ''}`}>
+                              <i className="fa-regular fa-images"></i>{photoCountLabel(count)}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -455,9 +459,10 @@ const MediaPage = () => {
                   );
                 })
               ) : (
-                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
-                  No videos available
-                </p>
+                <div className="mp-empty-block">
+                  <i className="fa-regular fa-circle-play mp-empty-block-icon"></i>
+                  <p className="mp-empty-block-title">No videos yet</p>
+                </div>
               )}
             </div>
           </div>
@@ -491,9 +496,10 @@ const MediaPage = () => {
                   </div>
                 ))
               ) : (
-                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
-                  No {activeFilter !== 'ALL' ? activeFilter.toLowerCase() + ' ' : ''}news available
-                </p>
+                <div className="mp-empty-block">
+                  <i className="fa-regular fa-newspaper mp-empty-block-icon"></i>
+                  <p className="mp-empty-block-title">No {activeFilter !== 'ALL' ? activeFilter.toLowerCase() + ' ' : ''}news yet</p>
+                </div>
               )}
             </div>
           </div>
@@ -511,7 +517,7 @@ const MediaPage = () => {
             </div>
             <div className="mp-videos-grid">
               {filteredVideos.length > 0 ? (
-                filteredVideos.slice(0, 4).map((v) => {
+                filteredVideos.slice(0, 3).map((v) => {
                   const avail = videoAvailable(v);
                   return (
                   <div key={v.id} className={`mp-video-card ${!avail ? 'mp-video-unavailable' : ''}`} onClick={() => avail && router.push(`/media/video/${v.documentId}`)} style={{ cursor: avail ? 'pointer' : 'default' }}>
@@ -533,9 +539,10 @@ const MediaPage = () => {
                   );
                 })
               ) : (
-                <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center', width: '100%' }}>
-                  No videos available
-                </p>
+                <div className="mp-empty-block">
+                  <i className="fa-regular fa-circle-play mp-empty-block-icon"></i>
+                  <p className="mp-empty-block-title">No videos yet</p>
+                </div>
               )}
             </div>
           </div>
@@ -614,7 +621,10 @@ const MediaPage = () => {
                   )}
                 </div>
               )) : (
-                <p style={{ color: 'rgba(255,255,255,0.4)', padding: '20px 0' }}>No {activeFilter !== 'ALL' ? activeFilter.toLowerCase() : ''} documents available</p>
+                <div className="mp-empty-block">
+                  <i className="fa-regular fa-file-lines mp-empty-block-icon"></i>
+                  <p className="mp-empty-block-title">No {activeFilter !== 'ALL' ? activeFilter.toLowerCase() + ' ' : ''}press releases yet</p>
+                </div>
               )}
             </div>
           </div>

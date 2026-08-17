@@ -164,7 +164,7 @@
 /* ========== СОСТОЯНИЕ 1: 1440px ========== */
 @media (min-width: 1025px) {
     .featured-docs-container {
-        justify-content: space-between;
+        justify-content: flex-start;
         flex-wrap: nowrap;
     }
     
@@ -247,10 +247,25 @@
 /* ===== Правки по ревью ===== */
 .featured-docs-empty {
     grid-column: 1 / -1;
-    padding: 40px 8px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 48px 8px;
     color: rgba(255, 255, 255, 0.45);
     font-size: 14px;
     text-align: center;
+}
+.featured-docs-empty-icon { font-size: 32px; color: rgba(0, 216, 245, 0.5); }
+.featured-docs-empty-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
 }
 .featured-docs-download-area.is-unavailable {
     cursor: not-allowed;

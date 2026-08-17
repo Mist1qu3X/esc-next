@@ -435,11 +435,7 @@
     letter-spacing: 1.5px;
     color: rgba(255, 255, 255, 0.4);
     margin-bottom: 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    /* Название федерации показываем целиком (перенос по словам), без обрезки */
     overflow-wrap: anywhere;
 }
 
@@ -524,6 +520,9 @@
     height: 1px;
     background: rgba(255, 255, 255, 0.08);
     margin-bottom: 16px;
+    /* Прижимаем блок «президент/контакты/кнопка» к низу карточки — при разной длине
+       названия нижние элементы выравниваются по ряду (карточки одной высоты через grid). */
+    margin-top: auto;
 }
 
 /* Президент */

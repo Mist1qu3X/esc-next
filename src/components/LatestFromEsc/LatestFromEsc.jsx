@@ -27,7 +27,7 @@ const LatestFromEsc = () => {
                 } else {
                     console.warn('Unexpected response structure:', response.data);
                 }
-                setNews(items.slice(0, 4));
+                setNews(items.slice(0, 3));
                 setLoading(false);
             } catch (error) {
                 console.error('Ошибка загрузки:', error);
@@ -124,9 +124,10 @@ const LatestFromEsc = () => {
                         );
                     })
                 ) : (
-                    <p style={{ color: 'rgba(255,255,255,0.5)', padding: '40px', textAlign: 'center' }}>
-                        No news available
-                    </p>
+                    <div className="latest-empty">
+                        <i className="fa-regular fa-newspaper latest-empty-icon"></i>
+                        <p className="latest-empty-title">No news yet</p>
+                    </div>
                 )}
             </div>
         </section>
