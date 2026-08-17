@@ -325,7 +325,9 @@ const EventsPageContent = () => {
                             const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : `${config.API_URL}${rawImg}`) : null;
                             return (
                                 <div className="epc-featured-card" key={event.id} onClick={() => handleDetails(event)}>
-                                    {imgUrl && <img src={imgUrl} alt={event.name} />}
+                                    {imgUrl
+                                        ? <img src={imgUrl} alt={event.name} />
+                                        : <div className="epc-featured-noimg"><i className="fa-solid fa-crosshairs"></i></div>}
                                     <div className="epc-featured-content">
                                         <div className="epc-featured-tags">
                                             <span className="epc-tag epc-tag-accent">{event.category || 'SENIOR'}</span>
