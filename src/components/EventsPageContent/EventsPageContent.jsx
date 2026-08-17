@@ -127,6 +127,8 @@ const EventsPageContent = () => {
 
     const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
     const currentEvents = filteredEvents.slice((currentPage - 1) * eventsPerPage, currentPage * eventsPerPage);
+    // Активны ли фильтры — чтобы отличать «нет под фильтр» от «данных нет совсем»
+    const eventsFiltersActive = filterType !== 'all' || filterStatus !== 'all' || filterMonth !== 'all' || filterYear !== 'all' || !!searchTerm.trim();
 
     const months = [
         { value: '0', label: 'JAN' }, { value: '1', label: 'FEB' }, { value: '2', label: 'MAR' },
@@ -481,11 +483,11 @@ const EventsPageContent = () => {
                     }) : (
                         <div className="epc-events-empty">
                             <i className="fa-regular fa-calendar-xmark"></i>
-                            <p>No events match your filters.</p>
-                            <button className="epc-events-empty-btn" onClick={() => {
+                            <p>{eventsFiltersActive ? 'No events match your filters.' : 'No events scheduled yet.'}</p>
+                            {eventsFiltersActive && <button className="epc-events-empty-btn" onClick={() => {
                                 setFilterType('all'); setFilterStatus('all'); setFilterMonth('all'); setFilterYear('all');
                                 setSearchTerm(''); setCurrentPage(1);
-                            }}>Clear filters</button>
+                            }}>Clear filters</button>}
                         </div>
                     )}
                 </div>

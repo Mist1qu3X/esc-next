@@ -10,16 +10,6 @@ import { downloadFile as forceDownload } from '@/lib/download';
 import { fileTypeMeta } from '@/lib/fileType';
 import './ResultsRankingsPage.css';
 
-// Тестовые соревнования (fallback, если в Strapi пусто) — чтобы флоу Results работал целиком
-const TEST_EVENTS = [
-  { id: 'te1', name: 'European Championship 10m 2026', location: 'Prague, Czech Republic', date: '2026-05-18', statusEvent: 'FINISHED', category: 'SENIOR', type: 'CHAMPIONSHIP' },
-  { id: 'te2', name: 'ESC Grand Prix Munich 2026', location: 'Munich, Germany', date: '2026-06-12', statusEvent: 'UPCOMING', category: 'SENIOR', type: 'CHAMPIONSHIP' },
-  { id: 'te3', name: 'European Youth League Final', location: 'Bologna, Italy', date: '2026-04-05', statusEvent: 'FINISHED', category: 'JUNIOR', type: 'CHAMPIONSHIP' },
-  { id: 'te4', name: 'ESC Development Workshop Lausanne', location: 'Lausanne, Switzerland', date: '2026-03-15', statusEvent: 'FINISHED', category: 'SENIOR', type: 'WORKSHOP' },
-  { id: 'te5', name: 'Nordic Shooting Cup Oslo', location: 'Oslo, Norway', date: '2026-07-20', statusEvent: 'UPCOMING', category: 'SENIOR', type: 'CHAMPIONSHIP' },
-  { id: 'te6', name: 'ESC Air Rifle Grand Prix Vienna', location: 'Vienna, Austria', date: '2026-02-10', statusEvent: 'FINISHED', category: 'SENIOR', type: 'CHAMPIONSHIP' },
-];
-
 // Дисциплины для RANKINGS — с разбивкой по полу (порядок = 3 колонки по макету)
 const IC_PISTOL = '/img/Icon1.png';
 const IC_RIFLE = '/img/Icon2.png';
@@ -461,7 +451,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const isCompetition = (e) => (e.type || 'competition').toLowerCase() === 'competition';
   const eventsWithResults = events.filter((e) =>
     e.hasResults || e.hasResultBook || (evStatus(e) !== 'FINISHED' && isCompetition(e)));
-  const eventsSource = events.length > 0 ? eventsWithResults : (loaded ? TEST_EVENTS : []);
+  const eventsSource = eventsWithResults; // нет событий → пустой список → показываем пустое состояние
 
   // Лёгкая загрузка по клику на событие: только НАБОР крупных дисциплин (для карточек Level 2).
   // Строки атлетов НЕ тянем — одно поле на строку, ответ крошечный даже для больших событий.
@@ -1049,11 +1039,13 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             <section className="rankings-level">
               {rankingsFilterBar}
               <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC EUROPEAN RECORDS</span></div>
+              {(!recordsLoaded || recordBases.length > 0) && (<>
               <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
               <p className="discipline-desc">Choose a discipline to view European records</p>
+              </>)}
               {!recordsLoaded ? (
                 <LoadingResults variant="records" onDone={() => {}} />
-              ) : (
+              ) : recordBases.length > 0 ? (
               <div className="discipline-grid">
                 {recordBases.map((b) => {
                   const [mainTok, ...subToks] = b.name.split(' ');
@@ -1065,6 +1057,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   );
                 })}
               </div>
+              ) : (
+                <div className="rt-empty">
+                  <i className="fa-solid fa-trophy rt-empty-icon"></i>
+                  <p className="rt-empty-title">No records yet</p>
+                  <p className="rt-empty-text">European records will appear here once they are published.</p>
+                </div>
               )}
             </section>
           )}
