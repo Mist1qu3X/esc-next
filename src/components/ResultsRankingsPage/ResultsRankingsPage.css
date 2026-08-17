@@ -925,9 +925,9 @@
 /* Кликабельная строка + разворот по-выстрельно */
 .row-clickable { cursor: pointer; }
 .row-clickable:hover { background: rgba(255, 255, 255, 0.03); }
-.expand-caret { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-left: 10px; border-radius: 50%; font-size: 11px; color: rgba(255, 255, 255, 0.7); background: rgba(0, 216, 245, 0.12); border: 1px solid rgba(0, 216, 245, 0.3); vertical-align: middle; transition: background 0.18s ease, color 0.18s ease; }
-.row-clickable:hover .expand-caret { background: rgba(0, 216, 245, 0.22); color: #00d8f5; }
-.row-expanded .expand-caret { background: #00d8f5; color: #06121f; border-color: #00d8f5; }
+.expand-caret { display: inline-flex; align-items: center; justify-content: center; margin-left: 10px; font-size: 11px; color: rgba(255, 255, 255, 0.7); vertical-align: middle; transition: color 0.18s ease; }
+.row-clickable:hover .expand-caret { color: #00d8f5; }
+.row-expanded .expand-caret { color: #00d8f5; }
 .team-members { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(255, 255, 255, 0.6); line-height: 1.5; }
 .shots-detail-row {
     padding: 10px 22px 16px 64px;
