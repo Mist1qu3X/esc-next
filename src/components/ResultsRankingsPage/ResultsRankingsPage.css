@@ -928,6 +928,8 @@
 .expand-caret { display: inline-flex; align-items: center; justify-content: center; margin-left: 10px; font-size: 11px; color: rgba(255, 255, 255, 0.7); vertical-align: middle; transition: color 0.18s ease; }
 .row-clickable:hover .expand-caret { color: #00d8f5; }
 .row-expanded .expand-caret { color: #00d8f5; }
+/* В Records каретка — текстовый символ ▸/▾, он мельче иконки: увеличиваем */
+.records-grid .expand-caret { font-size: 18px; line-height: 1; }
 .team-members { font-family: 'Inter', sans-serif; font-size: 12px; color: rgba(255, 255, 255, 0.6); line-height: 1.5; }
 .shots-detail-row {
     padding: 10px 22px 16px 64px;
