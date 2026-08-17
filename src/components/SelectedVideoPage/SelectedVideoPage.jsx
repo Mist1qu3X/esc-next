@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
 import VideoDetailSkeleton from './VideoDetailSkeleton';
+import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import './SelectedVideoPage.css';
 
 const mediaUrl = (m) => {
@@ -62,16 +63,7 @@ const SelectedVideoPage = ({ id }) => {
   }
 
   if (!video) {
-    return (
-      <section className="sv-header">
-        <div className="sv-breadcrumbs">
-          <span className="sv-crumb" onClick={() => router.push('/')}>Home</span>
-          <span className="sv-crumb-sep">›</span>
-          <span className="sv-crumb" onClick={() => router.push('/media')}>Media</span>
-        </div>
-        <h1 className="sv-title">Video not found</h1>
-      </section>
-    );
+    return <ErrorPage />;
   }
 
   const fileSrc = mediaUrl(video.videoFile);

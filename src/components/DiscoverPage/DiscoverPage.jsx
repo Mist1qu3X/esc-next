@@ -65,6 +65,14 @@ const DiscoverPage = () => {
   }, [governance, committees, leaders]);
 
   const togglePanel = (id) => setOpenPanels(prev => ({ ...prev, [id]: !prev[id] }));
+  // Комитеты — одиночное раскрытие: открытие одного закрывает остальные ОТКРЫТЫЕ комитеты.
+  // Панели assembly/executive не трогаем — они могут быть открыты независимо и одновременно.
+  const toggleCommittee = (id) => setOpenPanels((prev) => {
+    const next = {};
+    for (const k of Object.keys(prev)) if (!k.startsWith('committee_')) next[k] = prev[k];
+    if (!prev[id]) next[id] = true;
+    return next;
+  });
 
   const filteredFeds = filterRegion === 'ALL'
     ? federations
@@ -415,7 +423,7 @@ const DiscoverPage = () => {
         {committeeCards.length > 0 && (
           <div className="committee-cards" id="committees">
             {committeeCards.map((c) => (
-              <div key={c.id} className="committee-card" onClick={() => togglePanel(c.id)}>
+              <div key={c.id} className="committee-card" onClick={() => toggleCommittee(c.id)}>
                 <div className="committee-card-content">
                   <h4 className="committee-name">{c.name}</h4>
                   <p className="committee-members">{c.members}</p>
@@ -436,7 +444,7 @@ const DiscoverPage = () => {
                 <div className="assembly-label">COMMITTEE</div>
                 <h3 className="assembly-title">{c.name}</h3>
                 {c.description && <p className="assembly-description">{c.description}</p>}
-                <button className="panel-close" onClick={() => togglePanel(c.id)}>
+                <button className="panel-close" onClick={() => toggleCommittee(c.id)}>
                   <i className="fa-solid fa-xmark"></i>
                 </button>
               </div>

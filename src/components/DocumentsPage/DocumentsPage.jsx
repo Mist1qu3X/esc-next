@@ -23,11 +23,12 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [downloadBumps, setDownloadBumps] = useState({}); // id -> оптимистичный прирост счётчика
+  const [showPrev, setShowPrev] = useState({}); // doc.id -> раскрыт ли список прошлых версий
 
   useEffect(() => {
     const fetchDocuments = async () => {
       const deepPopulate =
-        'populate[file]=true&populate[attachments][populate]=file';
+        'populate[file]=true&populate[attachments][populate]=file&populate[previousVersions][populate]=file';
       // событие → только его документы; общая библиотека → только не-событийные
       const eventFilter = eventSlug ? `&filters[eventSlug][$eq]=${eventSlug}` : `&filters[eventSlug][$null]=true`;
       const pageUrl = (populate, page) =>
@@ -419,6 +420,51 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                             );
                           })}
                         </div>
+
+                        {Array.isArray(doc.previousVersions) && doc.previousVersions.length > 0 && (
+                          <div className="docs-prev">
+                            <button
+                              className="docs-prev-toggle"
+                              onClick={() => setShowPrev((p) => ({ ...p, [doc.id]: !p[doc.id] }))}
+                              aria-expanded={!!showPrev[doc.id]}
+                            >
+                              <i className={`fa-solid ${showPrev[doc.id] ? 'fa-chevron-down' : 'fa-chevron-right'} docs-prev-caret`}></i>
+                              Previous versions ({doc.previousVersions.length})
+                            </button>
+                            {showPrev[doc.id] && (
+                              <div className="docs-prev-list">
+                                {[...doc.previousVersions]
+                                  .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+                                  .map((pv, j) => {
+                                    const pft = fileTypeMeta(pv.file, pv.name);
+                                    const purl = fileUrl(pv.file);
+                                    return (
+                                      <div className="docs-prev-item" key={j}>
+                                        <span className="docs-prev-ver">{pv.version}</span>
+                                        <span className="docs-prev-name">{pv.name}</span>
+                                        <span className="docs-prev-date">{formatMonthYear(pv.date)}</span>
+                                        {purl ? (
+                                          <button
+                                            className="docs-prev-dl"
+                                            onClick={() => downloadFile(doc, pv.file)}
+                                            title="Download this version"
+                                          >
+                                            <i className="fa-solid fa-download"></i>
+                                            {pft.label}
+                                          </button>
+                                        ) : (
+                                          <button className="docs-prev-dl docs-prev-dl-off" disabled title="File not available">
+                                            <i className="fa-solid fa-ban"></i>
+                                            N/A
+                                          </button>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

@@ -15,13 +15,13 @@ const MustSeeAction = () => {
             try {
                 // Источник — отдельная коллекция Must-See Action (связь на видео + order).
                 const msRes = await cachedGet(
-                    `${config.API_URL}/api/must-see-actions?populate[video][populate]=thumbnail&sort=order:asc&pagination[limit]=3`
+                    `${config.API_URL}/api/must-see-actions?populate[video][populate]=thumbnail&sort=order:asc&pagination[limit]=2`
                 ).catch(() => null);
                 let list = (msRes?.data?.data || []).map((e) => e.video).filter(Boolean);
                 // Пока коллекция пуста / не задеплоена — показываем 3 свежих видео.
                 if (!list.length) {
                     const latestRes = await cachedGet(
-                        `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=3`
+                        `${config.API_URL}/api/videos?populate=*&sort=createdAt:desc&pagination[limit]=2`
                     );
                     list = latestRes.data?.data || [];
                 }
@@ -57,7 +57,14 @@ const MustSeeAction = () => {
             </div>
             <div className="action-container">
                 {videos.length === 0 && (
-                    <div className="action-empty">{loaded ? 'No videos yet' : 'Loading…'}</div>
+                    <div className="action-empty">
+                        {loaded ? (
+                            <>
+                                <i className="fa-regular fa-circle-play action-empty-icon"></i>
+                                <span className="action-empty-title">No videos yet</span>
+                            </>
+                        ) : 'Loading…'}
+                    </div>
                 )}
                 {videos.map((video, index) => {
                     const { title, category, description, thumbnail, videoUrl } = video;

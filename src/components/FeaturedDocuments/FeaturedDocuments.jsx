@@ -20,7 +20,7 @@ const FeaturedDocuments = () => {
         const fetchDocuments = async () => {
             try {
                 const response = await cachedGet(
-                    `${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[limit]=4`
+                    `${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[limit]=3`
                 );
                 const docs = response.data.data || [];
                 setDocuments(docs);
@@ -99,7 +99,12 @@ const FeaturedDocuments = () => {
                     })
                 ) : (
                     <div className="featured-docs-empty">
-                        {loaded ? 'No documents yet' : 'Loading…'}
+                        {loaded ? (
+                            <>
+                                <i className="fa-regular fa-folder-open featured-docs-empty-icon"></i>
+                                <p className="featured-docs-empty-title">No documents yet</p>
+                            </>
+                        ) : 'Loading…'}
                     </div>
                 )}
             </div>

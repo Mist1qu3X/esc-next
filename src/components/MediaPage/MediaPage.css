@@ -219,13 +219,17 @@
 
 /* Featured Container */
 .mp-featured-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     gap: 2px;
     margin-bottom: 60px;
 }
 
 .mp-featured-card {
+    /* Неполный ряд: карточки НЕ растягиваются (grow:0), сохраняют размер, выравниваются влево */
+    flex: 0 1 calc(50% - 1px);
+    min-width: 320px;
     aspect-ratio: 687 / 386;
     background-size: cover;
     background-position: center;
@@ -318,13 +322,17 @@
 
 /* Latest News Grid */
 .mp-latest-news-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     gap: 2px;
     margin-top: 32px;
 }
 
 .mp-news-card {
+    /* До 4 в ряд; при меньшем числе НЕ растягиваются — сохраняют размер, выравниваются влево */
+    flex: 0 1 calc(25% - 1.5px);
+    min-width: 230px;
     background: #091A2E;
     border-radius: 4px;
     overflow: hidden;
@@ -439,8 +447,9 @@
 
 /* ========== VIDEOS GRID ========== */
 .mp-videos-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     gap: 2px;
     margin-top: 32px;
 }
@@ -549,9 +558,11 @@
 /* Универсальное пустое состояние (photo/фильтры) */
 .mp-empty-block {
     grid-column: 1 / -1;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-align: center;
     padding: 60px 24px;
     gap: 10px;
@@ -748,7 +759,9 @@
 }
 
 .mp-video-card {
-    width: 100%;
+    /* До 4 в ряд; при меньшем числе НЕ растягиваются — сохраняют размер и центрируются */
+    flex: 0 1 calc(25% - 1.5px);
+    min-width: 230px;
     min-height: 232px;
     background: #091A2E;
     border-radius: 4px;
@@ -912,8 +925,9 @@
 
 /* Сетка */
 .mp-live-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     gap: 2px;
 }
 
@@ -965,6 +979,9 @@
 
 /* ========== ГЛАВНАЯ КАРТОЧКА ========== */
 .mp-live-card-main {
+    /* Неполный ряд: 1 стрим НЕ растягивается — сохраняет половину ширины и центрируется */
+    flex: 0 1 calc(50% - 1px);
+    min-width: 320px;
     height: 360px;
     background-size: cover;
     background-position: center;
