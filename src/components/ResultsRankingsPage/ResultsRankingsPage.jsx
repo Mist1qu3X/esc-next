@@ -742,7 +742,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 <div className="event-card-right">
                   {isUpcoming
                     ? <span className="event-view-btn event-view-pending"><i className="fa-regular fa-clock"></i>RESULTS PENDING</span>
-                    : <button className="event-view-btn">{ev.hasResults ? 'VIEW >' : <><i className="fa-regular fa-file-pdf" style={{ marginRight: 6 }}></i>VIEW PDF</>}</button>}
+                    : <button className="event-view-btn">{ev.hasResults ? 'VIEW >' : 'VIEW PDF >'}</button>}
                 </div>
               </div>
               );
@@ -891,7 +891,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 <Fragment key={r.id || r.athleteName}>
                 <div className={`results-table-row ${medalClass} ${hasInner ? '' : 'no-inner'} ${canExpand(r) ? 'row-clickable' : ''} ${expanded ? 'row-expanded' : ''}`} onClick={() => toggleShots(r)}>
                   <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
-                  <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span>{canExpand(r) && <span className="expand-caret">{expanded ? '▾' : '▸'}</span>}</div>
+                  <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span>{canExpand(r) && <span className="expand-caret" aria-hidden="true"><i className={`fa-solid fa-chevron-${expanded ? 'up' : 'down'}`}></i></span>}</div>
                   <div className="rt-col rt-spacer"></div>
                   <div className="rt-col rt-fed">{flagFor(r.federationCode) && <img src={flagFor(r.federationCode)} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.federationCode}</span></div>
                   <div className="rt-col rt-series">{r.isTeam
