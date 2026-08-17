@@ -685,24 +685,6 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             <div className="events-filter-right"><span className="events-count-num">{sortedEvents.length}</span><span className="events-count-label">competitions</span></div>
           </div>
           <div className="events-list">
-            {/* Сводный исторический архив результатов (PDF, как на офиц. сайте) */}
-            {historicalArchive && !eventFiltersActive && (
-              <div className="event-card event-completed" onClick={() => openPdfView(historicalArchive.title, historicalArchive.files)} style={{ cursor: 'pointer' }}>
-                <div className="event-card-left">
-                  <div className="event-tags">
-                    <span className="event-status status-completed">ARCHIVE</span>
-                    <span className="event-category">1955–2023</span>
-                  </div>
-                  <h3 className="event-card-title">{historicalArchive.title}</h3>
-                  <div className="event-card-meta">
-                    <span className="event-meta-item"><i className="fa-regular fa-folder-open"></i>{historicalArchive.files.length} result books (PDF)</span>
-                  </div>
-                </div>
-                <div className="event-card-right">
-                  <button className="event-view-btn"><i className="fa-regular fa-file-pdf" style={{ marginRight: 6 }}></i>OPEN</button>
-                </div>
-              </div>
-            )}
             {sortedEvents.length > 0 ? sortedEvents.map((ev) => {
               const evSt = evStatus(ev);
               const isUpcoming = evSt !== 'FINISHED';
@@ -752,6 +734,24 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                 <p className="events-empty-title">No competitions found</p>
                 <p className="events-empty-text">{eventFiltersActive ? 'Nothing matches the selected filters.' : 'No competitions to show yet.'}</p>
                 {eventFiltersActive && <button className="events-empty-btn" onClick={resetEventFilters}>Clear filters</button>}
+              </div>
+            )}
+            {/* Сводный исторический архив результатов (PDF) — в самом низу списка */}
+            {historicalArchive && !eventFiltersActive && (
+              <div className="event-card event-completed" onClick={() => openPdfView(historicalArchive.title, historicalArchive.files)} style={{ cursor: 'pointer' }}>
+                <div className="event-card-left">
+                  <div className="event-tags">
+                    <span className="event-status status-completed">ARCHIVE</span>
+                    <span className="event-category">1955–2023</span>
+                  </div>
+                  <h3 className="event-card-title">{historicalArchive.title}</h3>
+                  <div className="event-card-meta">
+                    <span className="event-meta-item"><i className="fa-regular fa-folder-open"></i>{historicalArchive.files.length} result books (PDF)</span>
+                  </div>
+                </div>
+                <div className="event-card-right">
+                  <button className="event-view-btn">OPEN &gt;</button>
+                </div>
               </div>
             )}
           </div>
