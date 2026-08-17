@@ -11,38 +11,6 @@ import { downloadFile as forceDownload } from '@/lib/download';
 import './SelectedEventPage.css';
 import '@/components/DocumentsPage/DocumentsPage.css';
 
-// Расписание ALL EVENTS (пока нет отдельного поля/коллекции — демо-данные).
-// В демо намеренно пропущен день (06.11) — заполняется как «день отдыха» логикой ниже.
-const SCHEDULE = [
-  { mon: 'Nov', day: '04', date: '2026-11-04', items: [
-    { time: '12:30 - 13:30', event: 'Air Rifle 3P Men', stage: 'Qualification' },
-    { time: '12:00 - 18:00', event: 'Unofficial Training 10m Events', stage: 'Qualification' },
-    { time: '12:00 - 18:00', event: 'Equipment Control', stage: 'Qualification' },
-    { time: '17:00', event: 'Technical Meeting', stage: 'Qualification' },
-  ] },
-  { mon: 'Nov', day: '05', date: '2026-11-05', items: [
-    { time: '08:00 - 19:00', event: 'Equipment Control', stage: 'Qualification' },
-    { time: '08:30 - 11:00', event: 'Pre-event Training 10m Moving Target Mixed Men', stage: 'Qualification' },
-    { time: '08:30 - 11:00', event: 'Pre-event Training 10m Moving Target Mixed Women', stage: 'Qualification' },
-    { time: '08:30 - 11:00', event: 'Pre-event Training 10m Moving Target Men Junior', stage: 'Qualification' },
-    { time: '08:30 - 11:00', event: 'Pre-event Training 10m Moving Target Women Junior', stage: 'Qualification' },
-    { time: '11:00 - 19:00', event: '10m Moving Target Mixed Men', stage: 'Qualification' },
-    { time: '11:00 - 19:00', event: '10m Moving Target Mixed Women', stage: 'Qualification' },
-  ] },
-  { mon: 'Nov', day: '07', date: '2026-11-07', items: [
-    { time: '12:30 - 13:30', event: 'Air Rifle 3P Men', stage: 'Qualification' },
-    { time: '12:00 - 18:00', event: 'Unofficial Training 10m Events', stage: 'Qualification' },
-    { time: '12:00 - 18:00', event: 'Equipment Control', stage: 'Qualification' },
-    { time: '17:00', event: 'Technical Meeting', stage: 'Qualification' },
-  ] },
-  { mon: 'Nov', day: '08', date: '2026-11-08', items: [
-    { time: '12:30 - 13:30', event: 'Air Rifle 3P Men', stage: 'Qualification' },
-    { time: '12:00 - 18:00', event: 'Unofficial Training 10m Events', stage: 'Qualification' },
-    { time: '12:00 - 18:00', event: 'Equipment Control', stage: 'Qualification' },
-    { time: '17:00', event: 'Technical Meeting', stage: 'Qualification' },
-  ] },
-];
-
 // Прибавить n дней к ISO-дате (yyyy-mm-dd); полдень исключает сдвиг из-за таймзоны
 const addDays = (iso, n) => {
   const d = new Date(`${iso}T12:00:00`);
@@ -208,10 +176,10 @@ const SelectedEventPage = ({ slug }) => {
   const isFallbackSchedule = scheduleRows.some((r) => /^\s*(arrival & official training|detailed programme available)/i.test(r.title || ''));
   // Часть заглушек = «программа есть в PDF, но не распарсена» — для них укажем на таб Documents.
   const hasProgrammePdf = scheduleRows.some((r) => /detailed programme available/i.test(r.title || ''));
-  // Парсинг программ из PDF давал слишком много ошибок в таблице — по решению пользователя таблицу
-  // ОТКЛЮЧАЕМ и везде показываем оригинальный PDF-документ (ветка scheduleDocs ниже), иначе — уведомление.
-  // Флаг оставлен, чтобы при желании быстро вернуть табличный вид.
-  const SHOW_PARSED_SCHEDULE = false;
+  // Поведение по задумке: ЕСТЬ расписание (реальные строки, не авто-заглушка) → показываем таблицу
+  // ALL EVENTS; НЕТ → падаем на оригинальный PDF-документ (ветка scheduleDocs ниже), иначе — уведомление.
+  // Кривые авто-парсенные расписания вычищены; таблица показывается только у руками заведённых.
+  const SHOW_PARSED_SCHEDULE = true;
   const displaySchedule = SHOW_PARSED_SCHEDULE && scheduleRows.length > 0 && !isFallbackSchedule ? fillScheduleGaps(groupSchedule(scheduleRows)) : [];
 
   // Официальные документы события. В табе DOCUMENTS показываем ВСЕ оригиналы целиком, НИЧЕГО не
