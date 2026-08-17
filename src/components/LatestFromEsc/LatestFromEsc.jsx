@@ -27,7 +27,7 @@ const LatestFromEsc = () => {
                 } else {
                     console.warn('Unexpected response structure:', response.data);
                 }
-                setNews(items.slice(0, 3));
+                setNews(items.slice(0, 4));
                 setLoading(false);
             } catch (error) {
                 console.error('Ошибка загрузки:', error);

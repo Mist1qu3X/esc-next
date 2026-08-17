@@ -191,8 +191,8 @@ const MediaPage = () => {
   const isSaved = (slug) => !!slug && savedSlugs.includes(slug);
 
   const filteredNews = getFilteredNews();
-  const featuredNews = filteredNews.slice(0, 1);
-  const latestNews = filteredNews.slice(1, 4); // LATEST NEWS — обычный порядок по дате (без saved-first)
+  const featuredNews = filteredNews.slice(0, 2);
+  const latestNews = filteredNews.slice(2, 6); // LATEST NEWS — обычный порядок по дате (без saved-first)
   
   // Фильтр для VIDEOS
   const getFilteredVideos = () => {
@@ -517,7 +517,7 @@ const MediaPage = () => {
             </div>
             <div className="mp-videos-grid">
               {filteredVideos.length > 0 ? (
-                filteredVideos.slice(0, 3).map((v) => {
+                filteredVideos.slice(0, 4).map((v) => {
                   const avail = videoAvailable(v);
                   return (
                   <div key={v.id} className={`mp-video-card ${!avail ? 'mp-video-unavailable' : ''}`} onClick={() => avail && router.push(`/media/video/${v.documentId}`)} style={{ cursor: avail ? 'pointer' : 'default' }}>
