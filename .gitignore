@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# внутренние заметки — не в публичный репозиторий
+solution.md
