@@ -907,9 +907,35 @@
         width: 100%;
     }
 
+    /* Фильтры на мобилке: категории — горизонтальные чипсы (прокрутка), год — кнопки-чипсы */
     .sidebar-categories,
     .sidebar-year {
-        display: none;
+        display: block;
+        width: 100%;
+        background: transparent;
+        padding: 0;
+    }
+    .sidebar-heading { padding: 0; margin-bottom: 10px; }
+    .category-list {
+        flex-direction: row;
+        max-height: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        padding-bottom: 6px;
+    }
+    .category-item {
+        flex: 0 0 auto;
+        gap: 8px;
+        padding: 8px 14px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        background: #091A2E;
+        white-space: nowrap;
+    }
+    .category-item.active {
+        border-color: #00d8f5;
+        background: rgba(0, 216, 245, 0.12);
     }
 
     .docs-page-btn {
