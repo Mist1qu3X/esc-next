@@ -394,6 +394,13 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     a.category === b.category ? ((a.position || 0) - (b.position || 0)) : (a.category === 'MEN' ? -1 : 1)
   );
 
+  // Дисциплины рейтинга — динамически: показываем только те, по которым реально есть данные.
+  // Лейблы/иконки/порядок берём из RANKING_DISCIPLINES (официальный набор дисциплин).
+  const rankingDisciplinesAvail = useMemo(() => {
+    const present = new Set(rankings.map((r) => `${(r.discipline || '').toLowerCase()}|${(r.category || '').toUpperCase()}`));
+    return RANKING_DISCIPLINES.filter((d) => present.has(`${d.discipline.toLowerCase()}|${d.gender}`));
+  }, [rankings]);
+
   // Базовые дисциплины рекордов — динамически из данных (для сетки выбора Level 1).
   const recordBases = useMemo(() => {
     const m = new Map();
@@ -964,16 +971,28 @@ const ResultsRankingsPage = ({ embedded = false }) => {
         <section className="rankings-level">
           {rankingsFilterBar}
           <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC EUROPEAN RANKING</span></div>
+          {(!rankingsLoaded || rankingDisciplinesAvail.length > 0) && (<>
           <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
           <p className="discipline-desc">Choose a discipline to view the European ranking</p>
+          </>)}
+          {!rankingsLoaded ? (
+            <LoadingResults variant="ranking" onDone={() => {}} />
+          ) : rankingDisciplinesAvail.length > 0 ? (
           <div className="discipline-grid ranking-grid">
-            {RANKING_DISCIPLINES.map((d, i) => (
+            {rankingDisciplinesAvail.map((d, i) => (
               <div key={i} className="discipline-card" onClick={() => { setRankingsDetailLevel(true); setSelectedDiscipline(d.discipline); setRankingsGender(d.gender); }}>
                 <h3 className="disc-card-title"><span className="disc-main">{d.main}</span>{d.sub && <span className="disc-sub">{d.sub}</span>}</h3>
                 <div className="disc-card-icon"><img src={d.icon} alt="" /><span className="disc-card-arrow">›</span></div>
               </div>
             ))}
           </div>
+          ) : (
+            <div className="rt-empty">
+              <i className="fa-solid fa-ranking-star rt-empty-icon"></i>
+              <p className="rt-empty-title">No rankings yet</p>
+              <p className="rt-empty-text">European rankings will appear here once they are published.</p>
+            </div>
+          )}
         </section>
       )}
 
