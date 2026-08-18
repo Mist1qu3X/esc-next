@@ -2240,7 +2240,14 @@
 @media (max-width: 768px) {
     .mp-news-card, .mp-video-card { flex-basis: calc(50% - 1px); min-width: 0; }
     .mp-featured-card, .mp-live-card-main { flex-basis: 100%; min-width: 0; }
+    /* Видео-превью: обложка по пропорции 16:9 (~192 на всю ширину), панель компактная —
+       а не короткая обложка + растянутое пустое инфо из-за min-height:232 */
+    .mp-video-card { min-height: 0; }
+    .mp-video-thumbnail { height: auto; aspect-ratio: 16 / 9; min-height: 0; }
 }
 @media (max-width: 480px) {
     .mp-news-card, .mp-video-card { flex-basis: 100%; min-width: 0; }
+    /* Галерея видео/фото: на 1 колонку панель не растягиваем (date у низа, но компактно) */
+    .mp-photo-panel { flex: 0 0 auto; min-height: 0; }
+    .mp-vgal-cover, .mp-photo-cover { aspect-ratio: 16 / 9; }
 }
