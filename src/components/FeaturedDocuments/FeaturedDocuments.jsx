@@ -20,7 +20,7 @@ const FeaturedDocuments = () => {
         const fetchDocuments = async () => {
             try {
                 const response = await cachedGet(
-                    `${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[limit]=3`
+                    `${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[limit]=4`
                 );
                 const docs = response.data.data || [];
                 setDocuments(docs);

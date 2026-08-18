@@ -150,15 +150,17 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const downloadFile = (doc, file) => {
     const url = fileUrl(file);
     if (!url) return;
-    const key = file?.id ?? doc.id; // бампим счётчик именно этого файла, а не всех файлов документа
+    // Счётчик — на уровне ДОКУМЕНТА: бэкенд инкрементит doc.downloadCount, поэтому и ключ, и показ — по документу.
+    const key = doc.documentId ?? doc.id;
     setDownloadBumps((prev) => ({ ...prev, [key]: (prev[key] || 0) + 1 }));
-    const id = doc.documentId || doc.id;
-    axios.put(`${config.API_URL}/api/docs/${id}/download`).catch(() => {}); // не мешаем скачиванию, если счётчик недоступен
+    axios.put(`${config.API_URL}/api/docs/${key}/download`).catch(() => {}); // не мешаем скачиванию, если счётчик недоступен
     forceDownload(url, `${doc.title || 'document'}${file?.ext || ''}`);
   };
 
-  // Эффективное число скачиваний = сохранённое + оптимистичный прирост этой сессии
-  const shownDownloads = (doc, att) => (att.downloadCount || 0) + (downloadBumps[att.file?.id ?? doc.id] || 0);
+  // Эффективное число скачиваний = doc.downloadCount + оптимистичный прирост этой сессии (по документу)
+  const shownDownloads = (doc) => (doc.downloadCount || 0) + (downloadBumps[doc.documentId ?? doc.id] || 0);
+  // «NEW» — документ добавлен недавно (< 3 дней) по времени создания; дальше показываем счётчик скачиваний
+  const isNewDoc = (doc) => { const c = doc.createdAt || doc.publishedAt; return !!c && (Date.now() - new Date(c).getTime()) < 3 * 86400000; };
 
   // Можно ли показать файл в браузере (иначе предпросмотр недоступен)
   const canPreview = (file) => {
@@ -368,7 +370,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                         )}
                         <div className="docs-acc-files">
                           {attachments.map((att, i) => {
-                            const dl = shownDownloads(doc, att);
+                            const dl = shownDownloads(doc);
                             const ft = fileTypeMeta(att.file, att.name);
                             const prevUrl = previewUrlFor(fileUrl(att.file), att.file, att.name);
                             return (
@@ -379,7 +381,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
                                   ? <a className="docs-file-name docs-file-name-link" href={prevUrl || fileUrl(att.file)} target="_blank" rel="noopener noreferrer">{att.name}</a>
                                   : <span className="docs-file-name">{att.name}</span>}
                                 <span className="docs-file-meta">
-                                  {att.fileSize || '—'} · {dl === 0
+                                  {att.fileSize || '—'} · {isNewDoc(doc)
                                     ? <span className="docs-file-new">NEW</span>
                                     : `${dl.toLocaleString('en-US')} download${dl === 1 ? '' : 's'}`}
                                 </span>

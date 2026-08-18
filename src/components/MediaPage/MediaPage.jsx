@@ -163,6 +163,10 @@ const MediaPage = () => {
   // Видео считается доступным, если есть источник (ссылка или загруженный файл)
   const videoAvailable = (v) => !!(v?.videoUrl || v?.videoFile);
 
+  // Битые/удалённые видео (нет ни обложки, ни залитого файла) — источник удалён/заблокирован
+  // на канале, показывать нечего: исключаем из выдачи.
+  const videoDisplayable = (v) => !!(getImageUrl(v?.thumbnail) || v?.videoFile);
+
   // Реальная длительность: в Strapi у всех видео стоит заглушка "0:00" (ютуб-ссылки
   // без Data API). Показываем бейдж только если есть ненулевое время.
   const realDuration = (v) => {
@@ -197,7 +201,7 @@ const MediaPage = () => {
   // Фильтр для VIDEOS
   const getFilteredVideos = () => {
     if (activeFilter === 'ALL' || activeFilter === 'VIDEOS') {
-      return videos;
+      return videos.filter(videoDisplayable);
     }
     return [];
   };
@@ -429,8 +433,8 @@ const MediaPage = () => {
           <div>
             <h2 className="mp-photo-heading">VIDEOS</h2>
             <div className="mp-photo-grid">
-              {videos.length > 0 ? (
-                videos.map((v) => {
+              {filteredVideos.length > 0 ? (
+                filteredVideos.map((v) => {
                   const avail = videoAvailable(v);
                   return (
                   <div
