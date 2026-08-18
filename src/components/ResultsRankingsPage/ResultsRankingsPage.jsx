@@ -31,9 +31,6 @@ const recordFlagFor = (code) => {
   if (c === 'URS') return USSR_FLAG;
   return `https://shootingsportscloud.com:8594/api/v1/Resource/flag/${c}`;
 };
-// Официальные документы рекордов (esc-shooting.org): Senior+Junior и отдельно U16/U18. Обе — цели кнопок в Records.
-const OFFICIAL_RECORDS_PDF = 'https://esc-shooting.org/storage/2026/07/31/57b358c07315ac4a00714ba62aa252bb24170e56.pdf';
-const OFFICIAL_RECORDS_PDF_U16 = 'https://esc-shooting.org/storage/2026/05/29/a5f662fce904d17132fbb4f00ba9c9d72df5e431.pdf';
 // Официальные PDF рейтинга (esc-shooting.org/documents/ranking, дек. 2025) — источник таблиц
 // Rank/Name/Nation/Year of birth, по одному на дисциплину+пол. Ключ: `${discipline}|${GENDER}`.
 const OFFICIAL_RANKING_PDF = {
@@ -139,6 +136,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [recordsLoaded, setRecordsLoaded] = useState(false);   // ленивая загрузка вкладки Records
   const [eventDisciplineList, setEventDisciplineList] = useState([]); // крупные дисциплины текущего события (лёгкая загрузка)
   const [records, setRecords] = useState([]);
+  const [recordDocs, setRecordDocs] = useState([]);            // офиц. PDF рекордов (docs, theme=Records) — ссылки динамически из CMS
   const [expandedRec, setExpandedRec] = useState(null); // раскрытый командный рекорд (показ всех участников)
   const [gender, setGender] = useState('ALL');
   const [rankingsGender, setRankingsGender] = useState('ALL');
@@ -197,8 +195,11 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     }
     if (activeTab === 'records' && !recordsLoaded) {
       (async () => {
-        const r = await fetchAll(`/api/records?fields[0]=type&fields[1]=athleteName&fields[2]=federationCode&fields[3]=record&fields[4]=location&fields[5]=date&fields[6]=discipline&fields[7]=category&sort=date:desc`);
-        setRecords(r); setRecordsLoaded(true);
+        const [r, rdocs] = await Promise.all([
+          fetchAll(`/api/records?fields[0]=type&fields[1]=athleteName&fields[2]=federationCode&fields[3]=record&fields[4]=location&fields[5]=date&fields[6]=discipline&fields[7]=category&sort=date:desc`),
+          fetchAll(`/api/docs?filters[theme][$eq]=Records&fields[0]=title&fields[1]=description&populate[file][fields][0]=url&sort=date:desc`).catch(() => []),
+        ]);
+        setRecords(r); setRecordDocs(rdocs || []); setRecordsLoaded(true);
       })();
     }
   }, [activeTab, rankingsLoaded, recordsLoaded, fetchAll]);
@@ -582,6 +583,15 @@ const ResultsRankingsPage = ({ embedded = false }) => {
 
   // Общий фильтр-бар для RANKINGS (оба уровня)
   const rankingDisciplineOptions = [...new Set(RANKING_DISCIPLINES.map(d => `${d.main} ${d.sub}`.trim()))];
+  // Офиц. PDF рекордов — ссылки берём из CMS (docs, theme=Records), матч по описанию категории.
+  const recDocUrl = (re) => {
+    const d = recordDocs.find((x) => re.test(x.description || x.title || ''));
+    const u = d?.file?.url;
+    return u ? (u.startsWith('http') ? u : `${config.API_URL}${u}`) : null;
+  };
+  const recordsPdfSenior = recDocUrl(/senior/i);
+  const recordsPdfU16 = recDocUrl(/u1[68]/i);
+
   const rankingsFilterBar = (
     <div className="rankings-filter-bar">
       <div className="rankings-filter-left">
@@ -634,10 +644,10 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       {/* Ссылаемся только на официальные документы: у Records — офиц. PDF рекордов; у Results/Ranking
           официальные PDF показаны в самой детали (result-book / per-discipline ranking). Общего
           «экспорта нашей таблицы» тут нет. */}
-      {activeTab === 'records' && (
+      {activeTab === 'records' && recordBases.length > 0 && (recordsPdfSenior || recordsPdfU16) && (
         <div className="records-pdf-btns">
-          <button className="export-btn" onClick={() => window.open(OFFICIAL_RECORDS_PDF, '_blank', 'noopener')} title="Senior & Junior European records — official PDF"><i className="fa-solid fa-download"></i>OFFICIAL PDF</button>
-          <button className="export-btn export-btn-sec" onClick={() => window.open(OFFICIAL_RECORDS_PDF_U16, '_blank', 'noopener')} title="U16 / U18 European records — official PDF"><i className="fa-solid fa-download"></i>U16/U18 PDF</button>
+          {recordsPdfSenior && <button className="export-btn" onClick={() => window.open(recordsPdfSenior, '_blank', 'noopener')} title="Senior & Junior European records — official PDF"><i className="fa-solid fa-download"></i>OFFICIAL PDF</button>}
+          {recordsPdfU16 && <button className="export-btn export-btn-sec" onClick={() => window.open(recordsPdfU16, '_blank', 'noopener')} title="U16 / U18 European records — official PDF"><i className="fa-solid fa-download"></i>U16/U18 PDF</button>}
         </div>
       )}
     </div>
