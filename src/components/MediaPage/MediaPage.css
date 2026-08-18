@@ -2133,22 +2133,26 @@
     }
     
     .mp-press-item {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
         gap: 10px;
         padding: 10px 0;
     }
-    
+
+    .mp-press-info { min-width: 0; }  /* длинный тайтл переносится, а не выталкивает кнопку */
+
     .mp-press-title {
         font-size: 12px;
     }
-    
+
     .mp-press-meta {
         font-size: 10px;
     }
-    
+
     .mp-download-btn-press {
-        width: 100%;
+        width: 90px;
+        flex-shrink: 0;   /* кнопка держит ширину справа, не растягивается */
         height: 28px;
         font-size: 9px;
     }

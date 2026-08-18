@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Results &amp; Rankings — как заполнять в Strapi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#06101c; --bg2:#0b1a2e; --panel:#0d2137; --panel2:#0f2740;
+    --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.14);
+    --txt:#eaf2fb; --mut:rgba(234,242,251,.55); --mut2:rgba(234,242,251,.4);
+    --cyan:#00d8f5; --green:#39d98a; --amber:#ffcf5c; --red:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 80px}
+  h1,h2,h3,h4{font-family:'Barlow Condensed','Inter',sans-serif;text-transform:uppercase;letter-spacing:.5px;margin:0}
+  h1{font-size:40px;font-weight:800;line-height:1.05}
+  h2{font-size:27px;font-weight:800;margin:0 0 4px}
+  h3{font-size:20px;font-weight:700}
+  h4{font-size:15px;font-weight:700;letter-spacing:1px}
+  p{margin:8px 0}
+  a{color:var(--cyan)}
+  code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em}
+  .kbd{display:inline-block;background:#08243b;border:1px solid var(--line2);border-radius:4px;
+    padding:1px 7px;font-family:ui-monospace,Consolas,monospace;font-size:.85em;color:#bfe9f6;white-space:nowrap}
+
+  /* header */
+  .top{border-left:3px solid var(--cyan);padding-left:16px;margin-bottom:8px}
+  .eyebrow{display:flex;align-items:center;gap:10px;color:var(--cyan);font-weight:700;
+    font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--cyan)}
+  .lead{color:var(--mut);max-width:720px;margin-top:12px}
+
+  section{margin-top:40px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:18px}
+  .sec-num{font-family:'Barlow Condensed';font-weight:800;font-size:26px;color:var(--cyan);line-height:1}
+
+  /* verdict card */
+  .verdict{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);
+    border-radius:10px;padding:20px 22px}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:20px;font-weight:700;
+    font-size:12px;letter-spacing:.5px}
+  .badge.ok{background:rgba(57,217,138,.14);color:var(--green);border:1px solid rgba(57,217,138,.35)}
+
+  /* map / diagram */
+  .map{display:grid;grid-template-columns:1fr;gap:14px}
+  .maprow{display:grid;grid-template-columns:190px 34px 1fr;align-items:center;gap:0;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .tab{padding:16px 14px;background:var(--panel2);height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px}
+  .tab b{font-family:'Barlow Condensed';font-weight:800;font-size:18px;letter-spacing:1px}
+  .tab span{font-size:11px;color:var(--mut)}
+  .arrow{display:flex;align-items:center;justify-content:center;color:var(--cyan);font-size:20px}
+  .coll{padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+  .pill{align-self:flex-start;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#bfe9f6;
+    background:#08243b;border:1px solid var(--line2);border-radius:5px;padding:3px 9px}
+  .coll small{color:var(--mut)}
+
+  /* form mockup */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}.maprow{grid-template-columns:150px 26px 1fr}}
+  .fm{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .fm-bar{background:#0a1a2c;border-bottom:1px solid var(--line);padding:9px 14px;font-size:12px;color:var(--mut);
+    display:flex;align-items:center;gap:8px}
+  .fm-bar b{color:var(--txt);font-weight:600}
+  .fm-dot{width:9px;height:9px;border-radius:50%;background:#2b4258}
+  .fm-body{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field .lab{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--mut);font-weight:600;
+    display:flex;gap:8px;align-items:center}
+  .req{color:var(--red);font-size:10px;border:1px solid rgba(255,107,107,.4);border-radius:3px;padding:0 5px}
+  .opt{color:var(--mut2);font-size:10px;border:1px solid var(--line);border-radius:3px;padding:0 5px}
+  .inp{background:#08192b;border:1px solid var(--line2);border-radius:6px;padding:9px 11px;font-size:14px;color:#fff;
+    font-family:ui-monospace,Consolas,monospace}
+  .inp.enum{display:flex;gap:6px;flex-wrap:wrap;font-family:'Inter'}
+  .chip{background:#0c2a42;border:1px solid var(--line2);border-radius:20px;padding:3px 11px;font-size:12px;color:#cfe9f5}
+  .chip.on{background:var(--cyan);color:#06101c;border-color:var(--cyan);font-weight:700}
+  .hint{font-size:11.5px;color:var(--mut)}
+  .pubbtn{align-self:flex-start;margin-top:2px;background:#4945ff;color:#fff;border:none;border-radius:6px;
+    padding:9px 20px;font-weight:700;font-size:13px;letter-spacing:.5px}
+
+  /* result preview */
+  .rp{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .rp-cap{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--cyan);padding:10px 14px;border-bottom:1px solid var(--line);font-weight:700}
+  .rp table{width:100%;border-collapse:collapse;font-size:13px}
+  .rp th{font-family:'Barlow Condensed';font-weight:700;text-transform:uppercase;font-size:12px;letter-spacing:.5px;
+    color:var(--mut);text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
+  .rp td{padding:11px 14px;border-bottom:1px solid var(--line)}
+  .rp tr:last-child td{border-bottom:none}
+  .flag{display:inline-block;width:20px;height:14px;border-radius:2px;background:#26405a;vertical-align:middle;margin-right:8px}
+  .pos{color:var(--cyan);font-weight:700}
+  .reccard{display:flex;gap:14px;align-items:center;padding:14px}
+  .recscore{font-family:'Barlow Condensed';font-weight:800;font-size:30px;color:#fff;min-width:64px}
+  .rectag{font-size:10px;font-weight:700;color:#06101c;background:var(--cyan);border-radius:3px;padding:2px 6px;letter-spacing:.5px}
+
+  /* callouts */
+  .note{border-radius:8px;padding:13px 16px;margin:14px 0;border:1px solid;display:flex;gap:12px;font-size:13.5px}
+  .note .ic{font-weight:800;font-size:15px;line-height:1.4}
+  .note.warn{background:rgba(255,207,92,.08);border-color:rgba(255,207,92,.35)}
+  .note.warn .ic{color:var(--amber)}
+  .note.stop{background:rgba(255,107,107,.08);border-color:rgba(255,107,107,.35)}
+  .note.stop .ic{color:var(--red)}
+  .note.ok{background:rgba(57,217,138,.08);border-color:rgba(57,217,138,.3)}
+  .note.ok .ic{color:var(--green)}
+
+  /* string tables */
+  table.ref{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+  table.ref th,table.ref td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.ref th{color:var(--mut);text-transform:uppercase;font-size:11px;letter-spacing:.6px;font-weight:600}
+  table.ref td .mono{color:#bfe9f6}
+  ol.steps{counter-reset:s;list-style:none;padding:0;margin:14px 0}
+  ol.steps li{position:relative;padding:10px 0 10px 44px;border-bottom:1px solid var(--line)}
+  ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:9px;width:28px;height:28px;
+    background:#0c2a42;border:1px solid var(--line2);border-radius:50%;color:var(--cyan);font-weight:700;
+    display:flex;align-items:center;justify-content:center;font-size:13px}
+  .foot{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);color:var(--mut2);font-size:12px}
+  .tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="eyebrow">ESC · Инструкция для контент-менеджера</div>
+    <h1>Results &amp; Rankings<br>как заполнять в Strapi</h1>
+  </div>
+  <p class="lead">Раздел сайта <b>Results &amp; Rankings</b> собирается из <b>5 коллекций</b> Strapi.
+  Ниже — что откуда берётся, какие поля заполнять, с примерами реальных значений с прода и мокапами форм.
+  Всё работает через <b>Content Manager</b> в админке Strapi.</p>
+
+  <!-- ============ 0. ВЕРДИКТ ============ -->
+  <section>
+    <div class="verdict">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px">
+        <span class="badge ok">● Структура корректна</span>
+        <span style="color:var(--mut);font-size:13px">каждая часть страницы = одна коллекция, дублей нет</span>
+      </div>
+      <p style="margin:6px 0 0">Единственное, за чем реально нужно следить при ручном вводе — <b>строки дисциплин и категории</b>:
+      сайт сопоставляет строки <u>буквально</u>. Опечатка в поле <span class="mono">discipline</span> = строка просто не покажется.
+      Поэтому ниже даны точные списки допустимых значений — сверяйтесь с ними.</p>
+    </div>
+  </section>
+
+  <!-- ============ 1. КАРТА ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>Что откуда берётся</h2></div>
+    <div class="map">
+
+      <div class="maprow">
+        <div class="tab"><b>RECORDS</b><span>вкладка рекордов</span></div>
+        <div class="arrow">→</div>
+        <div class="coll">
+          <span class="pill">Record</span>
+          <small>Строки таблицы рекордов. + Кнопки официальных PDF — из <b>Document</b> (theme = Records).</small>
+        </div>
+      </div>
+
+      <div class="maprow">
+        <div class="tab"><b>RANKING</b><span>европейский рейтинг</span></div>
+        <div class="arrow">→</div>
+        <div class="coll">
+          <span class="pill">Ranking Detail</span>
+          <small>Строки рейтинга по дисциплине и полу (7 дисциплин).</small>
+        </div>
+      </div>
+
+      <div class="maprow">
+        <div class="tab"><b>RESULTS</b><span>результаты соревнований</span></div>
+        <div class="arrow">→</div>
+        <div class="coll">
+          <span class="pill">Event</span> <span class="pill">Result Detail</span> <span class="pill">Document</span>
+          <small><b>Event</b> — карточка соревнования и его PDF; <b>Result Detail</b> — таблицы результатов
+          (обычно приходят из импортёра SIUS); <b>Document</b> «Historical…» — архив 1955–2023.</small>
+        </div>
+      </div>
+
+    </div>
+    <div class="note ok"><span class="ic">✓</span><div><b>Records-PDF читаются из той же коллекции Document, что и раздел Documents.</b>
+    Заводите PDF рекордов один раз в Documents — кнопка на странице Results подхватится сама. Дублировать не нужно.</div></div>
+  </section>
+
+  <!-- ============ 2. RECORDS ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>Records — коллекция «Record»</h2></div>
+    <p><span class="kbd">Content Manager → Record → Create an entry</span></p>
+
+    <div class="grid2">
+      <div class="fm">
+        <div class="fm-bar"><span class="fm-dot"></span><b>Record</b> · новая запись</div>
+        <div class="fm-body">
+          <div class="field"><span class="lab">discipline <span class="req">обяз.</span></span>
+            <div class="inp">Trap Women</div>
+            <span class="hint">Точная строка с полом/возрастом. См. таблицу ниже.</span></div>
+          <div class="field"><span class="lab">category</span>
+            <div class="inp enum"><span class="chip">ALL</span><span class="chip on">WOMEN</span><span class="chip">MEN</span><span class="chip">MIXED</span></div></div>
+          <div class="field"><span class="lab">record <span class="opt">значение</span></span><div class="inp">27</div>
+            <span class="hint">Счёт/результат как строка: <span class="mono">27</span>, <span class="mono">361.7</span>, <span class="mono">631.6</span>.</span></div>
+          <div class="field"><span class="lab">athleteName</span><div class="inp">CORMENIER Carole</div></div>
+          <div class="field"><span class="lab">federationCode</span><div class="inp">FRA</div>
+            <span class="hint">3-буквенный код страны → флаг подгружается автоматически.</span></div>
+          <div class="field"><span class="lab">location</span><div class="inp">WC Hangzhou (CHN)</div></div>
+          <div class="field"><span class="lab">date</span><div class="inp">2026-07-27</div></div>
+          <div class="field"><span class="lab">type <span class="opt">код</span></span><div class="inp">ER</div>
+            <span class="hint">Тип рекорда, см. расшифровку ниже.</span></div>
+          <div class="field"><span class="lab">flag <span class="opt">запасной</span></span>
+            <span class="hint">Не трогать. Загрузить картинку только если авто-флаг не появился.</span></div>
+          <button class="pubbtn">Publish</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="rp">
+          <div class="rp-cap">Как это выглядит на сайте</div>
+          <div class="reccard">
+            <div class="recscore">27</div>
+            <div style="flex:1">
+              <div style="font-weight:700"><span class="flag"></span>CORMENIER Carole <span style="color:var(--mut)">· FRA</span></div>
+              <div style="color:var(--mut);font-size:12px;margin-top:2px">Trap Women · WC Hangzhou (CHN) · 27.07.2026</div>
+            </div>
+            <span class="rectag">ER</span>
+          </div>
+        </div>
+
+        <div class="note warn" style="margin-top:16px"><span class="ic">!</span><div>
+          <b>type — код рекорда.</b> Собирается из кусочков:<br>
+          <b>ER</b> = European Record · префикс <b>Q</b> = Qualification · префикс <b>E</b> = Equalled (=) · суффикс <b>J</b> = Junior · суффикс <b>T</b> = Team.
+          <div class="tag-list">
+            <span class="chip">ER</span><span class="chip">ERJ</span><span class="chip">ERT</span><span class="chip">ERJT</span>
+            <span class="chip">QER</span><span class="chip">EER</span><span class="chip">EQER</span>
+          </div>
+          <span class="hint">Проще всего скопировать <span class="mono">type</span> из похожей уже существующей записи.</span>
+        </div></div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:26px;color:var(--mut)">Строка discipline — по образцу существующих</h4>
+    <table class="ref">
+      <tr><th>Пол / возраст</th><th>Как писать discipline</th><th>category</th></tr>
+      <tr><td>Мужчины</td><td><span class="mono">50m Rifle 3 Positions Men</span>, <span class="mono">10m Air Pistol Men</span>, <span class="mono">Trap Men</span></td><td>MEN</td></tr>
+      <tr><td>Женщины</td><td><span class="mono">Trap Women</span>, <span class="mono">10m Air Rifle Women</span></td><td>WOMEN</td></tr>
+      <tr><td>Юниоры U16 / U18</td><td><span class="mono">10m Air Pistol U16 Men</span>, <span class="mono">10m Air Pistol U18 Women</span></td><td>MEN / WOMEN</td></tr>
+      <tr><td>Команда / микст</td><td><span class="mono">10m Air Pistol Mixed Team</span>, <span class="mono">… Team Men</span></td><td>MIXED / MEN</td></tr>
+    </table>
+    <div class="note stop"><span class="ic">✕</span><div>Обратите внимание: в рекордах пишется <b>«3 Positions»</b> (мн. ч.), а в рейтинге — <b>«3 Position»</b> (ед. ч.).
+    Это разные коллекции, строки не путать. Всегда сверяйтесь с уже существующей записью той же дисциплины.</div></div>
+
+    <h4 style="margin-top:22px;color:var(--mut)">Официальные PDF-кнопки (Senior / U16–U18)</h4>
+    <p>Кнопки «OFFICIAL PDF» на вкладке RECORDS — это записи коллекции <span class="pill" style="display:inline-block">Document</span> с
+    <span class="mono">theme = Records</span>. Кнопка выбирается по полю <span class="mono">description</span>:</p>
+    <table class="ref">
+      <tr><th>description содержит…</th><th>→ какая кнопка</th><th>пример title</th></tr>
+      <tr><td><span class="mono">Senior</span> (напр. «Senior &amp; Junior Category»)</td><td>Senior / Junior PDF</td><td>European Records as of July 30, 2026</td></tr>
+      <tr><td><span class="mono">U16</span> или <span class="mono">U18</span> (напр. «U16/U18 Category»)</td><td>U16/U18 PDF</td><td>European Records as of May 20, 2026</td></tr>
+    </table>
+  </section>
+
+  <!-- ============ 3. RANKING ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Ranking — коллекция «Ranking Detail»</h2></div>
+    <p><span class="kbd">Content Manager → Ranking Detail → Create an entry</span></p>
+
+    <div class="grid2">
+      <div class="fm">
+        <div class="fm-bar"><span class="fm-dot"></span><b>Ranking Detail</b> · новая запись</div>
+        <div class="fm-body">
+          <div class="field"><span class="lab">position <span class="req">обяз.</span></span><div class="inp">1</div>
+            <span class="hint">Место в рейтинге (число).</span></div>
+          <div class="field"><span class="lab">athleteName <span class="req">обяз.</span></span><div class="inp">SOLARI Jason</div></div>
+          <div class="field"><span class="lab">country <span class="req">обяз.</span></span><div class="inp">SUI</div>
+            <span class="hint">3-буквенный код → флаг авто.</span></div>
+          <div class="field"><span class="lab">yearOfBirth</span><div class="inp">2000</div></div>
+          <div class="field"><span class="lab">discipline <span class="req">важно</span></span><div class="inp">10m Air Pistol</div>
+            <span class="hint">Строго одна из 7 строк ниже.</span></div>
+          <div class="field"><span class="lab">category <span class="req">обяз.</span></span>
+            <div class="inp enum"><span class="chip">ALL</span><span class="chip on">MEN</span><span class="chip">WOMEN</span></div></div>
+          <div class="field"><span class="lab">flag <span class="opt">запасной</span></span>
+            <span class="hint">Не трогать. Только если авто-флаг не подгрузился.</span></div>
+          <button class="pubbtn">Publish</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="rp">
+          <div class="rp-cap">10m Air Pistol · Men — на сайте</div>
+          <table>
+            <tr><th>#</th><th>Спортсмен</th><th>Страна</th><th>Г.р.</th></tr>
+            <tr><td class="pos">1</td><td>SOLARI Jason</td><td><span class="flag"></span>SUI</td><td>2000</td></tr>
+            <tr><td class="pos">2</td><td>…</td><td>…</td><td>…</td></tr>
+          </table>
+        </div>
+
+        <div class="note warn" style="margin-top:16px"><span class="ic">!</span><div>
+          <b>Дисциплина показывается на сайте только если её строка есть в списке 7.</b>
+          Новую дисциплину «просто вписать» нельзя — карточка не появится. Такие правки — через разработчика.</div></div>
+      </div>
+    </div>
+
+    <h4 style="margin-top:22px;color:var(--mut)">7 дисциплин рейтинга — писать ровно так</h4>
+    <div class="tag-list" style="gap:8px">
+      <span class="chip">10m Air Pistol</span>
+      <span class="chip">10m Air Rifle</span>
+      <span class="chip">25m Pistol</span>
+      <span class="chip">25m Rapid Fire Pistol</span>
+      <span class="chip">50m Rifle 3 Position</span>
+      <span class="chip">Skeet</span>
+      <span class="chip">Trap</span>
+    </div>
+    <p class="hint" style="margin-top:10px">Для каждой дисциплины — свой список Men и свой список Women (поле <span class="mono">category</span>).</p>
+  </section>
+
+  <!-- ============ 4. RESULTS ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Results — Event + Result Detail + PDF</h2></div>
+    <p>Вкладка RESULTS — это <b>список соревнований</b>, у каждого своя таблица результатов и/или PDF. Три источника:</p>
+
+    <h3 style="margin-top:18px">A. Соревнование — коллекция «Event»</h3>
+    <p>Карточка в списке результатов = запись <span class="pill" style="display:inline-block">Event</span>. Ключевые поля, чтобы событие попало в Results:</p>
+    <table class="ref">
+      <tr><th>Поле</th><th>Значение</th><th>Зачем</th></tr>
+      <tr><td><span class="mono">statusEvent</span></td><td class="mono">FINISHED</td><td>Завершённые → в Results; UPCOMING → в Calendar</td></tr>
+      <tr><td><span class="mono">hasResults</span></td><td class="mono">true</td><td>У события есть таблицы результатов</td></tr>
+      <tr><td><span class="mono">hasResultBook</span></td><td class="mono">true</td><td>Показать кнопку result-book PDF</td></tr>
+      <tr><td><span class="mono">category</span></td><td class="mono">SENIOR / JUNIOR</td><td>Тег на карточке</td></tr>
+      <tr><td><span class="mono">disciplines</span></td><td>список дисциплин</td><td>Какие карточки дисциплин показать</td></tr>
+      <tr><td><span class="mono">location, date, endDate</span></td><td>—</td><td>Обязательные поля карточки</td></tr>
+    </table>
+
+    <h3 style="margin-top:22px">B. Таблицы результатов — «Result Detail»</h3>
+    <div class="note ok"><span class="ic">i</span><div>Строки <b>Result Detail</b> обычно заводятся <b>автоматически импортёром SIUS</b>, не вручную
+    (поля <span class="mono">shots / shotDetail</span> — служебные JSON). Вручную это трудоёмко: одна запись = один спортсмен в одной дисциплине.
+    Если всё же нужно вручную — заполните <span class="mono">eventSlug</span> (точно = slug события), <span class="mono">position</span>,
+    <span class="mono">athleteName</span>, <span class="mono">federationCode</span>, <span class="mono">total</span>,
+    <span class="mono">discipline</span> (ЗАГЛАВНЫМИ, напр. <span class="mono">10M AIR RIFLE</span>) и <span class="mono">category</span> (ALL/MEN/WOMEN).</div></div>
+
+    <h3 style="margin-top:22px">C. PDF результатов и Historical-архив</h3>
+    <table class="ref">
+      <tr><th>Что</th><th>Куда класть</th></tr>
+      <tr><td>Result-book PDF конкретного события</td><td>Открыть нужный <span class="mono">Event</span> → компонент <span class="mono">documents</span> → прикрепить файл. Плюс <span class="mono">hasResultBook = true</span>.</td></tr>
+      <tr><td>Архив «Historical results 1955–2023»</td><td>Коллекция <span class="mono">Document</span>, в <span class="mono">title</span> есть слово <b>Historical</b>, файлы — в компонент <span class="mono">attachments</span>.</td></tr>
+    </table>
+  </section>
+
+  <!-- ============ 5. ПРАВИЛА ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Общие правила — читать всем</h2></div>
+    <ol class="steps">
+      <li><b>Всегда жмите «Publish».</b> Черновик (Draft) на сайте не виден. После сохранения (Save) запись ещё в черновике — нужен зелёный <b>Publish</b>.</li>
+      <li><b>Строки дисциплин и категорий — буквально.</b> Регистр и пробелы важны. Не уверены — откройте существующую запись той же дисциплины и скопируйте строку.</li>
+      <li><b>Флаги — автоматические.</b> Достаточно кода страны (<span class="mono">federationCode</span> / <span class="mono">country</span>). Поле <span class="mono">flag</span> — запасной ручной вариант, трогать только если флаг не подгрузился.</li>
+      <li><b>Дата — формат <span class="mono">ГГГГ-ММ-ДД</span></b> (напр. <span class="mono">2026-07-27</span>).</li>
+      <li><b>Records-PDF заводятся в Documents</b> (theme = Records) — и там же появляются кнопки на Results. Отдельно дублировать не нужно.</li>
+      <li><b>Изменения после Publish появляются на сайте в течение ~3 минут</b> (кэш). Если не видно сразу — подождите и обновите страницу.</li>
+    </ol>
+  </section>
+
+  <div class="foot">
+    ESC — European Shooting Confederation · внутренняя инструкция для контент-менеджера.<br>
+    Значения полей в примерах — реальные данные с прод-базы. Файл: <span class="mono">/results-rankings-guide.html</span>
+  </div>
+
+</div>
+</body>
+</html>
