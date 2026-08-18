@@ -311,6 +311,19 @@
       <span class="chip">Trap</span>
     </div>
     <p class="hint" style="margin-top:10px">Для каждой дисциплины — свой список Men и свой список Women (поле <span class="mono">category</span>).</p>
+
+    <h4 style="margin-top:22px;color:var(--mut)">Официальный PDF рейтинга (кнопка «OFFICIAL PDF»)</h4>
+    <p>Кнопка на детали рейтинга берёт файл из коллекции <span class="pill" style="display:inline-block">Document</span> с
+    <span class="mono">theme = Ranking</span>. Сайт находит нужный PDF по <b>названию дисциплины и полу</b> в полях
+    <span class="mono">title</span> / <span class="mono">description</span>. Именуйте по образцу:</p>
+    <table class="ref">
+      <tr><th>title</th><th>description</th><th>→ где появится</th></tr>
+      <tr><td><span class="mono">European Ranking — 10m Air Pistol Men</span></td><td><span class="mono">10m Air Pistol · Men</span></td><td>кнопка PDF в 10m Air Pistol · Men</td></tr>
+      <tr><td><span class="mono">European Ranking — Trap Women</span></td><td><span class="mono">Trap · Women</span></td><td>кнопка PDF в Trap · Women</td></tr>
+    </table>
+    <div class="note warn"><span class="ic">!</span><div>Главное — чтобы в <span class="mono">title</span>/<span class="mono">description</span>
+    была точная строка дисциплины (из списка 7) и слово <b>Men</b> либо <b>Women</b>. Чтобы обновить PDF — просто замените файл в этом доке
+    (или создайте новый с таким же названием). Никакого кода трогать не нужно — раньше эти ссылки были прошиты в коде, теперь всё через Documents.</div></div>
   </section>
 
   <!-- ============ 4. RESULTS ============ -->
