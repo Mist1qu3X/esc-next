@@ -2234,3 +2234,12 @@
 @media (prefers-reduced-motion: reduce) {
     .mp-loader-video { display: none; }
 }
+/* === Мобилка: медиа-карточки заполняют ширину, а не «прижаты» влево min-width'ом === */
+/* (сетки переведены на flex, поэтому старые grid-template-columns в media-queries не работают) */
+@media (max-width: 768px) {
+    .mp-news-card, .mp-video-card { flex-basis: calc(50% - 1px); min-width: 0; }
+    .mp-featured-card, .mp-live-card-main { flex-basis: 100%; min-width: 0; }
+}
+@media (max-width: 480px) {
+    .mp-news-card, .mp-video-card { flex-basis: 100%; min-width: 0; }
+}
