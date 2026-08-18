@@ -33,20 +33,6 @@ const recordFlagFor = (code) => {
 };
 // Официальные PDF рейтинга (esc-shooting.org/documents/ranking, дек. 2025) — источник таблиц
 // Rank/Name/Nation/Year of birth, по одному на дисциплину+пол. Ключ: `${discipline}|${GENDER}`.
-const OFFICIAL_RANKING_PDF = {
-  '10m Air Pistol|MEN': 'https://esc-shooting.org/storage/2025/12/01/49fa32ef4e0d11bb746a4da95b5751dd25172787.pdf',
-  '10m Air Rifle|MEN': 'https://esc-shooting.org/storage/2025/12/01/9e3dd623e56383738ecdf1cc73fc0021ea6a5a75.pdf',
-  '25m Rapid Fire Pistol|MEN': 'https://esc-shooting.org/storage/2025/12/01/4ca6d4afc9703df3810b08ba804b0efe92c7f7e0.pdf',
-  '50m Rifle 3 Position|MEN': 'https://esc-shooting.org/storage/2025/12/01/413a5eb181e1e4d00ede51e0941c59724bfbf0eb.pdf',
-  'Skeet|MEN': 'https://esc-shooting.org/storage/2025/12/01/ff0bdab06f46fcdb0a58f06e962cb9d7ce88f81c.pdf',
-  'Trap|MEN': 'https://esc-shooting.org/storage/2025/12/01/6696c29f23b9b723c9127e6df6df3ae9d9b77255.pdf',
-  '10m Air Pistol|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/506c83ff806ed005f226770f0d4ab5ec4a2979c4.pdf',
-  '10m Air Rifle|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/a771c81bc92512d1535c1d9f05fe6e0bcbc320a7.pdf',
-  '25m Pistol|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/a51d6378c4f046a02b8ff96541e2f145791810cf.pdf',
-  '50m Rifle 3 Position|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/9762a74245d0ac30b6c49062fc2dc47e520e9a68.pdf',
-  'Skeet|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/6a7755e66aa54a542347dfb8aed7ef75a68abe70.pdf',
-  'Trap|WOMEN': 'https://esc-shooting.org/storage/2025/12/01/7184f96a772fc426086996e3e524238bb62f1bcd.pdf',
-};
 // Легенда типов рекордов — как в официальном PDF.
 const RECORD_TYPE_LEGEND = [
   ['ER', 'European Record'], ['EER', 'Equalled European Record'],
@@ -137,6 +123,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   const [eventDisciplineList, setEventDisciplineList] = useState([]); // крупные дисциплины текущего события (лёгкая загрузка)
   const [records, setRecords] = useState([]);
   const [recordDocs, setRecordDocs] = useState([]);            // офиц. PDF рекордов (docs, theme=Records) — ссылки динамически из CMS
+  const [rankingDocs, setRankingDocs] = useState([]);          // офиц. PDF рейтинга (docs, theme=Ranking) — матч по дисциплине+полу, из CMS
   const [expandedRec, setExpandedRec] = useState(null); // раскрытый командный рекорд (показ всех участников)
   const [gender, setGender] = useState('ALL');
   const [rankingsGender, setRankingsGender] = useState('ALL');
@@ -189,8 +176,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   useEffect(() => {
     if (activeTab === 'ranking' && !rankingsLoaded) {
       (async () => {
-        const r = await fetchAll(`/api/ranking-details?fields[0]=position&fields[1]=athleteName&fields[2]=country&fields[3]=yearOfBirth&fields[4]=discipline&fields[5]=category&sort=position:asc`);
-        setRankings(r); setRankingsLoaded(true);
+        const [r, rdocs] = await Promise.all([
+          fetchAll(`/api/ranking-details?fields[0]=position&fields[1]=athleteName&fields[2]=country&fields[3]=yearOfBirth&fields[4]=discipline&fields[5]=category&sort=position:asc`),
+          // Офиц. PDF рейтинга — из CMS (docs, theme=Ranking), матч по дисциплине+полу в title/description.
+          fetchAll(`/api/docs?filters[theme][$eq]=Ranking&fields[0]=title&fields[1]=description&populate[file][fields][0]=url&sort=date:desc`).catch(() => []),
+        ]);
+        setRankings(r); setRankingDocs(rdocs || []); setRankingsLoaded(true);
       })();
     }
     if (activeTab === 'records' && !recordsLoaded) {
@@ -591,6 +582,19 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   };
   const recordsPdfSenior = recDocUrl(/senior/i);
   const recordsPdfU16 = recDocUrl(/u1[68]/i);
+  // Офиц. PDF рейтинга — из CMS (docs, theme=Ranking). Матч: в title/description дока есть
+  // строка дисциплины и слово пола (Men/Women как слово — "women" не ловится на "men").
+  const rankDocUrl = (discipline, gender) => {
+    const disc = (discipline || '').toLowerCase();
+    const gw = gender === 'MEN' ? 'men' : 'women';
+    const re = new RegExp(`\\b${gw}\\b`, 'i');
+    const d = rankingDocs.find((x) => {
+      const hay = `${x.title || ''} ${x.description || ''}`.toLowerCase();
+      return hay.includes(disc) && re.test(hay);
+    });
+    const u = d?.file?.url;
+    return u ? (u.startsWith('http') ? u : `${config.API_URL}${u}`) : null;
+  };
 
   const rankingsFilterBar = (
     <div className="rankings-filter-bar">
@@ -1017,7 +1021,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             <h2 className="rankings-detail-title">{selectedDiscipline.toUpperCase()}{rankingsGender !== 'ALL' ? ` — ${rankingsGender}` : ''}</h2>
             <div className="records-pdf-btns">
               {(rankingsGender === 'ALL' ? ['MEN', 'WOMEN'] : [rankingsGender]).map((g) => {
-                const pdf = OFFICIAL_RANKING_PDF[`${selectedDiscipline}|${g}`];
+                const pdf = rankDocUrl(selectedDiscipline, g);
                 return pdf ? (
                   <a key={g} className="export-btn export-btn-sec" href={pdf} target="_blank" rel="noopener noreferrer">
                     <i className="fa-solid fa-file-pdf"></i> OFFICIAL PDF{rankingsGender === 'ALL' ? ` · ${g}` : ''}
