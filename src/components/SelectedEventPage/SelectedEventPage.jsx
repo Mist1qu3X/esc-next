@@ -85,6 +85,15 @@ const SelectedEventPage = ({ slug }) => {
 
   const tabs = ['OVERVIEW', 'DOCUMENTS', 'RESULTS', 'LIVE & MEDIA'];
 
+  // Открытие сразу на нужной вкладке по ?tab= (напр. кнопка RESULTS в календаре → ?tab=results)
+  useEffect(() => {
+    const q = (new URLSearchParams(window.location.search).get('tab') || '').toLowerCase();
+    if (!q) return;
+    const match = tabs.find((t) => t.toLowerCase().replace(/[^a-z]/g, '').includes(q.replace(/[^a-z]/g, '')));
+    if (match) setActiveTab(match);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slug]);
+
   useEffect(() => {
     const fetchEvent = async () => {
       try {
