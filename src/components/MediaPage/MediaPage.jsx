@@ -538,6 +538,8 @@ const MediaPage = () => {
                     <div className="mp-video-info">
                       <span className="mp-video-label">VIDEO</span>
                       <h3 className="mp-video-title">{v.title}</h3>
+                      {/* дата видна только на мобилке — там карточка приводится к виду галереи VIDEOS */}
+                      <span className="mp-video-date">{formatDatePhoto(v.date)}</span>
                     </div>
                   </div>
                   );
