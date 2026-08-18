@@ -9,6 +9,8 @@ import TargetLoader from '@/components/LoadingResults/TargetLoader';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import { fileTypeMeta, previewUrlFor } from '@/lib/fileType';
 import { downloadFile as forceDownload } from '@/lib/download';
+import { imageUrl } from '@/lib/media';
+import LazyBg from '@/components/LazyBg/LazyBg';
 import './SelectedEventPage.css';
 import '@/components/DocumentsPage/DocumentsPage.css';
 
@@ -523,13 +525,13 @@ const SelectedEventPage = ({ slug }) => {
                     <h3 className="event-subtitle" style={{ marginTop: 28 }}>PHOTO GALLERY</h3>
                     <div className="event-photo-grid">
                       {eventPhotos.map((p) => (
-                        <div key={p.id} className="event-photo-card" style={{ backgroundImage: `url(${getImageUrl(p.image)})` }} onClick={() => p.slug && router.push(`/media/photo/${p.slug}`)}>
+                        <LazyBg key={p.id} className="event-photo-card" src={imageUrl(p.image, 'small') || getImageUrl(p.image)} onClick={() => p.slug && router.push(`/media/photo/${p.slug}`)}>
                           <div className="event-photo-overlay"></div>
                           <div className="event-photo-info">
                             <span className="event-photo-title">{p.title}</span>
                             <span className="event-photo-count"><i className="fa-regular fa-images"></i> {Array.isArray(p.images) ? p.images.length : (p.photoCount || 0)}</span>
                           </div>
-                        </div>
+                        </LazyBg>
                       ))}
                     </div>
                   </>

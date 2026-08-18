@@ -6,6 +6,8 @@ import config from '@/lib/config';
 import VideoPlayer from '@/components/VideoPlayer/VideoPlayer';
 import VideoDetailSkeleton from './VideoDetailSkeleton';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
+import { imageUrl } from '@/lib/media';
+import LazyBg from '@/components/LazyBg/LazyBg';
 import './SelectedVideoPage.css';
 
 const mediaUrl = (m) => {
@@ -96,10 +98,10 @@ const SelectedVideoPage = ({ id }) => {
                 className="sv-card"
                 onClick={() => router.push(`/media/video/${v.documentId}`)}
               >
-                <div className="sv-card-cover" style={{ backgroundImage: `url(${mediaUrl(v.thumbnail)})` }}>
+                <LazyBg className="sv-card-cover" src={imageUrl(v.thumbnail, 'small') || mediaUrl(v.thumbnail)}>
                   <div className="sv-card-play"><i className="fa-solid fa-play"></i></div>
                   {realDuration(v.duration) && <span className="sv-card-duration">{realDuration(v.duration)}</span>}
-                </div>
+                </LazyBg>
                 <div className="sv-card-panel">
                   <h3 className="sv-card-title">{v.title}</h3>
                   {v.date && <span className="sv-card-date">{formatDate(v.date)}</span>}

@@ -80,7 +80,7 @@ const MustSeeAction = () => {
                         >
                             <p className="number-video">{String(index + 1).padStart(2, '0')}</p>
                             <div className="video-image-wrapper">
-                                {thumbnailUrl && <img src={thumbnailUrl} alt={title} />}
+                                {thumbnailUrl && <img src={thumbnailUrl} alt={title} loading="lazy" decoding="async" />}
                                 <div className="play-icon">
                                     <i className="fa-solid fa-play"></i>
                                 </div>
