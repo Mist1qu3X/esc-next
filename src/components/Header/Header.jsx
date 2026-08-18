@@ -88,8 +88,12 @@ const Header = () => {
         const onKey = (e) => { if (e.key === 'Escape') setIsMobileMenuOpen(false); };
         document.addEventListener('keydown', onKey);
         const prevOverflow = document.body.style.overflow;
+        const prevPad = document.body.style.paddingRight;
+        // Компенсируем ширину скроллбара, иначе при overflow:hidden страница прыгает вбок
+        const sbw = window.innerWidth - document.documentElement.clientWidth;
         document.body.style.overflow = 'hidden';
-        return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prevOverflow; };
+        if (sbw > 0) document.body.style.paddingRight = `${sbw}px`;
+        return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prevOverflow; document.body.style.paddingRight = prevPad; };
     }, [isMobileMenuOpen]);
 
     const handleSuggestionClick = (suggestion) => {
