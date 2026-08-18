@@ -222,23 +222,36 @@
         margin: 30px;
     }
     
+    /* Оставляем компактную СТРОКУ: цифра слева + мини-превью + текст (как в макете),
+       а не колонку с большими карточками. */
     .video-container {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
         gap: 12px;
+        padding: 12px;
     }
-    
+
     .number-video {
-        width: auto;
+        width: 28px;
+        font-size: 24px;
+        flex-shrink: 0;
     }
-    
+
     .video-image-wrapper {
-        width: 100%;
-        height: 180px;
+        width: 110px;
+        height: 64px;
     }
-    
+
+    .video-info {
+        min-width: 0; /* чтобы длинный заголовок переносился, а не выпирал */
+    }
+
+    .text-information {
+        font-size: 14px;
+    }
+
     .watch-btn {
-        align-self: flex-end;
+        display: none; /* на мобилке кликабельна вся строка */
     }
 }
 /* Пустое состояние блока видео */
