@@ -322,8 +322,12 @@
       <tr><td><span class="mono">European Ranking — Trap Women</span></td><td><span class="mono">Trap · Women</span></td><td>кнопка PDF в Trap · Women</td></tr>
     </table>
     <div class="note warn"><span class="ic">!</span><div>Главное — чтобы в <span class="mono">title</span>/<span class="mono">description</span>
-    была точная строка дисциплины (из списка 7) и слово <b>Men</b> либо <b>Women</b>. Чтобы обновить PDF — просто замените файл в этом доке
-    (или создайте новый с таким же названием). Никакого кода трогать не нужно — раньше эти ссылки были прошиты в коде, теперь всё через Documents.</div></div>
+    была точная строка дисциплины (из списка 7) и слово <b>Men</b> либо <b>Women</b>. Обновить PDF проще всего так: открыть уже существующий
+    док «European Ranking — …» и <b>заменить файл</b>. 12 таких доков (6 дисциплин × Men/Women) уже заведены. Код трогать не нужно —
+    раньше ссылки были прошиты в коде, теперь всё через Documents.</div></div>
+    <div class="note stop"><span class="ic">✕</span><div><b>Важно: эти 12 доков НЕ должны показываться в общей библиотеке Documents</b> — только на Results.
+    Это обеспечивает поле <span class="mono">eventSlug = results-ranking</span> (маркер «раздел Results, не библиотека»). Оно уже проставлено.
+    Если создаёте новый ранкинг-PDF вручную — <b>обязательно проставьте <span class="mono">eventSlug = results-ranking</span></b>, иначе он «утечёт» на страницу Documents.</div></div>
   </section>
 
   <!-- ============ 4. RESULTS ============ -->
