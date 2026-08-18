@@ -879,6 +879,15 @@
     overflow-wrap: break-word;
 }
 
+/* Дата в ALL-превью видео — только на мобилке (там карточка = вид галереи VIDEOS) */
+.mp-video-date {
+    display: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+}
+
 /* ========== LIVE BLOCK ========== */
 .mp-live-block {
     margin-top: 60px;
@@ -1993,42 +2002,27 @@
     }
     
     .mp-videos-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2px;
+        gap: 12px;
     }
-    
-    .mp-video-thumbnail {
-        height: 100px;
-        min-height: 100px;
-    }
-    
+
+    /* Полноширинная карточка (1 колонка) — как в галерее VIDEOS */
     .mp-video-play-btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 15px;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
     }
-    
+
     .mp-video-play-btn i {
-        font-size: 10px;
+        font-size: 15px;
     }
-    
-    .mp-video-duration {
-        width: 30px;
-        height: 16px;
-        font-size: 8px;
-    }
-    
+
     .mp-video-info {
-        padding: 8px;
+        padding: 14px 16px;
     }
-    
-    .mp-video-label {
-        font-size: 7px;
-    }
-    
+
     .mp-video-title {
-        font-size: 10px;
-        line-height: 12px;
+        font-size: 17px;
+        line-height: 1.15;
     }
     
     .mp-live-block {
@@ -2244,6 +2238,10 @@
        а не короткая обложка + растянутое пустое инфо из-за min-height:232 */
     .mp-video-card { min-height: 0; }
     .mp-video-thumbnail { height: auto; aspect-ratio: 16 / 9; min-height: 0; }
+    /* ALL-превью видео = карточка галереи VIDEOS: панель #0D2642, дата вместо лейбла */
+    .mp-video-info { background: #0D2642; gap: 8px; justify-content: flex-start; }
+    .mp-video-label { display: none; }
+    .mp-video-date { display: block; }
 }
 @media (max-width: 480px) {
     .mp-news-card, .mp-video-card { flex-basis: 100%; min-width: 0; }
