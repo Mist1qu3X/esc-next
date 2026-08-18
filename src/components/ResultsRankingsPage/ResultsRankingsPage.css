@@ -1914,9 +1914,13 @@
 
 /* Телефон: упрощённые колонки — имя атлета всегда видно, ничего не уезжает */
 @media (max-width: 600px) {
-    /* RESULTS → RANK | ATHLETE | FED | TOTAL (серия выстрелов уезжает — прячем) */
+    /* RESULTS → RANK | ATHLETE | FED | TOTAL (серия выстрелов уезжает — прячем).
+       .no-inner (shotgun / Champions League) перечисляем явно: у него специфичность
+       выше базового мобильного правила, иначе он бы остался 6-колоночным и жался влево. */
     .results-table-header,
-    .results-table-row {
+    .results-table-row,
+    .results-table-header.no-inner,
+    .results-table-row.no-inner {
         grid-template-columns: 26px minmax(0, 1.5fr) auto minmax(0, 0.75fr);
         gap: 8px;
         padding: 12px 10px;
