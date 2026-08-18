@@ -302,7 +302,7 @@ const DiscoverPage = () => {
             <div className="leader-card" key={l.id}>
               <div className="leader-photo">
                 {l.image ? (
-                  <img src={getImageUrl(l.image)} alt={l.name} className="leader-photo-img" />
+                  <img src={getImageUrl(l.image)} alt={l.name} className="leader-photo-img" loading="lazy" decoding="async" />
                 ) : (
                   <span className="leader-initials">{l.initials}</span>
                 )}
@@ -390,7 +390,7 @@ const DiscoverPage = () => {
                     <div className="executive-new-card" key={leader.id}>
                       <div className="executive-card-image">
                         {leader.image ? (
-                          <img src={getImageUrl(leader.image)} alt={leader.name} />
+                          <img src={getImageUrl(leader.image)} alt={leader.name} loading="lazy" decoding="async" />
                         ) : (
                           <div className="executive-card-placeholder">
                             <span>{leader.initials}</span>
@@ -454,7 +454,7 @@ const DiscoverPage = () => {
                     <div className="executive-member" key={m.id}>
                       <div className="executive-photo">
                         {m.image ? (
-                          <img src={getImageUrl(m.image)} alt={m.name} className="executive-photo-img" />
+                          <img src={getImageUrl(m.image)} alt={m.name} className="executive-photo-img" loading="lazy" decoding="async" />
                         ) : (
                           <span>{m.initials}</span>
                         )}

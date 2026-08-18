@@ -329,7 +329,7 @@ const EventsPageContent = () => {
                             return (
                                 <div className="epc-featured-card" key={event.id} onClick={() => handleDetails(event)}>
                                     {imgUrl
-                                        ? <img src={imgUrl} alt={event.name} />
+                                        ? <img src={imgUrl} alt={event.name} loading="lazy" decoding="async" />
                                         : <div className="epc-featured-noimg"><i className="fa-solid fa-crosshairs"></i></div>}
                                     <div className="epc-featured-content">
                                         <div className="epc-featured-tags">

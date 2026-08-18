@@ -6,6 +6,8 @@ import { downloadFile } from '@/lib/download';
 import { useRouter } from 'next/navigation';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import LoadingMedia from './LoadingMedia';
+import LazyBg from '@/components/LazyBg/LazyBg';
+import { imageUrl } from '@/lib/media';
 import './MediaPage.css';
 
 // GET с повтором при временных сбоях (холодный старт Strapi / сеть).
@@ -73,10 +75,10 @@ const MediaPage = () => {
         // Каждый запрос падает независимо: сбой одного (напр. live-streams) больше
         // не обнуляет всю страницу — остальные секции отрисуются нормально.
         const [newsRes, videosRes, docsRes, streamsRes, photosRes] = await Promise.all([
-          getWithRetry(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
+          getWithRetry(`${config.API_URL}/api/news-items?populate[image]=true&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
           getWithRetry(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=createdAt:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
           // docs/streams: только общие (событийные живут на странице события).
-          getWithRetry(`${config.API_URL}/api/docs?populate=*&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
+          getWithRetry(`${config.API_URL}/api/docs?populate[file]=true&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
           getWithRetry(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => EMPTY_RES),
           // photos: показываем ВСЕ альбомы (событийные тоже) — в сетке нужна только обложка + счётчик
           getWithRetry(`${config.API_URL}/api/photos?populate[image]=true&populate[images][fields][0]=id&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
@@ -116,7 +118,7 @@ const MediaPage = () => {
         (async () => {
           try {
             for (let page = 2; page <= 30; page++) {
-              const r = await cachedGet(`${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
+              const r = await cachedGet(`${config.API_URL}/api/news-items?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
               const batch = extractData(r);
               if (!batch.length) break;
               setNews((prev) => [...prev, ...batch]);
@@ -330,7 +332,7 @@ const MediaPage = () => {
               {featuredNews.length > 0 ? (
                 featuredNews.map((item) => (
                   <div key={item.id} className="mp-featured-card"
-                    style={{ backgroundImage: `url(${getImageUrl(item.image)})`, cursor: 'pointer' }}
+                    style={{ backgroundImage: `url(${imageUrl(item.image, 'medium') || getImageUrl(item.image)})`, cursor: 'pointer' }}
                     onClick={() => goToNews(item.slug)}>
                     {isSaved(item.slug) && <span className="mp-saved-badge"><i className="fa-solid fa-bookmark"></i>Saved</span>}
                     <div className="mp-featured-overlay">
@@ -390,7 +392,7 @@ const MediaPage = () => {
             <div className="mp-photo-grid">
               {displayedPhotos.length > 0 ? (
                 displayedPhotos.map((p) => {
-                  const cover = getImageUrl(p.image) || getImageUrl(p.images);
+                  const cover = imageUrl(p.image, 'small') || getImageUrl(p.image);
                   const count = photoCountOf(p);
                   return (
                     <div
@@ -399,9 +401,9 @@ const MediaPage = () => {
                       onClick={() => p.slug && router.push(`/media/photo/${p.slug}`)}
                       style={{ cursor: p.slug ? 'pointer' : 'default' }}
                     >
-                      <div className="mp-photo-cover" style={{ backgroundImage: `url(${cover})` }}>
+                      <LazyBg className="mp-photo-cover" src={cover}>
                         {count === 0 && <span className="mp-photo-empty-badge">Empty</span>}
-                      </div>
+                      </LazyBg>
                       <div className="mp-photo-panel">
                         <h3 className="mp-photo-title">{p.title}</h3>
                         <div className="mp-photo-footer">
@@ -443,7 +445,7 @@ const MediaPage = () => {
                     onClick={() => avail && router.push(`/media/video/${v.documentId}`)}
                     style={{ cursor: avail ? 'pointer' : 'default' }}
                   >
-                    <div className="mp-vgal-cover" style={{ backgroundImage: `url(${getImageUrl(v.thumbnail)})` }}>
+                    <LazyBg className="mp-vgal-cover" src={imageUrl(v.thumbnail, 'small') || getImageUrl(v.thumbnail)}>
                       {avail ? (
                         <>
                           <div className="mp-vgal-play"><i className="fa-solid fa-play"></i></div>
@@ -452,7 +454,7 @@ const MediaPage = () => {
                       ) : (
                         <div className="mp-video-unavail"><i className="fa-solid fa-video-slash"></i><span>Unavailable</span></div>
                       )}
-                    </div>
+                    </LazyBg>
                     <div className="mp-photo-panel">
                       <h3 className="mp-photo-title">{v.title}</h3>
                       <div className="mp-photo-footer">
@@ -488,9 +490,9 @@ const MediaPage = () => {
               {newsGridItems.length > 0 ? (
                 newsGridItems.map((item) => (
                   <div key={item.id} className="mp-news-card" onClick={() => goToNews(item.slug)} style={{ cursor: 'pointer' }}>
-                    <div className="mp-news-card-image" style={{ backgroundImage: `url(${getImageUrl(item.image)})` }}>
+                    <LazyBg className="mp-news-card-image" src={imageUrl(item.image, 'small') || getImageUrl(item.image)}>
                       {isSaved(item.slug) && <span className="mp-saved-badge"><i className="fa-solid fa-bookmark"></i>Saved</span>}
-                    </div>
+                    </LazyBg>
                     <div className="mp-news-card-content">
                       <span className={`mp-news-type mp-type-${item.theme?.toLowerCase() || 'education'}`}>{item.theme || 'NEWS'}</span>
                       <h3 className="mp-news-card-title">{item.title}</h3>
@@ -525,7 +527,7 @@ const MediaPage = () => {
                   const avail = videoAvailable(v);
                   return (
                   <div key={v.id} className={`mp-video-card ${!avail ? 'mp-video-unavailable' : ''}`} onClick={() => avail && router.push(`/media/video/${v.documentId}`)} style={{ cursor: avail ? 'pointer' : 'default' }}>
-                    <div className="mp-video-thumbnail" style={{ backgroundImage: `url(${getImageUrl(v.thumbnail)})` }}>
+                    <LazyBg className="mp-video-thumbnail" src={imageUrl(v.thumbnail, 'small') || getImageUrl(v.thumbnail)}>
                       {avail ? (
                         <>
                           <div className="mp-video-play-btn"><i className="fa-solid fa-play"></i></div>
@@ -534,7 +536,7 @@ const MediaPage = () => {
                       ) : (
                         <div className="mp-video-unavail"><i className="fa-solid fa-video-slash"></i><span>Unavailable</span></div>
                       )}
-                    </div>
+                    </LazyBg>
                     <div className="mp-video-info">
                       <span className="mp-video-label">VIDEO</span>
                       <h3 className="mp-video-title">{v.title}</h3>

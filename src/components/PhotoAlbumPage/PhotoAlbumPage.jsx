@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
+import { imageUrl } from '@/lib/media';
+import LazyBg from '@/components/LazyBg/LazyBg';
 import PhotoAlbumSkeleton from './PhotoAlbumSkeleton';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import './PhotoAlbumPage.css';
@@ -27,7 +29,7 @@ const PhotoAlbumPage = ({ slug }) => {
     const fetchAlbum = async () => {
       try {
         const res = await cachedGet(
-          `${config.API_URL}/api/photos?filters[slug][$eq]=${slug}&populate=*`
+          `${config.API_URL}/api/photos?filters[slug][$eq]=${slug}&populate[image]=true&populate[images]=true`
         );
         const data = res.data?.data || [];
         setAlbum(data[0] || null);
@@ -110,8 +112,9 @@ const PhotoAlbumPage = ({ slug }) => {
               <div className="pa-track" ref={trackRef} onScroll={onTrackScroll}>
                 {photos.map((ph, i) => (
                   <div className="pa-slide" key={ph.id || i}>
-                    <div className="pa-slide-bg" style={{ backgroundImage: `url(${getImageUrl(ph)})` }}></div>
-                    <img className="pa-slide-img" src={getImageUrl(ph)} alt={album.title} draggable={false} />
+                    <LazyBg className="pa-slide-bg" src={imageUrl(ph, 'large') || getImageUrl(ph)} eager={i === 0}></LazyBg>
+                    <img className="pa-slide-img" src={imageUrl(ph, 'large') || getImageUrl(ph)} alt={album.title}
+                         draggable={false} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
                   </div>
                 ))}
               </div>
@@ -135,12 +138,12 @@ const PhotoAlbumPage = ({ slug }) => {
                 <div className="pa-all-label">ALL PHOTO · {total} PHOTOS</div>
                 <div className="pa-grid">
                   {photos.map((ph, i) => (
-                    <div
+                    <LazyBg
                       key={ph.id || i}
                       className={`pa-thumb ${i === selected ? 'pa-active' : ''}`}
-                      style={{ backgroundImage: `url(${getImageUrl(ph)})` }}
+                      src={imageUrl(ph, 'small') || getImageUrl(ph)}
                       onClick={() => scrollToIndex(i)}
-                    ></div>
+                    ></LazyBg>
                   ))}
                 </div>
               </>
