@@ -698,11 +698,11 @@
 /* Плашка под фото (310x97) */
 .mp-photo-panel {
     min-height: 97px;
+    flex: 1; /* заполняет растянутую высоту карточки, чтобы низ ровнялся по ряду */
     background: #0D2642;
     padding: 16px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 12px;
 }
 
@@ -717,6 +717,7 @@
 }
 
 .mp-photo-footer {
+    margin-top: auto; /* дата/счётчик всегда у низа карточки — ряд выравнивается */
     display: flex;
     align-items: center;
     justify-content: space-between;
