@@ -59,13 +59,14 @@ const FullInfo = () => {
     }, []);
 
     // Загрузка событий вокруг «сейчас»: недавно начавшиеся/завершившиеся + ближайшие, по дате.
-    // Окно от (сегодня − 14 дней), чтобы показать и идущие (ONGOING), и недавно завершённые (FINISHED).
+    // Только НЕзавершённые события: идущие (IN PROGRESS) + ближайшие будущие (UPCOMING).
+    // Фильтр по endDate>=сегодня отсекает finished; сортировка по дате — ближайшие сверху.
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const windowStart = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
+                const today = new Date().toISOString().slice(0, 10);
                 const response = await cachedGet(
-                    `${config.API_URL}/api/events?filters[date][$gte]=${windowStart}&sort=date:asc&pagination[limit]=3`
+                    `${config.API_URL}/api/events?filters[endDate][$gte]=${today}&sort=date:asc&pagination[limit]=3`
                 );
                 setEvents(response.data.data || []);
             } catch (error) {
