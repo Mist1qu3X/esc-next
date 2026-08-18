@@ -824,7 +824,8 @@
 .epc-season-wrapper {
     width: 100%;
     max-width: 1440px;
-    margin: 0 auto;
+    /* отступ от шапки/фильтров, чтобы блок прогресса сезона не прилипал */
+    margin: 32px auto 0;
     padding: 0 clamp(16px, 3vw, 32px);
     background-color: #06121f;
 }
