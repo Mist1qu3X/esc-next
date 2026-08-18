@@ -71,7 +71,8 @@ const EventsPageContent = () => {
     };
     const getMonthShort = (dateString) => {
         const date = parseDate(dateString);
-        return isNaN(date.getTime()) ? '' : date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+        // без .toUpperCase(): регистр задаёт CSS (десктоп — uppercase, мобильная карточка — как в макете «Nov»)
+        return isNaN(date.getTime()) ? '' : date.toLocaleDateString('en-US', { month: 'short' });
     };
     const getDayRange = (startStr, endStr) => {
         const s = parseDate(startStr);

@@ -1378,3 +1378,51 @@
     color: rgba(255, 255, 255, 0.4);
     white-space: nowrap;
 }
+
+/* === Мобильная карточка события — 1:1 с макетом === */
+@media (max-width: 480px) {
+    .epc-events-table-row {
+        background: #0d2137;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        padding: 18px 20px 20px;
+    }
+    /* Заголовок крупный (Barlow Condensed, uppercase, белый), шире — чтобы влезал в 2 строки */
+    .epc-col-event { width: calc(100% - 88px); }
+    .epc-event-name {
+        font-size: 21px;
+        line-height: 1.15;
+    }
+    /* Локация — серая, покрупнее */
+    .epc-col-location span { font-size: 14px; color: rgba(255, 255, 255, 0.6); }
+    .epc-col-location i { font-size: 13px; color: rgba(255, 255, 255, 0.4); }
+    /* Дата — СЕРАЯ (не cyan), формат «Nov 12–18, 2026» */
+    .epc-date-month, .epc-date-day {
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 15px;
+        font-weight: 500;
+        text-transform: none;
+        line-height: 1;
+    }
+    .epc-date-year { font-size: 15px; font-weight: 500; color: rgba(255, 255, 255, 0.45); }
+    .epc-date-day::after { content: ','; } /* «12–18, 2026» — запятая вплотную к дню */
+    .epc-col-date { gap: 5px; }
+    /* UPCOMING / статус — просто cyan-текст, без плашки */
+    .epc-status-tag.epc-upcoming {
+        background: transparent;
+        padding: 0;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #00d8f5;
+    }
+    .epc-status-tag.epc-finished { background: transparent; padding: 0; font-size: 13px; letter-spacing: 1px; }
+    /* DETAILS — cyan-кнопка крупнее */
+    .epc-action-btn.epc-details-btn {
+        font-size: 13px;
+        padding: 10px 20px;
+        border-radius: 4px;
+        letter-spacing: 1px;
+    }
+}
