@@ -170,7 +170,8 @@ const EventsPageContent = () => {
     };
 
     const handleDetails = (event) => { if (event.slug) router.push(`/events/${event.slug}`); };
-    const handleResults = (event) => { if (event.slug) router.push(`/events/${event.slug}`); };
+    // RESULTS ведёт на страницу события сразу на вкладку RESULTS (?tab=results)
+    const handleResults = (event) => { if (event.slug) router.push(`/events/${event.slug}?tab=results`); };
 
     // FEATURED — идущие сейчас первыми, затем ближайшие предстоящие
     const byDateAsc = (a, b) => parseDate(a.date) - parseDate(b.date);
