@@ -2244,3 +2244,6 @@
 }
 .subdisc-substages { display: flex; flex-wrap: wrap; gap: 8px; }
 .subdisc-btn-sm { padding: 5px 11px; font-size: 11px; }
+
+/* Прочерк, когда федерация не указана (вместо названия клуба/города) */
+.rt-fed .fed-none { color: rgba(255, 255, 255, 0.35); }

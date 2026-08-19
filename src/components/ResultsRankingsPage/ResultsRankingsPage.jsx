@@ -556,6 +556,13 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     if (!c || c === 'RUS') return null;
     return `https://shootingsportscloud.com:8594/api/v1/Resource/flag/${c}`;
   };
+  // Настоящий код федерации/страны — короткий и без строчных букв (FRA, SUI, ISL, AIN).
+  // Если федерация не указана, SIUS подставляет название клуба/города (Chateauroux, Winterthur) —
+  // такое в колонке FED не показываем (ставим прочерк вместо чужого имени).
+  const isRealFed = (code) => {
+    const s = String(code || '').trim();
+    return !!s && !/[a-z]/.test(s) && /[A-Z]/.test(s) && s.length <= 6;
+  };
   // По клику на строку атлета тянем по-выстрельно (по одному запросу, кэшируем).
   const toggleShots = async (r) => {
     if (!canExpand(r) || !r.id) return;
@@ -904,7 +911,9 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   <div className="rt-col rt-rank">{gi < 3 ? <img src={`/img/${['First', 'Second', 'Third'][gi]}_results.png`} className="rank-medal" alt="" /> : <span className="rank-num">{gi + 1}</span>}</div>
                   <div className="rt-col rt-athlete"><span className="athlete-name">{r.athleteName}</span>{canExpand(r) && <span className="expand-caret" aria-hidden="true"><i className={`fa-solid fa-chevron-${expanded ? 'up' : 'down'}`}></i></span>}</div>
                   <div className="rt-col rt-spacer"></div>
-                  <div className="rt-col rt-fed">{flagFor(r.federationCode) && <img src={flagFor(r.federationCode)} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.federationCode}</span></div>
+                  <div className="rt-col rt-fed">{isRealFed(r.federationCode)
+                    ? <>{flagFor(r.federationCode) && <img src={flagFor(r.federationCode)} className="fed-flag-img" alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}<span>{r.federationCode}</span></>
+                    : <span className="fed-none">—</span>}</div>
                   <div className="rt-col rt-series">{r.isTeam
                     ? <div className="team-members">{shotsRaw.join(' · ')}</div>
                     : <div className="shots-container"><div className="shots-row">{shotsRaw.length ? shotsRaw.map((s, si) => <span key={si} className={`shot ${getShotClass(s)}`}>{s}</span>) : <span className="shot shot-miss">•</span>}</div></div>}</div>

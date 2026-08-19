@@ -1,11 +1,20 @@
 .pgn {
     display: flex;
+    justify-content: center;
+    margin-top: 32px;
+}
+
+.pgn-full,
+.pgn-compact {
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-top: 32px;
     flex-wrap: wrap;
 }
+
+/* компактный вариант (3 кубика) — только на мобильных */
+.pgn-compact { display: none; }
 
 .pgn-btn {
     height: 44px;
@@ -57,5 +66,7 @@
 }
 
 @media (max-width: 640px) {
+    .pgn-full { display: none; }        /* прячем полную пагинацию */
+    .pgn-compact { display: flex; }     /* показываем 3 кубика */
     .pgn-btn { height: 40px; min-width: 40px; font-size: 12px; padding: 0 10px; }
 }

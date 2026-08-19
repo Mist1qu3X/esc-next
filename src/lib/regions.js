@@ -8,5 +8,4 @@ export const REGIONS = [
   { label: 'Northern Europe', value: 'SCANDINAVIA' },
   { label: 'Western Europe', value: 'W.EUROPE' },
   { label: 'Eastern Europe', value: 'E.EUROPE' },
-  { label: 'Caucasus', value: 'CAUCASUS' },
 ];
