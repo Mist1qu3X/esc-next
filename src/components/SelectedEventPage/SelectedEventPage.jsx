@@ -12,6 +12,13 @@ import { downloadFile as forceDownload } from '@/lib/download';
 import { imageUrl } from '@/lib/media';
 import LazyBg from '@/components/LazyBg/LazyBg';
 import './SelectedEventPage.css';
+
+// Настоящий код федерации/страны — короткий и без строчных букв (FRA, SUI, AIN).
+// Если федерации нет, SIUS подставляет название клуба/города — его в колонке FED не показываем.
+const isRealFed = (code) => {
+  const s = String(code || '').trim();
+  return !!s && !/[a-z]/.test(s) && /[A-Z]/.test(s) && s.length <= 6;
+};
 import '@/components/DocumentsPage/DocumentsPage.css';
 
 // Прибавить n дней к ISO-дате (yyyy-mm-dd); полдень исключает сдвиг из-за таймзоны
@@ -454,7 +461,7 @@ const SelectedEventPage = ({ slug }) => {
                               <div className={`er-row ${i < 3 ? 'er-medal er-medal-' + (i + 1) : ''}`} key={r.id || i}>
                                 <span className="er-rank">{i + 1}</span>
                                 <span className="er-name">{r.athleteName}</span>
-                                <span className="er-fed">{r.federationCode}</span>
+                                <span className="er-fed">{isRealFed(r.federationCode) ? r.federationCode : '—'}</span>
                                 <span className="er-total">{r.total}</span>
                                 <span className="er-inner">{r.inner10s}</span>
                               </div>
