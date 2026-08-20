@@ -42,6 +42,15 @@
     margin: 30px 0 10px;
 }
 
+.legal-content h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    color: #eaf2fb;
+    font-size: clamp(16px, 2.2vw, 19px);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin: 20px 0 6px;
+}
+
 .legal-content p,
 .legal-content li { font-size: 15px; line-height: 1.7; color: rgba(255, 255, 255, 0.78); }
 .legal-content ul { padding-left: 20px; margin: 8px 0; }

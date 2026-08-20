@@ -8,7 +8,7 @@ export const metadata = {
 // Официальная Privacy Policy ESC (esc-shooting.org), приведённая в соответствие с GDPR.
 export default function PrivacyPolicy() {
     return (
-        <LegalPage title="Privacy Policy">
+        <LegalPage title="Privacy Policy" updated="August 2026">
             <p>
                 The European Shooting Confederation (“ESC”) is committed to protecting your privacy and
                 complying with applicable data protection and privacy law. This Privacy Policy is in line with the
@@ -104,6 +104,62 @@ export default function PrivacyPolicy() {
                 <li>Be processed in accordance with the rights of data subjects.</li>
                 <li>Be protected in appropriate ways.</li>
             </ul>
+
+            <h2>Information collected through this website</h2>
+            <p>
+                In addition to the sport-related data described above, the ESC processes a limited amount of
+                information in connection with your use of this website.
+            </p>
+
+            <h3>Contact form</h3>
+            <p>
+                When you use the contact form on our “Contacts” page, we collect the name, e-mail address and
+                message you provide, so that we can read and respond to your enquiry. This information is
+                transmitted to and stored in the ESC’s content-management system. The legal basis is your consent
+                and the ESC’s legitimate interest in answering your request (Article 6 (1) (a) and (f) GDPR). We do
+                not use these details for marketing and keep them only for as long as necessary to handle your
+                enquiry and any follow-up. A hidden anti-spam field is used to filter out automated submissions and
+                does not collect information about you.
+            </p>
+
+            <h3>Cookies and local storage</h3>
+            <p>
+                This website uses strictly necessary cookies and similar browser storage (local storage) to
+                function — for example, to remember your cookie-consent choice and the articles you save. Such data
+                is stored on your device and, in the case of saved articles, is not sent to or read by our servers.
+                With your consent, we may also use analytics to understand how the site is used and improve it;
+                analytics are never enabled without your consent, and we do not use advertising cookies or
+                personalised ads. You can accept or reject non-essential cookies in the banner shown on your first
+                visit and change your choice at any time via the “Cookie Settings” link in the footer. For details,
+                see our <a href="/cookies">Cookie Policy</a>.
+            </p>
+
+            <h3>Server logs and security</h3>
+            <p>
+                Like most websites, our servers may automatically record technical information such as your IP
+                address, browser type and the pages requested. This information is used to operate the website
+                securely, prevent abuse and diagnose technical problems, on the basis of the ESC’s legitimate
+                interest (Article 6 (1) (f) GDPR).
+            </p>
+
+            <h3>Third-party content and links</h3>
+            <p>
+                Some pages embed content hosted by third parties — in particular videos and live streams from
+                YouTube and Facebook, and flag and results data used to display competition information. When such
+                content is loaded, the relevant provider may set its own cookies and receive technical data (such as
+                your IP address), governed by that provider’s own privacy and cookie policies, which the ESC does
+                not control. Our website also links to external services, such as the ESC entry system, which
+                operate under their own terms and privacy policies.
+            </p>
+
+            <h3>Where your website data is processed</h3>
+            <p>
+                Contact-form submissions and the website’s content-management system are hosted on servers located
+                within the European Economic Area. Some content (for example media files) and other data may be
+                processed elsewhere or by third-party service providers acting on the ESC’s behalf, as described in
+                this Policy. The rights described in “Your rights as a data subject” below apply to this data as
+                well; to exercise them, contact <a href="mailto:esc@escsport.eu">esc@escsport.eu</a>.
+            </p>
 
             <h2>Legal basis for the processing of data</h2>
             <p>
