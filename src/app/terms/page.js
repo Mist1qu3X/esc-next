@@ -22,6 +22,12 @@ export default function TermsOfUse() {
                 member federations. You agree to use it only for lawful purposes and not to disrupt its operation, misuse it,
                 or attempt to gain unauthorised access to any part of it or its underlying systems.
             </p>
+            <p>
+                If you contact us through the website (for example via the contact form), you are responsible for ensuring
+                that the information you submit is accurate and lawful, and you agree not to submit content that is unlawful,
+                abusive or infringing. The ESC will use such information to respond to your enquiry, as described in the{' '}
+                <a href="/privacy">Privacy Policy</a>.
+            </p>
 
             <h2>2. Sporting rules and official documents</h2>
             <p>
