@@ -93,13 +93,13 @@ const Info = () => {
     const titleMaxPx = Math.max(32, 90 - titleLines * 5);
     // Есть ли поверх кадра текст. Если нет — не затемняем (кадр остаётся ярким целиком).
     const hasText = !!(kicker || rawTitle || cur.subtitle || cur.dateText);
-    // Кнопка ведёт на список по типу слайда.
-    const LISTING = {
-        event: { label: 'ALL EVENTS', link: '/events' },
-        news: { label: 'ALL NEWS', link: '/media?filter=NEWS' },
-        video: { label: 'ALL VIDEOS', link: '/media?filter=VIDEOS' },
+    // Две кнопки по типу слайда: VIEW X (конкретный элемент, поле link) + ALL X (список).
+    const T = {
+        event: { view: 'VIEW EVENT', all: 'ALL EVENTS', allLink: '/events' },
+        news: { view: 'VIEW NEWS', all: 'ALL NEWS', allLink: '/media?filter=NEWS' },
+        video: { view: 'VIEW VIDEO', all: 'ALL VIDEOS', allLink: '/media?filter=VIDEOS' },
     };
-    const listBtn = LISTING[cur.type] || LISTING.event;
+    const tt = T[cur.type] || T.event;
 
     return (
         <section
@@ -148,7 +148,10 @@ const Info = () => {
                 )}
 
                 <div className="info-section-buttons-wrapper">
-                    <button className="info-section-btn-view-event" onClick={() => goLink(listBtn.link)}>{listBtn.label}</button>
+                    {cur.link && (
+                        <button className="info-section-btn-view-event" onClick={() => goLink(cur.link)}>{tt.view}</button>
+                    )}
+                    <button className={cur.link ? 'info-section-btn-all-events' : 'info-section-btn-view-event'} onClick={() => goLink(tt.allLink)}>{tt.all}</button>
                 </div>
 
                 {/* точки + стрелки — только если слайдов несколько */}
