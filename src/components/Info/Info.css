@@ -323,3 +323,6 @@ body {
 @media (max-width: 480px) {
     .hero-play { width: 64px; height: 64px; font-size: 24px; }
 }
+
+/* Слайд без текста — не затемняем, кадр целиком яркий */
+.info-section.no-dim { background-image: var(--hero-img, url(/img/back1.png)); }

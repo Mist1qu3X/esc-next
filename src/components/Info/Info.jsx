@@ -65,7 +65,6 @@ const Info = () => {
     };
     const heroImg = cur ? imageUrl(cur.image, 'full') : null;
 
-    const kickerFor = (s) => s.kicker || ({ event: 'UPCOMING EVENT', news: 'LATEST NEWS', video: 'VIDEO' }[s.type] || '');
     const subIcon = (t) => (t === 'event' ? 'fa-location-dot' : t === 'video' ? 'fa-film' : 'fa-newspaper');
 
     if (slides === null) return <section className="info-section"></section>; // загрузка
@@ -88,13 +87,23 @@ const Info = () => {
         );
     }
 
+    const kicker = cur.kicker || '';
     const rawTitle = (cur.title || '').trim();
     const titleLines = Math.max(rawTitle.split('\n').length, Math.ceil(rawTitle.replace(/\s+/g, ' ').length / 22));
     const titleMaxPx = Math.max(32, 90 - titleLines * 5);
+    // Есть ли поверх кадра текст. Если нет — не затемняем (кадр остаётся ярким целиком).
+    const hasText = !!(kicker || rawTitle || cur.subtitle || cur.dateText);
+    // Кнопка ведёт на список по типу слайда.
+    const LISTING = {
+        event: { label: 'ALL EVENTS', link: '/events' },
+        news: { label: 'ALL NEWS', link: '/media?filter=NEWS' },
+        video: { label: 'ALL VIDEOS', link: '/media?filter=VIDEOS' },
+    };
+    const listBtn = LISTING[cur.type] || LISTING.event;
 
     return (
         <section
-            className={`info-section ${many ? 'has-slider' : ''}`}
+            className={`info-section ${many ? 'has-slider' : ''} ${hasText ? '' : 'no-dim'}`}
             style={heroImg ? { '--hero-img': `url(${heroImg})` } : undefined}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
@@ -106,21 +115,18 @@ const Info = () => {
                 touchX.current = null; setPaused(false);
             }}
         >
-            {/* видео-слайд: иконка play по центру кадра */}
-            {cur.type === 'video' && (
-                <button className="hero-play" onClick={() => goLink(cur.link)} aria-label="Play video">
-                    <i className="fa-solid fa-play"></i>
-                </button>
+            {(kicker || rawTitle) && (
+                <div className="info-section-content" key={idx}>
+                    {kicker && <span className={`hero-kicker hero-kicker-${cur.type}`}>{kicker}</span>}
+                    {rawTitle && (
+                        <p className="info-section-nameing" style={{ fontSize: `clamp(28px, 6vw, ${titleMaxPx}px)` }}>
+                            {rawTitle.split('\n').map((line, i, arr) => (
+                                <React.Fragment key={i}>{line}{i < arr.length - 1 && <br />}</React.Fragment>
+                            ))}
+                        </p>
+                    )}
+                </div>
             )}
-
-            <div className="info-section-content" key={idx}>
-                {kickerFor(cur) && <span className={`hero-kicker hero-kicker-${cur.type}`}>{kickerFor(cur)}</span>}
-                <p className="info-section-nameing" style={{ fontSize: `clamp(28px, 6vw, ${titleMaxPx}px)` }}>
-                    {rawTitle.split('\n').map((line, i, arr) => (
-                        <React.Fragment key={i}>{line}{i < arr.length - 1 && <br />}</React.Fragment>
-                    ))}
-                </p>
-            </div>
 
             <div className="info-section-bottom">
                 {(cur.subtitle || cur.dateText) && (
@@ -142,12 +148,7 @@ const Info = () => {
                 )}
 
                 <div className="info-section-buttons-wrapper">
-                    {cur.link && cur.buttonLabel && (
-                        <button className="info-section-btn-view-event" onClick={() => goLink(cur.link)}>{cur.buttonLabel}</button>
-                    )}
-                    <button className={cur.link && cur.buttonLabel ? 'info-section-btn-all-events' : 'info-section-btn-view-event'} onClick={() => router.push('/events')}>
-                        ALL EVENTS
-                    </button>
+                    <button className="info-section-btn-view-event" onClick={() => goLink(listBtn.link)}>{listBtn.label}</button>
                 </div>
 
                 {/* точки + стрелки — только если слайдов несколько */}
