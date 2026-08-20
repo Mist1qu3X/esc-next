@@ -113,7 +113,7 @@
 /* Средняя часть футера — ссылки */
 .other-links-container {
     display: flex;
-    justify-content: space-around;        /* лого убрано — колонки равномерно */
+    justify-content: space-around;        /* колонки равномерно */
     gap: clamp(16px, 3vw, 48px);
     padding-bottom: 50px;
     margin-bottom: 30px;
