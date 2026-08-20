@@ -1,116 +1,167 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
+import { imageUrl } from '@/lib/media';
 import './Info.css';
 
+// Главный баннер = слайдер (коллекция Hero Slide в админке: событие / новость / видео).
+// Если слайдов нет — фолбэк на текущий Championship-баннер (поведение как раньше).
 const Info = () => {
-    const [championship, setChampionship] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [slides, setSlides] = useState(null); // null = ещё грузим
+    const [champ, setChamp] = useState(null);
+    const [idx, setIdx] = useState(0);
+    const [paused, setPaused] = useState(false);
+    const touchX = useRef(null);
     const router = useRouter();
 
     useEffect(() => {
-        const fetchData = async () => {
+        (async () => {
+            let s = [];
             try {
-                const champResponse = await cachedGet(
-                    `${config.API_URL}/api/championships?populate=*`
-                );
-                if (champResponse.data.data.length > 0) {
-                    setChampionship(champResponse.data.data[0]);
-                }
-                
-                setLoading(false);
-            } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                setLoading(false);
+                const r = await cachedGet(`${config.API_URL}/api/hero-slides?populate[image]=true&sort=order:asc&pagination[pageSize]=12`);
+                s = (r.data?.data || []);
+            } catch (e) { /* коллекции ещё нет / сеть — уходим в фолбэк */ }
+            setSlides(s);
+            if (!s.length) {
+                try {
+                    const c = await cachedGet(`${config.API_URL}/api/championships?populate=*`);
+                    setChamp(c.data?.data?.[0] || null);
+                } catch (e) { /* нет чемпионата — покажем пустое состояние */ }
             }
-        };
-
-        fetchData();
+        })();
     }, []);
 
-    const handleViewEvent = () => {
-        if (championship?.slug) {
-            router.push(`/events/${championship.slug}`);
-        }
+    // Championship → приводим к виду слайда, чтобы рендерить единым шаблоном.
+    const champSlide = champ ? {
+        type: 'event',
+        kicker: 'FEATURED EVENT',
+        title: champ.title,
+        subtitle: champ.location,
+        dateText: champ.dateRange,
+        image: champ.image,
+        buttonLabel: 'VIEW EVENT',
+        link: champ.slug ? `/events/${champ.slug}` : null,
+    } : null;
+
+    const list = (slides && slides.length) ? slides : (champSlide ? [champSlide] : []);
+    const many = list.length > 1;
+    const cur = list.length ? list[Math.min(idx, list.length - 1)] : null;
+
+    // Автопрокрутка (пауза при наведении/касании)
+    useEffect(() => {
+        if (!many || paused) return;
+        const t = setInterval(() => setIdx((i) => (i + 1) % list.length), 6000);
+        return () => clearInterval(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [many, paused, list.length]);
+
+    const go = (i) => setIdx((i + list.length) % list.length);
+    const goLink = (link) => {
+        if (!link) return;
+        if (/^https?:\/\//i.test(link)) window.open(link, '_blank', 'noopener');
+        else router.push(link);
     };
+    const heroImg = cur ? imageUrl(cur.image, 'full') : null;
 
-    const handleAllEvents = () => {
-        router.push('/events');  // Просто переход на страницу событий, без hash
-    };
+    const kickerFor = (s) => s.kicker || ({ event: 'UPCOMING EVENT', news: 'LATEST NEWS', video: 'VIDEO' }[s.type] || '');
+    const subIcon = (t) => (t === 'event' ? 'fa-location-dot' : t === 'video' ? 'fa-film' : 'fa-newspaper');
 
-    if (loading) return <section className="info-section"></section>;
+    if (slides === null) return <section className="info-section"></section>; // загрузка
 
-    const hasChamp = !!championship;
+    // Пустое состояние (нет ни слайдов, ни чемпионата)
+    if (!cur) {
+        return (
+            <section className="info-section">
+                <div className="info-section-content">
+                    <span className="info-section-empty-kicker">EUROPEAN SHOOTING CONFEDERATION</span>
+                    <p className="info-section-nameing" style={{ fontSize: 'clamp(28px, 6vw, 72px)' }}>No featured content right now</p>
+                    <p className="info-section-empty-sub">New events, news and videos will appear here. Meanwhile, explore the full calendar.</p>
+                </div>
+                <div className="info-section-bottom">
+                    <div className="info-section-buttons-wrapper">
+                        <button className="info-section-btn-view-event" onClick={() => router.push('/events')}>VIEW CALENDAR &gt;</button>
+                    </div>
+                </div>
+            </section>
+        );
+    }
 
-    const heroImg = championship?.image?.url
-        ? (championship.image.url.startsWith('http') ? championship.image.url : `${config.API_URL}${championship.image.url}`)
-        : null;
-
-    // Чем длиннее название, тем меньше макс. размер шрифта — чтобы многострочный тайтл не растягивал
-    // блок. Учитываем и явные переносы (\n), и перенос длинных строк (~22 симв./строку). Пол — 32px.
-    const rawTitle = (championship?.title || '').trim();
-    const titleLines = Math.max(
-        rawTitle.split('\n').length,
-        Math.ceil(rawTitle.replace(/\s+/g, ' ').length / 22)
-    );
+    const rawTitle = (cur.title || '').trim();
+    const titleLines = Math.max(rawTitle.split('\n').length, Math.ceil(rawTitle.replace(/\s+/g, ' ').length / 22));
     const titleMaxPx = Math.max(32, 90 - titleLines * 5);
 
     return (
         <section
-            className="info-section"
+            className={`info-section ${many ? 'has-slider' : ''}`}
             style={heroImg ? { '--hero-img': `url(${heroImg})` } : undefined}
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onTouchStart={(e) => { touchX.current = e.touches[0].clientX; setPaused(true); }}
+            onTouchEnd={(e) => {
+                if (touchX.current == null) return;
+                const dx = e.changedTouches[0].clientX - touchX.current;
+                if (many && Math.abs(dx) > 60) go(idx + (dx < 0 ? 1 : -1));
+                touchX.current = null; setPaused(false);
+            }}
         >
-            <div className="info-section-content">
-                {hasChamp ? (
-                    <p className="info-section-nameing" style={{ fontSize: `clamp(28px, 6vw, ${titleMaxPx}px)` }}>
-                        {championship?.title?.split('\n').map((line, i) => (
-                            <React.Fragment key={i}>
-                                {line}
-                                {i < (championship?.title?.split('\n').length || 0) - 1 && <br />}
-                            </React.Fragment>
-                        ))}
-                    </p>
-                ) : (
-                    <>
-                        <span className="info-section-empty-kicker">EUROPEAN SHOOTING CONFEDERATION</span>
-                        <p className="info-section-nameing" style={{ fontSize: 'clamp(28px, 6vw, 72px)' }}>
-                            No featured event right now
-                        </p>
-                        <p className="info-section-empty-sub">
-                            New championships and cups will appear here. Meanwhile, explore the full calendar.
-                        </p>
-                    </>
-                )}
+            {/* видео-слайд: иконка play по центру кадра */}
+            {cur.type === 'video' && (
+                <button className="hero-play" onClick={() => goLink(cur.link)} aria-label="Play video">
+                    <i className="fa-solid fa-play"></i>
+                </button>
+            )}
+
+            <div className="info-section-content" key={idx}>
+                {kickerFor(cur) && <span className={`hero-kicker hero-kicker-${cur.type}`}>{kickerFor(cur)}</span>}
+                <p className="info-section-nameing" style={{ fontSize: `clamp(28px, 6vw, ${titleMaxPx}px)` }}>
+                    {rawTitle.split('\n').map((line, i, arr) => (
+                        <React.Fragment key={i}>{line}{i < arr.length - 1 && <br />}</React.Fragment>
+                    ))}
+                </p>
             </div>
 
-            {/* Нижний блок — location/date + кнопки ВМЕСТЕ, зафиксирован снизу-слева hero (32/65px) */}
             <div className="info-section-bottom">
-                {hasChamp && (
+                {(cur.subtitle || cur.dateText) && (
                     <div className="info-section-event-details">
-                        <div className="info-section-location-wrapper">
-                            <i className="fa-solid fa-location-dot"></i>
-                            <p className="info-section-location">{championship?.location}</p>
-                        </div>
-                        <span className="info-section-event-separator">•</span>
-                        <div className="info-section-date-wrapper">
-                            <i className="fa-regular fa-calendar"></i>
-                            <p className="info-section-date">{championship?.dateRange}</p>
-                        </div>
+                        {cur.subtitle && (
+                            <div className="info-section-location-wrapper">
+                                <i className={`fa-solid ${subIcon(cur.type)}`}></i>
+                                <p className="info-section-location">{cur.subtitle}</p>
+                            </div>
+                        )}
+                        {cur.subtitle && cur.dateText && <span className="info-section-event-separator">•</span>}
+                        {cur.dateText && (
+                            <div className="info-section-date-wrapper">
+                                <i className="fa-regular fa-calendar"></i>
+                                <p className="info-section-date">{cur.dateText}</p>
+                            </div>
+                        )}
                     </div>
                 )}
 
                 <div className="info-section-buttons-wrapper">
-                    {hasChamp && (
-                        <button className="info-section-btn-view-event" onClick={handleViewEvent}>
-                            VIEW EVENT &gt;
-                        </button>
+                    {cur.link && cur.buttonLabel && (
+                        <button className="info-section-btn-view-event" onClick={() => goLink(cur.link)}>{cur.buttonLabel}</button>
                     )}
-                    <button className={hasChamp ? 'info-section-btn-all-events' : 'info-section-btn-view-event'} onClick={handleAllEvents}>
-                        {hasChamp ? 'ALL EVENTS' : 'VIEW CALENDAR >'}
+                    <button className={cur.link && cur.buttonLabel ? 'info-section-btn-all-events' : 'info-section-btn-view-event'} onClick={() => router.push('/events')}>
+                        ALL EVENTS
                     </button>
                 </div>
+
+                {/* точки + стрелки — только если слайдов несколько */}
+                {many && (
+                    <div className="hero-nav">
+                        <button className="hero-arrow" onClick={() => go(idx - 1)} aria-label="Previous"><i className="fa-solid fa-chevron-left"></i></button>
+                        <div className="hero-dots">
+                            {list.map((_, i) => (
+                                <button key={i} className={`hero-dot ${i === idx ? 'active' : ''}`} onClick={() => setIdx(i)} aria-label={`Slide ${i + 1}`}></button>
+                            ))}
+                        </div>
+                        <button className="hero-arrow" onClick={() => go(idx + 1)} aria-label="Next"><i className="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                )}
             </div>
         </section>
     );
