@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" role="img" aria-label="ESC">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1c30"/>
+      <stop offset="1" stop-color="#06121f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#00d8f5" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#00d8f5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <rect width="800" height="450" fill="url(#glow)"/>
+  <!-- концентрические кольца мишени -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.10">
+    <circle cx="400" cy="205" r="120" stroke-width="2"/>
+    <circle cx="400" cy="205" r="86" stroke-width="2"/>
+    <circle cx="400" cy="205" r="52" stroke-width="2"/>
+  </g>
+  <circle cx="400" cy="205" r="18" fill="#00d8f5" fill-opacity="0.55"/>
+  <!-- перекрестие -->
+  <g stroke="#00d8f5" stroke-opacity="0.35" stroke-width="2">
+    <line x1="400" y1="55" x2="400" y2="105"/>
+    <line x1="400" y1="305" x2="400" y2="355"/>
+    <line x1="250" y1="205" x2="300" y2="205"/>
+    <line x1="500" y1="205" x2="550" y2="205"/>
+  </g>
+  <text x="400" y="400" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="700" letter-spacing="4" fill="#ffffff" fill-opacity="0.32">EUROPEAN SHOOTING CONFEDERATION</text>
+</svg>

@@ -182,7 +182,7 @@ const SelectedNewsPage = ({ slug }) => {
 
   return (
     <>
-      <section className="selected_media_head" style={{ backgroundImage: `url(${getImageUrl(article.image) || '/img/fallback-news.jpg'})` }}>
+      <section className="selected_media_head" style={{ backgroundImage: `url(${getImageUrl(article.image) || '/img/fallback-news.svg'})` }}>
         <div className="selected-media-overlay"></div>
         <div className="selected-breadcrumbs">
           <span className="selected-breadcrumb" onClick={handleAllMedia} style={{ cursor: 'pointer' }}>HOME</span>
@@ -288,7 +288,7 @@ const SelectedNewsPage = ({ slug }) => {
                     onClick={() => handleRelatedClick(n.slug)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <img src={getImageUrl(n.image) || '/img/fallback-news.jpg'} alt={n.title} className="related-img" loading="lazy" decoding="async" />
+                    <img src={getImageUrl(n.image) || '/img/fallback-news.svg'} alt={n.title} className="related-img" loading="lazy" decoding="async" />
                     <div className="related-info">
                       <span className={`related-type type-${n.theme?.toLowerCase() || 'event'}`}>{n.theme || 'NEWS'}</span>
                       <h5 className="related-title">{n.title}</h5>

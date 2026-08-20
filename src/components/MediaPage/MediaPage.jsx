@@ -332,7 +332,7 @@ const MediaPage = () => {
               {featuredNews.length > 0 ? (
                 featuredNews.map((item) => (
                   <div key={item.id} className="mp-featured-card"
-                    style={{ backgroundImage: `url(${imageUrl(item.image, 'medium') || getImageUrl(item.image)})`, cursor: 'pointer' }}
+                    style={{ backgroundImage: `url(${imageUrl(item.image, 'medium') || getImageUrl(item.image) || '/img/fallback-news.svg'})`, cursor: 'pointer' }}
                     onClick={() => goToNews(item.slug)}>
                     {isSaved(item.slug) && <span className="mp-saved-badge"><i className="fa-solid fa-bookmark"></i>Saved</span>}
                     <div className="mp-featured-overlay">
@@ -490,7 +490,7 @@ const MediaPage = () => {
               {newsGridItems.length > 0 ? (
                 newsGridItems.map((item) => (
                   <div key={item.id} className="mp-news-card" onClick={() => goToNews(item.slug)} style={{ cursor: 'pointer' }}>
-                    <LazyBg className="mp-news-card-image" src={imageUrl(item.image, 'small') || getImageUrl(item.image)}>
+                    <LazyBg className="mp-news-card-image" src={imageUrl(item.image, 'small') || getImageUrl(item.image) || '/img/fallback-news.svg'}>
                       {isSaved(item.slug) && <span className="mp-saved-badge"><i className="fa-solid fa-bookmark"></i>Saved</span>}
                     </LazyBg>
                     <div className="mp-news-card-content">

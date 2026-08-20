@@ -110,7 +110,7 @@ const LatestFromEsc = () => {
                                 onClick={() => router.push(`/media/${linkSlug}`)} 
                                 style={{ cursor: 'pointer' }}
                             >
-                                {imageUrl && <img src={imageUrl} alt={title} loading="lazy" decoding="async" />}
+                                <img src={imageUrl || '/img/fallback-news.svg'} alt={title} loading="lazy" decoding="async" />
                                 <p className="theme">{theme || 'NEWS'}</p>
                                 <p className="description">{title}</p>
                                 <p className="date">
