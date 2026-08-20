@@ -15,11 +15,22 @@
     background: rgba(255, 255, 255, 0.08);
 }
 
+/* Заголовок секции */
+.ad-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: clamp(22px, 3vw, 32px);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ffffff;
+    margin: 24px 0 4px;
+}
+
 /* Контент секции */
 .ad-content {
     display: flex;
     align-items: center;
-    padding: 24px 0;
+    padding: 12px 0 24px;
 }
 
 /* Бегущая строка */

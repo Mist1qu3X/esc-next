@@ -19,8 +19,8 @@ export default function Home() {
           <FullInfo />
           <LatestFromEsc />
           <MustSeeAction />
-          <Ad />
           <FeaturedDocuments />
+          <Ad />
         </LoadingGate>
       </main>
       <Footer />

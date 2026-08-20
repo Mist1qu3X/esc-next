@@ -20,11 +20,11 @@ const Header = () => {
     const navItems = [
         { label: 'Home', href: '/' },
         { label: 'About Us', href: '/discover' },
-        { label: 'Calendar', href: '/events' },
-        { label: 'Results & Rankings', href: '/results' },
+        { label: 'Members', href: '/members' },
         { label: 'Documents', href: '/documents' },
+        { label: 'Calendar', href: '/events' },
+        { label: 'Results', href: '/results' },
         { label: 'Media', href: '/media' },
-        { label: 'Member Federations', href: '/members' },
         { label: 'Contacts', href: '/contacts' },
     ];
 

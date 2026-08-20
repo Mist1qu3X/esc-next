@@ -67,7 +67,7 @@
         position: relative;
         padding: 8px 0;
         color: #8b9bb0;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 500;
         text-decoration: none;
         letter-spacing: 0.3px;
@@ -239,7 +239,9 @@
         display: flex;
         position: fixed;
         inset: 0;
-        width: 100%;
+        width: 100vw;
+        max-width: 100vw;
+        right: auto;
         height: 100vh;
         height: 100dvh;
         background: #06121F;
@@ -247,6 +249,7 @@
         z-index: 200;
         flex-direction: column;
         overflow-y: auto;
+        overflow-x: hidden;
         /* Состояния открытия/закрытия: плавное появление и скрытие */
         opacity: 0;
         visibility: hidden;
@@ -557,10 +560,10 @@
     transform: translateX(4px);
 }
 
-/* На обычном десктопе шрифт 14px; на более узком (но ещё не бургер) — 13px, чтобы 8 пунктов влезали */
+/* На более узком (но ещё не бургер) экране уменьшаем шрифт, чтобы пункты влезали */
 @media (max-width: 1260px) {
-    .navigation ul { gap: 24px; }
-    .navigation a { font-size: 13px; }
+    .navigation ul { gap: 22px; }
+    .navigation a { font-size: 15px; }
 }
 
 /* Адаптив для мобильных */
@@ -606,8 +609,7 @@
             display: none;
         }
 
-        /* Навигация ОСТАЁТСЯ видимой до 960px: длинные пункты ("Results & Rankings",
-           "Member Federations") переносятся по словам в 2 строки, отступы уже. */
+        /* Навигация остаётся видимой до 960px, отступы становятся компактнее. */
         .navigation ul { gap: 16px; }
         .navigation a {
             white-space: normal;

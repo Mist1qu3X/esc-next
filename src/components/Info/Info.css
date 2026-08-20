@@ -23,10 +23,18 @@ body {
     overflow: hidden;
     position: relative;
     
-    background: linear-gradient(
-        rgba(6, 18, 31, 0.85),
-        rgba(6, 18, 31, 0.85)
-    ), var(--hero-img, url(/img/back1.png));
+    /* Частичное (градиентное) затемнение: слева темно под текстом, справа кадр остаётся ярким.
+       Нижний вертикальный слой чуть притемняет зону под location/кнопками. */
+    background:
+        linear-gradient(90deg,
+            rgba(6, 18, 31, 0.92) 0%,
+            rgba(6, 18, 31, 0.72) 32%,
+            rgba(6, 18, 31, 0.40) 62%,
+            rgba(6, 18, 31, 0.12) 100%),
+        linear-gradient(0deg,
+            rgba(6, 18, 31, 0.55) 0%,
+            rgba(6, 18, 31, 0) 38%),
+        var(--hero-img, url(/img/back1.png));
     
     background-size: cover;
     background-position: center;

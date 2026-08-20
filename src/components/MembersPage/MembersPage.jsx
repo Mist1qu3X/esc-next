@@ -12,10 +12,10 @@ const PER_PAGE = 28; // 7 рядов × 4 карточки, как в макет
 // Fallback-значения, если member-stats недоступна (напр. нет Public-прав на чтение).
 // Реальные цифры берутся из коллекции member-stats в Strapi.
 const DEFAULT_STATS = [
-  { number: '16+', label: 'ANNUAL EVENTS' },
-  { number: '55+', label: 'YEARS' },
-  { number: '60', label: 'MEMBER' },
-  { number: '10000+', label: 'ATHLETES' },
+  { number: '...', label: 'ANNUAL EVENTS' },
+  { number: '...', label: 'YEARS' },
+  { number: '...', label: 'MEMBER' },
+  { number: '...', label: 'ATHLETES' },
 ];
 
 // Читаемая подпись региона для карточки (value поля region → label кнопки фильтра)
