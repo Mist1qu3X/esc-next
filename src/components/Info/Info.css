@@ -241,3 +241,85 @@ body {
         font-size: 11px;
     }
 }
+/* ==================== СЛАЙДЕР ГЛАВНОГО БАННЕРА ==================== */
+/* Плашка-категория над заголовком */
+.hero-kicker {
+    color: #00d8f5;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.hero-kicker-news { color: #ffd166; }
+.hero-kicker-video { color: #ff6b9d; }
+
+/* Плавное появление контента при смене слайда */
+.info-section.has-slider .info-section-content { animation: heroFade 0.5s ease; }
+@keyframes heroFade {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Кнопка Play по центру (видео-слайд) */
+.hero-play {
+    position: absolute;
+    top: 44%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: rgba(0, 216, 245, 0.92);
+    border: none;
+    color: #06121f;
+    font-size: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: transform 0.2s ease, background 0.2s ease;
+    box-shadow: 0 8px 30px rgba(0, 216, 245, 0.35);
+}
+.hero-play i { margin-left: 5px; }
+.hero-play:hover { transform: translate(-50%, -50%) scale(1.08); background: #00d8f5; }
+
+/* Навигация слайдера (стрелки + точки) — в нижнем блоке под кнопками */
+.hero-nav {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 4px;
+}
+.hero-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+.hero-arrow:hover { background: rgba(0, 216, 245, 0.2); border-color: #00d8f5; }
+.hero-dots { display: flex; align-items: center; gap: 8px; }
+.hero-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.hero-dot.active { width: 26px; border-radius: 5px; background: #00d8f5; }
+
+@media (max-width: 480px) {
+    .hero-play { width: 64px; height: 64px; font-size: 24px; }
+}
