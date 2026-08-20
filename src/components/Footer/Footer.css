@@ -113,8 +113,8 @@
 /* Средняя часть футера — ссылки */
 .other-links-container {
     display: flex;
-    justify-content: center;              /* лого убрано — колонки по центру */
-    gap: clamp(40px, 8vw, 120px);
+    justify-content: space-around;        /* лого убрано — колонки равномерно */
+    gap: clamp(16px, 3vw, 48px);
     padding-bottom: 50px;
     margin-bottom: 30px;
     position: relative;
@@ -166,8 +166,8 @@
 .related-links {
     display: flex;
     flex-direction: column;
-    align-items: center;   /* содержимое колонок по центру */
-    text-align: center;
+    align-items: flex-start;   /* содержимое колонок — по левому краю */
+    text-align: left;
     gap: 12px;
     flex: 0 1 auto;
 }
