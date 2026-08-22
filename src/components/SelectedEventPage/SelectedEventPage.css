@@ -82,7 +82,7 @@
     letter-spacing: 1.4px;
     text-transform: uppercase;
     color: #00d8f5;
-    background: #223c82;
+    background: #1c2b66;
     padding: 4px 10px;
     border-radius: 2px;
 }
@@ -208,7 +208,7 @@
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    background-color: #172a63;
+    background-color: #1c2b66;
 }
 
 .event-filters-nav {
@@ -283,7 +283,7 @@
 
 /* Блоки сайдбара */
 .sidebar-block {
-    background: #223c82;
+    background: #1c2b66;
     overflow: hidden;
 }
 
@@ -421,7 +421,7 @@
 
 /* Live Stream Block */
 .live-stream-block {
-    background: #223c82;
+    background: #1c2b66;
     overflow: hidden;
 }
 
@@ -682,7 +682,7 @@
 
 .se-discipline-card {
     height: 46px;
-    background: #223c82;
+    background: #1c2b66;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -711,7 +711,7 @@
     height: 285px;
     border-radius: 4px;
     overflow: hidden;
-    background: #172a63;
+    background: #1c2b66;
 }
 
 .venue-image {
@@ -1191,7 +1191,7 @@
     width: 40px;
     height: 40px;
     border-radius: 4px;
-    background: #223c82;
+    background: #1c2b66;
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.6);
     font-family: 'Inter', sans-serif;
@@ -1656,7 +1656,7 @@
 .se-disc-card {
     position: relative;
     min-height: 120px;
-    background: #172a63;
+    background: #1c2b66;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 6px;
     padding: 18px 22px;
@@ -1759,7 +1759,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    background: #172a63;
+    background: #1c2b66;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 16px 18px;

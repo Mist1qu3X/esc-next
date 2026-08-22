@@ -4,7 +4,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 100px 32px 0;
-    background-color: #172a63;
+    background-color: #1c2b66;
 }
 
 /* Хлебные крошки */
@@ -333,7 +333,7 @@
     /* До 4 в ряд; при меньшем числе НЕ растягиваются — сохраняют размер, выравниваются влево */
     flex: 0 1 calc(25% - 1.5px);
     min-width: 230px;
-    background: #172a63;
+    background: #1c2b66;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -527,7 +527,7 @@
     cursor: pointer;
     max-width: 220px;
 }
-.mp-photo-select option { background: #172a63; color: #fff; }
+.mp-photo-select option { background: #1c2b66; color: #fff; }
 
 .mp-photo-grid {
     display: grid;
@@ -699,7 +699,7 @@
 .mp-photo-panel {
     min-height: 97px;
     flex: 1; /* заполняет растянутую высоту карточки, чтобы низ ровнялся по ряду */
-    background: #223c82;
+    background: #1c2b66;
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -764,7 +764,7 @@
     flex: 0 1 calc(25% - 1.5px);
     min-width: 230px;
     min-height: 232px;
-    background: #172a63;
+    background: #1c2b66;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -1517,7 +1517,7 @@
 }
 
 .mp-spotlight-card {
-    background: #172a63;
+    background: #1c2b66;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -2242,8 +2242,8 @@
        а не короткая обложка + растянутое пустое инфо из-за min-height:232 */
     .mp-video-card { min-height: 0; }
     .mp-video-thumbnail { height: auto; aspect-ratio: 16 / 9; min-height: 0; }
-    /* ALL-превью видео = карточка галереи VIDEOS: панель #223c82, дата вместо лейбла */
-    .mp-video-info { background: #223c82; gap: 8px; justify-content: flex-start; }
+    /* ALL-превью видео = карточка галереи VIDEOS: панель #1c2b66, дата вместо лейбла */
+    .mp-video-info { background: #1c2b66; gap: 8px; justify-content: flex-start; }
     .mp-video-label { display: none; }
     .mp-video-date { display: block; }
 }

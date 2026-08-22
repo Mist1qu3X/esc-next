@@ -7,7 +7,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 100px 32px 0;
-    background-color: #172a63;
+    background-color: #1c2b66;
 }
 
 .results-breadcrumbs {
@@ -170,7 +170,7 @@
 }
 
 .events-select option {
-    background: #172a63;
+    background: #1c2b66;
     color: rgba(255, 255, 255, 0.7);
     font-family: 'Inter', sans-serif;
     font-size: 11px;
@@ -222,7 +222,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 24px 28px;
-    background: #172a63;
+    background: #1c2b66;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -589,7 +589,7 @@
 .discipline-card {
     width: 100%;
     height: 123px;
-    background: #172a63;
+    background: #1c2b66;
     border-radius: 4px;
     padding: 24px;
     display: flex;
@@ -993,7 +993,7 @@
 
 /* Shot Progress */
 .shot-progress {
-    background: #172a63;
+    background: #1c2b66;
     border-radius: 4px;
     padding: 24px;
     margin-bottom: 24px;
@@ -1492,7 +1492,7 @@
 }
 
 .records-category-select option {
-    background: #172a63;
+    background: #1c2b66;
     color: rgba(255, 255, 255, 0.85);
 }
 
@@ -1562,7 +1562,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: #172a63;
+  background: #1c2b66;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 16px;
@@ -1737,7 +1737,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: #172a63;
+  background: #1c2b66;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 16px;
@@ -1795,7 +1795,7 @@
 
 /* ========== SHOT PROGRESS ========== */
 .shot-progress {
-    background: #172a63;
+    background: #1c2b66;
     border-radius: 4px;
     padding: 24px;
     margin: 24px 0;
@@ -2076,7 +2076,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    background: #172a63;
+    background: #1c2b66;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 16px 18px;

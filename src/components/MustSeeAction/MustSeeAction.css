@@ -4,7 +4,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 50px 32px;
-    background-color: #172a63;
+    background-color: #1c2b66;
 }
 
 /* Заголовок секции с линией и кнопкой */
@@ -76,7 +76,7 @@
     padding: 12px 20px;
     cursor: pointer;
     transition: transform 0.2s ease;
-    background: #223c82;
+    background: #1c2b66;
 }
 
 .video-container:hover {

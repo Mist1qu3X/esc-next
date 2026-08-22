@@ -66,7 +66,7 @@
 
 /* Карточка документа */
 .featured-docs-card {
-    background: #223c82;
+    background: #1c2b66;
     padding: 20px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
@@ -88,7 +88,7 @@
 .featured-docs-card.is-unavailable:hover {
     transform: none;
     box-shadow: none;
-    background: #223c82;
+    background: #1c2b66;
 }
 
 .featured-docs-card-header {

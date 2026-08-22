@@ -10,7 +10,7 @@
 .fa-card {
     width: 100%;
     max-width: 520px;
-    background: #223c82;
+    background: #1c2b66;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 10px;
     padding: clamp(20px, 4vw, 36px);
