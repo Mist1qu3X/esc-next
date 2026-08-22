@@ -671,7 +671,7 @@
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    background: linear-gradient(135deg, #0e2438 0%, #002168 100%);
+    background: linear-gradient(135deg, #1c2b66 0%, #002168 100%);
 }
 
 .epc-featured-card img {
@@ -1051,7 +1051,7 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
     color: #ffffff;
-    background: #16324f;
+    background: #1c2b66;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 2px;
     padding: 16px 40px;
@@ -1061,7 +1061,7 @@
 }
 
 .epc-ss-btn:hover {
-    background: #1d3d5f;
+    background: #1c2b66;
     border-color: rgba(0, 216, 245, 0.4);
 }
 
