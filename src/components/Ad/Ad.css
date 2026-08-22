@@ -12,7 +12,7 @@
     display: flex;
     align-items: center;
     gap: 20px;
-    padd
+    margin-bottom: 24px;
 }
 
 .ad-title {
