@@ -70,7 +70,7 @@
 /* Карточка новости */
 .news {
     width: calc(25% - 3.75px);
-    background: #223c82;
+    background: #1c2b66;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;

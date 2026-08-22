@@ -223,7 +223,7 @@
 
 .epc-status-tag.epc-upcoming {
     color: #00d8f5;
-    background: #223c82;
+    background: #1c2b66;
 }
 
 .epc-status-tag.epc-finished {
@@ -341,7 +341,7 @@
     margin: 0 auto;
     /* верхний отступ до хлебных крошек как на остальных страницах (100px на десктопе) */
     padding: clamp(48px, 8vw, 100px) clamp(16px, 3vw, 32px) clamp(24px, 4vw, 40px);
-    background-color: #172a63;
+    background-color: #1c2b66;
 }
 
 /* ============================================================
@@ -720,7 +720,7 @@
     font-weight: 700;
     letter-spacing: 0.5px;
     color: #00d8f5;
-    background: #223c82;
+    background: #1c2b66;
     padding: clamp(3px, 0.4vw, 4px) clamp(6px, 0.8vw, 8px);
     border-radius: 4px;
     white-space: nowrap;
@@ -1012,7 +1012,7 @@
 .epc-season-status {
     width: 100%;
     min-height: 99px;
-    background-color: #223c82;
+    background-color: #1c2b66;
     padding: clamp(16px, 2vw, 24px) clamp(20px, 3vw, 40px);
     display: flex;
     align-items: center;
@@ -1077,7 +1077,7 @@
     top: 100%;
     left: 0;
     margin-top: 8px;
-    background: #223c82;
+    background: #1c2b66;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     padding: clamp(12px, 1.5vw, 16px);
@@ -1321,7 +1321,7 @@
 .epc-dd-menu {
     position: absolute; top: calc(100% + 6px); left: 0; z-index: 40;
     min-width: 100%; width: max-content; max-height: 320px; overflow-y: auto;
-    background: #172a63; border: 1px solid rgba(0, 216, 245, 0.2);
+    background: #1c2b66; border: 1px solid rgba(0, 216, 245, 0.2);
     border-radius: 8px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); padding: 6px;
     display: flex; flex-direction: column; gap: 2px;
 }
@@ -1382,7 +1382,7 @@
 /* === Мобильная карточка события — 1:1 с макетом === */
 @media (max-width: 480px) {
     .epc-events-table-row {
-        background: #172a63;
+        background: #1c2b66;
         border: 1px solid rgba(255, 255, 255, 0.06);
         border-radius: 10px;
         margin-bottom: 10px;

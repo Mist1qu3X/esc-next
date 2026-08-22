@@ -125,7 +125,7 @@
 
 /* PART 2 - ESC PLATFORM */
 .part2 {
-    background: #223c82;
+    background: #1c2b66;
     color: #ffffff;
 }
 
@@ -178,7 +178,7 @@
 
 /* PART 3 - UPCOMING EVENTS */
 .part3 {
-    background: #172a63;
+    background: #1c2b66;
     color: #ffffff;
     display: flex;
     flex-direction: column;
