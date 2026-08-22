@@ -4,7 +4,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 100px 32px 64px;
-    background-color: #091A2E;
+    background-color: #172a63;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -61,7 +61,7 @@
 /* ========== ФОРМА ОБРАТНОЙ СВЯЗИ ========== */
 .contacts-body {
     width: 100%;
-    background-color: #06121f;
+    background-color: #0e1e50;
     padding: 80px 32px 120px;
 }
 
@@ -199,7 +199,7 @@
 .contacts-submit {
     width: 100%;
     background-color: #00d8f5;
-    color: #06121f;
+    color: #0e1e50;
     border: none;
     border-radius: 6px;
     padding: 18px;

@@ -4,7 +4,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 50px 32px;
-    background-color: #091A2E;
+    background-color: #172a63;
 }
 
 /* Заголовок секции с линией и кнопкой */
@@ -76,7 +76,7 @@
     padding: 12px 20px;
     cursor: pointer;
     transition: transform 0.2s ease;
-    background: #0c233d;
+    background: #223c82;
 }
 
 .video-container:hover {
@@ -125,7 +125,7 @@
 }
 
 .play-icon i {
-    color: #06121f;
+    color: #0e1e50;
     font-size: 14px;
     margin-left: 0.2em; /* оптический сдвиг треугольника к центру — как в VIDEOS */
 }

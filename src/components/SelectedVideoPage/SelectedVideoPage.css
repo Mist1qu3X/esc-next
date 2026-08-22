@@ -4,7 +4,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 32px;
-    background-color: #0A1B2E;
+    background-color: #0e1e50;
 }
 
 .sv-breadcrumbs {
@@ -61,7 +61,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 32px;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 .sv-more-label {
@@ -118,12 +118,12 @@
     background-position: center;
 }
 
-/* Затемнение + блюр (#06101C 32%, blur, 75% opacity) */
+/* Затемнение + блюр (#0e1e50 32%, blur, 75% opacity) */
 .sv-card-cover::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(6, 16, 28, 0.32);
+    background: rgba(14, 30, 80, 0.32);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     opacity: 0.75;
@@ -140,7 +140,7 @@
     height: 44px;
     border-radius: 50%;
     background: #00d8f5;
-    color: #06101C;
+    color: #0e1e50;
     z-index: 2;
     display: flex;
     align-items: center;
@@ -160,7 +160,7 @@
     right: 10px;
     bottom: 10px;
     z-index: 2;
-    background: rgba(6, 16, 28, 0.85);
+    background: rgba(14, 30, 80, 0.85);
     color: #ffffff;
     font-family: 'Inter', sans-serif;
     font-size: 11px;
@@ -171,7 +171,7 @@
 
 .sv-card-panel {
     min-height: 97px;
-    background: #0D2642;
+    background: #223c82;
     padding: 16px;
     display: flex;
     flex-direction: column;
