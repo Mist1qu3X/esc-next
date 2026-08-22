@@ -1,7 +1,7 @@
 /* Блок full-info */
 .full-info {
     width: 100%;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .full-info-content {
@@ -32,7 +32,7 @@
 /* PART 1 - WHAT'S ON — вся карточка кликабельна (открывает событие) */
 .part1 {
     background: #00d8f5;
-    color: #0e1e50;
+    color: #002168;
     cursor: pointer;
 }
 
@@ -108,7 +108,7 @@
 .event-info-btn {
     background: transparent;
     border: none;
-    color: #0e1e50;
+    color: #002168;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
     font-weight: 800;
@@ -157,7 +157,7 @@
 .entry-system-btn {
     background: #00d8f5;
     border: none;
-    color: #0e1e50;
+    color: #002168;
     font-family: 'Inter', sans-serif;
     font-size: 12px;
     font-weight: 800;
@@ -311,7 +311,7 @@
 
 /* PART 4 - ESC RANKING */
 .part4 {
-    background: #0e1e50;
+    background: #002168;
     color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -556,8 +556,8 @@
 }
 .champ-status-dot { display: none; }
 /* Карточка WHAT'S ON — циановый фон (#00d8f5), поэтому статус тёмным, иначе не виден */
-.champ-status--ongoing .champ-status-text { color: #0e1e50; font-weight: 800; }
-.champ-status--finished .champ-status-text { color: rgba(14, 30, 80, 0.75); font-weight: 800; }
+.champ-status--ongoing .champ-status-text { color: #002168; font-weight: 800; }
+.champ-status--finished .champ-status-text { color: rgba(0, 33, 104, 0.75); font-weight: 800; }
 
 /* Год под днём/месяцем в UPCOMING EVENTS */
 .event-year { font-size: 11px; color: rgba(255, 255, 255, 0.5); font-weight: 600; }
@@ -593,9 +593,9 @@
     max-width: 240px;
 }
 /* part1 — на cyan-фоне тёмный текст */
-.part1 .fi-block-empty-icon { color: rgba(14, 30, 80, 0.45); }
-.part1 .fi-block-empty-title { color: #0e1e50; }
-.part1 .fi-block-empty-text { color: rgba(14, 30, 80, 0.7); }
+.part1 .fi-block-empty-icon { color: rgba(0, 33, 104, 0.45); }
+.part1 .fi-block-empty-title { color: #002168; }
+.part1 .fi-block-empty-text { color: rgba(0, 33, 104, 0.7); }
 /* part2 — на тёмном фоне светлый текст */
 .part2 .fi-block-empty-icon { color: rgba(255, 255, 255, 0.35); }
 .part2 .fi-block-empty-title { color: rgba(255, 255, 255, 0.9); }
