@@ -4,7 +4,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 100px 32px 0;
-    background-color: #091A2E;
+    background-color: #172a63;
 }
 
 /* Хлебные крошки */
@@ -148,7 +148,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 0 32px 80px;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 /* Section Label */
@@ -333,7 +333,7 @@
     /* До 4 в ряд; при меньшем числе НЕ растягиваются — сохраняют размер, выравниваются влево */
     flex: 0 1 calc(25% - 1.5px);
     min-width: 230px;
-    background: #091A2E;
+    background: #172a63;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -366,7 +366,7 @@
     font-weight: 800;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #06101C;
+    color: #0e1e50;
     background: #00d8f5;
     border-radius: 3px;
     padding: 4px 8px;
@@ -527,7 +527,7 @@
     cursor: pointer;
     max-width: 220px;
 }
-.mp-photo-select option { background: #0C2138; color: #fff; }
+.mp-photo-select option { background: #172a63; color: #fff; }
 
 .mp-photo-grid {
     display: grid;
@@ -548,7 +548,7 @@
     letter-spacing: 0.5px;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.8);
-    background: rgba(6, 16, 28, 0.7);
+    background: rgba(14, 30, 80, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 3px;
     padding: 3px 8px;
@@ -612,7 +612,7 @@
     aspect-ratio: 310 / 173;
     position: relative;
     overflow: hidden;
-    background-color: #0a1929;
+    background-color: #0e1e50;
 }
 /* размытая подложка того же фото — заполняет поля, не обрезая основной кадр */
 .mp-photo-cover::before {
@@ -644,12 +644,12 @@
     background-position: center;
 }
 
-/* Затемнение + блюр (#06101C 32%, blur, 75% opacity) */
+/* Затемнение + блюр (#0e1e50 32%, blur, 75% opacity) */
 .mp-vgal-cover::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(6, 16, 28, 0.32);
+    background: rgba(14, 30, 80, 0.32);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     opacity: 0.75;
@@ -666,7 +666,7 @@
     height: 46px;
     border-radius: 50%;
     background: #00d8f5;
-    color: #06101C;
+    color: #0e1e50;
     z-index: 2;
     display: flex;
     align-items: center;
@@ -686,7 +686,7 @@
     right: 10px;
     bottom: 10px;
     z-index: 2;
-    background: rgba(6, 16, 28, 0.85);
+    background: rgba(14, 30, 80, 0.85);
     color: #ffffff;
     font-family: 'Inter', sans-serif;
     font-size: 11px;
@@ -699,7 +699,7 @@
 .mp-photo-panel {
     min-height: 97px;
     flex: 1; /* заполняет растянутую высоту карточки, чтобы низ ровнялся по ряду */
-    background: #0D2642;
+    background: #223c82;
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -764,7 +764,7 @@
     flex: 0 1 calc(25% - 1.5px);
     min-width: 230px;
     min-height: 232px;
-    background: #091A2E;
+    background: #172a63;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -787,12 +787,12 @@
     transform: scale(1.03);
 }
 
-/* Затемнение + блюр видео-превью (#06101C 32%, blur, 75% opacity) */
+/* Затемнение + блюр видео-превью (#0e1e50 32%, blur, 75% opacity) */
 .mp-video-thumbnail::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(6, 16, 28, 0.32);
+    background: rgba(14, 30, 80, 0.32);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     opacity: 0.75;
@@ -826,7 +826,7 @@
 
 .mp-video-play-btn i {
     font-size: 16px;
-    color: #06101C;
+    color: #0e1e50;
     margin-left: 0.2em;
 }
 
@@ -953,7 +953,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: rgba(6, 16, 28, 0.62);
+    background: rgba(14, 30, 80, 0.62);
     color: rgba(255, 255, 255, 0.85);
     font-family: 'Inter', sans-serif;
     font-size: 11px;
@@ -1011,7 +1011,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(6, 16, 28, 0.55);
+    background: rgba(14, 30, 80, 0.55);
     z-index: 0;
     pointer-events: none;
 }
@@ -1023,7 +1023,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(0deg, rgba(6, 16, 28, 0.96) 0%, rgba(6, 16, 28, 0.45) 50%, rgba(6, 16, 28, 0.18) 100%);
+    background: linear-gradient(0deg, rgba(14, 30, 80, 0.96) 0%, rgba(14, 30, 80, 0.45) 50%, rgba(14, 30, 80, 0.18) 100%);
     z-index: 1;
     pointer-events: none;
 }
@@ -1295,7 +1295,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(6, 16, 28, 0.55);
+    background: rgba(14, 30, 80, 0.55);
     z-index: 0;
     pointer-events: none;
 }
@@ -1307,7 +1307,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(0deg, rgba(6, 16, 28, 0.96) 0%, rgba(6, 16, 28, 0.45) 50%, rgba(6, 16, 28, 0.18) 100%);
+    background: linear-gradient(0deg, rgba(14, 30, 80, 0.96) 0%, rgba(14, 30, 80, 0.45) 50%, rgba(14, 30, 80, 0.18) 100%);
     z-index: 1;
     pointer-events: none;
 }
@@ -1517,7 +1517,7 @@
 }
 
 .mp-spotlight-card {
-    background: #091A2E;
+    background: #172a63;
     border-radius: 4px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -2242,8 +2242,8 @@
        а не короткая обложка + растянутое пустое инфо из-за min-height:232 */
     .mp-video-card { min-height: 0; }
     .mp-video-thumbnail { height: auto; aspect-ratio: 16 / 9; min-height: 0; }
-    /* ALL-превью видео = карточка галереи VIDEOS: панель #0D2642, дата вместо лейбла */
-    .mp-video-info { background: #0D2642; gap: 8px; justify-content: flex-start; }
+    /* ALL-превью видео = карточка галереи VIDEOS: панель #223c82, дата вместо лейбла */
+    .mp-video-info { background: #223c82; gap: 8px; justify-content: flex-start; }
     .mp-video-label { display: none; }
     .mp-video-date { display: block; }
 }

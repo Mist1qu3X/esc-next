@@ -3,7 +3,7 @@
     width: 100%;
     max-width: 1440px;
     margin: 50px auto;
-    background-color: #06121f;
+    background-color: #0e1e50;
 }
 
 /* Заголовок секции с линией и кнопкой */
@@ -70,7 +70,7 @@
 /* Карточка новости */
 .news {
     width: calc(25% - 3.75px);
-    background: #0c233d;
+    background: #223c82;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;

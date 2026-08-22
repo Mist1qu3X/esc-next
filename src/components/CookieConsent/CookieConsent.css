@@ -60,7 +60,7 @@
 }
 .cookie-btn-reject:hover { border-color: rgba(255, 255, 255, 0.5); color: #fff; }
 
-.cookie-btn-accept { background: #00d8f5; color: #04121f; }
+.cookie-btn-accept { background: #00d8f5; color: #0e1e50; }
 .cookie-btn-accept:hover { background: #24e3ff; }
 
 @media (max-width: 640px) {

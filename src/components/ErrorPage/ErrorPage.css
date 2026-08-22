@@ -5,7 +5,7 @@
 }
 
 body {
-    background-color: #06121f;
+    background-color: #0e1e50;
     font-family: 'Inter', sans-serif;
 }
 
@@ -190,7 +190,7 @@ body {
     top: calc(100% + 8px);
     left: 0;
     right: 0;
-    background: #0C2138;
+    background: #172a63;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
     overflow: hidden;
@@ -245,7 +245,7 @@ body {
 .back-home-btn {
     display: inline-block;
     background: #00d8f5;
-    color: #06121f;
+    color: #0e1e50;
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 700;

@@ -19,7 +19,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(0deg, rgba(6, 16, 28, 1) 0%, rgba(6, 16, 28, 0.8) 50%, rgba(6, 16, 28, 0.7) 100%);
+    background: linear-gradient(0deg, rgba(14, 30, 80, 1) 0%, rgba(14, 30, 80, 0.8) 50%, rgba(14, 30, 80, 0.7) 100%);
     z-index: 1;
     pointer-events: none;
 }
@@ -82,14 +82,14 @@
     letter-spacing: 1.4px;
     text-transform: uppercase;
     color: #00d8f5;
-    background: #0D2642;
+    background: #223c82;
     padding: 4px 10px;
     border-radius: 2px;
 }
 
 /* Статус вычисляется по датам (getEffectiveStatus): idём/завершено получают свой стиль,
    чтобы бейдж не противоречил остальной странице */
-.event-status-upcoming.event-status-ongoing { color: #04121f; background: #00d8f5; }
+.event-status-upcoming.event-status-ongoing { color: #0e1e50; background: #00d8f5; }
 .event-status-upcoming.event-status-finished { color: rgba(255, 255, 255, 0.6); background: rgba(255, 255, 255, 0.08); }
 
 .event-status-type {
@@ -183,7 +183,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 12px;
     font-weight: 700;
-    color: #06101C;
+    color: #0e1e50;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -208,7 +208,7 @@
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    background-color: #091A2E;
+    background-color: #172a63;
 }
 
 .event-filters-nav {
@@ -259,7 +259,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 80px;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 .event-content-wrapper {
@@ -283,7 +283,7 @@
 
 /* Блоки сайдбара */
 .sidebar-block {
-    background: #0C233D;
+    background: #223c82;
     overflow: hidden;
 }
 
@@ -421,7 +421,7 @@
 
 /* Live Stream Block */
 .live-stream-block {
-    background: #0C233D;
+    background: #223c82;
     overflow: hidden;
 }
 
@@ -682,7 +682,7 @@
 
 .se-discipline-card {
     height: 46px;
-    background: #0C233D;
+    background: #223c82;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -711,7 +711,7 @@
     height: 285px;
     border-radius: 4px;
     overflow: hidden;
-    background: #091A2E;
+    background: #172a63;
 }
 
 .venue-image {
@@ -1191,7 +1191,7 @@
     width: 40px;
     height: 40px;
     border-radius: 4px;
-    background: #0C233D;
+    background: #223c82;
     border: 1px solid rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.6);
     font-family: 'Inter', sans-serif;
@@ -1202,7 +1202,7 @@
 }
 
 .ae-page-btn:hover { border-color: rgba(0, 216, 245, 0.4); color: #fff; }
-.ae-page-btn.active { background: #00d8f5; color: #06121f; border-color: #00d8f5; }
+.ae-page-btn.active { background: #00d8f5; color: #0e1e50; border-color: #00d8f5; }
 
 /* ---- День отдыха в расписании (пропуск дат читается как выходной, а не дыра) ---- */
 .ae-group.ae-rest { opacity: 0.72; }
@@ -1333,7 +1333,7 @@
     background: #00d8f5;
     border: none;
     border-radius: 4px;
-    color: #06121f;
+    color: #0e1e50;
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 700;
@@ -1378,7 +1378,7 @@
     aspect-ratio: 16 / 9;
     border-radius: 6px;
     overflow: hidden;
-    background-color: #0a1929;
+    background-color: #0e1e50;
     cursor: pointer;
 }
 .event-media-card::before {
@@ -1406,7 +1406,7 @@
     position: absolute;
     inset: 0;
     z-index: 2;
-    background: linear-gradient(0deg, rgba(6, 16, 28, 0.9) 0%, rgba(6, 16, 28, 0.2) 60%, transparent 100%);
+    background: linear-gradient(0deg, rgba(14, 30, 80, 0.9) 0%, rgba(14, 30, 80, 0.2) 60%, transparent 100%);
 }
 
 /* Бренд-обложка, когда своего превью нет (напр. Facebook — публичного кадра нет) */
@@ -1435,7 +1435,7 @@
     gap: 8px;
     padding: 6px 12px;
     border-radius: 4px;
-    background: rgba(6, 16, 28, 0.7);
+    background: rgba(14, 30, 80, 0.7);
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 800;
@@ -1489,7 +1489,7 @@
     height: 56px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.92);
-    color: #06101C;
+    color: #0e1e50;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1550,7 +1550,7 @@
     /* как на остальных вкладках: фон до 1440px, внутренний twist-container даёт свои отступы */
     max-width: 1440px;
     padding: 0;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 .event-content-full {
@@ -1612,7 +1612,7 @@
     aspect-ratio: 4 / 3;
     border-radius: 6px;
     overflow: hidden;
-    background-color: #0a1929;
+    background-color: #0e1e50;
     cursor: pointer;
 }
 .event-photo-card::before {
@@ -1635,7 +1635,7 @@
     background-position: center;
     background-repeat: no-repeat;
 }
-.event-photo-overlay { position: absolute; inset: 0; z-index: 2; background: linear-gradient(0deg, rgba(6,16,28,0.85) 0%, transparent 55%); }
+.event-photo-overlay { position: absolute; inset: 0; z-index: 2; background: linear-gradient(0deg, rgba(14, 30, 80,0.85) 0%, transparent 55%); }
 .event-photo-info { position: absolute; left: 12px; right: 12px; bottom: 10px; z-index: 3; display: flex; flex-direction: column; gap: 2px; }
 .event-photo-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 700; text-transform: uppercase; color: #fff; line-height: 1.1; }
 .event-photo-count { font-family: 'Inter', sans-serif; font-size: 11px; color: rgba(255,255,255,0.6); }
@@ -1656,7 +1656,7 @@
 .se-disc-card {
     position: relative;
     min-height: 120px;
-    background: #0B1E33;
+    background: #172a63;
     border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 6px;
     padding: 18px 22px;
@@ -1759,7 +1759,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    background: #0B1E33;
+    background: #172a63;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 16px 18px;
@@ -1775,7 +1775,7 @@
     letter-spacing: 0.5px; cursor: pointer; white-space: nowrap; text-decoration: none; transition: all 0.15s ease;
 }
 .event-doc-btn:hover { background: rgba(255, 255, 255, 0.12); }
-.event-doc-btn-dl { background: #00d8f5; border-color: #00d8f5; color: #06101C; }
+.event-doc-btn-dl { background: #00d8f5; border-color: #00d8f5; color: #0e1e50; }
 .event-doc-btn-dl:hover { background: #33e2f7; }
 @media (max-width: 640px) {
     .event-doc-item { flex-wrap: wrap; }

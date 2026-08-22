@@ -5,7 +5,7 @@
     }
 
     body {
-        background-color: #06121f;
+        background-color: #0e1e50;
         font-family: 'Inter', sans-serif;
     }
 
@@ -19,7 +19,7 @@
         height: 68px;
         margin: 0 auto;
         padding: 0 32px;
-        background: rgba(6, 18, 31, 0.95);
+        background: rgba(14, 30, 80, 0.95);
         backdrop-filter: blur(8px);
         position: sticky;
         top: 0;
@@ -183,7 +183,7 @@
         border: none;
         border-radius: 2px;
         background: linear-gradient(135deg, #00d8f5 0%, #0099cc 100%);
-        color: #06121f;
+        color: #0e1e50;
         font-size: 13px;
         font-weight: 900;
         height: 56px;
@@ -244,7 +244,7 @@
         right: auto;
         height: 100vh;
         height: 100dvh;
-        background: #06121F;
+        background: #0e1e50;
         padding: 20px 24px 24px;
         z-index: 200;
         flex-direction: column;
@@ -298,7 +298,7 @@
         top: calc(100% + 6px);
         left: 0;
         right: 0;
-        background: #0C2138;
+        background: #172a63;
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 6px;
         overflow: hidden;
@@ -424,7 +424,7 @@
         background: #00d8f5;
         border: none;
         border-radius: 2px;
-        color: #06121f;
+        color: #0e1e50;
         font-family: 'Inter', sans-serif;
         font-size: 14px;
         font-weight: 800;
@@ -468,7 +468,7 @@
 
     .mobile-lang.active {
         background: #00d8f5;
-        color: #06121f;
+        color: #0e1e50;
         border-color: #00d8f5;
     }
 
@@ -482,7 +482,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    background: #0C233D;
+    background: #223c82;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
     margin-top: 8px;

@@ -7,7 +7,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 100px 32px 0;
-    background-color: #091A2E;
+    background-color: #172a63;
 }
 
 .results-breadcrumbs {
@@ -128,7 +128,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 .events-filter-bar {
@@ -170,7 +170,7 @@
 }
 
 .events-select option {
-    background: #0B1E33;
+    background: #172a63;
     color: rgba(255, 255, 255, 0.7);
     font-family: 'Inter', sans-serif;
     font-size: 11px;
@@ -222,7 +222,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 24px 28px;
-    background: #0B1E33;
+    background: #172a63;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -451,7 +451,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 .discipline-filter-bar {
@@ -482,7 +482,7 @@
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 1px;
-    color: #06101C;
+    color: #0e1e50;
     background: #00d8f5;
     border: none;
     padding: 10px 20px;
@@ -589,7 +589,7 @@
 .discipline-card {
     width: 100%;
     height: 123px;
-    background: #0B1E33;
+    background: #172a63;
     border-radius: 4px;
     padding: 24px;
     display: flex;
@@ -695,7 +695,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 .results-detail-header {
@@ -809,7 +809,7 @@
 
 .gender-btn.active {
     background: #00d8f5;
-    color: #06101C;
+    color: #0e1e50;
     border-color: #00d8f5;
 }
 
@@ -993,7 +993,7 @@
 
 /* Shot Progress */
 .shot-progress {
-    background: #0B1E33;
+    background: #172a63;
     border-radius: 4px;
     padding: 24px;
     margin-bottom: 24px;
@@ -1180,7 +1180,7 @@
 
 .page-btn.active {
     background: #00d8f5;
-    color: #06121f;
+    color: #0e1e50;
     border-color: #00d8f5;
 }
 
@@ -1210,7 +1210,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 .rankings-filter-bar {
@@ -1269,7 +1269,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #06101C;
+    background-color: #0e1e50;
 }
 
 .rankings-detail-breadcrumbs {
@@ -1309,7 +1309,7 @@
     gap: clamp(6px, 1vw, 12px);
     padding: 14px 20px;
     align-items: center;
-    background: #06101C;
+    background: #0e1e50;
 }
 
 .rankings-table-header {
@@ -1492,7 +1492,7 @@
 }
 
 .records-category-select option {
-    background: #0B1E33;
+    background: #172a63;
     color: rgba(255, 255, 255, 0.85);
 }
 
@@ -1562,7 +1562,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: #0B1E33;
+  background: #172a63;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 16px;
@@ -1603,13 +1603,13 @@
 
 .epc-date-option.epc-active {
   background: #00d8f5;
-  color: #06121f;
+  color: #0e1e50;
 }
 
 .epc-date-apply-btn {
   background: #00d8f5;
   border: none;
-  color: #06121f;
+  color: #0e1e50;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
@@ -1692,7 +1692,7 @@
 
 .rankings-gender-buttons .gender-btn.active {
   background: #00d8f5;
-  color: #06101C;
+  color: #0e1e50;
   border-color: #00d8f5;
 }
 
@@ -1737,7 +1737,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: #0B1E33;
+  background: #172a63;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 16px;
@@ -1778,13 +1778,13 @@
 
 .epc-date-option.epc-active {
   background: #00d8f5;
-  color: #06121f;
+  color: #0e1e50;
 }
 
 .epc-date-apply-btn {
   background: #00d8f5;
   border: none;
-  color: #06121f;
+  color: #0e1e50;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
@@ -1795,7 +1795,7 @@
 
 /* ========== SHOT PROGRESS ========== */
 .shot-progress {
-    background: #0B1E33;
+    background: #172a63;
     border-radius: 4px;
     padding: 24px;
     margin: 24px 0;
@@ -2076,7 +2076,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    background: #0B1E33;
+    background: #172a63;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     padding: 16px 18px;
@@ -2125,7 +2125,7 @@
 .results-archive-btn-dl {
     background: #00d8f5;
     border-color: #00d8f5;
-    color: #06101C;
+    color: #0e1e50;
 }
 .results-archive-btn-dl:hover {
     background: #33e2f7;
