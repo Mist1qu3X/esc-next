@@ -3,19 +3,18 @@
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 0 32px 20px;
-    background-color: #002168;
+    padding: 0 32px 10px;
+    background-color: #111749;
 }
 
-/* Разделительная полоса сверху */
-.ad-divider {
-    width: calc(100% + 64px);
-    margin-left: -32px;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.08);
+/* Заголовок секции с линией — как в других секциях (LATEST FROM ESC / FEATURED DOCUMENTS) */
+.ad-naming {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padd
 }
 
-/* Заголовок секции — в тон другим секциям (FEATURED DOCUMENTS / LATEST FROM ESC) */
 .ad-title {
     font-family: 'Inter', sans-serif;
     font-weight: 800;
@@ -23,7 +22,15 @@
     text-transform: uppercase;
     letter-spacing: 2px;
     color: rgba(255, 255, 255, 0.32);
-    margin: 24px 0 0;
+    margin: 0;
+    white-space: nowrap;
+}
+
+/* Короткая черта после заголовка — 80px (как .section-line в других блоках) */
+.ad-line {
+    width: 80px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.32);
 }
 
 /* Контент секции */
@@ -94,11 +101,6 @@
         padding: 0 20px;
     }
 
-    .ad-divider {
-        width: calc(100% + 40px);
-        margin-left: -20px;
-    }
-
     .ad-content {
         padding: 20px 0;
     }
@@ -127,11 +129,6 @@
 @media (max-width: 480px) {
     .ad {
         padding: 0 16px;
-    }
-
-    .ad-divider {
-        width: calc(100% + 32px);
-        margin-left: -16px;
     }
 
     .ad-content {

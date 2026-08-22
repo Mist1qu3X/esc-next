@@ -63,8 +63,10 @@ const Ad = () => {
 
     return (
         <section className="ad">
-            <div className="ad-divider"></div>
-            <h2 className="ad-title">Partners</h2>
+            <div className="ad-naming">
+                <h2 className="ad-title">Partners</h2>
+                <div className="ad-line"></div>
+            </div>
             <div className="ad-content">
                 <div className="ad-marquee" ref={marqueeRef}>
                     <div className="ad-track" ref={trackRef} style={{ animationDuration }}>
