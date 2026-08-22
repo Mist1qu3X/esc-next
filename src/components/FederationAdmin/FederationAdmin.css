@@ -4,7 +4,7 @@
     align-items: flex-start;
     justify-content: center;
     padding: clamp(24px, 6vw, 64px) 16px;
-    background: #0e1e50;
+    background: #002168;
 }
 
 .fa-card {
@@ -54,7 +54,7 @@
 
 .fa-input {
     width: 100%;
-    background: #0e1e50;
+    background: #002168;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 6px;
     padding: 12px 14px;
@@ -73,7 +73,7 @@
     margin-top: 22px;
     width: 100%;
     background: #00d8f5;
-    color: #0e1e50;
+    color: #002168;
     border: none;
     border-radius: 6px;
     padding: 13px 18px;
@@ -121,7 +121,7 @@
     width: 84px;
     height: 56px;
     border-radius: 4px;
-    background: #0e1e50;
+    background: #002168;
     border: 1px solid rgba(255, 255, 255, 0.12);
     display: flex;
     align-items: center;

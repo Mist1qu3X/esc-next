@@ -61,7 +61,7 @@
 /* ========== ФОРМА ОБРАТНОЙ СВЯЗИ ========== */
 .contacts-body {
     width: 100%;
-    background-color: #0e1e50;
+    background-color: #002168;
     padding: 80px 32px 120px;
 }
 
@@ -199,7 +199,7 @@
 .contacts-submit {
     width: 100%;
     background-color: #00d8f5;
-    color: #0e1e50;
+    color: #002168;
     border: none;
     border-radius: 6px;
     padding: 18px;

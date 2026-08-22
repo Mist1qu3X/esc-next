@@ -128,7 +128,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .events-filter-bar {
@@ -451,7 +451,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .discipline-filter-bar {
@@ -482,7 +482,7 @@
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 1px;
-    color: #0e1e50;
+    color: #002168;
     background: #00d8f5;
     border: none;
     padding: 10px 20px;
@@ -695,7 +695,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .results-detail-header {
@@ -809,7 +809,7 @@
 
 .gender-btn.active {
     background: #00d8f5;
-    color: #0e1e50;
+    color: #002168;
     border-color: #00d8f5;
 }
 
@@ -1180,7 +1180,7 @@
 
 .page-btn.active {
     background: #00d8f5;
-    color: #0e1e50;
+    color: #002168;
     border-color: #00d8f5;
 }
 
@@ -1210,7 +1210,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .rankings-filter-bar {
@@ -1269,7 +1269,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 60px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .rankings-detail-breadcrumbs {
@@ -1309,7 +1309,7 @@
     gap: clamp(6px, 1vw, 12px);
     padding: 14px 20px;
     align-items: center;
-    background: #0e1e50;
+    background: #002168;
 }
 
 .rankings-table-header {
@@ -1603,13 +1603,13 @@
 
 .epc-date-option.epc-active {
   background: #00d8f5;
-  color: #0e1e50;
+  color: #002168;
 }
 
 .epc-date-apply-btn {
   background: #00d8f5;
   border: none;
-  color: #0e1e50;
+  color: #002168;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
@@ -1692,7 +1692,7 @@
 
 .rankings-gender-buttons .gender-btn.active {
   background: #00d8f5;
-  color: #0e1e50;
+  color: #002168;
   border-color: #00d8f5;
 }
 
@@ -1778,13 +1778,13 @@
 
 .epc-date-option.epc-active {
   background: #00d8f5;
-  color: #0e1e50;
+  color: #002168;
 }
 
 .epc-date-apply-btn {
   background: #00d8f5;
   border: none;
-  color: #0e1e50;
+  color: #002168;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
@@ -2125,7 +2125,7 @@
 .results-archive-btn-dl {
     background: #00d8f5;
     border-color: #00d8f5;
-    color: #0e1e50;
+    color: #002168;
 }
 .results-archive-btn-dl:hover {
     background: #33e2f7;

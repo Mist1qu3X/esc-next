@@ -18,7 +18,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(0deg, rgba(14, 30, 80, 1) 0%, rgba(14, 30, 80, 0.8) 50%, rgba(14, 30, 80, 0.7) 100%);
+    background: linear-gradient(0deg, rgba(0, 33, 104, 1) 0%, rgba(0, 33, 104, 0.8) 50%, rgba(0, 33, 104, 0.7) 100%);
     z-index: 1;
     pointer-events: none;
 }
@@ -123,7 +123,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 0 32px 80px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .media-content-wrapper {
@@ -207,7 +207,7 @@
     transition: all 0.2s ease;
 }
 
-.save-btn { background: #00d8f5; border: none; color: #0e1e50; }
+.save-btn { background: #00d8f5; border: none; color: #002168; }
 .save-btn:hover { background: #0ee0ff; }
 
 .share-btn { background: transparent; border: 1px solid rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.5); }

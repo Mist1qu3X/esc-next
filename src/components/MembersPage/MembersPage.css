@@ -252,7 +252,7 @@
 .mp-view-btn-list.active {
     background: #00d8f5;
     border-color: #00d8f5;
-    color: #0e1e50;
+    color: #002168;
 }
 
 .mp-view-btn-grid:hover:not(.active),
@@ -267,7 +267,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 0 32px 80px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .mp-showing-header {
@@ -593,7 +593,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 0 32px 80px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .mp-federations-list-wrapper {

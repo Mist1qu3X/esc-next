@@ -4,7 +4,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 40px 32px 32px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 .pa-breadcrumbs {
@@ -61,7 +61,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding: 32px;
-    background-color: #0e1e50;
+    background-color: #002168;
 }
 
 /* Большое выбранное фото */
@@ -70,7 +70,7 @@
     width: 100%;
     border-radius: 4px;
     overflow: hidden;
-    background: #0e1e50;
+    background: #002168;
 }
 
 /* Горизонтальная лента со scroll-snap (свайп/прокрутка) */
@@ -96,7 +96,7 @@
     justify-content: center;
     overflow: hidden;
     isolation: isolate;
-    background: #0e1e50;
+    background: #002168;
 }
 
 /* размытая подложка того же кадра — заполняет поля без обрезки */
@@ -134,7 +134,7 @@
     border-radius: 50%;
     border: none;
     background: rgba(255, 255, 255, 0.9);
-    color: #0e1e50;
+    color: #002168;
     font-size: 18px;
     cursor: pointer;
     display: flex;
@@ -170,7 +170,7 @@
     right: 16px;
     z-index: 5;
     padding: 6px 12px;
-    background: rgba(14, 30, 80, 0.7);
+    background: rgba(0, 33, 104, 0.7);
     border-radius: 20px;
     font-family: 'Inter', sans-serif;
     font-size: 13px;
@@ -221,7 +221,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: #0e1e50;
+    background-color: #002168;
     border-radius: 4px;
     cursor: pointer;
     transition: opacity 0.2s ease, outline-color 0.2s ease;
