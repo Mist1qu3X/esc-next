@@ -3,7 +3,7 @@
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 10px 32px 20px;
+    padding: 50px 32px 50px;
     background-color: #002168;
 }
 
@@ -63,28 +63,20 @@
 .action-container {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 2px;
     width: 100%;
-    background: #1c2b66;
-    border-radius: 4px;
-    padding: 0 20px;
 }
 
-/* Видео строка — плоский список на плашке секции, строки разделены тонкой линией (как в макете) */
+/* Видео карточка — отдельная плашка #1c2b66 без скруглений, зазор 2px между ними (как в макете) */
 .video-container {
     display: flex;
     align-items: center;
     gap: 20px;
     width: 100%;
-    padding: 18px 8px;
+    padding: 18px 20px;
     cursor: pointer;
     transition: transform 0.2s ease;
-    background: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.video-container:last-child {
-    border-bottom: none;
+    background: #1c2b66;
 }
 
 .video-container:hover {
