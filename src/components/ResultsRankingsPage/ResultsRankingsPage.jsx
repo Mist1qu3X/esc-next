@@ -713,9 +713,12 @@ const ResultsRankingsPage = ({ embedded = false }) => {
             {sortedEvents.length > 0 ? sortedEvents.map((ev) => {
               const evSt = evStatus(ev);
               const isUpcoming = evSt !== 'FINISHED';
+              // Результаты доступны, если они реально есть (SIUS-строки или официальный PDF) —
+              // даже у идущего события (live-результаты). «RESULTS PENDING» только когда данных ещё нет.
+              const hasData = ev.hasResults || ev.hasResultBook;
               return (
-              <div key={ev.id} className={`event-card ${isUpcoming ? 'event-upcoming' : 'event-completed'}`}
-                onClick={isUpcoming ? undefined : async () => {
+              <div key={ev.id} className={`event-card ${hasData ? 'event-completed' : 'event-upcoming'}`}
+                onClick={!hasData ? undefined : async () => {
                   setSelectedEvent(ev.name);
                   setSelectedEventSlug(ev.slug || `__ev-${ev.id}__`);
                   // Есть структура (SIUS) → грузим строки события и открываем выбор дисциплины;
@@ -733,7 +736,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                     openPdfView(ev.name, files);
                   }
                 }}
-                style={{ cursor: isUpcoming ? 'default' : 'pointer' }}>
+                style={{ cursor: hasData ? 'pointer' : 'default' }}>
                 <div className="event-card-left">
                   <div className="event-tags">
                     <span className={`event-status ${isUpcoming ? 'status-upcoming' : 'status-completed'}`}>{evSt}</span>
@@ -747,7 +750,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
                   </div>
                 </div>
                 <div className="event-card-right">
-                  {isUpcoming
+                  {!hasData
                     ? <span className="event-view-btn event-view-pending"><i className="fa-regular fa-clock"></i>RESULTS PENDING</span>
                     : <button className="event-view-btn">{ev.hasResults ? 'VIEW >' : 'VIEW PDF >'}</button>}
                 </div>
