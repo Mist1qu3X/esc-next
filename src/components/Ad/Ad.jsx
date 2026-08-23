@@ -64,7 +64,7 @@ const Ad = () => {
     return (
         <section className="ad">
             <div className="ad-naming">
-                <h2 className="ad-title">Partners</h2>
+                <h2 className="ad-title">Partnerss</h2>
                 <div className="ad-line"></div>
             </div>
             <div className="ad-content">
