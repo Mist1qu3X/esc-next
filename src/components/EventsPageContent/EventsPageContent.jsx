@@ -122,9 +122,16 @@ const EventsPageContent = () => {
         const matchYear = filterYear === 'all' || eventDate.getFullYear() === parseInt(filterYear);
         const matchSearch = !searchTerm || event.name?.toLowerCase().includes(searchTerm.toLowerCase());
         return matchType && matchStatus && matchMonth && matchYear && matchSearch;
-    // Сортируем по дате ОКОНЧАНИЯ (desc): при одинаковом старте идущее событие оказывается выше
-    // только что завершившегося (напр. 13-16 IN PROGRESS выше 13-15 FINISHED), т.е. статус учитывается.
-    }).sort((a, b) => parseDate(b.endDate || b.date) - parseDate(a.endDate || a.date));
+    // По умолчанию — от сегодняшнего дня: идущие/предстоящие сверху (ближайшие первыми),
+    // затем прошедшие (самые свежие первыми). Чтобы наверху не висели далёкие 2027-события.
+    }).sort((a, b) => {
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const aEnd = parseDate(a.endDate || a.date), bEnd = parseDate(b.endDate || b.date);
+        const aPast = aEnd < today, bPast = bEnd < today;
+        if (aPast !== bPast) return aPast ? 1 : -1;
+        const aStart = parseDate(a.date), bStart = parseDate(b.date);
+        return aPast ? bStart - aStart : aStart - bStart;
+    });
 
     const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
     const currentEvents = filteredEvents.slice((currentPage - 1) * eventsPerPage, currentPage * eventsPerPage);

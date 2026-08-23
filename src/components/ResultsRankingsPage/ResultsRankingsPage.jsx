@@ -507,10 +507,17 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     const matchYear = filterYear === 'all' || eventDate.getFullYear() === parseInt(filterYear);
     return matchType && matchStatus && matchMonth && matchYear;
   });
-  // Сортировка по дате с видимым направлением
-  const sortedEvents = [...filteredEvents].sort((a, b) =>
-    sortDir === 'desc' ? new Date(b.date) - new Date(a.date) : new Date(a.date) - new Date(b.date)
-  );
+  // Сортировка: активные (ONGOING) сверху, затем завершённые (по направлению тумблера —
+  // свежие/старые), затем предстоящие (ближайшие первыми). Чтобы наверху не висели далёкие
+  // 2027-события со статусом «RESULTS PENDING».
+  const relRank = (e) => { const s = evStatus(e); return s === 'ONGOING' ? 0 : s === 'FINISHED' ? 1 : 2; };
+  const sortedEvents = [...filteredEvents].sort((a, b) => {
+    const ra = relRank(a), rb = relRank(b);
+    if (ra !== rb) return ra - rb;
+    const da = new Date(a.date), db = new Date(b.date);
+    if (ra === 2) return da - db;                    // предстоящие: ближайшие первыми
+    return sortDir === 'desc' ? db - da : da - db;   // идущие/завершённые: тумблер newest/oldest
+  });
   const eventFiltersActive = filterMonth !== 'all' || filterYear !== 'all' || filterType !== 'ALL TYPES' || filterStatus !== 'ALL STATUSES';
   const resetEventFilters = () => { setFilterMonth('all'); setFilterYear('all'); setFilterType('ALL TYPES'); setFilterStatus('ALL STATUSES'); };
 
