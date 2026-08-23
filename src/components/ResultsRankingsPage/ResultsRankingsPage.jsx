@@ -838,21 +838,35 @@ const ResultsRankingsPage = ({ embedded = false }) => {
           <div className="discipline-breadcrumbs"><span className="disc-breadcrumb-parent" onClick={() => setDisciplineLevel(false)}>Results</span><span className="disc-breadcrumb-separator">›</span><span className="disc-breadcrumb-active">{selectedEvent || 'Competitions'}</span></div>
           <div className="discipline-header"><span className="discipline-line"></span><span className="discipline-subtitle">ESC RESULTS</span></div>
           <h2 className="discipline-title">SELECT A DISCIPLINE</h2>
-          <p className="discipline-desc">Choose a discipline to view results</p>
-          <div className="discipline-grid">
-            {disciplines.filter((d) => eventDisciplines.has(`${d.main} ${d.sub}`.trim().toUpperCase())).map((d) => (
-              <div key={d.id} className="discipline-card" onClick={() => {
-                const disc = `${d.main} ${d.sub}`.trim();
-                setSelectedDiscipline(disc);
-                setResultsLevel(true);
-                setDetailLoading(true);
-                loadEventResults(selectedEventSlug, disc).finally(() => setDetailLoading(false));
-              }}>
-                <h3 className="disc-card-title"><span className="disc-main">{d.main}</span><span className="disc-sub">{d.sub}</span></h3>
-                <div className="disc-card-icon"><img src={d.icon} alt="" /><span className="disc-card-arrow">›</span></div>
+          {(() => {
+            const evDiscs = disciplines.filter((d) => eventDisciplines.has(`${d.main} ${d.sub}`.trim().toUpperCase()));
+            // Флаг hasResults на событии может опережать реальные строки (после переезда/чистки, пока
+            // синк не отработал). Если дисциплин нет — показываем понятную заглушку, а не пустоту.
+            if (evDiscs.length === 0) return (
+              <div className="results-empty">
+                <i className="fa-regular fa-clock results-empty-icon"></i>
+                <p className="results-empty-title">Results not available yet</p>
+                <p className="results-empty-text">Results for this competition haven&apos;t been published yet. For ongoing events they usually appear within ~30 minutes.</p>
               </div>
-            ))}
-          </div>
+            );
+            return (<>
+              <p className="discipline-desc">Choose a discipline to view results</p>
+              <div className="discipline-grid">
+                {evDiscs.map((d) => (
+                  <div key={d.id} className="discipline-card" onClick={() => {
+                    const disc = `${d.main} ${d.sub}`.trim();
+                    setSelectedDiscipline(disc);
+                    setResultsLevel(true);
+                    setDetailLoading(true);
+                    loadEventResults(selectedEventSlug, disc).finally(() => setDetailLoading(false));
+                  }}>
+                    <h3 className="disc-card-title"><span className="disc-main">{d.main}</span><span className="disc-sub">{d.sub}</span></h3>
+                    <div className="disc-card-icon"><img src={d.icon} alt="" /><span className="disc-card-arrow">›</span></div>
+                  </div>
+                ))}
+              </div>
+            </>);
+          })()}
         </section>
       )}
 
