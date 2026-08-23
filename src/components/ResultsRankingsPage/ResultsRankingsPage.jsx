@@ -717,7 +717,7 @@ const ResultsRankingsPage = ({ embedded = false }) => {
               // даже у идущего события (live-результаты). «RESULTS PENDING» только когда данных ещё нет.
               const hasData = ev.hasResults || ev.hasResultBook;
               return (
-              <div key={ev.id} className={`event-card ${hasData ? 'event-completed' : 'event-upcoming'}`}
+              <div key={ev.id} className={`event-card ${hasData ? 'event-completed' : 'event-upcoming'} ${evSt === 'ONGOING' ? 'event-ongoing' : ''}`}
                 onClick={!hasData ? undefined : async () => {
                   setSelectedEvent(ev.name);
                   setSelectedEventSlug(ev.slug || `__ev-${ev.id}__`);
