@@ -81,7 +81,6 @@ const SelectedEventPage = ({ slug }) => {
   const [streams, setStreams] = useState([]);
   const [eventResults, setEventResults] = useState([]); // старые result-details (fallback)
   const [eventPhotos, setEventPhotos] = useState([]);
-  const [contactEmail, setContactEmail] = useState('technical@esc-shooting.eu');
   const [resultDisc, setResultDisc] = useState(null);
   const [playing, setPlaying] = useState(null); // стрим во встроенном плеере
   const [animDone, setAnimDone] = useState(false); // мишень доиграла
@@ -128,17 +127,15 @@ const SelectedEventPage = ({ slug }) => {
         }
         return all;
       };
-      const [sRes, rAll, pRes, ciRes] = await Promise.all([
+      const [sRes, rAll, pRes] = await Promise.all([
         // LIVE & MEDIA — общий для всех событий (глобальные стримы/фото, как на Media)
         cachedGet(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
         fetchResults(),
         cachedGet(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
-        cachedGet(`${config.API_URL}/api/contact-info`).catch(() => ({ data: { data: {} } })),
       ]);
       setStreams(sRes.data?.data || []);
       setEventResults(rAll || []);
       setEventPhotos(pRes.data?.data || []);
-      setContactEmail(ciRes.data?.data?.technicalEmail || 'technical@esc-shooting.eu');
     };
     fetchExtra();
   }, [slug]);
@@ -274,6 +271,7 @@ const SelectedEventPage = ({ slug }) => {
   const platformClass = (p) => ((p || '').toLowerCase() === 'facebook' ? 'facebook' : 'youtube');
 
   // WATCH: twitch убран.
+  const contactEmail = event?.contactEmail || 'technical@esc-shooting.eu';
   const liveStreams = streams.filter((s) => (s.platform || '').toLowerCase() !== 'twitch').slice(0, 3);
   const openStream = (s) => (canEmbed(s) ? setPlaying(s) : s.url && window.open(s.url, '_blank'));
 
