@@ -273,8 +273,10 @@ const MediaPage = () => {
     if (photoSearch.trim()) { const q = photoSearch.toLowerCase(); r = r.filter((p) => (p.title || '').toLowerCase().includes(q)); }
     if (photoYear !== 'all') r = r.filter((p) => p.date && new Date(p.date).getFullYear().toString() === photoYear);
     if (photoEvent !== 'all') r = r.filter((p) => p.eventSlug === photoEvent);
-    if (photoSort === 'recent') r.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-    else if (photoSort === 'oldest') r.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+    // «Newest first» — по дате ЗАГРУЗКИ альбома (createdAt), чтобы только что добавленный
+    // всегда был сверху и кривые/будущие даты события не ломали порядок. Фолбэк — дата события.
+    if (photoSort === 'recent') r.sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0));
+    else if (photoSort === 'oldest') r.sort((a, b) => new Date(a.createdAt || a.date || 0) - new Date(b.createdAt || b.date || 0));
     else if (photoSort === 'count') r.sort((a, b) => photoCountOf(b) - photoCountOf(a));
     else if (photoSort === 'az') r.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
     return r;
