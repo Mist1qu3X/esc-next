@@ -121,7 +121,6 @@
     user-select: none;
     -webkit-user-drag: none;
     -webkit-user-select: none;
-    pointer-events: none;
 }
 
 .pa-arrow {
@@ -161,6 +160,36 @@
 
 .pa-arrow-next {
     right: 24px;
+}
+
+/* Кнопка скачивания — слева от счётчика */
+.pa-download-btn {
+    position: absolute;
+    bottom: 16px;
+    right: 90px; /* Отступ, чтобы не перекрывать счётчик */
+    z-index: 5;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    font-size: 14px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(4px);
+}
+
+.pa-download-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.05);
+}
+
+.pa-download-btn:active {
+    transform: scale(0.95);
 }
 
 /* Счётчик текущей фотографии */
@@ -255,8 +284,12 @@
         gap: 16px;
     }
 
-    /* На ≤960 навигация свайпом/прокруткой — стрелки прячем */
+    /* На ≤960 навигация свайпом/прокруткой — стрелки и кнопку скачивания прячем */
     .pa-arrow {
+        display: none;
+    }
+    
+    .pa-download-btn {
         display: none;
     }
 }
