@@ -36,9 +36,12 @@ const mdComponents = {
   h3: (props) => <h3 className="article-heading" {...props} />,
   blockquote: (props) => <blockquote className="article-quote" {...props} />,
   a: (props) => <a target="_blank" rel="noopener noreferrer" {...props} />,
-  img: ({ node, ...props }) => (
-    <img className="article-image" loading="lazy" decoding="async" alt={props.alt || ''} {...props} />
-  ),
+  img: ({ node, src, alt, ...props }) => {
+    // Прод-медиа на S3 уже абсолютные; локальные загрузки Strapi — относительные (/uploads/…),
+    // их префиксуем адресом API, иначе <img> резолвится в адрес фронта и не грузится.
+    const resolved = src && !src.startsWith('http') ? `${config.API_URL}${src}` : src;
+    return <img className="article-image" loading="lazy" decoding="async" src={resolved} alt={alt || ''} {...props} />;
+  },
 };
 
 // Универсальная функция для извлечения данных
