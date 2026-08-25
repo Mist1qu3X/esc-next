@@ -17,22 +17,20 @@ const getImageUrl = (img) => {
   return null;
 };
 
-// Функция для скачивания изображения
-const downloadImage = async (url, filename) => {
-  try {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = blobUrl;
-    link.download = filename || 'image.jpg';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error('Ошибка скачивания:', error);
-  }
+// Скачивание изображения через серверный прокси /api/download-image.
+// Прямой fetch().blob() к S3 падает на CORS (Selectel непоследовательно отдаёт
+// ACAO на размерных превью), поэтому качаем через свой same-origin роут,
+// который проставляет Content-Disposition: attachment.
+const downloadImage = (url, filename) => {
+  if (!url) return;
+  const name = filename || 'image.jpg';
+  const href = `/api/download-image?url=${encodeURIComponent(url)}&name=${encodeURIComponent(name)}`;
+  const link = document.createElement('a');
+  link.href = href;
+  link.download = name;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 const PhotoAlbumPage = ({ slug }) => {
