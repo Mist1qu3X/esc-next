@@ -3,9 +3,43 @@ import { useState, useEffect } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import { useRouter } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import NewsDetailSkeleton from './NewsDetailSkeleton';
 import './SelectedNewsPage.css';
+
+// Поле content — Strapi richtext (Markdown). Легаси-статьи писались без markdown:
+// строка целиком в кавычках = пул-квоут, короткая КАПС-строка = заголовок.
+// Приводим их к markdown, чтобы старые статьи выглядели как раньше, а новые
+// могли использовать полноценный markdown (жирный, картинки, ссылки, списки…).
+const normalizeLegacy = (content) =>
+  (content || '')
+    .split('\n\n')
+    .map((block) => {
+      const b = block.trim();
+      if (b.length > 1 && b.startsWith('"') && b.endsWith('"')) {
+        return `> ${b.slice(1, -1)}`;
+      }
+      if (b.length > 0 && b.length < 60 && b === b.toUpperCase() && !b.includes('.') && /[A-Z]/.test(b)) {
+        return `## ${b}`;
+      }
+      return block;
+    })
+    .join('\n\n');
+
+// Маппинг markdown-узлов на существующие классы статьи.
+const mdComponents = {
+  p: (props) => <p className="article-text" {...props} />,
+  h1: (props) => <h2 className="article-heading" {...props} />,
+  h2: (props) => <h2 className="article-heading" {...props} />,
+  h3: (props) => <h3 className="article-heading" {...props} />,
+  blockquote: (props) => <blockquote className="article-quote" {...props} />,
+  a: (props) => <a target="_blank" rel="noopener noreferrer" {...props} />,
+  img: ({ node, ...props }) => (
+    <img className="article-image" loading="lazy" decoding="async" alt={props.alt || ''} {...props} />
+  ),
+};
 
 // Универсальная функция для извлечения данных
 const extractData = (response) => {
@@ -153,25 +187,6 @@ const SelectedNewsPage = ({ slug }) => {
     }
   };
 
-  const formatContent = (content) => {
-    if (!content) return null;
-    const blocks = content.split('\n\n');
-    return blocks.map((block, i) => {
-      if (block.startsWith('"') && block.endsWith('"')) {
-        return (
-          <blockquote key={i} className="article-quote">
-            <p>{block.slice(1, -1)}</p>
-          </blockquote>
-        );
-      }
-      const isHeading = block === block.toUpperCase() && block.length < 60 && !block.includes('.');
-      if (isHeading) {
-        return <h2 key={i} className="article-heading">{block}</h2>;
-      }
-      return <p key={i} className="article-text">{block}</p>;
-    });
-  };
-
   if (loading || !animDone) {
     return <NewsDetailSkeleton onEnded={() => setAnimDone(true)} />;
   }
@@ -215,11 +230,15 @@ const SelectedNewsPage = ({ slug }) => {
               </>
             )}
 
-            {formatContent(article.content)}
-            
-            {!article.content && article.description && (
+            {article.content ? (
+              <div className="article-markdown">
+                <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                  {normalizeLegacy(article.content)}
+                </ReactMarkdown>
+              </div>
+            ) : article.description ? (
               <p className="article-text">{article.description}</p>
-            )}
+            ) : null}
 
             <div className="article-divider"></div>
             
