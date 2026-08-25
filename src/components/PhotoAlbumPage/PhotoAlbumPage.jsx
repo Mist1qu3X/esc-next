@@ -17,10 +17,28 @@ const getImageUrl = (img) => {
   return null;
 };
 
+// Функция для скачивания изображения
+const downloadImage = async (url, filename) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename || 'image.jpg';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error('Ошибка скачивания:', error);
+  }
+};
+
 const PhotoAlbumPage = ({ slug }) => {
   const [album, setAlbum] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [animDone, setAnimDone] = useState(false); // мишень доиграла
+  const [animDone, setAnimDone] = useState(false);
   const [selected, setSelected] = useState(0);
   const trackRef = useRef(null);
   const router = useRouter();
@@ -42,14 +60,11 @@ const PhotoAlbumPage = ({ slug }) => {
     fetchAlbum();
   }, [slug]);
 
-  // Реальное число фото: фактические images, иначе поле photoCount
   const realCount =
     album && Array.isArray(album.images) && album.images.length > 0
       ? album.images.length
       : (album?.photoCount || 0);
 
-  // Список фотографий: альбом (images) либо одиночная обложка.
-  // У пустого альбома (счётчик 0) обложку как «фото» НЕ показываем — выводим пустое состояние.
   const photos =
     album && Array.isArray(album.images) && album.images.length > 0
       ? album.images
@@ -59,22 +74,29 @@ const PhotoAlbumPage = ({ slug }) => {
 
   const total = photos.length;
 
-  // Императивная прокрутка ленты к индексу (без завязки на state, чтобы не было петли)
   const scrollToIndex = (i) => {
     const track = trackRef.current;
     if (track) track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
   };
 
-  // Без зацикливания: на первой/последней фотографии стрелка неактивна
   const goPrev = () => { if (selected > 0) scrollToIndex(selected - 1); };
   const goNext = () => { if (selected < total - 1) scrollToIndex(selected + 1); };
 
-  // Прокрутка/свайп только обновляет активную миниатюру (никакого встречного скролла)
   const onTrackScroll = () => {
     const track = trackRef.current;
     if (!track || !track.clientWidth) return;
     const idx = Math.round(track.scrollLeft / track.clientWidth);
     setSelected((prev) => (prev !== idx ? idx : prev));
+  };
+
+  // Обработчик скачивания текущего изображения
+  const handleDownload = () => {
+    if (total === 0 || !photos[selected]) return;
+    const imgUrl = imageUrl(photos[selected], 'large') || getImageUrl(photos[selected]);
+    if (imgUrl) {
+      const filename = `${album?.title || 'photo'}-${selected + 1}.jpg`;
+      downloadImage(imgUrl, filename);
+    }
   };
 
   if (loading || !animDone) {
@@ -107,7 +129,6 @@ const PhotoAlbumPage = ({ slug }) => {
           </div>
         ) : (
           <>
-            {/* Большое фото: стрелки на десктопе, свайп/прокрутка на ≤960 */}
             <div className="pa-viewer">
               <div className="pa-track" ref={trackRef} onScroll={onTrackScroll}>
                 {photos.map((ph, i) => (
@@ -118,7 +139,6 @@ const PhotoAlbumPage = ({ slug }) => {
                   </div>
                 ))}
               </div>
-              {/* Одиночное изображение открывается как одно фото: без стрелок, счётчика и полосы миниатюр */}
               {total > 1 && (
                 <>
                   <button className="pa-arrow pa-arrow-prev" onClick={goPrev} disabled={selected === 0} aria-label="Previous">
@@ -127,12 +147,15 @@ const PhotoAlbumPage = ({ slug }) => {
                   <button className="pa-arrow pa-arrow-next" onClick={goNext} disabled={selected >= total - 1} aria-label="Next">
                     <i className="fa-solid fa-chevron-right"></i>
                   </button>
+                  {/* Кнопка скачивания слева от счётчика */}
+                  <button className="pa-download-btn" onClick={handleDownload} aria-label="Download image">
+                    <i className="fa-solid fa-download"></i>
+                  </button>
                   <span className="pa-counter">{selected + 1} / {total}</span>
                 </>
               )}
             </div>
 
-            {/* Все фото альбома — только для настоящего альбома (>1 фото) */}
             {total > 1 && (
               <>
                 <div className="pa-all-label">ALL PHOTO · {total} PHOTOS</div>
