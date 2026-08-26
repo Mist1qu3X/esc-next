@@ -185,7 +185,7 @@
 }
 
 .mp-section-text.mp-grey-text {
-    color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .mp-section-header {
@@ -433,7 +433,7 @@
     font-weight: 400;
     font-size: 11.5px;
     line-height: 18.4px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.9);
     margin: 0;
 }
 
@@ -1462,7 +1462,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 12px;
     line-height: 1.4;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.9);
     margin: 4px 0 6px;
     max-width: 640px;
 }
