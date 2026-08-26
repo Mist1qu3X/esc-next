@@ -401,7 +401,7 @@
     color: #fff;
     margin: 0;
 }
-.events-empty-text { font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(255, 255, 255, 0.5); margin: 0; }
+.events-empty-text { font-family: 'Inter', sans-serif; font-size: 13px; color: rgba(255, 255, 255, 0.9); margin: 0; }
 .events-empty-btn {
     margin-top: 8px;
     height: 36px;
@@ -441,7 +441,7 @@
 .results-empty-text, .rt-empty-text {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.9);
     max-width: 440px;
     line-height: 1.5;
     margin: 0;
@@ -581,7 +581,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.9);
     margin: 0 0 40px 0;
 }
 
@@ -1102,7 +1102,7 @@
     font-weight: 700;
     font-size: 11px;
     line-height: 16.5px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .source-dot {

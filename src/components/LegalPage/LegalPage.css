@@ -52,6 +52,6 @@
 }
 
 .legal-content p,
-.legal-content li { font-size: 15px; line-height: 1.7; color: rgba(255, 255, 255, 0.78); }
+.legal-content li { font-size: 15px; line-height: 1.7; color: rgba(255, 255, 255, 0.9); }
 .legal-content ul { padding-left: 20px; margin: 8px 0; }
 .legal-content a { color: #00d8f5; text-decoration: underline; }

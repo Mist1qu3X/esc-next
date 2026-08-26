@@ -420,7 +420,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.9);
     margin: 0 0 8px 0;
 }
 
@@ -701,7 +701,7 @@
 .docs-empty-text {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.9);
     max-width: 420px;
     margin: 0;
     line-height: 1.5;

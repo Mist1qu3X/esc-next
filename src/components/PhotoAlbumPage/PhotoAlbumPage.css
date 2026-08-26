@@ -226,7 +226,7 @@
     color: #fff;
     margin: 0;
 }
-.pa-empty-text { font-family: 'Inter', sans-serif; font-size: 14px; color: rgba(255, 255, 255, 0.5); margin: 0; }
+.pa-empty-text { font-family: 'Inter', sans-serif; font-size: 14px; color: rgba(255, 255, 255, 0.9); margin: 0; }
 
 /* ALL PHOTO */
 .pa-all-label {

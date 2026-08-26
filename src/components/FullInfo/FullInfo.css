@@ -151,7 +151,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .entry-system-btn {
@@ -355,7 +355,7 @@
     font-family: 'Inter', sans-serif;
     font-size: 11px;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.9);
     letter-spacing: 1px;
     margin-bottom: 20px;
     text-transform: uppercase;
@@ -599,4 +599,4 @@
 /* part2 — на тёмном фоне светлый текст */
 .part2 .fi-block-empty-icon { color: rgba(255, 255, 255, 0.35); }
 .part2 .fi-block-empty-title { color: rgba(255, 255, 255, 0.9); }
-.part2 .fi-block-empty-text { color: rgba(255, 255, 255, 0.45); }
+.part2 .fi-block-empty-text { color: rgba(255, 255, 255, 0.85); }
