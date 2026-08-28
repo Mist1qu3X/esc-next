@@ -227,11 +227,18 @@ const MediaPage = () => {
     return 'youtube';
   };
 
-  const youtubeStream = streams.find((s) => normPlatform(s.platform) === 'youtube');
-  const facebookStream = streams.find((s) => normPlatform(s.platform) === 'facebook');
+  // Стрим показываем только если у записи есть осмысленный url (иначе смотреть нечего).
+  // Пустой/«-»/placeholder url = запись-заготовка в Strapi — блок трансляции не рендерим.
+  const hasStreamUrl = (s) => {
+    const u = (s?.url || '').trim();
+    return /^https?:\/\//i.test(u) || /(youtu\.?be|youtube\.com|facebook\.com|fb\.watch|twitch\.tv|vimeo\.com)/i.test(u);
+  };
+  const validStreams = streams.filter(hasStreamUrl);
+  const youtubeStream = validStreams.find((s) => normPlatform(s.platform) === 'youtube');
+  const facebookStream = validStreams.find((s) => normPlatform(s.platform) === 'facebook');
   let liveStreams = [youtubeStream, facebookStream].filter(Boolean);
   if (liveStreams.length < 2) {
-    const rest = streams.filter((s) => !liveStreams.includes(s));
+    const rest = validStreams.filter((s) => !liveStreams.includes(s));
     liveStreams = [...liveStreams, ...rest].slice(0, 2);
   }
 
@@ -559,7 +566,7 @@ const MediaPage = () => {
         )}
 
         {/* LIVE STREAMS */}
-        {showLiveStreams && streams.length > 0 && (
+        {showLiveStreams && liveStreams.length > 0 && (
           <div className="mp-live-block">
             <div className="mp-section-label">
               <span className="mp-section-line mp-grey"></span>
