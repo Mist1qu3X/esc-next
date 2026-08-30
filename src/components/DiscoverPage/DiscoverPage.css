@@ -690,7 +690,9 @@
 
 .assembly-federations {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
+    /* minmax(0, 1fr): колонки строго равны и не растягиваются под длинный
+       неразрывный контент одной ячейки (иначе весь столбец становится шире). */
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     gap: 2px;
     width: 100%;
 }
@@ -704,6 +706,7 @@
     padding: 16px 12px;
     background: #1c2b66;
     border-radius: 4px;
+    min-width: 0; /* разрешаем ячейке сжиматься уже своего контента */
 }
 
 .assembly-member:hover {
@@ -739,6 +742,7 @@
     line-clamp: 2;
     overflow: hidden;
     text-overflow: ellipsis;
+    overflow-wrap: anywhere; /* длинные неразрывные строки переносятся, а не растягивают колонку */
     line-height: 1.25;
     min-height: 2.5em;
 }
@@ -1630,7 +1634,7 @@
     .committee-name { font-size: clamp(12px, 1.5vw, 16px); }
     .committee-members { font-size: clamp(10px, 1vw, 12px); }
     .assembly-panel { padding: 30px; }
-    .assembly-federations { grid-template-columns: repeat(4, 1fr); }
+    .assembly-federations { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .executive-members { grid-template-columns: repeat(2, 1fr); }
 
     .leadership { padding: clamp(40px, 5vw, 60px) clamp(16px, 3vw, 24px); }
@@ -1656,7 +1660,7 @@
 
 @media (max-width: 768px) {
     .core-card:last-child { max-width: 100%; }
-    .assembly-federations { grid-template-columns: repeat(4, 1fr); }
+    .assembly-federations { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 @media (max-width: 480px) {
@@ -1690,7 +1694,7 @@
     .assembly-panel { padding: 20px; }
     .assembly-title { font-size: 28px; }
     .assembly-description { font-size: 13px; }
-    .assembly-federations { grid-template-columns: repeat(2, 1fr); gap: 2px; }
+    .assembly-federations { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; }
     .executive-members { grid-template-columns: 1fr; }
 
     .leadership { padding: 40px 16px; }
