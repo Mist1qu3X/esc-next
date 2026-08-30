@@ -353,7 +353,7 @@ const DiscoverPage = () => {
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                       <div className="assembly-code">{fed.countryCode}</div>
-                      <div className="assembly-country">{fed.country}</div>
+                      <div className="assembly-country" title={fed.country}>{fed.country}</div>
                     </div>
                   ))}
                 </div>
