@@ -249,29 +249,31 @@ const ResultsRankingsPage = ({ embedded = false }) => {
   levelsRef.current = { pdfLevel, resultsLevel, rankingsDetailLevel, disciplineLevel };
 
   // Поднимаемся ровно на один уровень (тот же порядок, что и у хлебных крошек).
-  // Возвращаем true, если ПОСЛЕ подъёма остаёмся внутри drill-down (нужен ещё буфер).
   const goUpOneLevel = useCallback(() => {
     const L = levelsRef.current;
-    if (L.pdfLevel) { setPdfLevel(false); setPdfFiles([]); return !!(L.resultsLevel || L.rankingsDetailLevel || L.disciplineLevel); }
-    if (L.resultsLevel) { setResultsLevel(false); return !!L.disciplineLevel; }
-    if (L.rankingsDetailLevel) { setRankingsDetailLevel(false); return false; }
-    if (L.disciplineLevel) { setDisciplineLevel(false); return false; }
-    return false;
+    if (L.pdfLevel) { setPdfLevel(false); setPdfFiles([]); return; }
+    if (L.resultsLevel) { setResultsLevel(false); return; }
+    if (L.rankingsDetailLevel) { setRankingsDetailLevel(false); return; }
+    if (L.disciplineLevel) { setDisciplineLevel(false); return; }
   }, []);
 
-  const drilled = pdfLevel || resultsLevel || rankingsDetailLevel || disciplineLevel;
-
-  // Пока мы внутри drill-down, держим одну буферную запись истории. «Назад» её «съедает»,
-  // мы поднимаемся на уровень выше и (если ещё внутри) снова ставим буфер. В корне буфер не
-  // восстанавливаем — следующий «назад» уводит со страницы, как и ожидается.
+  // Глубина = число активных уровней. На КАЖДОЕ углубление кладём одну буферную
+  // запись истории (не внутри popstate — это кросс-браузерно надёжно). «Назад»
+  // снимает буфер и поднимает нас на уровень выше; в корне буферов нет — «назад»
+  // уводит со страницы, как и ожидается.
+  const drillDepth = (pdfLevel ? 1 : 0) + (resultsLevel ? 1 : 0) + (rankingsDetailLevel ? 1 : 0) + (disciplineLevel ? 1 : 0);
+  const prevDepthRef = useRef(0);
   useEffect(() => {
-    if (!drilled) return;
-    window.history.pushState({ rrDrill: true }, '');
-    const onPop = () => { if (goUpOneLevel()) window.history.pushState({ rrDrill: true }, ''); };
+    const prev = prevDepthRef.current;
+    prevDepthRef.current = drillDepth;
+    for (let k = prev; k < drillDepth; k++) window.history.pushState({ rrDrill: true }, '');
+  }, [drillDepth]);
+
+  useEffect(() => {
+    const onPop = () => goUpOneLevel();
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drilled, goUpOneLevel]);
+  }, [goUpOneLevel]);
 
   // Статус события по датам (как на странице Events): UPCOMING / ONGOING / FINISHED.
   // Не полагаемся на ручное поле statusEvent, чтобы статус не устаревал.
