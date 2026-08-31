@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo, useCallback, Fragment } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef, Fragment } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import config from '@/lib/config';
 import LoadingResults from '@/components/LoadingResults/LoadingResults';
@@ -242,6 +242,36 @@ const ResultsRankingsPage = ({ embedded = false }) => {
     setSelectedEventSlug('');
     setGender('ALL'); // records может выставить MIXED — сбрасываем, чтобы не «утекало» в Results
   };
+
+  // ── Браузерный «назад» шагает по уровням drill-down, а не уводит со страницы ──
+  // Рефы с актуальными уровнями — чтобы popstate-обработчик не работал по устаревшему замыканию.
+  const levelsRef = useRef({});
+  levelsRef.current = { pdfLevel, resultsLevel, rankingsDetailLevel, disciplineLevel };
+
+  // Поднимаемся ровно на один уровень (тот же порядок, что и у хлебных крошек).
+  // Возвращаем true, если ПОСЛЕ подъёма остаёмся внутри drill-down (нужен ещё буфер).
+  const goUpOneLevel = useCallback(() => {
+    const L = levelsRef.current;
+    if (L.pdfLevel) { setPdfLevel(false); setPdfFiles([]); return !!(L.resultsLevel || L.rankingsDetailLevel || L.disciplineLevel); }
+    if (L.resultsLevel) { setResultsLevel(false); return !!L.disciplineLevel; }
+    if (L.rankingsDetailLevel) { setRankingsDetailLevel(false); return false; }
+    if (L.disciplineLevel) { setDisciplineLevel(false); return false; }
+    return false;
+  }, []);
+
+  const drilled = pdfLevel || resultsLevel || rankingsDetailLevel || disciplineLevel;
+
+  // Пока мы внутри drill-down, держим одну буферную запись истории. «Назад» её «съедает»,
+  // мы поднимаемся на уровень выше и (если ещё внутри) снова ставим буфер. В корне буфер не
+  // восстанавливаем — следующий «назад» уводит со страницы, как и ожидается.
+  useEffect(() => {
+    if (!drilled) return;
+    window.history.pushState({ rrDrill: true }, '');
+    const onPop = () => { if (goUpOneLevel()) window.history.pushState({ rrDrill: true }, ''); };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drilled, goUpOneLevel]);
 
   // Статус события по датам (как на странице Events): UPCOMING / ONGOING / FINISHED.
   // Не полагаемся на ручное поле statusEvent, чтобы статус не устаревал.
