@@ -554,6 +554,14 @@ const SelectedEventPage = ({ slug }) => {
                     </div>
                   </>
                 )}
+
+                {liveStreams.length === 0 && eventPhotos.length === 0 && (
+                  <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
+                    <i className="fa-regular fa-photo-film stream-scheduled-icon"></i>
+                    <span className="stream-scheduled-title">NO MEDIA YET</span>
+                    <span className="stream-scheduled-text">Photos and live streams for this event will appear here once they&apos;re available.</span>
+                  </div>
+                )}
                 <button className="event-tab-cta" onClick={() => router.push('/media')}>GO TO MEDIA &amp; NEWS ›</button>
               </>
             )}
