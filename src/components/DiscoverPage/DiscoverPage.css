@@ -1094,11 +1094,24 @@
 
 .federations-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    /* minmax(0,1fr): колонки строго равны, длинные названия не «улетают» вправо */
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 2px;
     margin-bottom: 40px;
     width: 100%;
+    /* ~6 рядов, дальше — скролл, чтобы 58 федераций не были бесконечным списком */
+    max-height: 542px;
+    overflow-y: auto;
+    padding-right: 6px;
+    /* минималистичный тематический скроллбар (Firefox) */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 216, 245, 0.45) rgba(255, 255, 255, 0.06);
 }
+/* тематический скроллбар (WebKit/Chrome) */
+.federations-grid::-webkit-scrollbar { width: 6px; }
+.federations-grid::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.06); border-radius: 3px; }
+.federations-grid::-webkit-scrollbar-thumb { background: rgba(0, 216, 245, 0.45); border-radius: 3px; }
+.federations-grid::-webkit-scrollbar-thumb:hover { background: rgba(0, 216, 245, 0.8); }
 
 .federation-card {
     display: flex;
@@ -1638,7 +1651,7 @@
     .leader-initials { font-size: 56px; }
 
     .member-federations { padding: 60px 24px; }
-    .federations-grid { grid-template-columns: repeat(3, 1fr); }
+    .federations-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .federations-header { flex-direction: column; align-items: flex-start; gap: 16px; }
     .federation-card { width: 100%; min-width: 0; padding: 12px; gap: 8px; }
     .fed-name { font-size: 11px; line-height: 1.1; }
@@ -1702,7 +1715,7 @@
     .flag { width: 16px; height: 11px; }
 
     .member-federations { padding: 40px 16px; }
-    .federations-grid { grid-template-columns: repeat(2, 1fr); }
+    .federations-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .filter-count { display: none; }
     .federation-card { padding: 10px; gap: 8px; height: auto; min-height: 72px; }
     .fed-flag { width: 22px; height: 16px; }

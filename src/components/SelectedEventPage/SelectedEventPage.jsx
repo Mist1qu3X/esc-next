@@ -128,8 +128,8 @@ const SelectedEventPage = ({ slug }) => {
         return all;
       };
       const [sRes, rAll, pRes] = await Promise.all([
-        // Стримы — пока общие (у Live Stream нет привязки к событию).
-        cachedGet(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
+        // Стримы — только этого события (у Live Stream есть eventSlug).
+        cachedGet(`${config.API_URL}/api/live-streams?filters[eventSlug][$eq]=${slug}&populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
         fetchResults(),
         // Фото — только этого события (у Photo есть eventSlug).
         cachedGet(`${config.API_URL}/api/photos?filters[eventSlug][$eq]=${slug}&populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
@@ -273,10 +273,16 @@ const SelectedEventPage = ({ slug }) => {
 
   // WATCH: twitch убран.
   const contactEmail = event?.contactEmail || 'technical@esc-shooting.eu';
-  const liveStreams = streams.filter((s) => (s.platform || '').toLowerCase() !== 'twitch').slice(0, 3);
+  // Только стримы с осмысленным url (пустой/«-»/placeholder не показываем).
+  const hasStreamUrl = (s) => {
+    const u = (s?.url || '').trim();
+    return /^https?:\/\//i.test(u) || /(youtu\.?be|youtube\.com|facebook\.com|fb\.watch|twitch\.tv|vimeo\.com)/i.test(u);
+  };
+  const liveStreams = streams.filter((s) => hasStreamUrl(s) && (s.platform || '').toLowerCase() !== 'twitch').slice(0, 3);
   const openStream = (s) => (canEmbed(s) ? setPlaying(s) : s.url && window.open(s.url, '_blank'));
 
-  const liveStreamBlock = event?.showStreams === false ? null : (
+  // Блок трансляции — только если у события есть валидный стрим (иначе не показываем «STREAM SCHEDULED»).
+  const liveStreamBlock = (event?.showStreams === false || liveStreams.length === 0) ? null : (
     <div className="sidebar-block live-stream-block">
       <div className="live-stream-header">
         <div className="live-stream-indicator">
@@ -502,7 +508,7 @@ const SelectedEventPage = ({ slug }) => {
               <>
                 <h2 className="event-section-title">LIVE &amp; MEDIA</h2>
                 <p className="event-description">Live streams, highlights and media coverage.</p>
-                {liveStreams.length > 0 ? (
+                {liveStreams.length > 0 && (
                   <div className="event-media-streams">
                     {liveStreams.map((s) => {
                       // превью: своё залитое, иначе стоп-кадр самого стрима (YouTube)
@@ -529,12 +535,6 @@ const SelectedEventPage = ({ slug }) => {
                       </div>
                       );
                     })}
-                  </div>
-                ) : (
-                  <div className="stream-scheduled" style={{ maxWidth: 480, margin: '40px auto' }}>
-                    <i className="fa-regular fa-circle-play stream-scheduled-icon"></i>
-                    <span className="stream-scheduled-title">STREAM SCHEDULED</span>
-                    <span className="stream-scheduled-text">Goes live when the event begins. Available on YouTube &amp; Facebook.</span>
                   </div>
                 )}
 
