@@ -178,8 +178,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       (async () => {
         const [r, rdocs] = await Promise.all([
           fetchAll(`/api/ranking-details?fields[0]=position&fields[1]=athleteName&fields[2]=country&fields[3]=yearOfBirth&fields[4]=discipline&fields[5]=category&sort=position:asc`),
-          // Офиц. PDF рейтинга — из CMS (docs, theme=Ranking), матч по дисциплине+полу в title/description.
-          fetchAll(`/api/docs?filters[theme][$eq]=Ranking&fields[0]=title&fields[1]=description&populate[file][fields][0]=url&sort=date:desc`).catch(() => []),
+          // Офиц. PDF рейтинга — из CMS. Приоритет у category=Ranking; theme=Ranking — фолбэк только для доков без категории.
+          fetchAll(`/api/docs?filters[$or][0][category][name][$eq]=Ranking&filters[$or][1][theme][$eq]=Ranking&filters[$or][1][category][$null]=true&fields[0]=title&fields[1]=description&populate[file][fields][0]=url&sort=date:desc`).catch(() => []),
         ]);
         setRankings(r); setRankingDocs(rdocs || []); setRankingsLoaded(true);
       })();
@@ -188,7 +188,8 @@ const ResultsRankingsPage = ({ embedded = false }) => {
       (async () => {
         const [r, rdocs] = await Promise.all([
           fetchAll(`/api/records?fields[0]=type&fields[1]=athleteName&fields[2]=federationCode&fields[3]=record&fields[4]=location&fields[5]=date&fields[6]=discipline&fields[7]=category&sort=date:desc`),
-          fetchAll(`/api/docs?filters[theme][$eq]=Records&fields[0]=title&fields[1]=description&populate[file][fields][0]=url&sort=date:desc`).catch(() => []),
+          // Офиц. PDF рекордов — приоритет у category=Records; theme=Records — фолбэк для доков без категории.
+          fetchAll(`/api/docs?filters[$or][0][category][name][$eq]=Records&filters[$or][1][theme][$eq]=Records&filters[$or][1][category][$null]=true&fields[0]=title&fields[1]=description&populate[file][fields][0]=url&sort=date:desc`).catch(() => []),
         ]);
         setRecords(r); setRecordDocs(rdocs || []); setRecordsLoaded(true);
       })();

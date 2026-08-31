@@ -58,16 +58,19 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
         setDocuments(docs);
         setFilteredDocs(docs);
 
-        // Подсчет категорий из реальных данных
+        // Категории из реальных данных. Порядок чипов задаётся полем order в коллекции
+        // Category (админ управляет им); у кого order нет (фолбэк на theme) — в конец, по алфавиту.
         const categoryMap = new Map();
-        categoryMap.set('All Documents', docs.length);
+        const orderMap = new Map();
         docs.forEach((doc) => {
           const cat = docCategory(doc);
           categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1);
+          if (doc?.category?.order != null) orderMap.set(cat, doc.category.order);
         });
-        setCategories(
-          Array.from(categoryMap.entries()).map(([name, count]) => ({ name, count }))
-        );
+        const sortedCats = Array.from(categoryMap.entries())
+          .map(([name, count]) => ({ name, count, order: orderMap.has(name) ? orderMap.get(name) : 999 }))
+          .sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+        setCategories([{ name: 'All Documents', count: docs.length }, ...sortedCats]);
 
         // Подсчет годов из реальных данных. У части документов дата не задана и
         // превращается в epoch (1969-12-31 / 1970-01-01) — такие годы в фильтр не берём.
