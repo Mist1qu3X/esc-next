@@ -419,12 +419,7 @@
     text-transform: uppercase;
     line-height: 1.2;
     margin: 0 0 4px 0;
-    /* Длинные названия не должны раздувать карточку — максимум 2 строки */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    /* Полное название федерации без обрезки; строка сетки сама подстроится по высоте */
     overflow-wrap: anywhere;
 }
 

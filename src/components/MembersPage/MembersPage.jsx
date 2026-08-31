@@ -47,8 +47,11 @@ const MembersPage = () => {
           cachedGet(`${config.API_URL}/api/member-stats?sort=order:asc&pagination[limit]=20`).catch(() => ({ data: { data: [] } })),
         ]);
         if (res.data?.data) {
-          setFederations(res.data.data);
-          setFilteredFeds(res.data.data);
+          // Алфавитный порядок по названию страны (A→Z)
+          const sorted = [...res.data.data].sort((a, b) =>
+            (a.country || '').localeCompare(b.country || ''));
+          setFederations(sorted);
+          setFilteredFeds(sorted);
         }
         setStats(statsRes.data?.data || []);
         setLoading(false);
@@ -212,14 +215,16 @@ const MembersPage = () => {
                     <span className="mp-federation-code">{fed.countryCode || fed.code}</span>
                   </div>
                   <div className="mp-federation-info">
-                    <h3 className="mp-federation-name" title={fed.country || fed.name}>{fed.country || fed.name}</h3>
-                    <p className="mp-federation-country" title={fed.name}>{fed.name}</p>
+                    <h3 className="mp-federation-name" title={fed.name}>{fed.name}</h3>
+                    <p className="mp-federation-country" title={fed.country || fed.name}>{fed.country || fed.name}</p>
                     {regionLabel(fed.region) && (
                       <span className="mp-federation-region"><i className="fa-solid fa-location-dot"></i>{regionLabel(fed.region)}</span>
                     )}
                     <div className="mp-card-divider"></div>
                     <p className="mp-president-label">PRESIDENT</p>
                     <p className="mp-president-name">{fed.president || '—'}</p>
+                    <p className="mp-president-label">SECRETARY GENERAL</p>
+                    <p className="mp-president-name">{fed.secretaryGeneral || '—'}</p>
                     <div className="mp-contact-info">
                       <div className="mp-contact-item">
                         <i className="fa-regular fa-envelope"></i>
@@ -258,6 +263,7 @@ const MembersPage = () => {
                     <th>Country</th>
                     <th>Region</th>
                     <th>President</th>
+                    <th>Secretary General</th>
                     <th>Contact</th>
                     <th></th>
                   </tr>
@@ -270,6 +276,7 @@ const MembersPage = () => {
                       <td className="mp-list-country">{fed.country || fed.name}</td>
                       <td className="mp-list-region">{regionLabel(fed.region) || '—'}</td>
                       <td className="mp-list-president">{fed.president || '—'}</td>
+                      <td className="mp-list-president">{fed.secretaryGeneral || '—'}</td>
                       <td className="mp-list-contact">
                         {fed.email && <div><i className="fa-regular fa-envelope"></i> {fed.email}</div>}
                         {fed.phone && <div><i className="fa-solid fa-phone"></i> {fed.phone}</div>}

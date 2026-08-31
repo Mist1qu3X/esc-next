@@ -245,7 +245,7 @@ const DiscoverPage = () => {
           <div className="filter-count"><i className="fa-solid fa-users"></i><span>{filteredFeds.length} federations</span></div>
         </div>
         <div className="federations-grid">
-          {filteredFeds.slice(0, 15).map((fed) => {
+          {filteredFeds.map((fed) => {
             const raw = (fed.name || fed.country || '').trim();
             const c = (fed.country || '').trim();
             const fedName = c && raw.toUpperCase().startsWith(c.toUpperCase()) ? raw.slice(c.length).trim() : raw;
@@ -352,8 +352,8 @@ const DiscoverPage = () => {
                         className="assembly-flag-img"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
-                      <div className="assembly-code">{fed.countryCode}</div>
-                      <div className="assembly-country" title={fed.country}>{fed.country}</div>
+                      <div className="assembly-name" title={fed.name}>{fed.name}</div>
+                      <div className="assembly-country">{fed.country}</div>
                     </div>
                   ))}
                 </div>

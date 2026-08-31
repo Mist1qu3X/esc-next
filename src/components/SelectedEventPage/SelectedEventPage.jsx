@@ -128,10 +128,11 @@ const SelectedEventPage = ({ slug }) => {
         return all;
       };
       const [sRes, rAll, pRes] = await Promise.all([
-        // LIVE & MEDIA — общий для всех событий (глобальные стримы/фото, как на Media)
+        // Стримы — пока общие (у Live Stream нет привязки к событию).
         cachedGet(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => ({ data: { data: [] } })),
         fetchResults(),
-        cachedGet(`${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
+        // Фото — только этого события (у Photo есть eventSlug).
+        cachedGet(`${config.API_URL}/api/photos?filters[eventSlug][$eq]=${slug}&populate[image]=true&sort=date:desc&pagination[pageSize]=40`).catch(() => ({ data: { data: [] } })),
       ]);
       setStreams(sRes.data?.data || []);
       setEventResults(rAll || []);
