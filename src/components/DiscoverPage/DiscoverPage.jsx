@@ -43,7 +43,9 @@ const DiscoverPage = () => {
         );
         setLeaders(leadersRes.data?.data || []);
         setPresidiumMembers(presidiumRes.data?.data || []);
-        setFederations(fedsRes.data?.data || []);
+        // Алфавитный порядок по стране (A→Z) — и для сетки «UNITED BY PRECISION», и для General Assembly
+        setFederations([...(fedsRes.data?.data || [])].sort((a, b) =>
+          (a.country || '').localeCompare(b.country || '')));
         setMilestones(milestonesRes.data?.data || []);
         setGovernance(govRes.data?.data || []);
         setCommitteeMembers(membersRes.data?.data || []);

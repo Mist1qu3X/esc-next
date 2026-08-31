@@ -10,6 +10,9 @@ import './DocumentsPage.css';
 
 const DOCS_PER_PAGE = 8;
 
+// Категория документа: из управляемой в админке связи category, фолбэк на legacy-поле theme.
+const docCategory = (doc) => doc?.category?.name || doc?.theme || 'Other';
+
 const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   const [documents, setDocuments] = useState([]);
   const [filteredDocs, setFilteredDocs] = useState([]);
@@ -28,7 +31,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
   useEffect(() => {
     const fetchDocuments = async () => {
       const deepPopulate =
-        'populate[file]=true&populate[attachments][populate]=file&populate[previousVersions][populate]=file';
+        'populate[file]=true&populate[attachments][populate]=file&populate[previousVersions][populate]=file&populate[category]=true';
       // событие → только его документы; общая библиотека → только не-событийные
       const eventFilter = eventSlug ? `&filters[eventSlug][$eq]=${eventSlug}` : `&filters[eventSlug][$null]=true`;
       const pageUrl = (populate, page) =>
@@ -59,8 +62,8 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
         const categoryMap = new Map();
         categoryMap.set('All Documents', docs.length);
         docs.forEach((doc) => {
-          const theme = doc.theme || 'Other';
-          categoryMap.set(theme, (categoryMap.get(theme) || 0) + 1);
+          const cat = docCategory(doc);
+          categoryMap.set(cat, (categoryMap.get(cat) || 0) + 1);
         });
         setCategories(
           Array.from(categoryMap.entries()).map(([name, count]) => ({ name, count }))
@@ -91,7 +94,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
     let result = [...documents];
 
     if (activeCategory !== 'All Documents') {
-      result = result.filter((doc) => doc.theme === activeCategory);
+      result = result.filter((doc) => docCategory(doc) === activeCategory);
     }
 
     if (activeYear && activeYear !== 'all') {
@@ -105,7 +108,7 @@ const DocumentsPage = ({ embedded = false, eventSlug = null }) => {
       result = result.filter(
         (doc) =>
           doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          doc.theme?.toLowerCase().includes(searchTerm.toLowerCase())
+          docCategory(doc).toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
