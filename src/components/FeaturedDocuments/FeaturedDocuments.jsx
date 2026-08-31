@@ -19,9 +19,11 @@ const FeaturedDocuments = () => {
     useEffect(() => {
         const fetchDocuments = async () => {
             try {
-                // 1) Сначала — документы с включённым тумблером ShowOnHome
+                // 1) Сначала — документы с включённым тумблером ShowOnHome.
+                //    Порядок задаётся в админке полем homeOrder (больше число = выше);
+                //    при равном/нулевом homeOrder — по дате (свежие выше).
                 const featuredRes = await cachedGet(
-                    `${config.API_URL}/api/docs?filters[ShowOnHome][$eq]=true&populate=*&sort=date:desc&pagination[limit]=4`
+                    `${config.API_URL}/api/docs?filters[ShowOnHome][$eq]=true&populate=*&sort=homeOrder:desc,date:desc&pagination[limit]=4`
                 );
                 let docs = featuredRes.data.data || [];
 

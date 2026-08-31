@@ -111,7 +111,7 @@ const PhotoAlbumPage = ({ slug }) => {
         <div className="pa-breadcrumbs">
           <span className="pa-crumb" onClick={() => router.push('/')}>Home</span>
           <span className="pa-crumb-sep">›</span>
-          <span className="pa-crumb" onClick={() => router.push('/media')}>Media</span>
+          <span className="pa-crumb" onClick={() => router.push('/media?filter=PHOTO')}>Media</span>
           <span className="pa-crumb-sep">›</span>
           <span className="pa-crumb pa-crumb-active">{album.title}</span>
         </div>

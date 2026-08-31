@@ -56,10 +56,22 @@ const MediaPage = () => {
 
   const filters = ['ALL', 'NEWS', 'FEATURES', 'INTERVIEWS', 'PHOTO', 'VIDEOS', 'PRESS RELEASES'];
 
-  // Предвыбор вкладки из ?filter= (ссылки из хедера/футера)
+  // Вкладка живёт в URL (?filter=PHOTO): deep-link из хедера/футера + корректная
+  // кнопка «назад» (из фотоальбома возвращаемся на список фотоальбомов, а не на ALL).
+  const selectFilter = (f) => {
+    setActiveFilter(f);
+    const url = !f || f === 'ALL' ? '/media' : `/media?filter=${encodeURIComponent(f)}`;
+    window.history.pushState({}, '', url); // Next 16 синхронизирует URL без потери состояния
+  };
+
   useEffect(() => {
-    const f = new URLSearchParams(window.location.search).get('filter');
-    if (f && filters.includes(f)) setActiveFilter(f);
+    const readFilter = () => {
+      const f = new URLSearchParams(window.location.search).get('filter');
+      setActiveFilter(f && filters.includes(f) ? f : 'ALL');
+    };
+    readFilter();                                    // предвыбор при загрузке
+    window.addEventListener('popstate', readFilter); // назад/вперёд браузера
+    return () => window.removeEventListener('popstate', readFilter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -310,8 +322,8 @@ const MediaPage = () => {
           {filters.map((f) => (
             <button 
               key={f} 
-              className={`mp-filter-btn ${activeFilter === f ? 'active' : ''}`} 
-              onClick={() => setActiveFilter(f)}
+              className={`mp-filter-btn ${activeFilter === f ? 'active' : ''}`}
+              onClick={() => selectFilter(f)}
             >
               {f}<span className="mp-filter-line"></span>
             </button>
@@ -492,7 +504,7 @@ const MediaPage = () => {
                 <span className="mp-section-text mp-grey-text">{newsGridHeading}</span>
               </div>
               {!themeView && (
-                <button className="mp-all-articles-btn" onClick={() => { setActiveFilter('NEWS'); setTimeout(() => document.getElementById('latest-news')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120); }}>ALL ARTICLES ›</button>
+                <button className="mp-all-articles-btn" onClick={() => { selectFilter('NEWS'); setTimeout(() => document.getElementById('latest-news')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120); }}>ALL ARTICLES ›</button>
               )}
             </div>
             <div className="mp-latest-news-grid">
@@ -528,7 +540,7 @@ const MediaPage = () => {
                 <span className="mp-section-line mp-blue"></span>
                 <span className="mp-section-text">VIDEOS</span>
               </div>
-              <button className="mp-all-articles-btn" onClick={() => setActiveFilter('VIDEOS')}>ALL VIDEOS ›</button>
+              <button className="mp-all-articles-btn" onClick={() => selectFilter('VIDEOS')}>ALL VIDEOS ›</button>
             </div>
             <div className="mp-videos-grid">
               {filteredVideos.length > 0 ? (

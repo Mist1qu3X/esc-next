@@ -79,7 +79,7 @@ const SelectedVideoPage = ({ id }) => {
         <div className="sv-breadcrumbs">
           <span className="sv-crumb" onClick={() => router.push('/')}>Home</span>
           <span className="sv-crumb-sep">›</span>
-          <span className="sv-crumb" onClick={() => router.push('/media')}>Media</span>
+          <span className="sv-crumb" onClick={() => router.push('/media?filter=VIDEOS')}>Media</span>
           <span className="sv-crumb-sep">›</span>
           <span className="sv-crumb sv-crumb-active">{video.title}</span>
         </div>

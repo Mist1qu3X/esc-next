@@ -720,31 +720,25 @@
     flex-shrink: 0;
 }
 
-.assembly-code {
+/* Главный текст карточки — название федерации (различает две федерации одной страны) */
+.assembly-name {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 16px;
-    font-weight: 800;
+    font-size: 14px;
+    font-weight: 700;
     color: #ffffff;
-    text-transform: uppercase;
+    line-height: 1.15;
+    width: 100%;
+    overflow-wrap: anywhere; /* длинные неразрывные строки переносятся, а не растягивают колонку */
 }
 
+/* Второстепенный текст — страна, мелким приглушённым шрифтом */
 .assembly-country {
     font-family: 'Inter', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.5);
     width: 100%;
-    /* Ровно 2 строки с многоточием: карточки одинаковой высоты, длинные
-       названия федераций (напр. Azerbaijan) не растягивают строку сетки. */
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    overflow-wrap: anywhere; /* длинные неразрывные строки переносятся, а не растягивают колонку */
-    line-height: 1.25;
-    min-height: 2.5em;
+    overflow-wrap: anywhere;
 }
 
 .executive-members {
