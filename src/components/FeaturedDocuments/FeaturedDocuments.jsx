@@ -22,10 +22,24 @@ const FeaturedDocuments = () => {
                 // 1) Сначала — документы с включённым тумблером ShowOnHome.
                 //    Порядок задаётся в админке полем homeOrder (больше число = выше);
                 //    при равном/нулевом homeOrder — по дате (свежие выше).
+                //
+                //    Берём ВСЕ отмеченные документы, а не первые четыре: сортировку по
+                //    homeOrder делаем сами, ниже, и обрезаем уже после неё. С запросом
+                //    sort=homeOrder:desc четвёрку выбирал бы сервер — по неверному порядку.
                 const featuredRes = await cachedGet(
-                    `${config.API_URL}/api/docs?filters[ShowOnHome][$eq]=true&populate=*&sort=homeOrder:desc,date:desc&pagination[limit]=4`
+                    `${config.API_URL}/api/docs?filters[ShowOnHome][$eq]=true&populate=*&sort=date:desc&pagination[limit]=100`
                 );
                 let docs = featuredRes.data.data || [];
+
+                // homeOrder сортируем на клиенте. У документов, заведённых до появления
+                // поля, в нём null, а Postgres считает null больше любого числа: при
+                // сортировке по убыванию такие записи встают ВЫШЕ тех, где номер проставлен
+                // руками, — то есть ровно наоборот задуманному. Пустое значение здесь
+                // означает «номер не задан», а это ноль. Сортировка стабильная, поэтому при
+                // равных номерах сохраняется порядок по дате, пришедший с сервера.
+                docs = [...docs]
+                    .sort((a, b) => (b.homeOrder ?? 0) - (a.homeOrder ?? 0))
+                    .slice(0, 4);
 
                 // 2) Фолбэк: если ни у одного документа тумблер не включён —
                 //    показываем свежие по дате добавления (createdAt)
