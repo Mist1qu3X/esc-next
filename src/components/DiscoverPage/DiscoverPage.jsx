@@ -161,10 +161,10 @@ const DiscoverPage = () => {
     router.push('/members');
   };
 
-  // «Руководство» — это структура GOVERNANCE ниже на этой же странице
-  // (ассамблея, исполком, президиум, комитеты), а не список федераций.
+  // FULL DIRECTORY в блоке LEADERSHIP ведёт на отдельную страницу FULL STAFF
+  // со всеми записями коллекции Leader (здесь показаны только первые три).
   const handleLeadershipDirectory = () => {
-    document.getElementById('governance')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    router.push('/full-staff');
   };
 
   return (
