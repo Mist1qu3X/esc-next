@@ -250,7 +250,7 @@ const DiscoverPage = () => {
           {filteredFeds.map((fed) => {
             const raw = (fed.name || fed.country || '').trim();
             const c = (fed.country || '').trim();
-            const fedName = c && raw.toUpperCase().startsWith(c.toUpperCase()) ? raw.slice(c.length).trim() : raw;
+            const fedName = (fed.name || fed.country || '').trim();
             return (
               <div className="federation-card" key={fed.id}>
                 <img
