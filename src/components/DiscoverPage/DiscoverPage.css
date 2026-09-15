@@ -1118,7 +1118,7 @@
     align-items: center;
     gap: 12px;
     width: 100%;
-    height: 88px;
+    min-height: 88px;
     padding: 16px;
     background: #1c2b66;
     transition: all 0.2s ease;
@@ -1153,11 +1153,7 @@
     color: #ffffff;
     text-transform: uppercase;
     margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    overflow-wrap: anywhere;
 }
 
 .fed-sub {

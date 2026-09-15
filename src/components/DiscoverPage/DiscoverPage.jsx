@@ -248,8 +248,6 @@ const DiscoverPage = () => {
         </div>
         <div className="federations-grid">
           {filteredFeds.map((fed) => {
-            const raw = (fed.name || fed.country || '').trim();
-            const c = (fed.country || '').trim();
             const fedName = (fed.name || fed.country || '').trim();
             return (
               <div className="federation-card" key={fed.id}>
