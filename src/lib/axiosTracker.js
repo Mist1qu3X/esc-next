@@ -10,10 +10,13 @@ let installed = false;
 export function installAxiosTracker() {
   if (installed) return;
   installed = true;
-  axios.interceptors.request.use((cfg) => { pending += 1; notify(); return cfg; });
+  // Запросы с { skipGate: true } в конфиге не задерживают показ страницы
+  // (второстепенные проверки, которые можно дорисовать после появления контента).
+  const done = (cfg) => { if (!cfg?.skipGate) { pending = Math.max(0, pending - 1); notify(); } };
+  axios.interceptors.request.use((cfg) => { if (!cfg.skipGate) { pending += 1; notify(); } return cfg; });
   axios.interceptors.response.use(
-    (res) => { pending = Math.max(0, pending - 1); notify(); return res; },
-    (err) => { pending = Math.max(0, pending - 1); notify(); return Promise.reject(err); }
+    (res) => { done(res.config); return res; },
+    (err) => { done(err?.config); return Promise.reject(err); }
   );
 }
 

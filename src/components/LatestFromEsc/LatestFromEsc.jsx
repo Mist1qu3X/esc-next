@@ -4,6 +4,7 @@ import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import './LatestFromEsc.css';
 import config from '@/lib/config';
+import { imageUrl as mediaUrl } from '@/lib/media';
 
 const LatestFromEsc = () => {
     const [news, setNews] = useState([]);
@@ -97,9 +98,8 @@ const LatestFromEsc = () => {
                 {news && news.length > 0 ? (
                     news.map((item) => {
                         const { title, theme, date, image, slug } = item;
-                        const imageUrl = image?.url
-                            ? (image.url.startsWith('http') ? image.url : `${config.API_URL}${image.url}`)
-                            : null;
+                        // Карточка ~400px: формат medium (750px) вместо оригинала в 1–1.3 МБ
+                        const imageUrl = mediaUrl(image, 'medium');
                         // Используем documentId или id если slug отсутствует
                         const linkSlug = slug || item.documentId || item.id;
                         

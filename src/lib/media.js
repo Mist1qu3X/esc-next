@@ -14,9 +14,9 @@ const mediaObj = (m) => {
   return m;
 };
 
-const ORDER = ['thumbnail', 'small', 'medium', 'large'];
+const ORDER = ['thumbnail', 'small', 'medium', 'large', 'xlarge'];
 
-// URL картинки нужного размера. size: 'thumbnail'|'small'|'medium'|'large'|'full'.
+// URL картинки нужного размера. size: 'thumbnail'|'small'|'medium'|'large'|'xlarge'|'full'.
 // Берём запрошенный формат, если нет — следующий по возрастанию, иначе оригинал.
 // Так сетки/превью тянут ~40–100 КБ вместо полноразмерных 0.5–2 МБ.
 export function imageUrl(media, size = 'full') {
@@ -31,6 +31,20 @@ export function imageUrl(media, size = 'full') {
     }
   }
   return abs(o.url);
+}
+
+// Размер для фоновых «героев» на всю ширину: телефонам хватает large (1000px), десктопу — xlarge (1920px).
+export function heroSize() {
+  return typeof window !== 'undefined' && window.innerWidth <= 1024 ? 'large' : 'xlarge';
+}
+
+// Вариант картинки по адресу оригинала — для картинок внутри markdown, где объекта media нет:
+// /uploads/<hash>.jpg -> /uploads/large_<hash>.jpg. Формат есть не у всех файлов (Strapi делает
+// его только если оригинал больше), поэтому использовать вместе с onError-фолбэком на оригинал.
+export function sizedUrl(url, size) {
+  if (!url) return url;
+  const m = url.match(/^(.*\/uploads\/)(?!(?:thumbnail|small|medium|large|xlarge)_)([^/?#]+)$/);
+  return m ? `${m[1]}${size}_${m[2]}` : url;
 }
 
 export default imageUrl;

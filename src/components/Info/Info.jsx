@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
-import { imageUrl } from '@/lib/media';
+import { imageUrl, heroSize } from '@/lib/media';
 import './Info.css';
 
 // Главный баннер = слайдер (коллекция Hero Slide в админке: событие / новость / видео).
@@ -24,6 +24,10 @@ const Info = () => {
                 s = (r.data?.data || []);
             } catch (e) { /* коллекции ещё нет / сеть — уходим в фолбэк */ }
             setSlides(s);
+            // Первый кадр начинаем грузить сразу: пока LoadingGate держит секцию в display:none,
+            // браузер фоновую картинку не запрашивает, и герой появлялся бы с опозданием.
+            const first = s[0] ? imageUrl(s[0].image, heroSize()) : null;
+            if (first) { const im = new Image(); im.src = first; }
             if (!s.length) {
                 try {
                     const c = await cachedGet(`${config.API_URL}/api/championships?populate=*`);
@@ -63,7 +67,8 @@ const Info = () => {
         if (/^https?:\/\//i.test(link)) window.open(link, '_blank', 'noopener');
         else router.push(link);
     };
-    const heroImg = cur ? imageUrl(cur.image, 'full') : null;
+    // xlarge (1920px, ~300 КБ) вместо оригинала (4–5 тыс. px, ~1 МБ); на телефонах — large
+    const heroImg = cur ? imageUrl(cur.image, heroSize()) : null;
 
     const subIcon = (t) => (t === 'event' ? 'fa-location-dot' : t === 'video' ? 'fa-film' : 'fa-newspaper');
 
