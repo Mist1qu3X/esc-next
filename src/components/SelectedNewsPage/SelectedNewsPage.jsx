@@ -107,9 +107,10 @@ const SelectedNewsPage = ({ slug }) => {
           setArticle(articleData);
           setSaved(readSaved().some((a) => a.slug === slug));
 
-          // Полный отсортированный список — для соседей (prev/next) и «похожих»
+          // Полный отсортированный список — для соседей (prev/next) и «похожих».
+          // Только нужные поля: с populate=* ответ был 130+ КБ (тексты всех 100 статей).
           const listRes = await cachedGet(
-            `${config.API_URL}/api/news-items?populate=*&sort=date:desc&pagination[pageSize]=100`
+            `${config.API_URL}/api/news-items?fields[0]=title&fields[1]=slug&fields[2]=theme&fields[3]=date&populate[image]=true&sort=date:desc&pagination[pageSize]=100`
           );
           const list = extractData(listRes);
           const idx = list.findIndex((n) => n.id === articleData.id || n.slug === articleData.slug);

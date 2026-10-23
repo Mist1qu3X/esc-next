@@ -91,10 +91,9 @@ const DiscoverPage = () => {
   // Функция для получения URL флага из Strapi (PNG)
   const getFlagUrl = (flag) => {
     if (!flag) return null;
-    // Если пришел объект Media из Strapi
-    if (flag.url) {
-      return flag.url.startsWith('http') ? flag.url : `${config.API_URL}${flag.url}`;
-    }
+    // Если пришел объект Media из Strapi — флаг на странице не больше ~100px, берём thumbnail:
+    // часть флагов загружена фотографиями 4–6 тыс. px по 300–800 КБ.
+    if (flag.url) return imageUrl(flag, 'thumbnail');
     // Если пришел код страны
     if (typeof flag === 'string') {
       return `${config.API_URL}/uploads/flags/${flag.toLowerCase()}.png`;
@@ -188,7 +187,7 @@ const DiscoverPage = () => {
 
       <section
         className={`who-we-are ${pageData?.missionImage ? 'has-bg' : ''}`}
-        style={pageData?.missionImage ? { '--who-img': `url(${getImageUrl(pageData.missionImage)})` } : undefined}
+        style={pageData?.missionImage ? { '--who-img': `url(${imageUrl(pageData.missionImage, 'large')})` } : undefined}
       >
         <div className="who-we-are-container">
           <div className="who-left">
