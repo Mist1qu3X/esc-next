@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import StreamPlayer, { canEmbed, ytThumb } from '@/components/StreamPlayer/StreamPlayer';
 import LoadingMedia from './LoadingMedia';
 import LazyBg from '@/components/LazyBg/LazyBg';
+import LoadMoreSentinel from '@/components/LoadMoreSentinel/LoadMoreSentinel';
 import { imageUrl } from '@/lib/media';
 import './MediaPage.css';
 
@@ -23,6 +24,15 @@ const getWithRetry = async (url, tries = 3) => {
   }
 };
 const EMPTY_RES = { data: { data: [] } };
+
+const PAGE = 100; // Strapi капит pageSize на 100
+const NEWS_URL = (page) => `${config.API_URL}/api/news-items?populate[image]=true&sort=date:desc&pagination[pageSize]=${PAGE}&pagination[page]=${page}`;
+const VIDEOS_URL = (page) => `${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=createdAt:desc&pagination[pageSize]=${PAGE}&pagination[page]=${page}`;
+// Сетке альбомов нужны обложка и число фото (photoCount ведёт бэкенд) — сами фото не тянем:
+// populate[images] на 500 альбомах = 50 тыс. строк и 5–7 с ответа.
+const PHOTOS_URL = (page) => `${config.API_URL}/api/photos?populate[image]=true&sort=date:desc&pagination[pageSize]=${PAGE}&pagination[page]=${page}`;
+// Страницы приходят по мере прокрутки; если между запросами добавили запись, элемент может прийти дважды.
+const dedupe = (list) => { const seen = new Set(); return list.filter((x) => !seen.has(x.id) && seen.add(x.id)); };
 
 // Универсальная функция для извлечения данных из любого ответа Strapi
 const extractData = (response) => {
@@ -44,6 +54,10 @@ const MediaPage = () => {
   const [streams, setStreams] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Постраничная догрузка: раньше раздел тянул ВСЕ новости/видео/альбомы (30+ запросов) при каждом открытии.
+  const [newsPaging, setNewsPaging] = useState({ page: 1, done: false, loading: false });
+  const [videoPaging, setVideoPaging] = useState({ page: 1, pageCount: 1, loading: false });
+  const [photosState, setPhotosState] = useState('idle'); // idle | loading | ready — альбомы грузим при открытии вкладки PHOTO
   const [playing, setPlaying] = useState(null); // стрим, открытый во встроенном плеере
   const [savedSlugs, setSavedSlugs] = useState([]);       // сохранённые статьи (localStorage) — их наверх
   // Фильтры/сортировка вкладки PHOTO
@@ -86,58 +100,24 @@ const MediaPage = () => {
       try {
         // Каждый запрос падает независимо: сбой одного (напр. live-streams) больше
         // не обнуляет всю страницу — остальные секции отрисуются нормально.
-        const [newsRes, videosRes, docsRes, streamsRes, photosRes] = await Promise.all([
-          getWithRetry(`${config.API_URL}/api/news-items?populate[image]=true&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
-          getWithRetry(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=createdAt:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
+        const [newsRes, videosRes, docsRes, streamsRes] = await Promise.all([
+          getWithRetry(NEWS_URL(1)).catch(() => EMPTY_RES),
+          getWithRetry(VIDEOS_URL(1)).catch(() => EMPTY_RES),
           // docs/streams: только общие (событийные живут на странице события).
           getWithRetry(`${config.API_URL}/api/docs?populate[file]=true&sort=date:desc&pagination[pageSize]=100&filters[eventSlug][$null]=true`).catch(() => EMPTY_RES),
           getWithRetry(`${config.API_URL}/api/live-streams?populate[thumbnail]=true&pagination[pageSize]=10`).catch(() => EMPTY_RES),
-          // photos: показываем ВСЕ альбомы (событийные тоже) — в сетке нужна только обложка + счётчик
-          getWithRetry(`${config.API_URL}/api/photos?populate[image]=true&populate[images][fields][0]=id&sort=date:desc&pagination[pageSize]=100`).catch(() => EMPTY_RES),
         ]);
 
-        setNews(extractData(newsRes));
+        // Первой страницы хватает вкладке ALL (2 featured + 4 latest + 4 видео + 4 релиза);
+        // остальное догружается по мере прокрутки на NEWS/VIDEOS, альбомы — при открытии PHOTO.
+        const firstNews = extractData(newsRes);
+        setNews(firstNews);
+        // кастомный контроллер news-items отдаёт массив без meta → «ещё есть», пока приходит по 100
+        setNewsPaging({ page: 1, done: firstNews.length < PAGE, loading: false });
         setVideos(extractData(videosRes));
+        setVideoPaging({ page: 1, pageCount: videosRes.data?.meta?.pagination?.pageCount || 1, loading: false });
         setDocs(extractData(docsRes));
         setStreams(extractData(streamsRes));
-        setPhotos(extractData(photosRes));
-
-        // дозагружаем остальные страницы альбомов в фоне (Strapi капит pageSize на 100)
-        (async () => {
-          try {
-            const pageCount = photosRes.data?.meta?.pagination?.pageCount || 1;
-            for (let page = 2; page <= pageCount; page++) {
-              const r = await cachedGet(`${config.API_URL}/api/photos?populate[image]=true&populate[images][fields][0]=id&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
-              const batch = extractData(r);
-              if (batch.length) setPhotos((prev) => [...prev, ...batch]);
-            }
-          } catch (_) { /* оставляем то, что успели загрузить */ }
-        })();
-
-        // видео: догружаем все страницы (всего их сотни)
-        (async () => {
-          try {
-            const pageCount = videosRes.data?.meta?.pagination?.pageCount || 1;
-            for (let page = 2; page <= pageCount; page++) {
-              const r = await cachedGet(`${config.API_URL}/api/videos?populate[thumbnail]=true&populate[videoFile]=true&sort=createdAt:desc&pagination[pageSize]=100&pagination[page]=${page}`);
-              const batch = extractData(r);
-              if (batch.length) setVideos((prev) => [...prev, ...batch]);
-            }
-          } catch (_) {}
-        })();
-
-        // новости: кастомный контроллер отдаёт массив без meta → грузим, пока приходит по 100
-        (async () => {
-          try {
-            for (let page = 2; page <= 30; page++) {
-              const r = await cachedGet(`${config.API_URL}/api/news-items?populate[image]=true&sort=date:desc&pagination[pageSize]=100&pagination[page]=${page}`);
-              const batch = extractData(r);
-              if (!batch.length) break;
-              setNews((prev) => [...prev, ...batch]);
-              if (batch.length < 100) break;
-            }
-          } catch (_) {}
-        })();
 
         setLoading(false);
       } catch (e) { 
@@ -147,6 +127,51 @@ const MediaPage = () => {
     };
     fetchData();
   }, []);
+
+  // Альбомы нужны только на вкладке PHOTO (фильтры по году/событию считаются по полному списку):
+  // грузим все страницы при первом открытии вкладки, страницы 2+ параллельно.
+  useEffect(() => {
+    if (activeFilter !== 'PHOTO' || photosState !== 'idle') return;
+    setPhotosState('loading');
+    (async () => {
+      try {
+        const first = await getWithRetry(PHOTOS_URL(1));
+        const pageCount = first.data?.meta?.pagination?.pageCount || 1;
+        setPhotos(extractData(first));
+        const rest = await Promise.all(
+          Array.from({ length: pageCount - 1 }, (_, i) => cachedGet(PHOTOS_URL(i + 2)).catch(() => EMPTY_RES))
+        );
+        setPhotos(dedupe([...extractData(first), ...rest.flatMap(extractData)]));
+      } catch (_) { /* показываем то, что успели загрузить */ }
+      setPhotosState('ready');
+    })();
+  }, [activeFilter, photosState]);
+
+  const loadMoreNews = async () => {
+    if (newsPaging.loading || newsPaging.done) return;
+    const page = newsPaging.page + 1;
+    setNewsPaging((p) => ({ ...p, loading: true }));
+    try {
+      const batch = extractData(await cachedGet(NEWS_URL(page)));
+      setNews((prev) => dedupe([...prev, ...batch]));
+      setNewsPaging({ page, done: batch.length < PAGE, loading: false });
+    } catch (_) {
+      setNewsPaging((p) => ({ ...p, loading: false }));
+    }
+  };
+
+  const loadMoreVideos = async () => {
+    if (videoPaging.loading || videoPaging.page >= videoPaging.pageCount) return;
+    const page = videoPaging.page + 1;
+    setVideoPaging((p) => ({ ...p, loading: true }));
+    try {
+      const r = await cachedGet(VIDEOS_URL(page));
+      setVideos((prev) => dedupe([...prev, ...extractData(r)]));
+      setVideoPaging((p) => ({ page, pageCount: r.data?.meta?.pagination?.pageCount || p.pageCount, loading: false }));
+    } catch (_) {
+      setVideoPaging((p) => ({ ...p, loading: false }));
+    }
+  };
 
   const getImageUrl = (img) => {
     if (!img) return null;
@@ -280,7 +305,7 @@ const MediaPage = () => {
   const newsGridItems = activeFilter === 'NEWS'
     ? savedFirstNews(filteredNews)
     : (themeView ? savedFirst(filteredNews) : latestNews);
-  const newsGridHeading = themeView ? `ALL ${newsGridItems.length} ${activeFilter}` : 'LATEST NEWS';
+  const newsGridHeading = themeView ? `ALL ${newsGridItems.length}${newsPaging.done ? '' : '+'} ${activeFilter}` : 'LATEST NEWS';
 
   // ---- PHOTO: фильтры (поиск / год / событие) + сортировка + счётчики ----
   const photoCountOf = (p) => (Array.isArray(p.images) && p.images.length > 0 ? p.images.length : (p.photoCount || 0));
@@ -331,7 +356,7 @@ const MediaPage = () => {
         </div>
       </section>
 
-      {loading ? (
+      {loading || (showPhotos && photosState !== 'ready' && photos.length === 0) ? (
         <LoadingMedia
           variant={
             activeFilter === 'PHOTO' ? 'photo'
@@ -492,6 +517,9 @@ const MediaPage = () => {
                 </div>
               )}
             </div>
+            {videoPaging.page < videoPaging.pageCount && (
+              <LoadMoreSentinel key={`videos-${videos.length}`} onVisible={loadMoreVideos} />
+            )}
           </div>
         )}
 
@@ -522,6 +550,8 @@ const MediaPage = () => {
                     </div>
                   </div>
                 ))
+              ) : themeView && !newsPaging.done ? (
+                <div className="mp-empty-block"><p className="mp-empty-block-title">Loading…</p></div>
               ) : (
                 <div className="mp-empty-block">
                   <i className="fa-regular fa-newspaper mp-empty-block-icon"></i>
@@ -529,6 +559,9 @@ const MediaPage = () => {
                 </div>
               )}
             </div>
+            {themeView && !newsPaging.done && (
+              <LoadMoreSentinel key={`news-${news.length}`} onVisible={loadMoreNews} />
+            )}
           </div>
         )}
 

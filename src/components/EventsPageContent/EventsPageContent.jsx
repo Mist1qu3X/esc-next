@@ -4,6 +4,7 @@ import { cachedGet } from '@/lib/apiCache';
 import { useRouter } from 'next/navigation';
 import config from '@/lib/config';
 import Pagination from '@/components/Pagination/Pagination';
+import { imageUrl } from '@/lib/media';
 import './EventsPageContent.css';
 
 // Фолбэк-вкладки фильтра типа (коллекция event-category откатана на проде)
@@ -332,8 +333,7 @@ const EventsPageContent = () => {
                     </div>
                     <div className="epc-featured-container">
                         {featuredEvents.map((event) => {
-                            const rawImg = event.image?.url || event.image?.data?.attributes?.url;
-                            const imgUrl = rawImg ? (rawImg.startsWith('http') ? rawImg : `${config.API_URL}${rawImg}`) : null;
+                            const imgUrl = imageUrl(event.image, 'medium');
                             return (
                                 <div className="epc-featured-card" key={event.id} onClick={() => handleDetails(event)}>
                                     {imgUrl

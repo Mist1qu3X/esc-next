@@ -56,7 +56,8 @@ const FeaturedDocuments = () => {
                 const urls = docs.map((d) => absUrl(d.file)).filter(Boolean);
                 if (urls.length) {
                     try {
-                        const r = await axios.post('/api/doc-availability', { urls });
+                        // skipGate: проверка идёт через сервер Next и не должна держать скелет главной
+                        const r = await axios.post('/api/doc-availability', { urls }, { skipGate: true });
                         setAvailability(r.data?.results || {});
                     } catch {
                         // проверка недоступна

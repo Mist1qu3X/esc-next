@@ -9,7 +9,7 @@ import TargetLoader from '@/components/LoadingResults/TargetLoader';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import { fileTypeMeta, previewUrlFor } from '@/lib/fileType';
 import { downloadFile as forceDownload } from '@/lib/download';
-import { imageUrl } from '@/lib/media';
+import { imageUrl, heroSize } from '@/lib/media';
 import LazyBg from '@/components/LazyBg/LazyBg';
 import './SelectedEventPage.css';
 
@@ -318,7 +318,7 @@ const SelectedEventPage = ({ slug }) => {
   return (
     <>
       {/* HERO */}
-      <section className="selected-event-header" style={{ backgroundImage: `url(${getImageUrl(event.image) || '/img/event1.png'})` }}>
+      <section className="selected-event-header" style={{ backgroundImage: `url(${imageUrl(event.image, heroSize()) || '/img/event1.png'})` }}>
         <div className="event-overlay"></div>
         <div className="event-breadcrumbs">
           <span className="event-breadcrumb" onClick={() => router.push('/')}>HOME</span><span className="event-breadcrumb-sep">›</span>

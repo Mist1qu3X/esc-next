@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ErrorPage from '@/components/ErrorPage/ErrorPage';
 import NewsDetailSkeleton from './NewsDetailSkeleton';
+import { imageUrl, heroSize, sizedUrl } from '@/lib/media';
 import './SelectedNewsPage.css';
 
 // Поле content — Strapi richtext (Markdown). Легаси-статьи писались без markdown:
@@ -40,7 +41,14 @@ const mdComponents = {
     // Прод-медиа на S3 уже абсолютные; локальные загрузки Strapi — относительные (/uploads/…),
     // их префиксуем адресом API, иначе <img> резолвится в адрес фронта и не грузится.
     const resolved = src && !src.startsWith('http') ? `${config.API_URL}${src}` : src;
-    return <img className="article-image" loading="lazy" decoding="async" src={resolved} alt={alt || ''} {...props} />;
+    // В тексте картинка не шире ~1000px — отдаём формат large (≈100 КБ) вместо оригинала (1–3 МБ).
+    // Формата может не быть (оригинал меньше 1000px): тогда по ошибке загрузки откатываемся на оригинал.
+    const sized = sizedUrl(resolved, 'large');
+    const fallback = (e) => {
+      const el = e.currentTarget;
+      if (sized !== resolved && !el.dataset.fallback) { el.dataset.fallback = '1'; el.src = resolved; }
+    };
+    return <img className="article-image" loading="lazy" decoding="async" src={sized} onError={fallback} alt={alt || ''} {...props} />;
   },
 };
 
@@ -158,7 +166,7 @@ const SelectedNewsPage = ({ slug }) => {
     const exists = list.some((a) => a.slug === slug);
     const next = exists
       ? list.filter((a) => a.slug !== slug)
-      : [{ slug, title: article?.title, date: article?.date, theme: article?.theme, image: getImageUrl(article?.image) }, ...list];
+      : [{ slug, title: article?.title, date: article?.date, theme: article?.theme, image: imageUrl(article?.image, 'small') }, ...list];
     try { localStorage.setItem(SAVED_KEY, JSON.stringify(next)); } catch (e) {}
     setSaved(!exists);
   };
@@ -200,7 +208,7 @@ const SelectedNewsPage = ({ slug }) => {
 
   return (
     <>
-      <section className="selected_media_head" style={{ backgroundImage: `url(${getImageUrl(article.image) || '/img/fallback-news.svg'})` }}>
+      <section className="selected_media_head" style={{ backgroundImage: `url(${imageUrl(article.image, heroSize()) || '/img/fallback-news.svg'})` }}>
         <div className="selected-media-overlay"></div>
         <div className="selected-breadcrumbs">
           <span className="selected-breadcrumb" onClick={handleAllMedia} style={{ cursor: 'pointer' }}>HOME</span>
@@ -310,7 +318,7 @@ const SelectedNewsPage = ({ slug }) => {
                     onClick={() => handleRelatedClick(n.slug)}
                     style={{ cursor: 'pointer' }}
                   >
-                    <img src={getImageUrl(n.image) || '/img/fallback-news.svg'} alt={n.title} className="related-img" loading="lazy" decoding="async" />
+                    <img src={imageUrl(n.image, 'small') || '/img/fallback-news.svg'} alt={n.title} className="related-img" loading="lazy" decoding="async" />
                     <div className="related-info">
                       <span className={`related-type type-${n.theme?.toLowerCase() || 'event'}`}>{n.theme || 'NEWS'}</span>
                       <h5 className="related-title">{n.title}</h5>

@@ -5,7 +5,9 @@ import { installAxiosTracker, pendingCount, onPending } from '@/lib/axiosTracker
 
 // Держит скелет, пока данные со Strapi не пришли: контент монтируется скрыто и шлёт
 // запросы, а скелет убирается, когда сеть «затихла» (нет активных запросов idle мс).
-export default function LoadingGate({ skeleton, children, minShow = 400, idle = 450, maxWait = 9000 }) {
+// idle нужен только чтобы «склеить» цепочки запросов (следующий стартует через пару мс
+// после ответа предыдущего), поэтому он короткий — каждая лишняя сотня мс тут видна глазом.
+export default function LoadingGate({ skeleton, children, minShow = 300, idle = 120, maxWait = 6000 }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
